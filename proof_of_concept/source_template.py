@@ -1,9 +1,9 @@
 ################################################
 ##	Tucan Project
 
-##	Copyright (C) 2008  Fran Lupion Crakotak(at)yahoo.es
+##	Copyright (C) 2008 Fran Lupion Crakotak(at)yahoo.es
 ##	Copyright (C) 2008 Paco Salido beakman(at)riseup.net
-##	Copyright (C) 2008  2008 JM Cordero betic0(at)gmail.com
+##	Copyright (C) 2008 JM Cordero betic0(at)gmail.com
 
 ##	This program is free software; you can redistribute it and/or modify
 ##	it under the terms of the GNU General Public License as published by
