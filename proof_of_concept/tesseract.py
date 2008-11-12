@@ -30,32 +30,32 @@ TEXT_PATH = "tmp.txt"
 class Tesseract:
     """"""
     def __init__(self, data):
-        """"""
-        p = ImageFile.Parser()
-        p.feed(data)
-        image = p.close()
-        image = ImageOps.grayscale(image)
-        image.save(IMAGE_PATH)
-        
+	""""""
+	p = ImageFile.Parser()
+	p.feed(data)
+	image = p.close()
+	image = ImageOps.grayscale(image)
+	image.save(IMAGE_PATH)
+	
     def get_captcha(self, num_chars):
-        """"""
-        if os.system("tesseract "+ IMAGE_PATH + " tmp") == 0:
-            f = file(TEXT_PATH, "r")
-            captcha = f.readline().strip()
-            if len(captcha) == num_chars:
-                return captcha
-        
+	""""""
+	if os.system("tesseract "+ IMAGE_PATH + " tmp") == 0:
+	    f = file(TEXT_PATH, "r")
+	    captcha = f.readline().strip()
+	    if len(captcha) == num_chars:
+		return captcha
+	
 if __name__ == "__main__":
     correct = []
     incorrect = []
     for archive in os.listdir("images"):
-        f = file("images/" + archive , "r")
-        t = Tesseract(f.read())
-        result = t.get_captcha(3)
-        if result:
-            correct.append((archive, result))
-        else:
-            incorrect.append((archive, result))
+	f = file("images/" + archive , "r")
+	t = Tesseract(f.read())
+	result = t.get_captcha(3)
+	if result:
+	    correct.append((archive, result))
+	else:
+	    incorrect.append((archive, result))
     print len(incorrect)
     for i in correct:
-        print i
+	print i

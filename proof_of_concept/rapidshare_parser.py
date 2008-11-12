@@ -32,46 +32,46 @@ URL = ""
 class FormParser(HTMLParser):
     """"""
     def __init__(self, url):
-        """"""
-        HTMLParser.__init__(self)
-        self.form_action = None
-        self.url = None
-        self.wait = None
-        self.feed(urllib2.urlopen(urllib2.Request(url)).read())
-        self.close()
-        form = {"dl.start": "Free", "":"Free user"}
-        self.data = urllib.urlencode(form)
-        handle = urllib2.urlopen(self.form_action, self.data)
-        self.download_data = handle.read()
-        for line in self.download_data.split("\n"):
-            if not self.url:
-                self.feed(line)
-            else:
-                if "var c=" in line:
-                    self.wait = int(line.split("var c=")[1].split(";")[0])
+	""""""
+	HTMLParser.__init__(self)
+	self.form_action = None
+	self.url = None
+	self.wait = None
+	self.feed(urllib2.urlopen(urllib2.Request(url)).read())
+	self.close()
+	form = {"dl.start": "Free", "":"Free user"}
+	self.data = urllib.urlencode(form)
+	handle = urllib2.urlopen(self.form_action, self.data)
+	self.download_data = handle.read()
+	for line in self.download_data.split("\n"):
+	    if not self.url:
+		self.feed(line)
+	    else:
+		if "var c=" in line:
+		    self.wait = int(line.split("var c=")[1].split(";")[0])
 
     def handle_starttag(self, tag, attrs):
-        """"""
-        if tag == "form":
-            if attrs[0][1] == "ff":
-                self.form_action = attrs[1][1]
-            elif attrs[0][1] == "dlf":
-                self.url = attrs[1][1]
+	""""""
+	if tag == "form":
+	    if attrs[0][1] == "ff":
+		self.form_action = attrs[1][1]
+	    elif attrs[0][1] == "dlf":
+		self.url = attrs[1][1]
 
 
 if __name__ == "__main__":
     c = FormParser(URL)
     if c.wait:
-        print c.wait
-        time.sleep(c.wait)
-        print c.url.split("/").pop()
-        f = file(c.url.split("/").pop() , "w")
-        handle = urllib2.urlopen(c.url)
-        data = handle.read(BUFFER_SIZE)
-        f.write(data)
-        while len(data) > 0:
-            data = handle.read(BUFFER_SIZE)
-            f.write(data)
-        f.close()
+	print c.wait
+	time.sleep(c.wait)
+	print c.url.split("/").pop()
+	f = file(c.url.split("/").pop() , "w")
+	handle = urllib2.urlopen(c.url)
+	data = handle.read(BUFFER_SIZE)
+	f.write(data)
+	while len(data) > 0:
+	    data = handle.read(BUFFER_SIZE)
+	    f.write(data)
+	f.close()
     else:
-        print "espera 5 minutos"
+	print "espera 5 minutos"
