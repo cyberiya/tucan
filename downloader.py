@@ -33,7 +33,8 @@ class Downloader(threading.Thread):
 	def run(self):
 		""""""
 		self.status = "downloading"
-		print "downloading"
+		while not self.stop:
+			print "downloading"
 
 if __name__ == "__main__":
     d = Downloader()

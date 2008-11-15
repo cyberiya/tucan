@@ -24,7 +24,7 @@ import threading
 
 class Uploader(threading.Thread):
 	""""""
-	def __init__(self, url, cookie=None):
+	def __init__(self, file_name, cookie=None):
 		""""""
 		threading.Thread.__init__(self)
 		self.stop = False
@@ -33,7 +33,8 @@ class Uploader(threading.Thread):
 	def run(self):
 		""""""
 		self.status = "uploading"
-		print "uploading"
+		while not self.stop:
+			print "uploading"
 
 if __name__ == "__main__":
     u = Uploader()
