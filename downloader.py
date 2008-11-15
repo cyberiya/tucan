@@ -20,14 +20,20 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-from .anonymous_plugin import AnonymousPlugin
+import threading
 
-class AnonymousRapidshare(AnonymousPlugin):
+class Downloader(threading.Thread):
 	""""""
-	def __init__(self):
+	def __init__(self, url, cookie=None):
 		""""""
-		AnonymousPlugin.__init__(self)
-		print "soy un plugin para rapidshare que descarga de forma anonima!"
+		threading.Thread.__init__(self)
+		self.stop = False
+		self.status = "stoped"
+		
+	def run(self):
+		""""""
+		self.status = "downloading"
+		print "downloading"
 
 if __name__ == "__main__":
-    p = AnonymousRapidshare()
+    d = Downloader()

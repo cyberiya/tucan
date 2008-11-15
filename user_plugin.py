@@ -26,6 +26,7 @@ class UserPlugin(Plugin):
 	""""""
 	def __init__(self):
 		""""""
+		Plugin.__init__(self)
 		print "Soy un UserPlugin"
 
 if __name__ == "__main__":

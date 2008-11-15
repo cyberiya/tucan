@@ -20,10 +20,38 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+from downloader import Downloader
+from uploader import Uploader
+
 class Plugin(object):
 	""""""
 	def __init__(self):
 		""""""
+		self.active_downloads = {}
+		self.active_uploads = {}
+		
+	def add_download(self, url):
+		""""""
+		pass
+	
+	def add_upload(self, url):
+		""""""
+		pass
+	
+	def stop_download(self, url):
+		""""""
+		pass
+	
+	def stop_upload(self, url):
+		""""""
+		pass
+	
+	def get_status(self, url):
+		""""""
+		pass
+
+	def test_link(self, url):
+		"""Metodo virtual que debe ser implementado por cada plugin final."""
 		pass
 
 if __name__ == "__main__":
