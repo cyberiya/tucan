@@ -27,6 +27,18 @@ class AnonymousPlugin(Plugin):
 	def __init__(self):
 		""""""
 		Plugin.__init__(self)
+		self.download_slots = None
+		self.download_slots = None
+		
+	def add_download(self, url):
+		""""""""
+		if self.download_slots > 0:
+			self._download(url)
+	
+	def add_upload(self, file):
+		""""""""
+		if self.upload_slots > 0:
+			self._upload(file)
 
 if __name__ == "__main__":
     p = AnonymousPlugin()

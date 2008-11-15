@@ -20,8 +20,6 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import time
-
 from downloader import Downloader
 from uploader import Uploader
 
@@ -31,18 +29,18 @@ class Plugin(object):
 		""""""
 		self.active_downloads = {}
 		self.active_uploads = {}
-		
-	def add_download(self, url, cookie=None):
+
+	def _download(self, url, wait=None, cookie=None):
 		""""""
 		if not url in self.active_downloads:
-			th = Downloader(url, cookie)
+			th = Downloader(url, wait, cookie)
 			th.start()
 			self.active_downloads[url] = th
 	
-	def add_upload(self, file_name, cookie=None):
+	def _upload(self, file_name, wait=None, cookie=None):
 		""""""
 		if not url in self.active_uploads:
-			th = Uploader(file_name, cookie)
+			th = Uploader(file_name, wait, cookie)
 			th.start()
 			self.active_uploads[file_name] = th
 	
@@ -58,22 +56,14 @@ class Plugin(object):
 			self.active_uploads[file_name].stop = True
 			del self.active_uploads[file_name]
 
-	def get_status(self, url):
+	def _get_status(self, url):
 		""""""
 		result = None
 		if url in self.active_downloads:
-			result = self.active_uploads[file_name].status
+			result = self.active_downloads[url].status
 		elif url in self.active_uploads:
-			result = self.active_uploads[file_name].status
+			result = self.active_uploads[url].status
 		return result
-
-	def get_cookie(self, user, password):
-		""""""
-		pass
-
-	def wait(self, seconds):
-		""""""
-		time.sleep(seconds)
 
 	def test_link(self, url):
 		"""Metodo virtual que debe ser implementado por cada plugin final."""

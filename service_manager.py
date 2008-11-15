@@ -45,11 +45,7 @@ class ServiceManager:
 		""""""
 		plugin = self.anonymous_plugins["AnonymousRapidshare"]
 		plugin.add_download(url)
-		plugin.wait(1)
-		print plugin.active_downloads
-		plugin.stop_download(url)
-		print plugin.active_downloads
 
 if __name__ == "__main__":
     s = ServiceManager()
-    s.prueba("cojones")
+    s.prueba("mierda")
