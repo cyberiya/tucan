@@ -26,6 +26,7 @@ class PremiumPlugin(Plugin):
 	""""""
 	def __init__(self):
 		""""""
+		Plugin.__init__(self)
 		print "Soy un PremiumPlugin"
 
 if __name__ == "__main__":

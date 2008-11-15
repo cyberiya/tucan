@@ -20,6 +20,6 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-#paquete de plugins, hay que registrar aqui los plugins para que funcione: from plugins import *
+"""Paquete de plugins, hay que registrar aqui los plugins para que funcionen."""
 
-__all__ = ["rapidshare_anonimo"]
+__all__ = ["rapidshare_anonimo", "megaupload_anonimo"]

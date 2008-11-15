@@ -22,12 +22,12 @@
 
 from .anonymous_plugin import AnonymousPlugin
 
-class AnonymousRapidshare(AnonymousPlugin):
+class AnonymousMegaupload(AnonymousPlugin):
 	""""""
 	def __init__(self):
 		""""""
 		AnonymousPlugin.__init__(self)
-		print "soy un plugin para rapidshare que descarga de forma anonima!"
+		print "soy un plugin para megaupload que descarga de forma anonima!"
 
 if __name__ == "__main__":
-    p = AnonymousRapidshare()
+    p = AnonymousMegaupload()
