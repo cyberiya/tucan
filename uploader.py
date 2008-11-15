@@ -21,17 +21,22 @@
 ###############################################################################
 
 import threading
+import time
 
 class Uploader(threading.Thread):
 	""""""
-	def __init__(self, file_name, cookie=None):
+	def __init__(self, file_name, time=None, cookie=None):
 		""""""
 		threading.Thread.__init__(self)
+		self.wait = time
 		self.stop = False
 		self.status = "stoped"
 		
 	def run(self):
 		""""""
+		if self.wait:
+			self.status = "waiting"
+			time.sleep(self.wait)
 		self.status = "uploading"
 		while not self.stop:
 			print "uploading"

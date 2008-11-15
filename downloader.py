@@ -21,17 +21,22 @@
 ###############################################################################
 
 import threading
+import time
 
 class Downloader(threading.Thread):
 	""""""
-	def __init__(self, url, cookie=None):
+	def __init__(self, url, time=None, cookie=None):
 		""""""
 		threading.Thread.__init__(self)
+		self.wait = time
 		self.stop = False
 		self.status = "stoped"
 		
 	def run(self):
 		""""""
+		if self.wait:
+			self.status = "waiting"
+			time.sleep(self.wait)
 		self.status = "downloading"
 		while not self.stop:
 			print "downloading"

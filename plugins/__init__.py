@@ -22,4 +22,4 @@
 
 """Paquete de plugins, hay que registrar aqui los plugins para que funcionen."""
 
-__all__ = ["rapidshare_anonimo", "megaupload_anonimo"]
+__all__ = ["rapidshare_anonimo"]
