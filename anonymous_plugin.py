@@ -27,7 +27,6 @@ class AnonymousPlugin(Plugin):
 	def __init__(self):
 		""""""
 		Plugin.__init__(self)
-		print "soy un AnonymousPlugin"
 
 if __name__ == "__main__":
     p = AnonymousPlugin()

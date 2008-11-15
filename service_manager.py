@@ -33,16 +33,23 @@ class ServiceManager:
 		for plugin in Plugin.__subclasses__():
 			if plugin.__name__ == "AnonymousPlugin":
 				for plugin in plugin.__subclasses__():
-					self.anonymous_plugins[plugin.__name__] = plugin()
+					self.anonymous_plugins[plugin.__name__]= plugin()
 			elif plugin.__name__ == "UserPlugin":
 				for plugin in plugin.__subclasses__():
-					self.user_plugins[plugin.__name__] = plugin()
+					self.user_plugins[plugin.__name__]= plugin()
 			elif plugin.__name__ == "PremiumPlugin":
 				for plugin in plugin.__subclasses__():
-					self.premium_plugins[plugin.__name__] = plugin()
-		print self.anonymous_plugins
-		print self.user_plugins
-		print self.premium_plugins
+					self.premium_plugins[plugin.__name__]= plugin()
+	
+	def prueba(self, url):
+		""""""
+		plugin = self.anonymous_plugins["AnonymousRapidshare"]
+		plugin.add_download(url)
+		plugin.wait(1)
+		print plugin.active_downloads
+		plugin.stop_download(url)
+		print plugin.active_downloads
 
 if __name__ == "__main__":
     s = ServiceManager()
+    s.prueba("cojones")
