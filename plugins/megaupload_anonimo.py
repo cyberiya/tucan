@@ -22,12 +22,20 @@
 
 from .anonymous_plugin import AnonymousPlugin
 
+NAME = "Megaupload Anonimo"
+VERSION = "0.1"
+AUTHOR = "Crak"
+
+SERVICE = "megaupload.com"
+DOWNLOAD_SLOTS = 1
+UPLOAD_SLOTS = 1
+
 class AnonymousMegaupload(AnonymousPlugin):
 	""""""
 	def __init__(self):
 		""""""
-		AnonymousPlugin.__init__(self)
-		print "soy un plugin para megaupload que descarga de forma anonima!"
+		self.service = SERVICE
+		AnonymousPlugin.__init__(self, DOWNLOAD_SLOTS, UPLOAD_SLOTS)
 
 if __name__ == "__main__":
     p = AnonymousMegaupload()
