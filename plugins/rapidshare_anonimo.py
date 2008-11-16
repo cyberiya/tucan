@@ -22,12 +22,30 @@
 
 from .anonymous_plugin import AnonymousPlugin
 
+NAME = "Rapidshare Anonimo"
+VERSION = "0.1"
+AUTHOR = "Crak"
+
+SERVICE = "http://rapidshare.com/"
+DOWNLOAD_SLOTS = 1
+UPLOAD_SLOTS = 1
+
 class AnonymousRapidshare(AnonymousPlugin):
 	""""""
 	def __init__(self):
 		""""""
-		AnonymousPlugin.__init__(self)
-		print "soy un plugin para rapidshare que descarga de forma anonima!"
+		self.service = SERVICE
+		AnonymousPlugin.__init__(self, DOWNLOAD_SLOTS, UPLOAD_SLOTS)
+		
+	def add_download(self, link):
+		""""""
+		#parsea el link para obtener el link final y saltate los captchas antes de llamar a _add_download()
+		return self._add_download(link, 3)
+		
+	def add_upload(self, file):
+		""""""
+		#parsea el link para obtener el link final y saltate los captchas antes de llamar a _add_upload()
+		return self._add_upload(file)
 
 if __name__ == "__main__":
     p = AnonymousRapidshare()

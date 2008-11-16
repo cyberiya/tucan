@@ -25,11 +25,13 @@ import time
 
 class Downloader(threading.Thread):
 	""""""
-	def __init__(self, url, time=None, cookie=None):
+	def __init__(self, url, end, time=None, cookie=None):
 		""""""
 		threading.Thread.__init__(self)
+		self.url = url
+		self.end = end
 		self.wait = time
-		self.stop = False
+		self.stop_flag = False
 		self.status = "stoped"
 		
 	def run(self):
@@ -37,9 +39,11 @@ class Downloader(threading.Thread):
 		if self.wait:
 			self.status = "waiting"
 			time.sleep(self.wait)
-		self.status = "downloading"
-		while not self.stop:
-			print "downloading"
+		self.status = 0
+		while not self.stop_flag:
+			self.status += 1
+		self.status = "stoped"
+		self.end(self.url)
 
 if __name__ == "__main__":
     d = Downloader()
