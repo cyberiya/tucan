@@ -20,6 +20,8 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import cons
+
 from plugin import Plugin
 from plugins import *
 
@@ -32,11 +34,11 @@ class ServiceManager:
 		self.user_plugins = {}
 		self.premium_plugins = {}
 		for plugin in Plugin.__subclasses__():
-			if plugin.__name__ == "AnonymousPlugin":
+			if plugin.__name__ == cons.TYPE_ANONYMOUS:
 				self.init_plugin(plugin, self.anonymous_plugins)
-			elif plugin.__name__ == "UserPlugin":
+			elif plugin.__name__ == cons.TYPE_USER:
 				self.init_plugin(plugin, self.user_plugins)
-			elif plugin.__name__ == "PremiumPlugin":
+			elif plugin.__name__ == cons.TYPE_PREMIUM:
 				self.init_plugin(plugin, self.premium_plugins)
 
 	def init_plugin(self, plugin_type, dict):
@@ -56,7 +58,7 @@ class ServiceManager:
 
 	def filter_service(self, links):
 		""""""
-		services = {"unsupported": []}
+		services = {cons.UNSUPPORTED: []}
 		links = [link.strip() for link in links]
 		for link in links:
 			service = self.supported_service(link)
@@ -66,7 +68,7 @@ class ServiceManager:
 				else:
 					services[service] = [link]
 			else:
-				services["unsupported"].append(link)
+				services[cons.UNSUPPORTED].append(link)
 		return services
 		
 	def get_plugin(self, service, plugin_list):
@@ -93,7 +95,7 @@ class ServiceManager:
 
 if __name__ == "__main__":
 	s = ServiceManager()
-	#s.prueba("mierda")
+	s.prueba("mierda")
 	f = open("links_example.txt", "r")
 	links = s.filter_service(f.readlines())
 	f.close()
