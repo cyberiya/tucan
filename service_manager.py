@@ -68,7 +68,13 @@ class ServiceManager:
 			else:
 				services["unsupported"].append(link)
 		return services
-			
+		
+	def get_plugin(self, service, plugin_list):
+		""""""
+		if service in self.services:
+			for plugin_name, plugin in plugin_list.items():
+				if plugin.service == service:
+					return plugin_name, plugin
 	
 	def prueba(self, url):
 		""""""
@@ -89,5 +95,7 @@ if __name__ == "__main__":
 	s = ServiceManager()
 	#s.prueba("mierda")
 	f = open("links_example.txt", "r")
-	print s.filter_service(f.readlines())
+	links = s.filter_service(f.readlines())
 	f.close()
+	for service in links:
+		print s.get_plugin(service, s.anonymous_plugins)
