@@ -27,35 +27,67 @@ class ServiceManager:
 	""""""
 	def __init__(self):
 		""""""
+		self.services = []
 		self.anonymous_plugins = {}
 		self.user_plugins = {}
 		self.premium_plugins = {}
 		for plugin in Plugin.__subclasses__():
 			if plugin.__name__ == "AnonymousPlugin":
-				for plugin in plugin.__subclasses__():
-					self.anonymous_plugins[plugin.__name__]= plugin()
+				self.init_plugin(plugin, self.anonymous_plugins)
 			elif plugin.__name__ == "UserPlugin":
-				for plugin in plugin.__subclasses__():
-					self.user_plugins[plugin.__name__]= plugin()
+				self.init_plugin(plugin, self.user_plugins)
 			elif plugin.__name__ == "PremiumPlugin":
-				for plugin in plugin.__subclasses__():
-					self.premium_plugins[plugin.__name__]= plugin()
+				self.init_plugin(plugin, self.premium_plugins)
+
+	def init_plugin(self, plugin_type, dict):
+		""""""
+		for plugin in plugin_type.__subclasses__():
+			dict[plugin.__name__] = plugin()
+			if not dict[plugin.__name__].service in self.services:
+				self.services.append(dict[plugin.__name__].service)
+	
+	def supported_service(self, link):
+		""""""
+		result = None
+		for service in self.services:
+			if link.find(service) > 0:
+				result = service
+		return result
+
+	def filter_service(self, links):
+		""""""
+		services = {"unsupported": []}
+		links = [link.strip() for link in links]
+		for link in links:
+			service = self.supported_service(link)
+			if service:
+				if service in services:
+					services[service].append(link)
+				else:
+					services[service] = [link]
+			else:
+				services["unsupported"].append(link)
+		return services
+			
 	
 	def prueba(self, url):
 		""""""
 		import time
 		plugin = self.anonymous_plugins["AnonymousRapidshare"]
-		print plugin.add_upload(url)
-		print plugin.add_upload("cojones")
+		print plugin.add_download(url)
+		print plugin.add_download("cojones")
 		print plugin.get_status(url)
 		time.sleep(3)
 		print plugin.get_status(url)
-		plugin.stop_upload(url)
-		print plugin.stoped_uploads
+		plugin.stop_download(url)
+		print plugin.stoped_downloads
 		time.sleep(1)
 		print plugin.get_status(url)
-		print plugin.stoped_uploads
+		print plugin.stoped_downloads
 
 if __name__ == "__main__":
-    s = ServiceManager()
-    s.prueba("mierda")
+	s = ServiceManager()
+	#s.prueba("mierda")
+	f = open("links_example.txt", "r")
+	print s.filter_service(f.readlines())
+	f.close()

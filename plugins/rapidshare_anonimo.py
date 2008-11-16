@@ -26,7 +26,7 @@ NAME = "Rapidshare Anonimo"
 VERSION = "0.1"
 AUTHOR = "Crak"
 
-SERVICE = "http://rapidshare.com/"
+SERVICE = "rapidshare.com"
 DOWNLOAD_SLOTS = 1
 UPLOAD_SLOTS = 1
 
