@@ -57,6 +57,3 @@ class AnonymousPlugin(Plugin):
 		""""""
 		self.upload_slots += 1
 		self._stop_upload(file)
-
-if __name__ == "__main__":
-    p = AnonymousPlugin()

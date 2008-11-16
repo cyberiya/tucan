@@ -27,6 +27,9 @@ class Plugin(object):
 	""""""
 	def __init__(self):
 		""""""
+		self.__name__ = None
+		self.__version__ = None
+		self.__author__ = None
 		self.active_downloads = {}
 		self.active_uploads = {}
 		self.stoped_downloads = {}
@@ -78,6 +81,7 @@ class Plugin(object):
 	def test_link(self, url):
 		"""Metodo virtual que debe ser implementado por cada plugin final."""
 		pass
-
-if __name__ == "__main__":
-    p = Plugin()
+	
+	def get_info(self):
+		""""""
+		return self.__name__, self.__version__, self.__author__

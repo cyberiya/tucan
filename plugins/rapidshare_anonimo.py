@@ -34,8 +34,11 @@ class AnonymousRapidshare(AnonymousPlugin):
 	""""""
 	def __init__(self):
 		""""""
-		self.service = SERVICE
 		AnonymousPlugin.__init__(self, DOWNLOAD_SLOTS, UPLOAD_SLOTS)
+		self.__name__ = NAME
+		self.__version__ = VERSION
+		self.__author__ = AUTHOR
+		self.service = SERVICE
 		
 	def add_download(self, link):
 		""""""
@@ -46,6 +49,3 @@ class AnonymousRapidshare(AnonymousPlugin):
 		""""""
 		#parsea el link para obtener el link final y saltate los captchas antes de llamar a _add_upload()
 		return self._add_upload(file)
-
-if __name__ == "__main__":
-    p = AnonymousRapidshare()
