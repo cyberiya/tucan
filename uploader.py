@@ -25,11 +25,13 @@ import time
 
 class Uploader(threading.Thread):
 	""""""
-	def __init__(self, file_name, time=None, cookie=None):
+	def __init__(self, file_name, end, time=None, cookie=None):
 		""""""
 		threading.Thread.__init__(self)
+		self.file_name = file_name
+		self.end = end
 		self.wait = time
-		self.stop = False
+		self.stop_flag = False
 		self.status = "stoped"
 		
 	def run(self):
@@ -37,9 +39,11 @@ class Uploader(threading.Thread):
 		if self.wait:
 			self.status = "waiting"
 			time.sleep(self.wait)
-		self.status = "uploading"
-		while not self.stop:
-			print "uploading"
+		self.status = 0
+		while not self.stop_flag:
+			self.status += 1
+		self.status = "stoped"
+		self.end(self.file_name)
 
 if __name__ == "__main__":
     u = Uploader()

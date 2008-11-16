@@ -29,40 +29,50 @@ class Plugin(object):
 		""""""
 		self.active_downloads = {}
 		self.active_uploads = {}
+		self.stoped_downloads = {}
+		self.stoped_uploads = {}
 
 	def _download(self, url, wait=None, cookie=None):
 		""""""
 		if not url in self.active_downloads:
-			th = Downloader(url, wait, cookie)
+			th = Downloader(url, self._stop_download, wait, cookie)
 			th.start()
 			self.active_downloads[url] = th
 	
 	def _upload(self, file_name, wait=None, cookie=None):
 		""""""
-		if not url in self.active_uploads:
-			th = Uploader(file_name, wait, cookie)
+		if not file_name in self.active_uploads:
+			th = Uploader(file_name, self._stop_upload, wait, cookie)
 			th.start()
 			self.active_uploads[file_name] = th
 	
-	def stop_download(self, url):
+	def _stop_download(self, url):
 		""""""
 		if url in self.active_downloads:
-			self.active_downloads[url].stop = True
+			self.active_downloads[url].stop_flag = True
+			self.stoped_downloads[url] = self.active_downloads[url]
 			del self.active_downloads[url]
 	
-	def stop_upload(self, file_name):
+	def _stop_upload(self, file_name):
 		""""""
-		if url in self.active_uploads:
-			self.active_uploads[file_name].stop = True
+		if file_name in self.active_uploads:
+			self.active_uploads[file_name].stop_flag = True
+			self.stoped_uploads[file_name] = self.active_uploads[file_name]
 			del self.active_uploads[file_name]
 
-	def _get_status(self, url):
+	def get_status(self, url):
 		""""""
 		result = None
 		if url in self.active_downloads:
 			result = self.active_downloads[url].status
 		elif url in self.active_uploads:
 			result = self.active_uploads[url].status
+		elif url in self.stoped_downloads:
+			result = self.stoped_downloads[url].status
+			del self.stoped_downloads[url]
+		elif url in self.stoped_uploads:
+			result = self.stoped_uploads[url].status
+			del self.stoped_uploads[url]
 		return result
 
 	def test_link(self, url):

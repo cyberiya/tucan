@@ -43,8 +43,18 @@ class ServiceManager:
 	
 	def prueba(self, url):
 		""""""
+		import time
 		plugin = self.anonymous_plugins["AnonymousRapidshare"]
-		plugin.add_download(url)
+		print plugin.add_upload(url)
+		print plugin.add_upload("cojones")
+		print plugin.get_status(url)
+		time.sleep(3)
+		print plugin.get_status(url)
+		plugin.stop_upload(url)
+		print plugin.stoped_uploads
+		time.sleep(1)
+		print plugin.get_status(url)
+		print plugin.stoped_uploads
 
 if __name__ == "__main__":
     s = ServiceManager()
