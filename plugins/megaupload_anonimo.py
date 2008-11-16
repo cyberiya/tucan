@@ -34,8 +34,8 @@ class AnonymousMegaupload(AnonymousPlugin):
 	""""""
 	def __init__(self):
 		""""""
-		self.service = SERVICE
 		AnonymousPlugin.__init__(self, DOWNLOAD_SLOTS, UPLOAD_SLOTS)
-
-if __name__ == "__main__":
-    p = AnonymousMegaupload()
+		self.__name__ = NAME
+		self.__version__ = VERSION
+		self.__author__ = AUTHOR
+		self.service = SERVICE
