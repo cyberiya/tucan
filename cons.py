@@ -20,6 +20,9 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+# version constan
+TUCAN_VERSION = "0.1 pre-alpha"
+
 # status constants for uploads and downloads
 STATUS_ACTIVE = "active"
 STATUS_WAIT = "waiting"
@@ -34,3 +37,13 @@ UNSUPPORTED = "unsupported"
 TYPE_ANONYMOUS = "AnonymousPlugin"
 TYPE_USER = "UserPlugin"
 TYPE_PREMIUM = "PremiumPlugin"
+
+#media path constants
+ICON_TUCAN = "media/icon.svg"
+ICON_DOWNLOAD = "media/document-save.svg"
+ICON_UPLOAD = "media/system-software-update.svg"
+ICON_CLEAR = "media/edit-delete.svg"
+ICON_DOWN = "media/go-down.svg"
+ICON_UP = "media/go-up.svg"
+ICON_START = "media/media-playback-start.svg"
+ICON_STOP = "media/media-playback-stop.svg"
