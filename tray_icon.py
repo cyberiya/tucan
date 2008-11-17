@@ -24,42 +24,49 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-ICON = "media/icon.svg"
+import cons
 
-class TrayIcon:
-    """"""
-    def __init__(self):
+class TrayIcon(gtk.StatusIcon):
 	""""""
-	self.icon = gtk.StatusIcon()
-	self.icon.set_tooltip("Tucan!")
-	self.icon.set_from_file(ICON)
-	self.icon.set_visible(True)
-	
-	self.menu = gtk.Menu()
-	preferences = gtk.ImageMenuItem(gtk.STOCK_PREFERENCES)
-	#preferences.connect('activate', self.preferences_dialog)
-	self.menu.append(preferences)
-	about = gtk.ImageMenuItem(gtk.STOCK_ABOUT)
-	#about.connect('activate', self.about_dialog)
-	self.menu.append(about)
-	separator = gtk.SeparatorMenuItem()
-	self.menu.append(separator)
-	quit = gtk.ImageMenuItem(gtk.STOCK_QUIT)
-	quit.connect('activate', self.quit)
-	self.menu.append(quit)
-	self.menu.show_all()
-	
-	#self.icon.connect('activate', activate_callback)
-	self.icon.connect('popup-menu', self.popup_menu)
-	
-    def popup_menu(self, statusicon, button, time):
-	""""""
-	self.menu.popup(None, None, gtk.status_icon_position_menu, button, time, self.icon)
+	def __init__(self, show, hide, quit):
+		""""""
+		gtk.StatusIcon.__init__(self)
+		self.set_tooltip("Tucan!")
+		self.set_from_file(cons.ICON_TUCAN)
+		self.set_visible(True)
+		
+		self.window_visible = True
+		self.show_window = show
+		self.hide_window = hide
+		
+		menu = [(gtk.STOCK_PREFERENCES, quit), (gtk.STOCK_ABOUT, quit), None, (gtk.STOCK_QUIT, quit)]
+		self.menu = gtk.Menu()
+		for item in menu:
+			if item == None:
+				tmp = gtk.SeparatorMenuItem()
+			else:
+				tmp = gtk.ImageMenuItem(item[0])
+				tmp.connect('activate', item[1])
+			self.menu.append(tmp)
+		self.menu.show_all()
+		
+		self.connect('activate', self.activate)
+		self.connect('popup-menu', self.popup_menu)
+		
+	def activate(self, statusicon, event=None):
+		""""""
+		if self.window_visible:
+			self.hide_window()
+			self.window_visible = False
+		else:
+			self.show_window()
+			self.window_visible = True
 
-    def quit(self, dialog=None, response=None):
-	""""""
-	gtk.main_quit()
+	def popup_menu(self, statusicon, button, time):
+		""""""
+		self.menu.popup(None, None, gtk.status_icon_position_menu, button, time, self)
+
 
 if __name__ == "__main__":
-    i = TrayIcon()
-    gtk.main()
+	i = TrayIcon(None, None, gtk.main_quit)
+	gtk.main()
