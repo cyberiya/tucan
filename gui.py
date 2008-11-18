@@ -39,10 +39,17 @@ class Gui(gtk.Window):
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
 		
+		#menu items
+		menu_quit = gtk.STOCK_QUIT, self.quit
+		menu_help = gtk.STOCK_HELP, self.quit
+		menu_about = gtk.STOCK_ABOUT, self.quit
+		menu_preferences = gtk.STOCK_PREFERENCES, self.quit
+		menu_import = "Import", self.quit
+		
 		#menubar
-		file_menu = "File", [("Import", self.quit), None, (gtk.STOCK_QUIT, self.quit)]
-		edit_menu = "Options", [(gtk.STOCK_PREFERENCES, self.quit)]
-		help_menu = "Help", [("Help", self.quit), (gtk.STOCK_ABOUT, self.quit)]
+		file_menu = "File", [menu_import, None, menu_quit]
+		edit_menu = "Options", [menu_preferences]
+		help_menu = "Help", [menu_help, menu_about]
 		self.vbox.pack_start(MenuBar([file_menu, edit_menu, help_menu]), False)
 
 		#toolbar
@@ -65,11 +72,12 @@ class Gui(gtk.Window):
 		pane.pack1(Tree(self.downloads, "No Downloads Active."), False)
 		pane.pack2(Tree(self.uploads, "No Uploads Active."), False)
 		
-		#trayicon
-		self.tray_icon = TrayIcon(self.show, self.hide, self.quit)
-		
 		self.connect("delete_event", self.hide_on_delete)
 		self.show_all()
+		
+		#trayicon
+		tray_menu = [menu_preferences, menu_about, None, menu_quit]
+		self.tray_icon = TrayIcon(self.show, self.hide, tray_menu)
 
 	def quit(self, dialog=None, response=None):
 		""""""
