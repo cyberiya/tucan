@@ -28,7 +28,7 @@ import cons
 
 class TrayIcon(gtk.StatusIcon):
 	""""""
-	def __init__(self, show, hide, quit):
+	def __init__(self, show, hide, menu):
 		""""""
 		gtk.StatusIcon.__init__(self)
 		self.set_tooltip("Tucan!")
@@ -39,7 +39,6 @@ class TrayIcon(gtk.StatusIcon):
 		self.show_window = show
 		self.hide_window = hide
 		
-		menu = [(gtk.STOCK_PREFERENCES, quit), (gtk.STOCK_ABOUT, quit), None, (gtk.STOCK_QUIT, quit)]
 		self.menu = gtk.Menu()
 		for item in menu:
 			if item == None:
@@ -65,8 +64,3 @@ class TrayIcon(gtk.StatusIcon):
 	def popup_menu(self, statusicon, button, time):
 		""""""
 		self.menu.popup(None, None, gtk.status_icon_position_menu, button, time, self)
-
-
-if __name__ == "__main__":
-	i = TrayIcon(None, None, gtk.main_quit)
-	gtk.main()

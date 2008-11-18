@@ -58,7 +58,7 @@ class ServiceManager:
 
 	def filter_service(self, links):
 		""""""
-		services = {cons.UNSUPPORTED: []}
+		services = {cons.TYPE_UNSUPPORTED: []}
 		links = [link.strip() for link in links]
 		for link in links:
 			service = self.supported_service(link)
@@ -68,7 +68,7 @@ class ServiceManager:
 				else:
 					services[service] = [link]
 			else:
-				services[cons.UNSUPPORTED].append(link)
+				services[cons.TYPE_UNSUPPORTED].append(link)
 		return services
 		
 	def get_plugin(self, service, plugin_list):
