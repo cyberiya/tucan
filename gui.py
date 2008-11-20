@@ -25,13 +25,16 @@ pygtk.require('2.0')
 import gtk
 
 from tray_icon import TrayIcon
+from service_manager import ServiceManager
+from input_links import InputLinks
 
 import cons
 
-class Gui(gtk.Window):
+class Gui(gtk.Window, ServiceManager):
 	""""""
 	def __init__(self):
 		""""""
+		ServiceManager.__init__(self)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		self.set_icon_from_file(cons.ICON_TUCAN)
 		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION)
@@ -53,7 +56,7 @@ class Gui(gtk.Window):
 		self.vbox.pack_start(MenuBar([file_menu, edit_menu, help_menu]), False)
 
 		#toolbar
-		download = "Add Downloads", gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.quit
+		download = "Add Downloads", gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_callback
 		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.quit
 		clear = "Clear Complete", gtk.image_new_from_file(cons.ICON_CLEAR), self.quit
 		up = "Move Up", gtk.image_new_from_file(cons.ICON_UP), self.quit
@@ -78,6 +81,18 @@ class Gui(gtk.Window):
 		#trayicon
 		tray_menu = [menu_preferences, menu_about, None, menu_quit]
 		self.tray_icon = TrayIcon(self.show, self.hide, tray_menu)
+		
+	def add_callback(self, button):
+		""""""
+		i = InputLinks(self.filter_service, self.dummy_check, self.dummy_add)
+		
+	def dummy_add(self, links):
+		""""""
+		print links
+		
+	def dummy_check(self, link):
+		""""""
+		return True, link.split("/").pop(), "100MB"
 
 	def quit(self, dialog=None, response=None):
 		""""""
