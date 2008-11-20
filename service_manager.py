@@ -20,6 +20,8 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urlparse
+
 import cons
 
 from plugin import Plugin
@@ -47,29 +49,6 @@ class ServiceManager:
 			dict[plugin.__name__] = plugin()
 			if not dict[plugin.__name__].service in self.services:
 				self.services.append(dict[plugin.__name__].service)
-	
-	def supported_service(self, link):
-		""""""
-		result = None
-		for service in self.services:
-			if link.find(service) > 0:
-				result = service
-		return result
-
-	def filter_service(self, links):
-		""""""
-		services = {cons.TYPE_UNSUPPORTED: []}
-		links = [link.strip() for link in links]
-		for link in links:
-			service = self.supported_service(link)
-			if service:
-				if service in services:
-					services[service].append(link)
-				else:
-					services[service] = [link]
-			else:
-				services[cons.TYPE_UNSUPPORTED].append(link)
-		return services
 		
 	def get_plugin(self, service, plugin_list):
 		""""""
@@ -77,6 +56,23 @@ class ServiceManager:
 			for plugin_name, plugin in plugin_list.items():
 				if plugin.service == service:
 					return plugin_name, plugin
+					
+	def filter_service(self, links):
+		""""""
+		services = {cons.TYPE_UNSUPPORTED: []}
+		for link in links:
+			found = False
+			if urlparse.urlparse(link).scheme == "http":
+				for service in self.services:
+					if link.find(service) > 0:
+						found = True
+						if service in services:
+							services[service].append(link)
+						else:
+							services[service] = [link]
+				if not found:
+						services[cons.TYPE_UNSUPPORTED].append(link)
+		return services
 	
 	def prueba(self, url):
 		""""""
@@ -97,8 +93,3 @@ class ServiceManager:
 if __name__ == "__main__":
 	s = ServiceManager()
 	s.prueba("mierda")
-	f = open("links_example.txt", "r")
-	links = s.filter_service(f.readlines())
-	f.close()
-	for service in links:
-		print s.get_plugin(service, s.anonymous_plugins)
