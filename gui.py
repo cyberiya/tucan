@@ -25,8 +25,11 @@ pygtk.require('2.0')
 import gtk
 
 from tray_icon import TrayIcon
-from service_manager import ServiceManager
+from menu_bar import MenuBar
+from toolbar import Toolbar
+from tree import Tree
 from input_links import InputLinks
+from service_manager import ServiceManager
 
 import cons
 
@@ -66,14 +69,14 @@ class Gui(gtk.Window, ServiceManager):
 		self.vbox.pack_start(Toolbar([download, upload, clear, None, up, down, None, start, stop]), False)
 		
 		#treestores
-		self.downloads = gtk.TreeStore(str)
-		self.uploads = gtk.TreeStore(str)
+		self.downloads = Tree("No Downloads Active.")
+		self.uploads = Tree("No Uploads Active.")
 		
 		#pane
 		pane = gtk.VPaned()
 		self.vbox.pack_start(pane)
-		pane.pack1(Tree(self.downloads, "No Downloads Active."), False)
-		pane.pack2(Tree(self.uploads, "No Uploads Active."), False)
+		pane.pack1(self.downloads, False)
+		pane.pack2(self.uploads, False)
 		
 		self.connect("delete_event", self.hide_on_delete)
 		self.show_all()
@@ -97,55 +100,6 @@ class Gui(gtk.Window, ServiceManager):
 	def quit(self, dialog=None, response=None):
 		""""""
 		gtk.main_quit()
-		
-class Tree(gtk.VBox):
-	""""""
-	def __init__(self, model, text):
-		""""""
-		gtk.VBox.__init__(self)
-		scroll = gtk.ScrolledWindow()
-		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.treeview = gtk.TreeView(model)
-		self.treeview.set_rules_hint(True)
-		scroll.add(self.treeview)
-		self.pack_start(scroll)
-		self.status_bar = gtk.Statusbar()
-		self.status_bar.set_has_resize_grip(False)
-		self.pack_start(self.status_bar, False)
-		
-		self.status_bar.push(self.status_bar.get_context_id(""), "\t" + text)
-		
-class Toolbar(gtk.Toolbar):
-	""""""
-	def __init__(self, list):
-		"""list = [(tool_name, image, callback),]"""
-		gtk.Toolbar.__init__(self)
-		self.set_style(gtk.TOOLBAR_BOTH)
-		for button in list:
-			if button == None:
-				item = gtk.SeparatorToolItem()
-			else:
-				item = gtk.ToolButton(button[1], button[0])
-				item.connect("clicked", button[2])
-			self.insert(item, -1)
-
-class MenuBar(gtk.MenuBar):
-	""""""
-	def __init__(self, list):
-		"""list = [(menu_name=str, [(item_image=stock_item, callback), None=separator])]"""
-		gtk.MenuBar.__init__(self)
-		for menu in list:
-			item = gtk.MenuItem(menu[0])
-			self.append(item)
-			submenu = gtk.Menu()
-			for sub in menu[1]:
-				if sub == None:
-					subitem = gtk.SeparatorMenuItem()
-				else:
-					subitem = gtk.ImageMenuItem(sub[0])
-					subitem.connect("activate", sub[1])
-				submenu.append(subitem)
-			item.set_submenu(submenu)
 	
 if __name__ == "__main__":
 	g = Gui()
