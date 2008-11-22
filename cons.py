@@ -31,6 +31,17 @@ STATUS_STOP = "stoped"
 STATUS_CORRECT = "correct"
 STATUS_ERROR = "error"
 
+#size unit constants
+UNIT_KB = "KB"
+UNIT_MB = "MB"
+UNIT_GB = "GB"
+
+#time unit constants
+UNIT_SECOND = "s"
+UNIT_MINUTE = "m"
+UNIT_HOUR = "h"
+UNIT_DAY = "d"
+
 #service type constans
 TYPE_ANONYMOUS = "AnonymousPlugin"
 TYPE_USER = "UserPlugin"

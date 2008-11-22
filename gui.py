@@ -68,7 +68,7 @@ class Gui(gtk.Window, ServiceManager):
 		stop = "Stop Selected", gtk.image_new_from_file(cons.ICON_STOP), self.quit
 		self.vbox.pack_start(Toolbar([download, upload, clear, None, up, down, None, start, stop]), False)
 		
-		#treestores
+		#trees
 		self.downloads = Tree("No Downloads Active.")
 		self.uploads = Tree("No Uploads Active.")
 		
@@ -87,11 +87,11 @@ class Gui(gtk.Window, ServiceManager):
 		
 	def add_callback(self, button):
 		""""""
-		i = InputLinks(self.filter_service, self.dummy_check, self.dummy_add)
+		i = InputLinks(self.filter_service, self.dummy_check, self.new_download_package)
 		
-	def dummy_add(self, links):
+	def new_download_package(self, links):
 		""""""
-		print links
+		self.downloads.add_package(links, "mierda")
 		
 	def dummy_check(self, link):
 		""""""

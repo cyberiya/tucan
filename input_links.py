@@ -67,19 +67,17 @@ class InputLinks(gtk.Dialog):
 		check_button.connect("clicked", self.check)
 		
 		#treeview
-		self.store = gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str, bool)
 		frame = gtk.Frame()
 		self.vbox.pack_start(frame)
 		frame.set_border_width(10)
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.treeview = gtk.TreeView(self.store)		
+		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str, bool))
 		scroll.add(self.treeview)
 		
 		self.treeview.set_rules_hint(True)
 		self.treeview.set_headers_visible(False)
-		self.treeview.expand_all()
 		
 		tree_icon = gtk.TreeViewColumn('Icon') 
 		icon_cell = gtk.CellRendererPixbuf()
@@ -108,7 +106,8 @@ class InputLinks(gtk.Dialog):
 	def add_links(self, button):
 		""""""
 		tmp = {}
-		for column in self.store:
+		store = self.treeview.get_model()
+		for column in store:
 			if not column[1] == cons.TYPE_UNSUPPORTED:
 				tmp[column[1]] = []
 				for value in column.iterchildren():
@@ -119,7 +118,8 @@ class InputLinks(gtk.Dialog):
 	
 	def check(self, button):
 		""""""
-		self.store.clear()
+		store = self.treeview.get_model()
+		store.clear()
 		buffer = self.textview.get_buffer()
 		start, end = buffer.get_bounds()
 		link_list = [link.strip() for link in buffer.get_text(start, end).split("\n")]
@@ -133,17 +133,17 @@ class InputLinks(gtk.Dialog):
 		for service, links in self.sort_links(link_list).items():
 			if not links == []:
 				if service == cons.TYPE_UNSUPPORTED:
-					service_iter = self.store.append(None, [unsupported_icon, service, None, None, None])
+					service_iter = store.append(None, [unsupported_icon, service, None, None, None])
 					for link in links:
-						self.store.append(service_iter, [unactive_icon, link, None, None, None])
+						store.append(service_iter, [unactive_icon, link, None, None, None])
 				else:
-					service_iter = self.store.append(None, [service_icon, service, None, None, None])
+					service_iter = store.append(None, [service_icon, service, None, None, None])
 					for link in links:
 						active, file_name, size = self.check_links(link)
 						icon = unactive_icon
 						if active:
 							icon = active_icon
-						self.store.append(service_iter, [icon, link, file_name, size, active])
+						store.append(service_iter, [icon, link, file_name, size, active])
 		self.treeview.expand_all()
 		
 	def close(self, widget=None, other=None):
