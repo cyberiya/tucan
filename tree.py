@@ -107,25 +107,43 @@ class Tree(gtk.VBox):
 		
 	def add_package(self, dict, name):
 		"""TreeStore(icon, status, link, file_name, progress, progress_visible, current_size, total_size, speed, time)"""
+		package_size = PackageValue()
 		store = self.treeview.get_model()
-		str(["anonymousRapidshare", "AnonymousMegaupload"])
 		package_iter = store.append(None, [self.package_icon, None, None, name, 0, True, None, None, None, None, None])
 		for service, links in dict.items():
 			service_iter = store.append(package_iter, [self.service_icon, None, None, service, 0, False, None, None, None, None, None])
 			for link in links:
-				self.increment_package_size(link[1], link[2], link[3])
+				package_size.update(link[1], link[2], link[3])
 				store.append(service_iter, [self.stoped_icon, None, link[0], link[1], 0, True, None, str(link[2])+link[3], None, None, link[4]])
-		store.set_value(package_iter, )
+		store.set_value(package_iter, 7, package_size.get())
 		self.treeview.expand_all()
-
+	
+class PackageValue:
+	""""""
+	def __init__(self):
+		""""""
+		self.links = []
+		self.value = 0
+		self.value_unit = None
+		
+	def update(self, name, value, unit):
+		""""""
+		if not name in self.links:
+			self.links.append(name)
+			self.value += value
+			self.value_unit = unit
+		
+	def get(self):
+		""""""
+		return str(self.value) + self.value_unit
 
 if __name__ == "__main__":
-	LINKS = {'rapidshare.com': [('http://rapidshare.com/files/151319465/D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 100, "MB", "AnonymousRapidshare"),
-				('http://rapidshare.com/files/151319467/D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 100, "MB", "AnonymousRapidshare"), 
-				('http://rapidshare.com/files/151319554/D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 100, "MB", "AnonymousRapidshare"), 
-				('http://rapidshare.com/files/151319448/D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 100, "MB", "AnonymousRapidshare"), 
-				('http://rapidshare.com/files/151319452/D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 100, "MB", "AnonymousRapidshare"), 
-				('http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 100, "MB", "AnonymousRapidshare")]}
+	LINKS = {'rapidshare.com': [('http://rapidshare.com/files/151319465/D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 100, cons.UNIT_MB, "AnonymousRapidshare"),
+				('http://rapidshare.com/files/151319467/D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 100, cons.UNIT_MB, "AnonymousRapidshare"), 
+				('http://rapidshare.com/files/151319554/D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 100, cons.UNIT_MB, "AnonymousRapidshare"), 
+				('http://rapidshare.com/files/151319448/D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 100, cons.UNIT_MB, "AnonymousRapidshare"), 
+				('http://rapidshare.com/files/151319452/D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 100, cons.UNIT_MB, "AnonymousRapidshare"), 
+				('http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 100, cons.UNIT_MB, "AnonymousRapidshare")]}
 	window = gtk.Window(gtk.WINDOW_TOPLEVEL)
 	window.maximize()
 	t = Tree("mierda")

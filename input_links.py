@@ -73,7 +73,7 @@ class InputLinks(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str, bool))
+		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, bool, str, str, int, str, str))
 		scroll.add(self.treeview)
 		
 		self.treeview.set_rules_hint(True)
@@ -88,7 +88,7 @@ class InputLinks(gtk.Dialog):
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
 		tree_name.pack_start(name_cell, True)
-		tree_name.add_attribute(name_cell, 'text', 1)
+		tree_name.add_attribute(name_cell, 'text', 2)
 		self.treeview.append_column(tree_name)
 		
 		#action area
@@ -108,10 +108,10 @@ class InputLinks(gtk.Dialog):
 		tmp = {}
 		store = self.treeview.get_model()
 		for column in store:
-			if not column[1] == cons.TYPE_UNSUPPORTED:
-				tmp[column[1]] = []
+			if not column[2] == cons.TYPE_UNSUPPORTED:
+				tmp[column[2]] = []
 				for value in column.iterchildren():
-					tmp[column[1]].append((value[1], value[2], value[3], value[4]))
+					tmp[column[2]].append((value[2], value[3], value[4], value[5], value[6]))
 		if not tmp == {}:
 			self.add(tmp)
 		self.close()
@@ -133,17 +133,17 @@ class InputLinks(gtk.Dialog):
 		for service, links in self.sort_links(link_list).items():
 			if not links == []:
 				if service == cons.TYPE_UNSUPPORTED:
-					service_iter = store.append(None, [unsupported_icon, service, None, None, None])
+					service_iter = store.append(None, [unsupported_icon, False, service, None, 0, None, None])
 					for link in links:
-						store.append(service_iter, [unactive_icon, link, None, None, None])
+						store.append(service_iter, [unactive_icon, False, link, None, 0, None, None])
 				else:
-					service_iter = store.append(None, [service_icon, service, None, None, None])
+					service_iter = store.append(None, [service_icon, False, service, None, 0, None, None])
 					for link in links:
-						active, file_name, size = self.check_links(link)
+						active, file_name, size, size_unit, plugin = self.check_links(link, service)
 						icon = unactive_icon
 						if active:
 							icon = active_icon
-						store.append(service_iter, [icon, link, file_name, size, active])
+						store.append(service_iter, [icon, active, link, file_name, size, size_unit, plugin])
 		self.treeview.expand_all()
 		
 	def close(self, widget=None, other=None):
@@ -155,7 +155,7 @@ if __name__ == "__main__":
 		print text
 	def parse(text):
 		return {}
-	def dummy_check(link):
-		return True, link.split("/").pop(), "100MB"
+	def dummy_check(link, service):
+		return True, link.split("/").pop(), 100, cons.UNIT_MB, "AnonymousRapidshare"
 	g = InputLinks(parse, parse, add)
 	gtk.main()

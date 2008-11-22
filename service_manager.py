@@ -50,12 +50,20 @@ class ServiceManager:
 			if not dict[plugin.__name__].service in self.services:
 				self.services.append(dict[plugin.__name__].service)
 		
-	def get_plugin(self, service, plugin_list):
+	def get_plugin(self, service):
 		""""""
+		result = None
 		if service in self.services:
-			for plugin_name, plugin in plugin_list.items():
+			for plugin_name, plugin in self.anonymous_plugins.items():
 				if plugin.service == service:
-					return plugin_name, plugin
+					result = plugin_name, plugin
+			for plugin_name, plugin in self.user_plugins.items():
+				if plugin.service == service:
+					result = plugin_name, plugin
+			for plugin_name, plugin in self.premium_plugins.items():
+				if plugin.service == service:
+					result = plugin_name, plugin
+		return result
 					
 	def filter_service(self, links):
 		""""""
