@@ -87,15 +87,16 @@ class Gui(gtk.Window, ServiceManager):
 		
 	def add_callback(self, button):
 		""""""
-		i = InputLinks(self.filter_service, self.dummy_check, self.new_download_package)
+		i = InputLinks(self.filter_service, self.link_check, self.new_download_package)
 		
 	def new_download_package(self, links):
 		""""""
 		self.downloads.add_package(links, "mierda")
 		
-	def dummy_check(self, link):
-		""""""
-		return True, link.split("/").pop(), "100MB"
+	def link_check(self, link, service):
+		"""return (active, file_name, int_size, size_unit, plugin)"""
+		plugin_name, plugin = self.get_plugin(service)
+		return True, link.split("/").pop(), 100, cons.UNIT_MB, plugin_name
 
 	def quit(self, dialog=None, response=None):
 		""""""

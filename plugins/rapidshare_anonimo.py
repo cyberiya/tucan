@@ -49,3 +49,4 @@ class AnonymousRapidshare(AnonymousPlugin):
 		""""""
 		#parsea el link para obtener el link final y saltate los captchas antes de llamar a _add_upload()
 		return self._add_upload(file)
+		
