@@ -52,7 +52,7 @@ class ServiceManager:
 		
 	def get_plugin(self, service):
 		""""""
-		result = None
+		result = None, None
 		if service in self.services:
 			for plugin_name, plugin in self.anonymous_plugins.items():
 				if plugin.service == service:

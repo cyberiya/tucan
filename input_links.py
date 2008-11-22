@@ -37,7 +37,7 @@ class InputLinks(gtk.Dialog):
 		
 		self.sort_links = sort
 		self.check_links = check
-		self.add = add
+		self.add_package = add
 		
 		#textview
 		frame = gtk.Frame("Paste links here:")
@@ -113,7 +113,8 @@ class InputLinks(gtk.Dialog):
 				for value in column.iterchildren():
 					tmp[column[2]].append((value[2], value[3], value[4], value[5], value[6]))
 		if not tmp == {}:
-			self.add(tmp)
+			name = "D.S03E02.0TV.cHoPPaHoLiK"
+			self.add_package(tmp, name)
 		self.close()
 	
 	def check(self, button):
