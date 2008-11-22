@@ -24,12 +24,18 @@ import sys
 # proyect constants
 TUCAN_VERSION = "0.1 pre-alpha"
 
-# status constants for uploads and downloads
+# status constants
+STATUS_PEND = "pending"
 STATUS_ACTIVE = "active"
 STATUS_WAIT = "waiting"
 STATUS_STOP = "stoped"
 STATUS_CORRECT = "correct"
 STATUS_ERROR = "error"
+
+#message constants
+SEVERITY_INFO = "info"
+SEVERITY_WARNING = "warning"
+SEVERITY_ERROR = "error"
 
 #size unit constants
 UNIT_KB = "KB"

@@ -75,7 +75,7 @@ class Gui(gtk.Window, ServiceManager):
 		#pane
 		pane = gtk.VPaned()
 		self.vbox.pack_start(pane)
-		pane.pack1(self.downloads, False)
+		pane.pack1(self.downloads, True)
 		pane.pack2(self.uploads, False)
 		
 		self.connect("delete_event", self.hide_on_delete)
@@ -87,11 +87,7 @@ class Gui(gtk.Window, ServiceManager):
 		
 	def add_callback(self, button):
 		""""""
-		i = InputLinks(self.filter_service, self.link_check, self.new_download_package)
-		
-	def new_download_package(self, links):
-		""""""
-		self.downloads.add_package(links, "mierda")
+		i = InputLinks(self.filter_service, self.link_check, self.downloads.add_package)
 		
 	def link_check(self, link, service):
 		"""return (active, file_name, int_size, size_unit, plugin)"""
