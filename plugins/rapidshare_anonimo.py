@@ -20,6 +20,8 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib2
+
 from .anonymous_plugin import AnonymousPlugin
 
 NAME = "Rapidshare Anonimo"
@@ -49,4 +51,16 @@ class AnonymousRapidshare(AnonymousPlugin):
 		""""""
 		#parsea el link para obtener el link final y saltate los captchas antes de llamar a _add_upload()
 		return self._add_upload(file)
-		
+
+	def check_link(self, url):
+		""""""
+		name = None
+		size = 0
+		unit = None
+		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+			if "downloadlink" in line:
+				tmp = line.split(">")
+				name = tmp[1].split("<")[0].strip().split("/").pop()
+				size = int(tmp[2].split("<")[0].split(" ")[1])
+				unit = tmp[2].split("<")[0].split(" ")[2]
+		return name, size, unit
