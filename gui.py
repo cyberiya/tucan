@@ -92,7 +92,11 @@ class Gui(gtk.Window, ServiceManager):
 	def link_check(self, link, service):
 		"""return (active, file_name, int_size, size_unit, plugin)"""
 		plugin_name, plugin = self.get_plugin(service)
-		return True, link.split("/").pop(), 100, cons.UNIT_MB, plugin_name
+		name, size, unit = plugin.check_link(link)
+		if unit == cons.UNIT_KB:
+			size = int(round(size/1024))
+			unit = cons.UNIT_MB
+		return name, size, unit, plugin_name
 
 	def quit(self, dialog=None, response=None):
 		""""""

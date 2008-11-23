@@ -78,7 +78,7 @@ class Plugin(object):
 			del self.stoped_uploads[url]
 		return result
 
-	def test_link(self, url):
+	def check_link(self, url):
 		"""Metodo virtual que debe ser implementado por cada plugin final."""
 		pass
 	

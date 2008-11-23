@@ -20,6 +20,8 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib2
+
 from .anonymous_plugin import AnonymousPlugin
 
 NAME = "Megaupload Anonimo"
@@ -39,3 +41,17 @@ class AnonymousMegaupload(AnonymousPlugin):
 		self.__version__ = VERSION
 		self.__author__ = AUTHOR
 		self.service = SERVICE
+
+	def check_link(self, url):
+		""""""
+		name = None
+		size = 0
+		unit = None
+		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+			if "<b>Filename:</b>" in line:
+				name = line.split("<b>Filename:</b>")[1].split("</div>")[0].strip()
+			elif "<b>Filesize:</b>" in line:
+				tmp = line.split("<b>Filesize:</b>")[1].split("</div>")[0].split(" ")
+				size = int(round(float(tmp[1])))
+				unit = tmp[2]
+		return name, size, unit
