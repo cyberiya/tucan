@@ -96,7 +96,6 @@ class ServiceManager:
 		time.sleep(1)
 		print plugin.get_status(url)
 		print plugin.stoped_downloads
-		print plugin.get_info()
 
 if __name__ == "__main__":
 	s = ServiceManager()
