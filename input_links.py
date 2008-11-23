@@ -24,6 +24,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
+from message import Message
+
 import cons
 
 class InputLinks(gtk.Dialog):
