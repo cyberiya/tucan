@@ -97,6 +97,7 @@ class Tree(gtk.VBox):
 		self.service_icon = self.treeview.render_icon(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
 		self.correct_icon = self.treeview.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
 		self.failed_icon = self.treeview.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
+		self.wait_icon = self.treeview.render_icon(gtk.STOCK_REFRESH, gtk.ICON_SIZE_MENU)
 		self.active_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_MENU)
 		self.pending_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_MENU)
 		self.stoped_icon = self.treeview.render_icon(gtk.STOCK_NO, gtk.ICON_SIZE_MENU)
@@ -105,7 +106,7 @@ class Tree(gtk.VBox):
 		self.status_bar.set_has_resize_grip(False)
 		self.pack_start(self.status_bar, False)
 		self.status_bar.push(self.status_bar.get_context_id(""), "\t" + text)
-#		self.add_package({'rapidshare.com': [('http://rapidshare.com/files/151319465/D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319467/D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319554/D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319448/D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319452/D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 100, 'MB', 'AnonymousRapidshare')]}, "D.S03E02.0TV.cHoPPaHoLiK")
+		self.add_package({'rapidshare.com': [('http://rapidshare.com/files/151319465/D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319467/D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319554/D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319448/D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319452/D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 100, 'MB', 'AnonymousRapidshare')]}, "D.S03E02.0TV.cHoPPaHoLiK")
 		
 	def add_package(self, dict, name):
 		"""TreeStore(icon, status, link/path, file_name, progress, progress_visible, current_size, total_size, speed, time, plugin/services)"""
@@ -119,7 +120,25 @@ class Tree(gtk.VBox):
 				store.append(service_iter, [self.pending_icon, cons.STATUS_PEND, link[0], link[1], 0, True, None, str(link[2])+link[3], None, None, link[4]])
 		store.set_value(package_iter, 7, package_size.get())
 		self.treeview.expand_all()
-	
+		
+	def update(self, iter, status, size, time):
+		""""""
+		store = self.treeview.get_model()
+		icon = self.pending_icon
+		if status == cons.STATUS_WAIT:
+			icon = self.wait_icon
+		elif status == cons.STATUS_ACTIVE:
+			icon = self.active_icon
+		elif status == cons.STATUS_STOPED:
+			icon = self.stoped_icon
+		elif status == cons.STATUS_CORRECT:
+			icon = self.correct_icon
+		elif status == cons.STATUS_INCORRECT:
+			icon = self.failed_icon
+		store.set_value(iter, 0, icon)
+		store.set_value(iter, 1, status)
+		store.set_value(iter, 9, time)
+		
 class PackageValue:
 	""""""
 	def __init__(self):

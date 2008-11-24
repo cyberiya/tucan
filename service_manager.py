@@ -50,10 +50,17 @@ class ServiceManager:
 			if not dict[plugin.__name__].service in self.services:
 				self.services.append(dict[plugin.__name__].service)
 		
-	def get_plugin(self, service):
+	def get_plugin(self, service, name=None):
 		""""""
 		result = None, None
-		if service in self.services:
+		if name:
+			if name in self.anonymous_plugins:
+				result = name, self.anonymous_plugins[name]
+			elif name in self.user_plugins:
+				result = name, self.user_plugins[name]
+			elif name in self.premium_plugins:
+				result = name, self.premium_plugins[name]
+		elif service in self.services:
 			for plugin_name, plugin in self.anonymous_plugins.items():
 				if plugin.service == service:
 					result = plugin_name, plugin
@@ -82,21 +89,17 @@ class ServiceManager:
 						services[cons.TYPE_UNSUPPORTED].append(link)
 		return services
 	
-	def prueba(self, url):
+	def prueba(self):
 		""""""
 		import time
 		plugin = self.anonymous_plugins["AnonymousRapidshare"]
-		print plugin.add_download(url)
-		print plugin.add_download("cojones")
-		print plugin.get_status(url)
-		time.sleep(3)
-		print plugin.get_status(url)
-		plugin.stop_download(url)
-		print plugin.stoped_downloads
-		time.sleep(1)
-		print plugin.get_status(url)
-		print plugin.stoped_downloads
+		link = "http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar"
+		name, size, size_unit = plugin.check_link(link)
+		plugin.add_download(link, name)
+		while len(plugin.active_downloads) > 0:
+			print plugin.get_status(name)
+			time.sleep(1)
 
 if __name__ == "__main__":
 	s = ServiceManager()
-	s.prueba("mierda")
+	s.prueba()

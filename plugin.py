@@ -20,8 +20,12 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import time
+
 from downloader import Downloader
 from uploader import Uploader
+
+import cons
 
 class Plugin(object):
 	""""""
@@ -32,50 +36,44 @@ class Plugin(object):
 		self.__author__ = None
 		self.active_downloads = {}
 		self.active_uploads = {}
-		self.stoped_downloads = {}
-		self.stoped_uploads = {}
 
-	def _download(self, url, wait=None, cookie=None):
+	def _download(self, url, file_name, wait=None, cookie=None):
 		""""""
-		if not url in self.active_downloads:
-			th = Downloader(url, self._stop_download, wait, cookie)
+		if not file_name in self.active_downloads:
+			th = Downloader(url, file_name, wait, cookie)
 			th.start()
-			self.active_downloads[url] = th
+			self.active_downloads[file_name] = th
 	
-	def _upload(self, file_name, wait=None, cookie=None):
+	def _upload(self, url, file_name, wait=None, cookie=None):
 		""""""
 		if not file_name in self.active_uploads:
-			th = Uploader(file_name, self._stop_upload, wait, cookie)
+			th = Uploader(file_name, wait, cookie)
 			th.start()
 			self.active_uploads[file_name] = th
 	
-	def _stop_download(self, url):
+	def _stop_download(self, file_name):
 		""""""
 		if url in self.active_downloads:
-			self.active_downloads[url].stop_flag = True
-			self.stoped_downloads[url] = self.active_downloads[url]
-			del self.active_downloads[url]
+			self.active_downloads[file_name].stop_flag = True
+			del self.active_downloads[file_name]
 	
 	def _stop_upload(self, file_name):
 		""""""
 		if file_name in self.active_uploads:
 			self.active_uploads[file_name].stop_flag = True
-			self.stoped_uploads[file_name] = self.active_uploads[file_name]
 			del self.active_uploads[file_name]
 
-	def get_status(self, url):
-		""""""
-		result = None
-		if url in self.active_downloads:
-			result = self.active_downloads[url].status
-		elif url in self.active_uploads:
-			result = self.active_uploads[url].status
-		elif url in self.stoped_downloads:
-			result = self.stoped_downloads[url].status
-			del self.stoped_downloads[url]
-		elif url in self.stoped_uploads:
-			result = self.stoped_uploads[url].status
-			del self.stoped_uploads[url]
+	def get_status(self, file_name):
+		"""return (status, actual_size, time)"""
+		result = None, None, None
+		if file_name in self.active_downloads:
+			result = self.active_downloads[file_name].status, self.active_downloads[file_name].actual_size, self.active_downloads[file_name].elapsed_time
+			if self.active_downloads[file_name].stop_flag:
+				del self.active_downloads[file_name]
+		elif file_name in self.active_uploads:
+			result = self.active_uploads[file_name].status, self.active_uploads[file_name].actual_size, self.active_uploads[file_name].elapsed_time
+			if self.active_uploadsloads[file_name].stop_flag:
+				del self.active_uploads[file_name]
 		return result
 
 	def check_link(self, url):
@@ -85,3 +83,11 @@ class Plugin(object):
 	def get_info(self):
 		""""""
 		return self.__name__, self.__version__, self.__author__
+		
+
+if __name__ == "__main__":
+	d = Plugin()
+	d._download("http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar", "D.S03E02.0TV.cHoPPaHoLiK.part6.rar", 1)
+	while len(d.active_downloads) > 0:
+		print d.get_status("D.S03E02.0TV.cHoPPaHoLiK.part6.rar")
+		time.sleep(0.1)
