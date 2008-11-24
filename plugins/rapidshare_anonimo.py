@@ -20,7 +20,9 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib
 import urllib2
+from HTMLParser import HTMLParser
 
 from .anonymous_plugin import AnonymousPlugin
 
@@ -29,34 +31,60 @@ VERSION = "0.1"
 AUTHOR = "Crak"
 
 SERVICE = "rapidshare.com"
-DOWNLOAD_SLOTS = 1
-UPLOAD_SLOTS = 1
 
+class DownloadFormParser(HTMLParser):
+	""""""
+	def __init__(self, url):
+		""""""
+		HTMLParser.__init__(self)
+		self.form_action = None
+		self.url = None
+		self.wait = None
+		self.feed(urllib2.urlopen(urllib2.Request(url)).read())
+		self.close()
+		form = {"dl.start": "Free", "":"Free user"}
+		self.data = urllib.urlencode(form)
+		for line in urllib2.urlopen(self.form_action, self.data).readlines():
+			if not self.url:
+				self.feed(line)
+			else:
+				if "var c=" in line:
+					self.wait = int(line.split("var c=")[1].split(";")[0])
+
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "form":
+			if attrs[0][1] == "ff":
+				self.form_action = attrs[1][1]
+			elif attrs[0][1] == "dlf":
+				self.url = attrs[1][1]
+				
 class AnonymousRapidshare(AnonymousPlugin):
 	""""""
 	def __init__(self):
 		""""""
-		AnonymousPlugin.__init__(self, DOWNLOAD_SLOTS, UPLOAD_SLOTS)
+		AnonymousPlugin.__init__(self)
 		self.__name__ = NAME
 		self.__version__ = VERSION
 		self.__author__ = AUTHOR
 		self.service = SERVICE
 		
-	def add_download(self, link):
+	def add_download(self, link, file_name):
 		""""""
 		#parsea el link para obtener el link final y saltate los captchas antes de llamar a _add_download()
-		return self._add_download(link, 3)
+		parser = DownloadFormParser(link)
+		print parser.url, parser.wait
+		if parser.url:
+			return self._download(parser.url, file_name, parser.wait)
 		
 	def add_upload(self, file):
 		""""""
 		#parsea el link para obtener el link final y saltate los captchas antes de llamar a _add_upload()
-		return self._add_upload(file)
+		return self._upload(file)
 
 	def check_link(self, url):
 		""""""
 		name = None
-		size = 0
-		unit = None
 		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
 			if "downloadlink" in line:
 				tmp = line.split(">")
