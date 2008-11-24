@@ -29,14 +29,12 @@ VERSION = "0.1"
 AUTHOR = "Crak"
 
 SERVICE = "megaupload.com"
-DOWNLOAD_SLOTS = 1
-UPLOAD_SLOTS = 1
 
 class AnonymousMegaupload(AnonymousPlugin):
 	""""""
 	def __init__(self):
 		""""""
-		AnonymousPlugin.__init__(self, DOWNLOAD_SLOTS, UPLOAD_SLOTS)
+		AnonymousPlugin.__init__(self)
 		self.__name__ = NAME
 		self.__version__ = VERSION
 		self.__author__ = AUTHOR
