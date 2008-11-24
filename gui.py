@@ -21,10 +21,12 @@
 ###############################################################################
 
 import webbrowser
+import time
 
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 
 from about import About
 from message import Message
@@ -66,12 +68,12 @@ class Gui(gtk.Window, ServiceManager):
 
 		#toolbar
 		download = "Add Downloads", gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_callback
-		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.not_implemented
+		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.quit
 		clear = "Clear Complete", gtk.image_new_from_file(cons.ICON_CLEAR), self.not_implemented
 		up = "Move Up", gtk.image_new_from_file(cons.ICON_UP), self.not_implemented
 		down = "Move Down", gtk.image_new_from_file(cons.ICON_DOWN), self.not_implemented
-		start = "Start Selected", gtk.image_new_from_file(cons.ICON_START), self.not_implemented
-		stop = "Stop Selected", gtk.image_new_from_file(cons.ICON_STOP), self.not_implemented
+		start = "Start Selected", gtk.image_new_from_file(cons.ICON_START), self.start
+		stop = "Stop Selected", gtk.image_new_from_file(cons.ICON_STOP), self.stop
 		self.vbox.pack_start(Toolbar([download, upload, clear, None, up, down, None, start, stop]), False)
 		
 		#trees
@@ -91,6 +93,45 @@ class Gui(gtk.Window, ServiceManager):
 		#trayicon
 		tray_menu = [menu_preferences, menu_about, None, menu_quit]
 		self.tray_icon = TrayIcon(self.show, self.hide, tray_menu)
+		
+	def update_item(self, model, path, iter):
+		""""""
+		if not model.iter_has_child(iter):
+			link = model.get_value(iter, 2)
+			name = model.get_value(iter, 3)
+			plugin_name = model.get_value(iter, 10)
+			status, size, time = self.get_plugin(None, plugin_name)[1].get_status(name)
+			if status:
+				self.downloads.update(iter, status, size, time)
+			
+		
+	def update_all(self):
+		""""""
+		self.downloads.treeview.get_model().foreach(self.update_item)
+		return True
+		
+	def start(self, button):
+		""""""
+		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
+		for path in paths:
+			iter = model.get_iter(path)
+			if not model.iter_has_child(iter):
+				link = model.get_value(iter, 2)
+				name = model.get_value(iter, 3)
+				plugin_name = model.get_value(iter, 10)
+				self.get_plugin(None, plugin_name)[1].add_download(link, name)
+				gobject.timeout_add(2000, self.update_all)
+
+	def stop(self, button):
+		""""""
+		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
+		for path in paths:
+			iter = model.get_iter(path)
+			if not model.iter_has_child(iter):
+				link = model.get_value(iter, 2)
+				name = model.get_value(iter, 3)
+				plugin_name = model.get_value(iter, 10)
+				self.get_plugin(None, plugin_name)[1]._stop_download(name)
 		
 	def not_implemented(self, widget):
 		""""""
@@ -126,4 +167,5 @@ class Gui(gtk.Window, ServiceManager):
 	
 if __name__ == "__main__":
 	g = Gui()
+	gobject.threads_init()
 	gtk.main()

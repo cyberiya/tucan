@@ -20,30 +20,55 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib2
 import threading
 import time
 
+import cons
+
+BUFFER_SIZE = 2048
+
 class Downloader(threading.Thread):
 	""""""
-	def __init__(self, url, end, time=None, cookie=None):
+	def __init__(self, url, file_name, wait=None, cookie=None):
 		""""""
 		threading.Thread.__init__(self)
 		self.url = url
-		self.end = end
-		self.wait = time
+		self.file = file_name
+		self.wait = wait		
 		self.stop_flag = False
-		self.status = "stoped"
+		self.start_time = time.time()
+		self.elapsed_time = 0
+		self.total_size = 0
+		self.actual_size = 0
+		self.status = cons.STATUS_STOP
 		
 	def run(self):
 		""""""
 		if self.wait:
-			self.status = "waiting"
-			time.sleep(self.wait)
-		self.status = 0
-		while not self.stop_flag:
-			self.status += 1
-		self.status = "stoped"
-		self.end(self.url)
-
-if __name__ == "__main__":
-    d = Downloader()
+			self.status = cons.STATUS_WAIT
+			while self.wait > 0:
+				time.sleep(1)
+				self.wait -= 1
+				self.elapsed_time = self.wait
+		f = open(self.file, "w")
+		handle = urllib2.urlopen(urllib2.Request(self.url))
+		self.total_size = int(handle.info().getheader("Content-Length"))
+		self.status = cons.STATUS_ACTIVE
+		actual_time = time.time()
+		data = handle.read(BUFFER_SIZE)
+		f.write(data)
+		self.elapsed_time = time.time() - actual_time
+		self.actual_size += len(data)
+		while ((len(data) > 0) and not self.stop_flag):
+			actual_time = time.time()
+			data = handle.read(BUFFER_SIZE)
+			f.write(data)
+			self.actual_size += len(data)
+			self.elapsed_time = time.time() - actual_time
+		self.stop_flag = True
+		self.elapsed_time = time.time() - self.start_time
+		if self.actual_size == self.total_size:
+			self.status = cons.STATUS_CORRECT
+		else:
+			self.status = cons.STATUS_INCORRECT
