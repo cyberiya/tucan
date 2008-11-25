@@ -23,8 +23,37 @@
 from plugin import Plugin
 
 class AnonymousPlugin(Plugin):
-	"""Dummy class"""
-	def __init__(self):
+	""""""
+	def __init__(self, downloads, uploads):
 		""""""
 		Plugin.__init__(self)
+		self.download_slots = downloads
+		self.upload_slots = uploads
+		
+	def _add_download(self, url, wait):
+		""""""""
+		result = False
+		if self.download_slots > 0:
+			self.download_slots -= 1
+			self._download(url, wait)
+			result = True
+		return result
 
+	def _add_upload(self, file):
+		""""""""
+		result = False
+		if self.upload_slots > 0:
+			self.upload_slots -= 1
+			self._upload(file)
+			result = True
+		return result
+		
+	def stop_download(self, link):
+		""""""
+		self.download_slots += 1
+		return self._stop_download(link)
+		
+	def stop_upload(self, file):
+		""""""
+		self.upload_slots += 1
+		return self._stop_upload(file)

@@ -38,19 +38,21 @@ class Downloader(threading.Thread):
 		self.wait = wait		
 		self.stop_flag = False
 		self.start_time = time.time()
-		self.elapsed_time = 0
+		self.time_remaining = 0
 		self.total_size = 0
 		self.actual_size = 0
+		self.progress = 0
+		self.speed = 1
 		self.status = cons.STATUS_STOP
 		
 	def run(self):
 		""""""
 		if self.wait:
 			self.status = cons.STATUS_WAIT
-			while self.wait > 0:
+			while ((self.wait > 0) and not self.stop_flag):
 				time.sleep(1)
 				self.wait -= 1
-				self.elapsed_time = self.wait
+				self.time_remaining = self.wait
 		f = open(self.file, "w")
 		handle = urllib2.urlopen(urllib2.Request(self.url))
 		self.total_size = int(handle.info().getheader("Content-Length"))
@@ -58,17 +60,27 @@ class Downloader(threading.Thread):
 		actual_time = time.time()
 		data = handle.read(BUFFER_SIZE)
 		f.write(data)
-		self.elapsed_time = time.time() - actual_time
 		self.actual_size += len(data)
+		tmp_size = 0
+		tmp_time = 0
 		while ((len(data) > 0) and not self.stop_flag):
 			actual_time = time.time()
 			data = handle.read(BUFFER_SIZE)
 			f.write(data)
-			self.actual_size += len(data)
-			self.elapsed_time = time.time() - actual_time
-		self.stop_flag = True
-		self.elapsed_time = time.time() - self.start_time
-		if self.actual_size == self.total_size:
-			self.status = cons.STATUS_CORRECT
-		else:
-			self.status = cons.STATUS_INCORRECT
+			increment = len(data)
+			self.actual_size += increment
+			self.progress = int((self.actual_size/self.total_size)*100)
+			self.time_remaining = int(self.total_size/(self.speed))
+			tmp_time += time.time() - actual_time
+			tmp_size += increment
+			if tmp_time > 2:
+				self.speed = int((tmp_size/1024)/(tmp_time))
+				tmp_time = 0
+				tmp_size = 0
+		self.time_remaining = time.time() - self.start_time
+		if not self.stop_flag:
+			self.stop_flag = True
+			if self.actual_size == self.total_size:
+				self.status = cons.STATUS_CORRECT
+			else:
+				self.status = cons.STATUS_ERROR
