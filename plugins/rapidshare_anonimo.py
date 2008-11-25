@@ -32,6 +32,9 @@ AUTHOR = "Crak"
 
 SERVICE = "rapidshare.com"
 
+DOWNLOAD_SLOTS = 1
+UPLOAD_SLOTS = 1
+
 class DownloadFormParser(HTMLParser):
 	""""""
 	def __init__(self, url):
@@ -63,7 +66,7 @@ class AnonymousRapidshare(AnonymousPlugin):
 	""""""
 	def __init__(self):
 		""""""
-		AnonymousPlugin.__init__(self)
+		AnonymousPlugin.__init__(self, DOWNLOAD_SLOTS, UPLOAD_SLOTS)
 		self.__name__ = NAME
 		self.__version__ = VERSION
 		self.__author__ = AUTHOR
@@ -73,7 +76,6 @@ class AnonymousRapidshare(AnonymousPlugin):
 		""""""
 		#parsea el link para obtener el link final y saltate los captchas antes de llamar a _add_download()
 		parser = DownloadFormParser(link)
-		print parser.url, parser.wait
 		if parser.url:
 			return self._download(parser.url, file_name, parser.wait)
 		
