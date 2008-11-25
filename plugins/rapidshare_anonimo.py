@@ -77,12 +77,12 @@ class AnonymousRapidshare(AnonymousPlugin):
 		#parsea el link para obtener el link final y saltate los captchas antes de llamar a _add_download()
 		parser = DownloadFormParser(link)
 		if parser.url:
-			return self._download(parser.url, file_name, parser.wait)
+			return self.download(parser.url, file_name, parser.wait)
 		
 	def add_upload(self, file):
 		""""""
 		#parsea el link para obtener el link final y saltate los captchas antes de llamar a _add_upload()
-		return self._upload(file)
+		return self.upload(file)
 
 	def check_link(self, url):
 		""""""
