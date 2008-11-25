@@ -77,7 +77,7 @@ class Plugin(object):
 			th = self.active_uploads[file_name]
 		if th:
 			actual_size, unit = self.get_size(th.actual_size)
-			result = th.status, th.progress, actual_size, unit, str(th.speed)+"KB/s", th.time_remaining
+			result = th.status, th.progress, actual_size, unit, str(th.speed/1024)+"KB/s", th.time_remaining
 			if th.stop_flag:
 				del th
 		return result

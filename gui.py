@@ -95,13 +95,13 @@ class Gui(gtk.Window, ServiceManager):
 		self.tray_icon = TrayIcon(self.show, self.hide, tray_menu)
 		
 	def start(self, button):
-		""""""
+		"""Implementado solo para descargas"""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		for path in paths:
 			print self.downloads.start_item(model.get_iter(path))
 
 	def stop(self, button):
-		""""""
+		"""Implementado solo para descargas"""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		for path in paths:
 			print self.downloads.stop_item(model.get_iter(path))

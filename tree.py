@@ -102,7 +102,7 @@ class Tree(gtk.VBox):
 		self.failed_icon = self.treeview.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
 		self.wait_icon = self.treeview.render_icon(gtk.STOCK_REFRESH, gtk.ICON_SIZE_MENU)
 		self.active_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_MENU)
-		self.pending_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_MENU)
+		self.pending_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_MENU)
 		self.stoped_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_STOP, gtk.ICON_SIZE_MENU)
 		
 		self.status_bar = gtk.Statusbar()
@@ -165,6 +165,7 @@ class Tree(gtk.VBox):
 			time = self.calculate_time(time)
 		elif status == cons.STATUS_STOP:
 			icon = self.stoped_icon
+			progress = 0
 			time = None
 			size = None
 			speed = None
