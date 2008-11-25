@@ -36,6 +36,7 @@ class Plugin(object):
 		self.__author__ = None
 		self.active_downloads = {}
 		self.active_uploads = {}
+		
 
 	def _download(self, url, file_name, wait=None, cookie=None):
 		""""""
@@ -68,18 +69,28 @@ class Plugin(object):
 			return True
 
 	def get_status(self, file_name):
-		"""return (status, actual_size, time)"""
+		"""return (status, progress, actual_size, unit, speed, time)"""
 		result = None, None, None, None, None, None
 		th = None
 		if file_name in self.active_downloads:
 			th = self.active_downloads[file_name]
+			if self.active_downloads[file_name].stop_flag:
+				del self.active_downloads[file_name]
 		elif file_name in self.active_uploads:
-			th = self.active_uploads[file_name]
+			th = self.active_uploads[file_name]			
+			if self.active_uploads[file_name].stop_flag:
+				del self.active_uploads[file_name]
 		if th:
 			actual_size, unit = self.get_size(th.actual_size)
-			result = th.status, th.progress, actual_size, unit, str(th.speed/1024)+"KB/s", th.time_remaining
-			if th.stop_flag:
-				del th
+			if th.status == cons.STATUS_ACTIVE:
+				speed = th.get_speed()
+				time = int(float((th.total_size - th.actual_size)/1024)/float(speed))
+				progress = int((float(th.actual_size)/float(th.total_size))*100)
+			else:
+				progress = 0
+				speed = 0
+				time = th.time_remaining
+			result = th.status, progress, actual_size, unit, str(speed)+"KB/s", time
 		return result
 
 	def check_link(self, url):
