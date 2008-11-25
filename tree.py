@@ -132,7 +132,7 @@ class Tree(gtk.VBox):
 			name = model.get_value(iter, 3)
 			plugin_name = model.get_value(iter, 10)
 			if self.get_plugin(None, plugin_name)[1].add_download(link, name):
-				gobject.timeout_add(1000, self.update, iter)
+				gobject.timeout_add(2000, self.update, iter)
 				return True
 	
 	def stop_item(self, iter):
@@ -176,6 +176,7 @@ class Tree(gtk.VBox):
 			result = False
 		else:
 			icon = self.failed_icon
+			progress = 0
 			time = None
 			size = None
 			speed = None

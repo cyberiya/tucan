@@ -98,13 +98,13 @@ class Gui(gtk.Window, ServiceManager):
 		"""Implementado solo para descargas"""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		for path in paths:
-			print self.downloads.start_item(model.get_iter(path))
+			print "start", self.downloads.start_item(model.get_iter(path))
 
 	def stop(self, button):
 		"""Implementado solo para descargas"""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		for path in paths:
-			print self.downloads.stop_item(model.get_iter(path))
+			print "stop", self.downloads.stop_item(model.get_iter(path))
 		
 	def not_implemented(self, widget):
 		""""""
@@ -124,15 +124,6 @@ class Gui(gtk.Window, ServiceManager):
 	def add_callback(self, button):
 		""""""
 		i = InputLinks(self.filter_service, self.link_check, self.downloads.add_package)
-		
-	def link_check(self, link, service):
-		"""return (active, file_name, int_size, size_unit, plugin)"""
-		plugin_name, plugin = self.get_plugin(service)
-		name, size, unit = plugin.check_link(link)
-		if unit == cons.UNIT_KB:
-			size = int(round(size/1024))
-			unit = cons.UNIT_MB
-		return name, size, unit, plugin_name
 
 	def quit(self, dialog=None, response=None):
 		""""""

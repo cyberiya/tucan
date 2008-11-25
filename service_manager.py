@@ -88,6 +88,15 @@ class ServiceManager:
 				if not found:
 						services[cons.TYPE_UNSUPPORTED].append(link)
 		return services
+		
+	def link_check(self, link, service):
+		"""return (active, file_name, int_size, size_unit, plugin)"""
+		plugin_name, plugin = self.get_plugin(service)
+		name, size, unit = plugin.check_link(link)
+		if unit == cons.UNIT_KB:
+			size = int(round(size/1024))
+			unit = cons.UNIT_MB
+		return name, size, unit, plugin_name
 	
 	def prueba(self):
 		""""""
@@ -98,7 +107,7 @@ class ServiceManager:
 		plugin.add_download(link, name)
 		while len(plugin.active_downloads) > 0:
 			print plugin.get_status(name)
-			time.sleep(1)
+			time.sleep(2)
 
 if __name__ == "__main__":
 	s = ServiceManager()

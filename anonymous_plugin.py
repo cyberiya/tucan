@@ -27,33 +27,35 @@ class AnonymousPlugin(Plugin):
 	def __init__(self, downloads, uploads):
 		""""""
 		Plugin.__init__(self)
+		self.max_downloads = downloads
+		self.max_uploads = uploads
 		self.download_slots = downloads
 		self.upload_slots = uploads
 		
-	def download(self, url, file_name, wait):
+	def download(self, url, file_name_name, wait):
 		""""""""
-		result = False
 		if self.download_slots > 0:
-			self.download_slots -= 1
-			self._download(url, file_name, wait)
-			result = True
-		return result
+			if self._download(url, file_name_name, wait):
+				self.download_slots -= 1
+				return True
 
-	def upload(self, file):
+	def upload(self, file_name):
 		""""""""
-		result = False
 		if self.upload_slots > 0:
-			self.upload_slots -= 1
-			self._upload(file)
-			result = True
-		return result
-		
-	def stop_download(self, link):
+			if self._upload(file_name):
+				self.upload_slots -= 1
+				return True
+				
+	def stop_download(self, file_name):
 		""""""
-		self.download_slots += 1
-		return self._stop_download(link)
+		if self.download_slots < self.max_downloads:
+			if self._stop_download(file_name):
+				self.download_slots += 1
+				return True
 		
-	def stop_upload(self, file):
+	def stop_upload(self, file_name):
 		""""""
-		self.upload_slots += 1
-		return self._stop_upload(file)
+		if self.upload_slots < self.max_uploads:
+			if self._stop_upload(file_name):
+				self.upload_slots += 1
+				return True
