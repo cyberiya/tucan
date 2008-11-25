@@ -101,10 +101,3 @@ class Plugin(object):
 			if tmp > 0:
 				result = tmp, cons.UNIT_MB
 		return result
-		
-if __name__ == "__main__":
-	d = Plugin()
-	d._download("http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar", "D.S03E02.0TV.cHoPPaHoLiK.part6.rar", 1)
-	while len(d.active_downloads) > 0:
-		print d.get_status("D.S03E02.0TV.cHoPPaHoLiK.part6.rar")
-		time.sleep(0.1)
