@@ -23,12 +23,13 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 
 import cons
 
 class Tree(gtk.VBox):
 	""""""
-	def __init__(self, text):
+	def __init__(self, get_plugin, text):
 		""""""
 		gtk.VBox.__init__(self)
 		scroll = gtk.ScrolledWindow()
@@ -36,6 +37,8 @@ class Tree(gtk.VBox):
 		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str, int, bool, str, str, str, str, str))
 		scroll.add(self.treeview)
 		self.pack_start(scroll)
+
+		self.get_plugin = get_plugin
 
 		self.treeview.set_rules_hint(True)
 		self.treeview.set_headers_visible(False)
@@ -121,23 +124,83 @@ class Tree(gtk.VBox):
 		store.set_value(package_iter, 7, package_size.get())
 		self.treeview.expand_all()
 		
-	def update(self, iter, status, size, time):
+	def start_item(self, iter):
 		""""""
-		store = self.treeview.get_model()
+		model = self.treeview.get_model()
+		if not model.iter_has_child(iter):
+			link = model.get_value(iter, 2)
+			name = model.get_value(iter, 3)
+			plugin_name = model.get_value(iter, 10)
+			if self.get_plugin(None, plugin_name)[1].add_download(link, name):
+				gobject.timeout_add(1000, self.update, iter)
+				return True
+	
+	def stop_item(self, iter):
+		""""""
+		model = self.treeview.get_model()
+		if not model.iter_has_child(iter):
+			name = model.get_value(iter, 3)
+			plugin_name = model.get_value(iter, 10)
+			if self.get_plugin(None, plugin_name)[1].stop_download(name):
+				return True
+		
+	def update(self, iter):
+		""""""
+		result = True
+		model = self.treeview.get_model()
+		link = model.get_value(iter, 2)
+		name = model.get_value(iter, 3)
+		plugin_name = model.get_value(iter, 10)
+		status, progress, size, unit, speed, time = self.get_plugin(None, plugin_name)[1].get_status(name)
+		print status, progress, size, unit, speed, time
 		icon = self.pending_icon
 		if status == cons.STATUS_WAIT:
 			icon = self.wait_icon
+			size = None
+			speed = None
+			time = str(time) + " seconds"
 		elif status == cons.STATUS_ACTIVE:
 			icon = self.active_icon
-		elif status == cons.STATUS_STOPED:
+			size = str(size)+unit
+			time = self.calculate_time(time)
+		elif status == cons.STATUS_STOP:
 			icon = self.stoped_icon
+			time = None
+			size = None
+			speed = None
+			result = False
 		elif status == cons.STATUS_CORRECT:
 			icon = self.correct_icon
-		elif status == cons.STATUS_INCORRECT:
+			speed = None
+			result = False
+		else:
 			icon = self.failed_icon
-		store.set_value(iter, 0, icon)
-		store.set_value(iter, 1, status)
-		store.set_value(iter, 9, time)
+			time = None
+			size = None
+			speed = None
+			result = False
+		model.set(iter, 0, icon, 1, status, 4, progress, 6, size, 8, speed, 9, time)
+		return result
+		
+	def calculate_time(self, time):
+		""""""
+		result = None
+		hours = 0
+		minutes = 0
+		while time >= cons.HOUR:
+			time = time - cons.HOUR
+			hours += 1
+		while time >= cons.MINUTE:
+			time = time - cons.MINUTE
+			minutes += 1
+		seconds = time
+		if hours > 0:
+			result = str(hours) + "h" + str(minutes) + "m" + str(seconds) + "s"
+		elif minutes > 0:
+			result =  str(minutes) + "m" + str(seconds) + "s"
+		else:
+			result = str(seconds) + "s"
+		return result
 		
 class PackageValue:
 	""""""

@@ -43,6 +43,7 @@ class Plugin(object):
 			th = Downloader(url, file_name, wait, cookie)
 			th.start()
 			self.active_downloads[file_name] = th
+			return True
 	
 	def _upload(self, url, file_name, wait=None, cookie=None):
 		""""""
@@ -50,30 +51,35 @@ class Plugin(object):
 			th = Uploader(file_name, wait, cookie)
 			th.start()
 			self.active_uploads[file_name] = th
+			return True
 	
 	def _stop_download(self, file_name):
 		""""""
-		if url in self.active_downloads:
+		if file_name in self.active_downloads:
 			self.active_downloads[file_name].stop_flag = True
-			del self.active_downloads[file_name]
+			self.active_downloads[file_name].status = cons.STATUS_STOP
+			return True
 	
 	def _stop_upload(self, file_name):
 		""""""
 		if file_name in self.active_uploads:
 			self.active_uploads[file_name].stop_flag = True
-			del self.active_uploads[file_name]
+			self.active_uploads[file_name].status = cons.STATUS_STOP
+			return True
 
 	def get_status(self, file_name):
 		"""return (status, actual_size, time)"""
-		result = None, None, None
+		result = None, None, None, None, None, None
+		th = None
 		if file_name in self.active_downloads:
-			result = self.active_downloads[file_name].status, self.active_downloads[file_name].actual_size, self.active_downloads[file_name].elapsed_time
-			if self.active_downloads[file_name].stop_flag:
-				del self.active_downloads[file_name]
+			th = self.active_downloads[file_name]
 		elif file_name in self.active_uploads:
-			result = self.active_uploads[file_name].status, self.active_uploads[file_name].actual_size, self.active_uploads[file_name].elapsed_time
-			if self.active_uploadsloads[file_name].stop_flag:
-				del self.active_uploads[file_name]
+			th = self.active_uploads[file_name]
+		if th:
+			actual_size, unit = self.get_size(th.actual_size)
+			result = th.status, th.progress, actual_size, unit, str(th.speed)+"KB/s", th.time_remaining
+			if th.stop_flag:
+				del th
 		return result
 
 	def check_link(self, url):
@@ -84,7 +90,18 @@ class Plugin(object):
 		""""""
 		return self.__name__, self.__version__, self.__author__
 		
-
+			
+	def get_size(self, num):
+		""""""
+		result = 0, cons.UNIT_KB
+		tmp = int(num/1024)
+		if  tmp > 0:
+			result = tmp, cons.UNIT_KB
+			tmp = int(tmp/1024)
+			if tmp > 0:
+				result = tmp, cons.UNIT_MB
+		return result
+		
 if __name__ == "__main__":
 	d = Plugin()
 	d._download("http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar", "D.S03E02.0TV.cHoPPaHoLiK.part6.rar", 1)

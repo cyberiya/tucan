@@ -42,11 +42,9 @@ UNIT_KB = "KB"
 UNIT_MB = "MB"
 UNIT_GB = "GB"
 
-#time unit constants
-UNIT_SECOND = "s"
-UNIT_MINUTE = "m"
-UNIT_HOUR = "h"
-UNIT_DAY = "d"
+#time constants
+MINUTE = 60
+HOUR = 3600
 
 #service type constans
 TYPE_ANONYMOUS = "AnonymousPlugin"

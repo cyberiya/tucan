@@ -77,8 +77,8 @@ class Gui(gtk.Window, ServiceManager):
 		self.vbox.pack_start(Toolbar([download, upload, clear, None, up, down, None, start, stop]), False)
 		
 		#trees
-		self.downloads = Tree("No Downloads Active.")
-		self.uploads = Tree("No Uploads Active.")
+		self.downloads = Tree(self.get_plugin, "No Downloads Active.")
+		self.uploads = Tree(self.get_plugin, "No Uploads Active.")
 		
 		#pane
 		self.pane = gtk.VPaned()
@@ -94,44 +94,17 @@ class Gui(gtk.Window, ServiceManager):
 		tray_menu = [menu_preferences, menu_about, None, menu_quit]
 		self.tray_icon = TrayIcon(self.show, self.hide, tray_menu)
 		
-	def update_item(self, model, path, iter):
-		""""""
-		if not model.iter_has_child(iter):
-			link = model.get_value(iter, 2)
-			name = model.get_value(iter, 3)
-			plugin_name = model.get_value(iter, 10)
-			status, size, time = self.get_plugin(None, plugin_name)[1].get_status(name)
-			if status:
-				self.downloads.update(iter, status, size, time)
-			
-		
-	def update_all(self):
-		""""""
-		self.downloads.treeview.get_model().foreach(self.update_item)
-		return True
-		
 	def start(self, button):
 		""""""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		for path in paths:
-			iter = model.get_iter(path)
-			if not model.iter_has_child(iter):
-				link = model.get_value(iter, 2)
-				name = model.get_value(iter, 3)
-				plugin_name = model.get_value(iter, 10)
-				self.get_plugin(None, plugin_name)[1].add_download(link, name)
-				gobject.timeout_add(2000, self.update_all)
+			print self.downloads.start_item(model.get_iter(path))
 
 	def stop(self, button):
 		""""""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		for path in paths:
-			iter = model.get_iter(path)
-			if not model.iter_has_child(iter):
-				link = model.get_value(iter, 2)
-				name = model.get_value(iter, 3)
-				plugin_name = model.get_value(iter, 10)
-				self.get_plugin(None, plugin_name)[1]._stop_download(name)
+			print self.downloads.stop_item(model.get_iter(path))
 		
 	def not_implemented(self, widget):
 		""""""
