@@ -30,16 +30,16 @@ class AnonymousPlugin(Plugin):
 		self.download_slots = downloads
 		self.upload_slots = uploads
 		
-	def _add_download(self, url, wait):
+	def download(self, url, file_name, wait):
 		""""""""
 		result = False
 		if self.download_slots > 0:
 			self.download_slots -= 1
-			self._download(url, wait)
+			self._download(url, file_name, wait)
 			result = True
 		return result
 
-	def _add_upload(self, file):
+	def upload(self, file):
 		""""""""
 		result = False
 		if self.upload_slots > 0:

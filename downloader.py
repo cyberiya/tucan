@@ -69,8 +69,8 @@ class Downloader(threading.Thread):
 			f.write(data)
 			increment = len(data)
 			self.actual_size += increment
-			self.progress = int((self.actual_size/self.total_size)*100)
-			self.time_remaining = int(self.total_size/(self.speed))
+			self.progress = int((float(self.actual_size)/float(self.total_size))*100)
+			self.time_remaining = int(self.total_size/(self.speed*1024))
 			tmp_time += time.time() - actual_time
 			tmp_size += increment
 			if tmp_time > 2:
