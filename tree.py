@@ -172,6 +172,9 @@ class Tree(gtk.VBox):
 			result = False
 		elif status == cons.STATUS_CORRECT:
 			icon = self.correct_icon
+			progress = 100
+			size = str(size)+unit
+			time = self.calculate_time(time)
 			speed = None
 			result = False
 		else:

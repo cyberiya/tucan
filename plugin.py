@@ -89,7 +89,7 @@ class Plugin(object):
 			else:
 				progress = 0
 				speed = 0
-				time = th.time_remaining
+				time = int(th.time_remaining)
 			result = th.status, progress, actual_size, unit, str(speed)+"KB/s", time
 		return result
 
