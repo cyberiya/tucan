@@ -87,6 +87,8 @@ class AnonymousRapidshare(AnonymousPlugin):
 	def check_link(self, url):
 		""""""
 		name = None
+		size = 0
+		unit = None
 		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
 			if "downloadlink" in line:
 				tmp = line.split(">")
