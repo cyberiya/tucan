@@ -27,7 +27,8 @@ import time
 import cons
 
 HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"}
-BUFFER_SIZE = 4096
+
+BUFFER_SIZE = 1024
 
 class Downloader(threading.Thread):
 	""""""
@@ -44,7 +45,9 @@ class Downloader(threading.Thread):
 		self.actual_size = 0
 		self.tmp_time = 0
 		self.tmp_size = 0
-		self.status = cons.STATUS_STOP
+		self.status = cons.STATUS_PEND
+		if cookie:
+			urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)))
 		
 	def run(self):
 		""""""
@@ -55,15 +58,13 @@ class Downloader(threading.Thread):
 				self.wait -= 1
 				self.time_remaining = self.wait
 		if not self.stop_flag:
-			self.status = cons.STATUS_ACTIVE
 			f = open(self.file, "w")
 			handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER))
 			self.total_size = int(handle.info().getheader("Content-Length"))
 			self.time_remaining = 0
 			self.start_time = time.time()
-			data = handle.read(BUFFER_SIZE)
-			f.write(data)
-			self.actual_size += len(data)
+			self.status = cons.STATUS_ACTIVE
+			data = "None"
 			while ((len(data) > 0) and not self.stop_flag):
 				data = handle.read(BUFFER_SIZE)
 				f.write(data)
@@ -77,7 +78,7 @@ class Downloader(threading.Thread):
 				else:
 					self.status = cons.STATUS_ERROR
 	def get_speed(self):
-		""""""
+		"""return int speed KB/s"""
 		elapsed_time = time.time() - self.tmp_time
 		size = self.actual_size - self.tmp_size
 		speed = int(float(size/1024)/float(elapsed_time))

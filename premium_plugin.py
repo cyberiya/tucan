@@ -20,6 +20,8 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import cookielib
+
 from plugin import Plugin
 
 class PremiumPlugin(Plugin):
@@ -27,7 +29,14 @@ class PremiumPlugin(Plugin):
 	def __init__(self):
 		""""""
 		Plugin.__init__(self)
-		print "Soy un PremiumPlugin"
-
-if __name__ == "__main__":
-    p = PremiumPlugin()
+		name = str(self.__class__).split("\'")[1].split(".").pop()
+		self.cookie = cookielib.MozillaCookieJar()
+		self.cookie.load("plugins/rapidshare.cookie")
+		
+	def add_download(self, link, file_name):
+		""""""
+		return self._download(link, file_name, None, self.cookie)
+	
+	def stop_download(self, file_name):
+		""""""
+		return self._stop_download(file_name)

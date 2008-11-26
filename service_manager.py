@@ -101,13 +101,13 @@ class ServiceManager:
 	def prueba(self):
 		""""""
 		import time
-		plugin = self.anonymous_plugins["AnonymousRapidshare"]
+		plugin = self.premium_plugins["PremiumRapidshare"]
 		link = "http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar"
 		name, size, size_unit = plugin.check_link(link)
 		plugin.add_download(link, name)
 		while len(plugin.active_downloads) > 0:
 			print plugin.get_status(name)
-			time.sleep(2)
+			time.sleep(5)
 
 if __name__ == "__main__":
 	s = ServiceManager()
