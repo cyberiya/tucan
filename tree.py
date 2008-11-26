@@ -109,7 +109,7 @@ class Tree(gtk.VBox):
 		self.status_bar.set_has_resize_grip(False)
 		self.pack_start(self.status_bar, False)
 		self.status_bar.push(self.status_bar.get_context_id(""), "\t" + text)
-		self.add_package({'rapidshare.com': [('http://rapidshare.com/files/151319465/D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319467/D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319554/D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319448/D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319452/D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 100, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 100, 'MB', 'AnonymousRapidshare')]}, "D.S03E02.0TV.cHoPPaHoLiK")
+		self.add_package({'rapidshare.com': [('http://rapidshare.com/files/151319465/D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 100, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319467/D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 100, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319554/D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 100, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319448/D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 100, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319452/D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 100, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 100, 'MB', 'PremiumRapidshare')]}, "D.S03E02.0TV.cHoPPaHoLiK")
 		
 	def add_package(self, dict, name):
 		"""TreeStore(icon, status, link/path, file_name, progress, progress_visible, current_size, total_size, speed, time, plugin/services)"""
@@ -132,7 +132,7 @@ class Tree(gtk.VBox):
 			name = model.get_value(iter, 3)
 			plugin_name = model.get_value(iter, 10)
 			if self.get_plugin(None, plugin_name)[1].add_download(link, name):
-				gobject.timeout_add(2000, self.update, iter)
+				gobject.timeout_add(500, self.update, iter)
 				return True
 	
 	def stop_item(self, iter):
@@ -153,8 +153,9 @@ class Tree(gtk.VBox):
 		plugin_name = model.get_value(iter, 10)
 		status, progress, size, unit, speed, time = self.get_plugin(None, plugin_name)[1].get_status(name)
 		print status, progress, size, unit, speed, time
-		icon = self.pending_icon
-		if status == cons.STATUS_WAIT:
+		if status == cons.STATUS_PEND:
+			icon = self.pending_icon
+		elif status == cons.STATUS_WAIT:
 			icon = self.wait_icon
 			size = None
 			speed = None
