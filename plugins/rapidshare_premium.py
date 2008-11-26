@@ -20,6 +20,35 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-"""Paquete de plugins, hay que registrar aqui los plugins para que funcionen."""
+import urllib2
 
-__all__ = ["rapidshare_anonimo", "megaupload_anonimo", "rapidshare_premium"]
+from .premium_plugin import PremiumPlugin
+
+NAME = "Rapidshare Premium"
+VERSION = "0.1"
+AUTHOR = "Crak"
+
+SERVICE = "rapidshare.com"
+
+class PremiumRapidshare(PremiumPlugin):
+	""""""
+	def __init__(self):
+		""""""
+		PremiumPlugin.__init__(self)		
+		self.__name__ = NAME
+		self.__version__ = VERSION
+		self.__author__ = AUTHOR
+		self.service = SERVICE
+
+	def check_link(self, url):
+		""""""
+		name = None
+		size = 0
+		unit = None
+		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+			if "downloadlink" in line:
+				tmp = line.split(">")
+				name = tmp[1].split("<")[0].strip().split("/").pop()
+				size = int(tmp[2].split("<")[0].split(" ")[1])
+				unit = tmp[2].split("<")[0].split(" ")[2]
+		return name, size, unit
