@@ -78,6 +78,7 @@ class ServiceManager:
 		for link in links:
 			found = False
 			if urlparse.urlparse(link).scheme == "http":
+				link = "http" + link.split("http").pop()
 				for service in self.services:
 					if link.find(service) > 0:
 						found = True
