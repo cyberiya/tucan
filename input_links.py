@@ -25,6 +25,7 @@ pygtk.require('2.0')
 import gtk
 
 from message import Message
+from package_manager import PackageManager
 
 import cons
 
@@ -116,8 +117,8 @@ class InputLinks(gtk.Dialog):
 					if not value[1] == value[2]:
 						tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
 		if not tmp == {}:
-			name = "D.S03E02.0TV.cHoPPaHoLiK"
-			self.add_package(tmp, name)
+			p = PackageManager()
+			print p.get_packages(p.sort_files(tmp))
 		self.close()
 	
 	def check(self, button):
