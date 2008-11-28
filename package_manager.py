@@ -43,15 +43,13 @@ class PackageManager:
 			for file_name in others:
 				chars = re.split("[0-9]+", file_name)
 				nums = re.split("[^0-9]+", file_name)
-				if nums[0] == "":
-					tmp = nums[0]
-					del nums[0]
-					for i in chars:
-						if tmp+i == first[0:len(tmp+i)]:
-							tmp += i
-							for j in nums:
-								if tmp+j == first[0:len(tmp+j)]:
-									tmp += j
+				tmp = ""
+				for i in chars:
+					if tmp+i == first[0:len(tmp+i)]:
+						tmp += i
+						for j in nums:
+							if tmp+j == first[0:len(tmp+j)]:
+								tmp += j
 				tmp_name.append(tmp)
 			final_name = ""
 			for name in tmp_name:
