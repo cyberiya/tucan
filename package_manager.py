@@ -25,7 +25,7 @@ import re
 import cons
 
 LINKS = {'megaupload.com': [('http://www.megaupload.com/?d=N06UYST6', 'D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 96, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=HE4TMQPQ', 'D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 96, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=3TSDC4J3', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 96, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=BP5RK0TM', 'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 96, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=2XF7ELQ9', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 96, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=15YBBMCG', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 68, 'MB', 'AnonymousMegaupload')], 'rapidshare.com': [('http://rapidshare.com/files/151319465/D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 98, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319467/D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 98, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319554/D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 98, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319448/D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 98, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319452/D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 98, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 69, 'MB', 'PremiumRapidshare')]}
-FILES = ['Los Episodios Nacionales 01-10 parte2.zip', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 'Los Episodios Nacionales 01-11 parte2.zip', 'Los Episodios Nacionales 01-10 parte1.zip', 'D.S02E02.0TV.cHoPPaHoLiK.part2.rar',  'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar']
+FILES = ['D.S02E02.0TV.cHoPPaHoLiK.part1.rar', 'Los Episodios Nacionales 01-10 parte2.zip', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 'Los Episodios Nacionales 01-11 parte2.zip', 'Los Episodios Nacionales 01-10 parte1.zip', 'D.S02E02.0TV.cHoPPaHoLiK.part2.rar',  'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar']
 
 class PackageManager:
 	""""""
@@ -68,7 +68,7 @@ class PackageManager:
 				for i in tmp_list:
 					del files[files.index(i)]
 			else:
-				alone_name = file_name
+				alone_name = first
 				alone_name = alone_name.split(".")
 				alone_name.pop()
 				alone_name = ".".join(alone_name)
@@ -88,4 +88,4 @@ class PackageManager:
 
 if __name__ == "__main__":
 	l = PackageManager()
-	print l.get_packages(FILES)
+	print l.get_packages(list(FILES))
