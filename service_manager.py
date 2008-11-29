@@ -77,6 +77,7 @@ class ServiceManager:
 		services = {cons.TYPE_UNSUPPORTED: []}
 		for link in links:
 			found = False
+			print link
 			if urlparse.urlparse(link).scheme == "http":
 				link = "http" + link.split("http").pop()
 				for service in self.services:

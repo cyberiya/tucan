@@ -24,10 +24,24 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
+import HTMLParser
+
 from message import Message
-from package_manager import PackageManager
 
 import cons
+
+class ClipParser(HTMLParser.HTMLParser):
+	""""""
+	def __init__(self):
+		""""""
+		HTMLParser.HTMLParser.__init__(self)
+		self.url = []
+	
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "a":
+			if attrs[0][0] == "href":
+				self.url.append(attrs[0][1])
 
 class InputLinks(gtk.Dialog):
 	""""""
@@ -37,6 +51,9 @@ class InputLinks(gtk.Dialog):
 		self.set_icon_from_file(cons.ICON_DOWNLOAD)
 		self.set_title("Input Links")
 		self.set_size_request(600,500)
+		
+		self.clipboard = gtk.clipboard_get()
+		self.clipboard.request_targets(self.get_clipboard)
 		
 		self.sort_links = sort
 		self.check_links = check
@@ -105,7 +122,23 @@ class InputLinks(gtk.Dialog):
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
-		
+
+	def get_clipboard(self, clipboard, selection_data, data):
+		""""""
+		target_html = "text/html"
+		if target_html  in list(selection_data):
+			selection = self.clipboard.wait_for_contents(target_html)
+			if selection:
+				for line in str(selection.data.decode("utf16")).split("\n"):
+					try:
+						parser = ClipParser()
+						parser.feed(line)
+						parser.close()
+						if len(parser.url) > 0:
+							self.textview.get_buffer().insert_at_cursor("\n".join(parser.url) + "\n")
+					except HTMLParser.HTMLParseError:
+						pass
+
 	def add_links(self, button):
 		""""""
 		tmp = {}
@@ -117,8 +150,7 @@ class InputLinks(gtk.Dialog):
 					if not value[1] == value[2]:
 						tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
 		if not tmp == {}:
-			p = PackageManager()
-			print p.get_packages(p.sort_files(tmp))
+			self.add_package(tmp, "mierda")
 		self.close()
 	
 	def check(self, button):
@@ -152,7 +184,7 @@ class InputLinks(gtk.Dialog):
 							file_name = link
 						print file_name, size, size_unit, plugin
 						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin])
-		self.treeview.expand_all()
+					self.treeview.expand_row(store.get_path(service_iter), True)
 		
 	def close(self, widget=None, other=None):
 		""""""
