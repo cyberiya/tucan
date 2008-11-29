@@ -26,7 +26,7 @@ import time
 
 import cons
 
-HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20071127 Firefox/2.0.0.11"}
+HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4"}
 
 BUFFER_SIZE = 1024
 
