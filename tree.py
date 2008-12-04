@@ -129,7 +129,7 @@ class Tree(gtk.VBox):
 		model.set_value(package_iter, 7, str(package_size)+cons.UNIT_MB)
 		if not self.updating:
 			self.updating = True
-			gobject.timeout_add(2000, self.update)
+			gobject.timeout_add(1000, self.update)
 		return package_iter
 		
 	def update(self):

@@ -61,5 +61,5 @@ class AnonymousPlugin(Plugin):
 				return True
 				
 	def download_avaible(self):
-		if self.download_slots:
+		if self.download_slots > 0:
 			return True
