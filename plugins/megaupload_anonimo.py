@@ -20,9 +20,13 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib
 import urllib2
+from HTMLParser import HTMLParser
 
 from .anonymous_plugin import AnonymousPlugin
+from .captcha import CaptchaParser, UrlParser
+from .tesseract import Tesseract
 
 NAME = "Megaupload Anonimo"
 VERSION = "0.1"
@@ -31,6 +35,34 @@ AUTHOR = "Crak"
 SERVICE = "megaupload.com"
 DOWNLOAD_SLOTS = 1
 UPLOAD_SLOTS = 1
+
+class CaptchaForm:
+	""""""
+	def __init__(self, url):
+		""""""
+		self.url = url
+		self.link = None
+		cont = 0
+		while not self.link and cont < 10:
+			self.get_link()
+			cont += 1
+		print self.link
+
+	def get_link(self):
+		""""""
+		c_parser = CaptchaParser(self.url)
+		handle = urllib2.urlopen(urllib2.Request(c_parser.form_action + c_parser.captcha))
+		tes = Tesseract(handle.read())
+		handle.close()
+		self.captcha = tes.get_captcha(3)
+		if self.captcha:
+			form = {"d": c_parser.form_d, "imagecode": c_parser.form_imagecode, "megavar": c_parser.form_megavar, "imagestring" : self.captcha.strip()}
+			data = urllib.urlencode(form)
+			handle = urllib2.urlopen(c_parser.form_action, data)
+			u_parser = UrlParser(handle.read())
+			handle.close()
+			if  u_parser.tmp_url:
+				self.link = u_parser.get_url()
 
 class AnonymousMegaupload(AnonymousPlugin):
 	""""""
@@ -41,6 +73,14 @@ class AnonymousMegaupload(AnonymousPlugin):
 		self.__version__ = VERSION
 		self.__author__ = AUTHOR
 		self.service = SERVICE
+
+	def add_download(self, link, file_name):
+		""""""
+		#parsea el link para obtener el link final y saltate los captchas antes de llamar a download()
+		if self.download_avaible():
+			parser = CaptchaForm(link)
+			if parser.link:
+				return self.download(parser.link, file_name, 45)
 
 	def check_link(self, url):
 		""""""
