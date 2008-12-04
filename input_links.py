@@ -24,6 +24,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
+import re
 import HTMLParser
 
 from message import Message
@@ -57,7 +58,7 @@ class InputLinks(gtk.Dialog):
 		
 		self.sort_links = sort
 		self.check_links = check
-		self.add_package = add
+		self.packages = add
 		
 		#textview
 		frame = gtk.Frame("Paste links here:")
@@ -107,6 +108,8 @@ class InputLinks(gtk.Dialog):
 				  
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
+		name_cell.set_property("editable", True)
+		name_cell.connect("edited", self.change_name)
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 2)
 		self.treeview.append_column(tree_name)
@@ -122,6 +125,11 @@ class InputLinks(gtk.Dialog):
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
+		
+	def change_name(self, cellrenderertext, path, new_text):
+		""""""
+		model = self.treeview.get_model()
+		model.set_value(model.get_iter(path), 2, new_text)
 
 	def get_clipboard(self, clipboard, selection_data, data):
 		""""""
@@ -150,7 +158,7 @@ class InputLinks(gtk.Dialog):
 					if not value[1] == value[2]:
 						tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
 		if not tmp == {}:
-			self.add_package(tmp, "mierda")
+			self.packages(tmp)
 		self.close()
 	
 	def check(self, button):
@@ -189,13 +197,4 @@ class InputLinks(gtk.Dialog):
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
-
-if __name__ == "__main__":
-	def add(text):
-		print text
-	def parse(text):
-		return {}
-	def dummy_check(link, service):
-		return True, link.split("/").pop(), 100, cons.UNIT_MB, "AnonymousRapidshare"
-	g = InputLinks(parse, parse, add)
-	gtk.main()
+	

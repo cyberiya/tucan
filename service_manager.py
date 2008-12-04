@@ -24,6 +24,8 @@ import urlparse
 
 import cons
 
+from download_manager import DownloadManager
+
 from plugin import Plugin
 from plugins import *
 
@@ -31,6 +33,7 @@ class ServiceManager:
 	""""""
 	def __init__(self):
 		""""""
+		self.download_manager = DownloadManager(self.get_plugin)
 		self.services = []
 		self.anonymous_plugins = {}
 		self.user_plugins = {}
@@ -96,17 +99,21 @@ class ServiceManager:
 		plugin_name, plugin = self.get_plugin(service)
 		name, size, unit = plugin.check_link(link)
 		if unit == cons.UNIT_KB:
-			size = int(round(size/1024))
+			size = int(size/1024)
 			unit = cons.UNIT_MB
 		return name, size, unit, plugin_name
+	
+	def stop_all(self):
+		""""""
+		self.download_manager.quit()
 	
 	def prueba(self):
 		""""""
 		import time
-		plugin = self.premium_plugins["PremiumRapidshare"]
-		link = "http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar"
+		plugin = self.anonymous_plugins["AnonymousMegaupload"]
+		link = "http://www.megaupload.com/?d=QNVY9GXH"
 		name, size, size_unit = plugin.check_link(link)
-		plugin.add_download(link, name)
+		print plugin.add_download(link, name)
 		while len(plugin.active_downloads) > 0:
 			print plugin.get_status(name)
 			time.sleep(5)

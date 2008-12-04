@@ -20,8 +20,8 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import urllib2
 import math
+import urllib2
 
 from HTMLParser import HTMLParser
 
@@ -39,21 +39,21 @@ class CaptchaParser(HTMLParser):
 		self.close()
 
 	def handle_starttag(self, tag, attrs):
-	""""""
-	if tag == "img":
-		if attrs[0][0]  == "src":
-			if attrs[0][1].find("capgen") > 0:
-			    self.captcha = attrs[0][1]
-	elif tag == "form":
-		if attrs[0][1] == "POST":
-			self.form_action = attrs[1][1]
-	elif tag == "input":
-		if attrs[1][1] == "d":
-			self.form_d = attrs[2][1]
-		if attrs[1][1] == "imagecode":
-			self.form_imagecode= attrs[2][1]
-		if attrs[1][1] == "megavar":
-			self.form_megavar = attrs[2][1]
+		""""""
+		if tag == "img":
+			if attrs[0][0]  == "src":
+				if attrs[0][1].find("capgen") > 0:
+					self.captcha = attrs[0][1]
+		elif tag == "form":
+			if attrs[0][1] == "POST":
+				self.form_action = attrs[1][1]
+		elif tag == "input":
+			if attrs[1][1] == "d":
+				self.form_d = attrs[2][1]
+			if attrs[1][1] == "imagecode":
+				self.form_imagecode= attrs[2][1]
+			if attrs[1][1] == "megavar":
+				self.form_megavar = attrs[2][1]
 		
 class UrlParser(HTMLParser):
 	""""""
@@ -87,8 +87,3 @@ class UrlParser(HTMLParser):
 		
 		tmp = self.tmp_url.split(" + ")
 		return tmp[0].split("\'")[0] + vars[tmp[1]] + vars[tmp[2]] + tmp[3].split("\'")[1]
-
-if __name__ == "__main__":
-	    f = open("source.html", "r")
-	    c = UrlParser(f.read())
-	    print c.get_url()

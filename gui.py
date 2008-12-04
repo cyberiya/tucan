@@ -40,6 +40,8 @@ from service_manager import ServiceManager
 
 import cons
 
+LINKS = {'megaupload.com': [('http://www.megaupload.com/?d=TF6TEHRR', 'D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 191, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=ERLE5HJ6', 'D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 191, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=9B8YV60U', 'D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 169, 'MB', 'AnonymousMegaupload')], 'rapidshare.com': [('http://rapidshare.com/files/158180946/D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 195, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/158180528/D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 195, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/158180616/D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 172, 'MB', 'AnonymousRapidshare')]}
+
 class Gui(gtk.Window, ServiceManager):
 	""""""
 	def __init__(self):
@@ -67,7 +69,7 @@ class Gui(gtk.Window, ServiceManager):
 		self.vbox.pack_start(MenuBar([file_menu, view_menu, help_menu]), False)
 
 		#toolbar
-		download = "Add Downloads", gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_callback
+		download = "Add Downloads", gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_links
 		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.quit
 		clear = "Clear Complete", gtk.image_new_from_file(cons.ICON_CLEAR), self.not_implemented
 		up = "Move Up", gtk.image_new_from_file(cons.ICON_UP), self.not_implemented
@@ -77,8 +79,9 @@ class Gui(gtk.Window, ServiceManager):
 		self.vbox.pack_start(Toolbar([download, upload, clear, None, up, down, None, start, stop]), False)
 		
 		#trees
-		self.downloads = Tree(self.get_plugin, "No Downloads Active.")
-		self.uploads = Tree(self.get_plugin, "No Uploads Active.")
+		self.downloads = Tree(self.download_manager.get_files)
+		#self.uploads = Tree(self.get_plugin, "No Uploads Active.")
+		self.uploads = gtk.VBox()
 		
 		#pane
 		self.pane = gtk.VPaned()
@@ -93,27 +96,16 @@ class Gui(gtk.Window, ServiceManager):
 		#trayicon
 		tray_menu = [menu_preferences, menu_about, None, menu_quit]
 		self.tray_icon = TrayIcon(self.show, self.hide, tray_menu)
-		
-	def start(self, button):
-		"""Implementado solo para descargas"""
-		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
-		for path in paths:
-			print "start", self.downloads.start_item(model.get_iter(path))
-
-	def stop(self, button):
-		"""Implementado solo para descargas"""
-		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
-		for path in paths:
-			print "stop", self.downloads.stop_item(model.get_iter(path))
+		#self.add_packages(LINKS)
 		
 	def not_implemented(self, widget):
 		""""""
-		w = Message(cons.SEVERITY_WARNING, "Not Implemented!", "The Functionality you are trying to use is not implemented yet.")
+		w = Message(cons.SEVERITY_WARNING, "Not Implemented!", "The functionality you are trying to use is not implemented yet.")
 	
 	def resize_pane(self, checkbox):
 		""""""
 		if checkbox.get_active():
-			self.pane.set_position(self.pane.get_property("max-position"))
+			self.pane.set_position(self.get_size()[1])
 		else:
 			self.pane.set_position(-1)
 		
@@ -121,12 +113,37 @@ class Gui(gtk.Window, ServiceManager):
 		""""""
 		webbrowser.open("http://cusl3-tucan.forja.rediris.es/")
 		
-	def add_callback(self, button):
+	def add_links(self, button):
 		""""""
-		i = InputLinks(self.filter_service, self.link_check, self.downloads.add_package)
+		i = InputLinks(self.filter_service, self.link_check, self.add_packages)
+		
+	def add_packages(self, links):
+		""""""
+		for package_name, package_links in self.download_manager.create_packages(links):
+			self.downloads.add_package(package_name, package_links)
+			
+	def start(self, button):
+		"""Implementado solo para descargas"""
+		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
+		if len(paths) > 0:
+			if len(paths[0]) > 1:
+				print "start", self.download_manager.start(model.get_value(model.get_iter(paths[0]), 3))
+			else:
+				print "start package", paths[0]
+
+	def stop(self, button):
+		"""Implementado solo para descargas"""
+		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
+		if len(paths) > 0:
+			if len(paths[0]) > 1:
+				print "stop", self.download_manager.stop(model.get_value(model.get_iter(paths[0]), 3))
+			else:
+				print "stop package", paths[0]
 
 	def quit(self, dialog=None, response=None):
 		""""""
+		self.hide()
+		self.stop_all()
 		gtk.main_quit()
 	
 if __name__ == "__main__":

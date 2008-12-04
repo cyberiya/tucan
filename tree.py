@@ -29,7 +29,7 @@ import cons
 
 class Tree(gtk.VBox):
 	""""""
-	def __init__(self, get_plugin, text):
+	def __init__(self, get_files):
 		""""""
 		gtk.VBox.__init__(self)
 		scroll = gtk.ScrolledWindow()
@@ -38,7 +38,7 @@ class Tree(gtk.VBox):
 		scroll.add(self.treeview)
 		self.pack_start(scroll)
 
-		self.get_plugin = get_plugin
+		self.get_files = get_files
 
 		self.treeview.set_rules_hint(True)
 		self.treeview.set_headers_visible(False)
@@ -51,9 +51,9 @@ class Tree(gtk.VBox):
 		self.treeview.append_column(tree_icon)
 				  
 		tree_name = gtk.TreeViewColumn('Name')
-		tree_name.set_max_width(300)
+		tree_name.set_max_width(350)
 		name_cell = gtk.CellRendererText()
-		tree_name.pack_start(name_cell, False)
+		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 3)
 		self.treeview.append_column(tree_name)
 		
@@ -97,97 +97,83 @@ class Tree(gtk.VBox):
 		
 		#icons
 		self.package_icon = self.treeview.render_icon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_MENU)
-		self.service_icon = self.treeview.render_icon(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
+		self.active_service_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_MENU)
+		self.unactive_service_icon = self.treeview.render_icon(gtk.STOCK_NO, gtk.ICON_SIZE_MENU)
 		self.correct_icon = self.treeview.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
 		self.failed_icon = self.treeview.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
 		self.wait_icon = self.treeview.render_icon(gtk.STOCK_REFRESH, gtk.ICON_SIZE_MENU)
 		self.active_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_PLAY, gtk.ICON_SIZE_MENU)
 		self.pending_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_MENU)
 		self.stoped_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_STOP, gtk.ICON_SIZE_MENU)
+		self.icons = {cons.STATUS_CORRECT: self.correct_icon, cons.STATUS_ERROR: self.failed_icon, cons.STATUS_WAIT: self.wait_icon, cons.STATUS_ACTIVE: self.active_icon, cons.STATUS_PEND: self.pending_icon, cons.STATUS_STOP: self.stoped_icon}
 		
 		self.status_bar = gtk.Statusbar()
 		self.status_bar.set_has_resize_grip(False)
 		self.pack_start(self.status_bar, False)
-		self.status_bar.push(self.status_bar.get_context_id(""), "\t" + text)
-		self.add_package({'rapidshare.com': [('http://rapidshare.com/files/151319465/D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part1.rar', 100, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319467/D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part2.rar', 100, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319554/D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part3.rar', 100, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319448/D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part4.rar', 100, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319452/D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part5.rar', 100, 'MB', 'PremiumRapidshare'), ('http://rapidshare.com/files/151319357/D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 'D.S03E02.0TV.cHoPPaHoLiK.part6.rar', 100, 'MB', 'PremiumRapidshare')]}, "D.S03E02.0TV.cHoPPaHoLiK")
-		
-	def add_package(self, dict, name):
-		"""TreeStore(icon, status, link/path, file_name, progress, progress_visible, current_size, total_size, speed, time, plugin/services)"""
-		package_size = PackageValue()
-		store = self.treeview.get_model()
-		package_iter = store.append(None, [self.package_icon, cons.STATUS_PEND, "/home/crak/downloads/", name, 0, True, None, None, None, None, str(dict.keys())])
-		for service, links in dict.items():
-			service_iter = store.append(package_iter, [self.service_icon, cons.STATUS_PEND, None, service, 0, False, None, None, None, None, None])
-			for link in links:
-				package_size.update(link[1], link[2], link[3])
-				store.append(service_iter, [self.pending_icon, cons.STATUS_PEND, link[0], link[1], 0, True, None, str(link[2])+link[3], None, None, link[4]])
-		store.set_value(package_iter, 7, package_size.get())
-		self.treeview.expand_all()
-		
-	def start_item(self, iter):
-		""""""
+		self.status_bar.push(self.status_bar.get_context_id(""), "\t" + "No Downloads Active.")
+		self.updating = False
+
+	def add_package(self, package_name, package):
+		"""
+		TreeStore(icon, status, path, name, progress, progress_visible, current_size, total_size, speed, time, services)
+		"""
+		package_size = 0
 		model = self.treeview.get_model()
-		if not model.iter_has_child(iter):
-			link = model.get_value(iter, 2)
-			name = model.get_value(iter, 3)
-			plugin_name = model.get_value(iter, 10)
-			if self.get_plugin(None, plugin_name)[1].add_download(link, name):
-				gobject.timeout_add(500, self.update, iter)
-				return True
-	
-	def stop_item(self, iter):
-		""""""
-		model = self.treeview.get_model()
-		if not model.iter_has_child(iter):
-			name = model.get_value(iter, 3)
-			plugin_name = model.get_value(iter, 10)
-			if self.get_plugin(None, plugin_name)[1].stop_download(name):
-				return True
+		package_iter = model.append(None, [self.package_icon, cons.STATUS_PEND, None, package_name, 0, True, None, None, None, None, None])
+		for item in package:
+			package_size += item[3]
+			item_iter = model.append(package_iter, [self.pending_icon, cons.STATUS_PEND, None, item[1], 0, True, None, str(item[3])+item[4], None, None, str(item[2])])
+			self.treeview.expand_to_path(model.get_path(item_iter))
+			for link in item[0]:
+				link_iter = model.append(item_iter, [self.unactive_service_icon, cons.STATUS_PEND, None, link, 0, False, None, None, None, None, item[5][item[0].index(link)]])
+		model.set_value(package_iter, 7, str(package_size)+cons.UNIT_MB)
+		if not self.updating:
+			self.updating = True
+			gobject.timeout_add(2000, self.update)
+		return package_iter
 		
-	def update(self, iter):
-		""""""
-		result = True
-		model = self.treeview.get_model()
-		link = model.get_value(iter, 2)
-		name = model.get_value(iter, 3)
-		plugin_name = model.get_value(iter, 10)
-		status, progress, size, unit, speed, time = self.get_plugin(None, plugin_name)[1].get_status(name)
-		print status, progress, size, unit, speed, time
-		if status == cons.STATUS_PEND:
-			icon = self.pending_icon
-		elif status == cons.STATUS_WAIT:
-			icon = self.wait_icon
-			size = None
-			speed = None
-			time = str(time) + " seconds"
-		elif status == cons.STATUS_ACTIVE:
-			icon = self.active_icon
-			size = str(size)+unit
-			time = self.calculate_time(time)
-		elif status == cons.STATUS_STOP:
-			icon = self.stoped_icon
-			progress = 0
-			time = None
-			size = None
-			speed = None
-			result = False
-		elif status == cons.STATUS_CORRECT:
-			icon = self.correct_icon
-			progress = 100
-			size = str(size)+unit
-			time = self.calculate_time(time)
-			speed = None
-			result = False
-		else:
-			icon = self.failed_icon
-			progress = 0
-			time = None
-			size = None
-			speed = None
-			result = False
-		model.set(iter, 0, icon, 1, status, 4, progress, 6, size, 8, speed, 9, time)
-		return result
-		
+	def update(self):
+		"""(icon, status, path, name, progress, progress_visible, current_size, total_size, speed, time, services)"""
+		files = self.get_files()
+		if len(files) > 0:
+			model = self.treeview.get_model()
+			package_iter = model.get_iter_root()
+			while package_iter:
+				file_iter = model.iter_children(package_iter)
+				#package_status = model.set_value(package_iter, 0)
+				package_progress = 0
+				package_actual_size = 0
+				package_total_size = 0
+				package_speed = 0
+				while file_iter:
+					name = model.get_value(file_iter, 3)
+					for file in files:
+						if file.name == name:
+							model.set_value(file_iter, 0, self.icons[file.status])
+							model.set_value(file_iter, 1, file.status)
+							model.set_value(file_iter, 4, file.progress)
+							package_progress += file.progress
+							model.set_value(file_iter, 6, str(file.actual_size)+file.size_unit)
+							package_actual_size += file.actual_size
+							model.set_value(file_iter, 7, str(file.total_size)+file.size_unit)
+							package_total_size += file.total_size
+							model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
+							package_speed += file.speed
+							model.set_value(file_iter, 9, self.calculate_time(file.time))
+							link_iter = model.iter_children(file_iter)
+							while link_iter:
+								for tmp_link in file.links:
+									if ((tmp_link.url == model.get_value(link_iter, 3)) and (tmp_link.active)):
+										model.set_value(link_iter, 0, self.active_service_icon)
+								link_iter = model.iter_next(link_iter)
+					file_iter = model.iter_next(file_iter)
+					model.set_value(package_iter, 4, int(package_progress/model.iter_n_children(package_iter)))
+					model.set_value(package_iter, 6, str(package_actual_size)+cons.UNIT_MB)
+					#model.set_value(package_iter, 7, str(package_total_size)+cons.UNIT_MB)
+					model.set_value(package_iter, 8, str(package_speed)+cons.UNIT_SPEED)
+				package_iter = model.iter_next(package_iter)
+		return True
+
 	def calculate_time(self, time):
 		""""""
 		result = None
@@ -207,22 +193,3 @@ class Tree(gtk.VBox):
 		else:
 			result = str(seconds) + "s"
 		return result
-		
-class PackageValue:
-	""""""
-	def __init__(self):
-		""""""
-		self.links = []
-		self.value = 0
-		self.value_unit = None
-		
-	def update(self, name, value, unit):
-		""""""
-		if not name in self.links:
-			self.links.append(name)
-			self.value += value
-			self.value_unit = unit
-		
-	def get(self):
-		""""""
-		return str(self.value) + self.value_unit

@@ -34,55 +34,55 @@ BUFFER_SIZE = 1024
 URL = ""
 
 class Captcha:
-    """"""
-    def __init__(self, url):
 	""""""
-	self.url = url
-	self.link = None
-	cont = 0
-	while not self.link and cont < 10:
-	    self.get_link()
-	    cont += 1
-	print self.link
+	def __init__(self, url):
+		""""""
+		self.url = url
+		self.link = None
+		cont = 0
+		while not self.link and cont < 10:
+			self.get_link()
+			cont += 1
+		print self.link
 
-    def get_link(self):
-	""""""
-	c_parser = CaptchaParser(self.url)
-	handle = urllib2.urlopen(urllib2.Request(c_parser.form_action + c_parser.captcha))
-	tes = Tesseract(handle.read())
-	handle.close()
-	self.captcha = tes.get_captcha(3)
-	if self.captcha:
-	    form = {"d": c_parser.form_d, "imagecode": c_parser.form_imagecode, "megavar": c_parser.form_megavar, "imagestring" : self.captcha.strip()}
-	    data = urllib.urlencode(form)
-	    handle = urllib2.urlopen(c_parser.form_action, data)
-	    u_parser = UrlParser(handle.read())
-	    handle.close()
-	    if  u_parser.tmp_url:
-		self.link = u_parser.get_url()
+	def get_link(self):
+		""""""
+		c_parser = CaptchaParser(self.url)
+		handle = urllib2.urlopen(urllib2.Request(c_parser.form_action + c_parser.captcha))
+		tes = Tesseract(handle.read())
+		handle.close()
+		self.captcha = tes.get_captcha(3)
+		if self.captcha:
+			form = {"d": c_parser.form_d, "imagecode": c_parser.form_imagecode, "megavar": c_parser.form_megavar, "imagestring" : self.captcha.strip()}
+			data = urllib.urlencode(form)
+			handle = urllib2.urlopen(c_parser.form_action, data)
+			u_parser = UrlParser(handle.read())
+			handle.close()
+			if  u_parser.tmp_url:
+				self.link = u_parser.get_url()
 
 if __name__ == "__main__":
 
-    socket.setdefaulttimeout(15)
+	socket.setdefaulttimeout(15)
 
-    c = Captcha(URL)
-    time.sleep(45)
-    if c.link:
-	print c.link.split("/").pop()
-	f = file(c.link.split("/").pop() , "w")
-	handle = urllib2.urlopen(c.link)
-	
-	elapsed = time.time()
-	
-	data = handle.read(BUFFER_SIZE)
-	f.write(data)
+	c = Captcha(URL)
+	time.sleep(45)
+	if c.link:
+		print c.link.split("/").pop()
+		f = file(c.link.split("/").pop() , "w")
+		handle = urllib2.urlopen(c.link)
 		
-	while len(data) > 0:
-	    try:
+		elapsed = time.time()
+		
 		data = handle.read(BUFFER_SIZE)
 		f.write(data)
-	    except socket.timeout:
-		print "timed out"
-		break
-	print int((time.time() - elapsed)/60), "minutos"
-	f.close()
+			
+		while len(data) > 0:
+			try:
+				data = handle.read(BUFFER_SIZE)
+				f.write(data)
+			except socket.timeout:
+				print "timed out"
+				break
+		print int((time.time() - elapsed)/60), "minutos"
+		f.close()

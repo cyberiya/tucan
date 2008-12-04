@@ -87,7 +87,7 @@ class Plugin(object):
 				progress = 0
 				speed = 0
 				time = int(th.time_remaining)
-			result = th.status, progress, actual_size, unit, str(speed)+"KB/s", time
+			result = th.status, progress, actual_size, unit, speed, time
 		return result
 
 	def check_link(self, url):
@@ -101,7 +101,7 @@ class Plugin(object):
 			
 	def get_size(self, num):
 		""""""
-		result = 0, cons.UNIT_KB
+		result = 0, cons.UNIT_MB
 		tmp = int(num/1024)
 		if  tmp > 0:
 			result = tmp, cons.UNIT_KB

@@ -22,7 +22,7 @@
 import sys
 
 # proyect constants
-TUCAN_VERSION = "0.1 pre-alpha"
+TUCAN_VERSION = "0.2 alpha"
 
 # status constants
 STATUS_PEND = "pending"
@@ -41,6 +41,9 @@ SEVERITY_ERROR = "error"
 UNIT_KB = "KB"
 UNIT_MB = "MB"
 UNIT_GB = "GB"
+
+#speed unit constant
+UNIT_SPEED = "KB/s"
 
 #time constants
 MINUTE = 60
