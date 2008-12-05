@@ -24,10 +24,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-import re
 import HTMLParser
-
-from message import Message
 
 import cons
 
@@ -46,7 +43,7 @@ class ClipParser(HTMLParser.HTMLParser):
 
 class InputLinks(gtk.Dialog):
 	""""""
-	def __init__(self, sort, check, add):
+	def __init__(self, sort, check, packages):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_DOWNLOAD)
@@ -58,7 +55,7 @@ class InputLinks(gtk.Dialog):
 		
 		self.sort_links = sort
 		self.check_links = check
-		self.packages = add
+		self.packages = packages
 		
 		#textview
 		frame = gtk.Frame("Paste links here:")
@@ -114,6 +111,11 @@ class InputLinks(gtk.Dialog):
 		tree_name.add_attribute(name_cell, 'text', 2)
 		self.treeview.append_column(tree_name)
 		
+		#advanced checkbutton
+		self.advanced_button = gtk.CheckButton("Show advanced Package configuration")
+		self.advanced_button.set_active(True)
+		self.vbox.pack_start(self.advanced_button, False)
+		
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
 		add_button = gtk.Button(None, gtk.STOCK_ADD)
@@ -158,7 +160,8 @@ class InputLinks(gtk.Dialog):
 					if not value[1] == value[2]:
 						tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
 		if not tmp == {}:
-			self.packages(tmp)
+			self.hide()
+			self.packages(tmp, self.advanced_button.get_active())
 		self.close()
 	
 	def check(self, button):
@@ -198,3 +201,6 @@ class InputLinks(gtk.Dialog):
 		""""""
 		self.destroy()
 	
+if __name__ == "__main__":
+	x = InputLinks(None, None, None)
+	gtk.main()

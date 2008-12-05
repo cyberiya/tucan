@@ -20,6 +20,7 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import os
 import webbrowser
 import time
 
@@ -35,10 +36,13 @@ from menu_bar import MenuBar
 from toolbar import Toolbar
 from tree import Tree
 from input_links import InputLinks
+from advanced_packages import AdvancedPackages
 
 from service_manager import ServiceManager
 
 import cons
+
+DEFAULT_PATH = "/home/crak/downloads/"
 
 LINKS = {'megaupload.com': [('http://www.megaupload.com/?d=TF6TEHRR', 'D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 191, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=ERLE5HJ6', 'D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 191, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=9B8YV60U', 'D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 169, 'MB', 'AnonymousMegaupload')], 'rapidshare.com': [('http://rapidshare.com/files/158180946/D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 195, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/158180528/D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 195, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/158180616/D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 172, 'MB', 'AnonymousRapidshare')]}
 
@@ -115,12 +119,41 @@ class Gui(gtk.Window, ServiceManager):
 		
 	def add_links(self, button):
 		""""""
-		i = InputLinks(self.filter_service, self.link_check, self.add_packages)
+		i = InputLinks(self.filter_service, self.link_check, self.manage_packages)
 		
-	def add_packages(self, links):
+	def manage_packages(self, links, advanced):
 		""""""
-		for package_name, package_links in self.download_manager.create_packages(links):
-			self.downloads.add_package(package_name, package_links)
+		packages = self.create_packages(links)
+		tmp_packages = []
+		packages_info = []
+		if advanced:
+			w = AdvancedPackages(DEFAULT_PATH, packages)
+			packages_info = w.packages
+		if not len(packages_info) > 0:
+			packages_info = [(DEFAULT_PATH, name, None) for name, package_files in packages]
+		#create directories and password files
+		for info in packages_info:
+			package_path = info[0] + info[1] + "/"
+			i = 1
+			while os.access(package_path, os.F_OK):
+				package_path = info[0] + info[1] + "_" + str(i) + "/"
+				i +=1
+			os.mkdir(package_path)
+			if info[2]:
+				f = open(package_path + "password.txt", "w")
+				f.write(info[2] + "\n")
+		#add packages to gui and manager
+		for package_name, package_downloads in packages:
+			info = packages_info[package_name.index(package_name)]
+			package_name = info[1]
+			package_path = info[0] + info[1] + "/"
+			self.downloads.add_package(package_name, package_path, package_downloads)
+			for download in package_downloads:
+				tmp = []
+				for service in download[2]:
+					plugin_name, plugin = self.get_plugin(service)
+					tmp.append((download[0][download[2].index(service)], plugin))
+				self.download_manager.add(package_path, download[1], tmp, download[3], download[4])
 			
 	def start(self, button):
 		"""Implementado solo para descargas"""

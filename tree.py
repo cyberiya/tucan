@@ -96,7 +96,7 @@ class Tree(gtk.VBox):
 		self.treeview.append_column(tree_plugins)
 		
 		#icons
-		self.package_icon = self.treeview.render_icon(gtk.STOCK_DIRECTORY, gtk.ICON_SIZE_MENU)
+		self.package_icon = self.treeview.render_icon(gtk.STOCK_OPEN, gtk.ICON_SIZE_MENU)
 		self.active_service_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_MENU)
 		self.unactive_service_icon = self.treeview.render_icon(gtk.STOCK_NO, gtk.ICON_SIZE_MENU)
 		self.correct_icon = self.treeview.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
@@ -113,13 +113,13 @@ class Tree(gtk.VBox):
 		self.status_bar.push(self.status_bar.get_context_id(""), "\t" + "No Downloads Active.")
 		self.updating = False
 
-	def add_package(self, package_name, package):
+	def add_package(self, package_name, package_path, package):
 		"""
 		TreeStore(icon, status, path, name, progress, progress_visible, current_size, total_size, speed, time, services)
 		"""
 		package_size = 0
 		model = self.treeview.get_model()
-		package_iter = model.append(None, [self.package_icon, cons.STATUS_PEND, None, package_name, 0, True, None, None, None, None, None])
+		package_iter = model.append(None, [self.package_icon, cons.STATUS_PEND, None, package_name, 0, True, None, None, None, None, package_path])
 		for item in package:
 			package_size += item[3]
 			item_iter = model.append(package_iter, [self.pending_icon, cons.STATUS_PEND, None, item[1], 0, True, None, str(item[3])+item[4], None, None, str(item[2])])

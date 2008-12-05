@@ -21,7 +21,6 @@
 ###############################################################################
 
 import threading
-import re
 
 import cons
 
@@ -37,8 +36,9 @@ class Link:
 
 class DownloadItem:
 	""""""
-	def __init__(self, name, links, total_size, size_unit):
+	def __init__(self, path, name, links, total_size, size_unit):
 		"""links = [(False, url, plugin)]"""
+		self.path = path
 		self.name = name
 		self.links = []
 		for url, plugin in links:
@@ -79,75 +79,13 @@ class DownloadManager:
 				result.append(download)
 		self.update()
 		return result
-		
-	def create_packages(self, dict):
-		""""""
-		packages = []
-		files = []
-		for service, links in dict.items():
-			for link in links:
-				found = False
-				for tmp_link in files:
-					if link[1] == tmp_link[1]:
-						found = True
-						if not service in tmp_link[2]:
-							tmp_link[2].append(service)
-							tmp_link[0].append(link[0])
-							tmp_link[5].append(link[4])
-				if not found:
-					files.append(([link[0]], link[1], [service], link[2], link[3], [link[4]]))
-		while len(files) > 0:
-			tmp_name = []
-			first = files[0]
-			others = files[1:]
-			for link in others:
-				chars = re.split("[0-9]+", link[1])
-				nums = re.split("[^0-9]+", link[1])
-				tmp = ""
-				for i in chars:
-					if tmp+i == first[1][0:len(tmp+i)]:
-						tmp += i
-						for j in nums:
-							if tmp+j == first[1][0:len(tmp+j)]:
-								tmp += j
-				tmp_name.append(tmp)
-			final_name = ""
-			for name in tmp_name:
-				if len(name) > len(final_name):
-					final_name = name
-			if len(final_name) > 0:
-				packages.append((final_name, [first]))
-				del files[files.index(first)]
-				tmp_list = []
-				for link in files:
-					if final_name in link[1]:
-						tmp_list.append(link)
-				for package_name, package_files in packages:
-					if package_name == final_name:
-						package_files += tmp_list
-				for i in tmp_list:
-					del files[files.index(i)]
-			else:
-				alone_name = first[1]
-				alone_name = alone_name.split(".")
-				alone_name.pop()
-				alone_name = ".".join(alone_name)
-				packages.append((alone_name, [first]))
-				del files[files.index(first)]
-		for package_name, package_downloads in packages:
-			for download in package_downloads:
-				tmp = []
-				for service in download[2]:
-					plugin_name, plugin = self.get_plugin(service)
-					tmp.append((download[0][download[2].index(service)], plugin))
-				self.add(download[1], tmp, download[3], download[4])
-		return packages
 
-	def add(self, name, links, total_size, size_unit):
+	def add(self, path, name, links, total_size, size_unit):
 		""""""
 		if ((name not in [tmp.name for tmp in self.active_downloads]) and (not name in [tmp.name for tmp in self.pending_downloads])):
-			self.pending_downloads.append(DownloadItem(name, links, total_size, size_unit))
-			self.scheduler()
+			self.pending_downloads.append(DownloadItem(path, name, links, total_size, size_unit))
+			threading.Timer(1, self.scheduler).start()
+			self.scheduler
 			return True
 	
 	def remove(self, name):
@@ -164,7 +102,7 @@ class DownloadManager:
 		for download in self.pending_downloads:
 			if name == download.name:
 				for link in download.links:
-					if link.plugin.add_download(link.url, download.name):
+					if link.plugin.add_download(download.path, link.url, download.name):
 						link.active = True
 						self.active_downloads.append(download)
 						self.pending_downloads.remove(download)
@@ -190,7 +128,7 @@ class DownloadManager:
 			if plugin:
 				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name)
 				download.update(status, progress, actual_size, unit, speed, time)
-				print status, progress, actual_size, unit, speed, time
+				print download.name, status, progress, actual_size, unit, speed, time
 				if ((status == cons.STATUS_STOP) or (status == cons.STATUS_ERROR)):
 					link.active = False
 					link.progress = 0
