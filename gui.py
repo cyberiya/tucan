@@ -134,17 +134,15 @@ class Gui(gtk.Window, ServiceManager):
 		#create directories and password files
 		for info in packages_info:
 			package_path = info[0] + info[1] + "/"
-			i = 1
-			while os.access(package_path, os.F_OK):
-				package_path = info[0] + info[1] + "_" + str(i) + "/"
-				i +=1
-			os.mkdir(package_path)
+			if not os.access(package_path, os.F_OK):
+				os.mkdir(package_path)
 			if info[2]:
 				f = open(package_path + "password.txt", "w")
 				f.write(info[2] + "\n")
+				f.close()
 		#add packages to gui and manager
 		for package_name, package_downloads in packages:
-			info = packages_info[package_name.index(package_name)]
+			info = packages_info[packages.index((package_name, package_downloads))]
 			package_name = info[1]
 			package_path = info[0] + info[1] + "/"
 			self.downloads.add_package(package_name, package_path, package_downloads)
