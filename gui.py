@@ -42,7 +42,7 @@ from service_manager import ServiceManager
 
 import cons
 
-DEFAULT_PATH = "/home/crak/downloads/"
+DEFAULT_PATH = >>> os.path.expanduser("~") + "/"
 
 LINKS = {'megaupload.com': [('http://www.megaupload.com/?d=TF6TEHRR', 'D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 191, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=ERLE5HJ6', 'D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 191, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=9B8YV60U', 'D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 169, 'MB', 'AnonymousMegaupload')], 'rapidshare.com': [('http://rapidshare.com/files/158180946/D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 195, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/158180528/D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 195, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/158180616/D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 172, 'MB', 'AnonymousRapidshare')]}
 
@@ -134,7 +134,7 @@ class Gui(gtk.Window, ServiceManager):
 		#create directories and password files
 		for info in packages_info:
 			package_path = info[0] + info[1] + "/"
-			if not os.access(package_path, os.F_OK):
+			if not os.path.exists(package_path):
 				os.mkdir(package_path)
 			if info[2]:
 				f = open(package_path + "password.txt", "w")
