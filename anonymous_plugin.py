@@ -48,14 +48,14 @@ class AnonymousPlugin(Plugin):
 				
 	def stop_download(self, file_name):
 		""""""
-		if self.download_slots < self.max_downloads:
+		if self.download_slots <= self.max_downloads:
 			if self._stop_download(file_name):
 				self.download_slots += 1
 				return True
 		
 	def stop_upload(self, file_name):
 		""""""
-		if self.upload_slots < self.max_uploads:
+		if self.upload_slots <= self.max_uploads:
 			if self._stop_upload(file_name):
 				self.upload_slots += 1
 				return True
@@ -67,6 +67,6 @@ class AnonymousPlugin(Plugin):
 			
 	def return_download_slot(self):
 		""""""
-		if self.download_slots < self.max_downloads:
+		if self.download_slots <= self.max_downloads:
 			self.download_slots += 1
 			return True
