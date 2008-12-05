@@ -112,8 +112,8 @@ class InputLinks(gtk.Dialog):
 		self.treeview.append_column(tree_name)
 		
 		#advanced checkbutton
-		self.advanced_button = gtk.CheckButton("Show advanced Package configuration")
-		self.advanced_button.set_active(True)
+		self.advanced_button = gtk.CheckButton("Show advanced Package configuration.")
+		#self.advanced_button.set_active(True)
 		self.vbox.pack_start(self.advanced_button, False)
 		
 		#action area
