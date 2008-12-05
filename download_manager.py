@@ -136,6 +136,7 @@ class DownloadManager:
 					self.pending_downloads.append(download)
 					self.active_downloads.remove(download)
 				elif status == cons.STATUS_CORRECT:
+					link.plugin.return_download_slot()
 					self.complete_downloads.append(download)
 					self.active_downloads.remove(download)
 
