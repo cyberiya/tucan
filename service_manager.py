@@ -21,6 +21,7 @@
 ###############################################################################
 
 import urlparse
+import re
 
 import cons
 
@@ -102,7 +103,63 @@ class ServiceManager:
 			size = int(size/1024)
 			unit = cons.UNIT_MB
 		return name, size, unit, plugin_name
-	
+
+	def create_packages(self, dict):
+		""""""
+		packages = []
+		files = []
+		for service, links in dict.items():
+			for link in links:
+				found = False
+				for tmp_link in files:
+					if link[1] == tmp_link[1]:
+						found = True
+						if not service in tmp_link[2]:
+							tmp_link[2].append(service)
+							tmp_link[0].append(link[0])
+							tmp_link[5].append(link[4])
+				if not found:
+					files.append(([link[0]], link[1], [service], link[2], link[3], [link[4]]))
+		while len(files) > 0:
+			tmp_name = []
+			first = files[0]
+			others = files[1:]
+			for link in others:
+				chars = re.split("[0-9]+", link[1])
+				nums = re.split("[^0-9]+", link[1])
+				tmp = ""
+				for i in chars:
+					if tmp+i == first[1][0:len(tmp+i)]:
+						tmp += i
+						for j in nums:
+							if tmp+j == first[1][0:len(tmp+j)]:
+								tmp += j
+				tmp_name.append(tmp)
+			final_name = ""
+			for name in tmp_name:
+				if len(name) > len(final_name):
+					final_name = name
+			if len(final_name) > 0:
+				packages.append((final_name, [first]))
+				del files[files.index(first)]
+				tmp_list = []
+				for link in files:
+					if final_name in link[1]:
+						tmp_list.append(link)
+				for package_name, package_files in packages:
+					if package_name == final_name:
+						package_files += tmp_list
+				for i in tmp_list:
+					del files[files.index(i)]
+			else:
+				alone_name = first[1]
+				alone_name = alone_name.split(".")
+				alone_name.pop()
+				alone_name = ".".join(alone_name)
+				packages.append((alone_name, [first]))
+				del files[files.index(first)]
+		return packages
+
 	def stop_all(self):
 		""""""
 		self.download_manager.quit()
@@ -113,7 +170,7 @@ class ServiceManager:
 		plugin = self.anonymous_plugins["AnonymousMegaupload"]
 		link = "http://www.megaupload.com/?d=QNVY9GXH"
 		name, size, size_unit = plugin.check_link(link)
-		print plugin.add_download(link, name)
+		print plugin.add_download("/home/crak/downloads/", link, name)
 		while len(plugin.active_downloads) > 0:
 			print plugin.get_status(name)
 			time.sleep(5)

@@ -74,13 +74,13 @@ class AnonymousMegaupload(AnonymousPlugin):
 		self.__author__ = AUTHOR
 		self.service = SERVICE
 
-	def add_download(self, link, file_name):
+	def add_download(self, path, link, file_name):
 		""""""
 		#parsea el link para obtener el link final y saltate los captchas antes de llamar a download()
 		if self.download_avaible():
 			parser = CaptchaForm(link)
 			if parser.link:
-				return self.download(parser.link, file_name, 45)
+				return self.download(path, parser.link, file_name, 45)
 
 	def check_link(self, url):
 		""""""

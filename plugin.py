@@ -35,10 +35,10 @@ class Plugin(object):
 		self.active_uploads = {}
 		
 
-	def _download(self, url, file_name, wait=None, cookie=None):
+	def _download(self, path, url, file_name, wait=None, cookie=None):
 		""""""
 		if not file_name in self.active_downloads:
-			th = Downloader(url, file_name, wait, cookie)
+			th = Downloader(path, url, file_name, wait, cookie)
 			th.start()
 			self.active_downloads[file_name] = th
 			return True

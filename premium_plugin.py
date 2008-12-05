@@ -33,9 +33,9 @@ class PremiumPlugin(Plugin):
 		self.cookie = cookielib.MozillaCookieJar()
 		self.cookie.load("plugins/rapidshare.cookie")
 		
-	def add_download(self, link, file_name):
+	def add_download(self, path, link, file_name):
 		""""""
-		return self._download(link, file_name, None, self.cookie)
+		return self._download(path, link, file_name, None, self.cookie)
 	
 	def stop_download(self, file_name):
 		""""""
