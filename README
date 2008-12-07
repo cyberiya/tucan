@@ -1,0 +1,66 @@
+=======================================
+ Tucan
+===================
+
+ - Tucan es una aplicación para gestionar de forma totalmente automática
+   descargas y subidas en webs como:
+
+   - http://rapidshare.com/
+   - http://megaupload.com/
+   - (...)
+
+
+===================
+ Características:
+=========
+ 
+ - Escrito en python.
+ - Interfaz gráfica escrita usando la librería pyGTK.
+ - Ligero.
+ - Multiplataforma.
+ - Fácilmente ampliable con plugins.
+ - Resolución de captchas (acceso anónimo de MegaUpload).
+ - Gestión de descargas y subidas con accesos anónimos
+      en RapidShare y MegaUpload.
+ - Gestión de descargas y subidas con accesos premium
+      en RapidShare y MegaUpload.
+ - Gestión de links intercambiables.
+
+ ... y muchas mas cosas ;)
+
+
+===================
+ Dependencias
+=========
+
+ - python 2.5 (o superior)
+
+ - módulos python:
+   - python-gtk2
+   - python-imaging (acceso anónimo de MegaUpload)
+
+ - OCR
+   - tesseract (acceso anónimo de MegaUpload)
+
+
+===================
+ Instalación
+=========
+
+ # TODO
+
+
+===================
+ Uso
+=========
+
+ - Teclear descomprimir y ejecutar:
+
+   $ python tucan.py
+
+===================
+ Links
+=========
+
+ - http://tucaneando.wordpress.com/
+ - http://cusl3-tucan.forja.rediris.es/
