@@ -25,6 +25,10 @@ pygtk.require('2.0')
 import gtk
 
 import HTMLParser
+import threading
+import time
+
+from message import Wait
 
 import cons
 
@@ -164,7 +168,13 @@ class InputLinks(gtk.Dialog):
 			self.packages(tmp, self.advanced_button.get_active())
 		self.close()
 	
-	def check(self, button):
+	def check(self, wait):
+		""""""
+		w = Wait("Checking links, please wait.", self)
+		th = threading.Thread(group=None, target=self.check_all, name=None, args=(w.destroy,))
+		th.start()
+		
+	def check_all(self, end_wait):
 		""""""
 		store = self.treeview.get_model()
 		store.clear()
@@ -196,6 +206,7 @@ class InputLinks(gtk.Dialog):
 						print file_name, size, size_unit, plugin
 						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin])
 					self.treeview.expand_row(store.get_path(service_iter), True)
+		end_wait[0]()
 		
 	def close(self, widget=None, other=None):
 		""""""

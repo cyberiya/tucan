@@ -23,8 +23,33 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 
 import cons
+
+class Wait(gtk.Window):
+	""""""
+	def __init__(self, message, parent):
+		""""""
+		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
+		self.set_transient_for(parent)
+		self.set_position(gtk.WIN_POS_CENTER)
+		self.set_resizable(False)
+		self.set_decorated(False)
+		self.set_size_request(300,100)
+		
+		self.progress = gtk.ProgressBar()
+		self.add(self.progress)
+		self.progress.set_text(message)
+		
+		self.show_all()
+
+		gobject.timeout_add(100, self.pulse)
+		
+	def pulse(self):
+		""""""
+		self.progress.pulse()
+		return True
 
 class Message(gtk.Dialog):
 	""""""
@@ -65,5 +90,5 @@ class Message(gtk.Dialog):
 		self.destroy()
 
 if __name__ == "__main__":
-	g = Message(cons.SEVERITY_WARNING, "Not Implemented!", "The Functionality you are trying to use is not implemented yet.")
+	g = Wait("Checking links, please wait.", None)
 	gtk.main()

@@ -100,8 +100,10 @@ class ServiceManager:
 		plugin_name, plugin = self.get_plugin(service)
 		name, size, unit = plugin.check_link(link)
 		if unit == cons.UNIT_KB:
-			size = int(size/1024)
-			unit = cons.UNIT_MB
+			tmp_size = int(size/1024)
+			if tmp_size > 0:
+				size = tmp_size
+				unit = cons.UNIT_MB
 		return name, size, unit, plugin_name
 
 	def create_packages(self, dict):
