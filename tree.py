@@ -118,15 +118,17 @@ class Tree(gtk.VBox):
 		TreeStore(icon, status, path, name, progress, progress_visible, current_size, total_size, speed, time, services)
 		"""
 		package_size = 0
+		package_unit = cons.UNIT_KB
 		model = self.treeview.get_model()
 		package_iter = model.append(None, [self.package_icon, cons.STATUS_PEND, None, package_name, 0, True, None, None, None, None, package_path])
 		for item in package:
 			package_size += item[3]
+			package_unit = item[4]
 			item_iter = model.append(package_iter, [self.pending_icon, cons.STATUS_PEND, None, item[1], 0, True, None, str(item[3])+item[4], None, None, str(item[2])])
 			self.treeview.expand_to_path(model.get_path(item_iter))
 			for link in item[0]:
 				link_iter = model.append(item_iter, [self.unactive_service_icon, cons.STATUS_PEND, None, link, 0, False, None, None, None, None, item[5][item[0].index(link)]])
-		model.set_value(package_iter, 7, str(package_size)+cons.UNIT_MB)
+		model.set_value(package_iter, 7, str(package_size)+package_unit)
 		if not self.updating:
 			self.updating = True
 			gobject.timeout_add(1000, self.update)
@@ -143,7 +145,7 @@ class Tree(gtk.VBox):
 				#package_status = model.set_value(package_iter, 0)
 				package_progress = 0
 				package_actual_size = 0
-				package_total_size = 0
+				package_unit = cons.UNIT_KB
 				package_speed = 0
 				while file_iter:
 					name = model.get_value(file_iter, 3)
@@ -155,22 +157,26 @@ class Tree(gtk.VBox):
 							package_progress += file.progress
 							model.set_value(file_iter, 6, str(file.actual_size)+file.size_unit)
 							package_actual_size += file.actual_size
+							package_unit = file.size_unit
 							model.set_value(file_iter, 7, str(file.total_size)+file.size_unit)
-							package_total_size += file.total_size
 							model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
 							package_speed += file.speed
 							model.set_value(file_iter, 9, self.calculate_time(file.time))
 							link_iter = model.iter_children(file_iter)
 							while link_iter:
 								for tmp_link in file.links:
-									if ((tmp_link.url == model.get_value(link_iter, 3)) and (tmp_link.active)):
-										model.set_value(link_iter, 0, self.active_service_icon)
+									if tmp_link.url == model.get_value(link_iter, 3):
+										service_icon = self.unactive_service_icon
+										if tmp_link.active:
+											service_icon = self.active_service_icon
+										model.set_value(link_iter, 0, service_icon)
 								link_iter = model.iter_next(link_iter)
-					file_iter = model.iter_next(file_iter)
+								
 					model.set_value(package_iter, 4, int(package_progress/model.iter_n_children(package_iter)))
-					model.set_value(package_iter, 6, str(package_actual_size)+cons.UNIT_MB)
-					#model.set_value(package_iter, 7, str(package_total_size)+cons.UNIT_MB)
+					model.set_value(package_iter, 6, str(package_actual_size)+package_unit)
 					model.set_value(package_iter, 8, str(package_speed)+cons.UNIT_SPEED)
+					
+					file_iter = model.iter_next(file_iter)
 				package_iter = model.iter_next(package_iter)
 		return True
 

@@ -101,7 +101,7 @@ class Plugin(object):
 			
 	def get_size(self, num):
 		""""""
-		result = 0, cons.UNIT_MB
+		result = 0, cons.UNIT_KB
 		tmp = int(num/1024)
 		if  tmp > 0:
 			result = tmp, cons.UNIT_KB

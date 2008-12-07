@@ -26,7 +26,6 @@ import gtk
 
 import HTMLParser
 import threading
-import time
 
 from message import Wait
 
