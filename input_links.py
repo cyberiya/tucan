@@ -206,7 +206,7 @@ class InputLinks(gtk.Dialog):
 						print file_name, size, size_unit, plugin
 						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin])
 					self.treeview.expand_row(store.get_path(service_iter), True)
-		end_wait[0]()
+		end_wait()
 		
 	def close(self, widget=None, other=None):
 		""""""
