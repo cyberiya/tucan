@@ -35,6 +35,7 @@ class Downloader(threading.Thread):
 	def __init__(self, path, url, file_name, wait=None, cookie=None):
 		""""""
 		threading.Thread.__init__(self)
+		self.status = cons.STATUS_PEND
 		self.path = path
 		self.url = url
 		self.file = file_name
@@ -44,9 +45,9 @@ class Downloader(threading.Thread):
 		self.time_remaining = 0
 		self.total_size = 0
 		self.actual_size = 0
+		self.speed = 0
 		self.tmp_time = 0
 		self.tmp_size = 0
-		self.status = cons.STATUS_PEND
 		if cookie:
 			urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)))
 		
@@ -78,18 +79,20 @@ class Downloader(threading.Thread):
 						self.status = cons.STATUS_CORRECT
 					else:
 						self.status = cons.STATUS_ERROR
-			except:
+			except e:
+				print "exception", e
 				f.close()
 				self.stop_flag = True
-				self.status = cons.STATUS_ERROR
+				self.status = cons.STATUS_PEND
 
 	def get_speed(self):
 		"""return int speed KB/s"""
 		elapsed_time = time.time() - self.tmp_time
 		size = self.actual_size - self.tmp_size
-		speed = int(float(size/1024)/float(elapsed_time))
-		if speed == 0:
-			speed = 1
-		self.tmp_time = time.time()
-		self.tmp_size = self.actual_size
-		return speed
+		if size > 0:
+			self.speed = int(float(size/1024)/float(elapsed_time))
+			if self.speed == 0:
+				self.speed = 1
+			self.tmp_time = time.time()
+			self.tmp_size = self.actual_size
+		return self.speed
