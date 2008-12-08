@@ -107,6 +107,8 @@ class DownloadManager:
 						self.active_downloads.append(download)
 						self.pending_downloads.remove(download)
 						return True
+					else:
+						download.status = cons.STATUS_PEND
 					
 	def stop(self, name):
 		""""""
