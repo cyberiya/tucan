@@ -82,7 +82,7 @@ class Downloader(threading.Thread):
 			except:
 				f.close()
 				self.stop_flag = True
-				self.status = cons.STATUS_PEND
+				self.status = cons.STATUS_ERROR
 
 	def get_speed(self):
 		"""return int speed KB/s"""
