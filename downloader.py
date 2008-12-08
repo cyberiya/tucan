@@ -45,7 +45,7 @@ class Downloader(threading.Thread):
 		self.time_remaining = 0
 		self.total_size = 0
 		self.actual_size = 0
-		self.speed = 0
+		self.speed = 1
 		self.tmp_time = 0
 		self.tmp_size = 0
 		if cookie:
@@ -91,8 +91,6 @@ class Downloader(threading.Thread):
 		size = self.actual_size - self.tmp_size
 		if size > 0:
 			self.speed = int(float(size/1024)/float(elapsed_time))
-			if self.speed == 0:
-				self.speed = 1
 			self.tmp_time = time.time()
 			self.tmp_size = self.actual_size
 		return self.speed
