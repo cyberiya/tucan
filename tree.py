@@ -160,9 +160,12 @@ class Tree(gtk.VBox):
 								package_actual_size += file.actual_size
 							model.set_value(file_iter, 7, str(file.total_size)+file.size_unit)
 							package_unit = file.size_unit
-							if file.speed > 0:
+							if file.speed > 1:
 								model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
 								package_speed += file.speed
+							if file.status == cons.STATUS_CORRECT:
+								if not file.time > 0:
+									file.time = 1
 							model.set_value(file_iter, 9, self.calculate_time(file.time))
 							link_iter = model.iter_children(file_iter)
 							while link_iter:
