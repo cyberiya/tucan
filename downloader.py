@@ -63,7 +63,6 @@ class Downloader(threading.Thread):
 			try:
 				handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER))
 				self.total_size = int(handle.info().getheader("Content-Length"))
-				self.time_remaining = 0
 				self.start_time = time.time()
 				self.status = cons.STATUS_ACTIVE
 				data = "None"
