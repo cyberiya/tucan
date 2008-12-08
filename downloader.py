@@ -28,7 +28,7 @@ import cons
 
 HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4"}
 
-BUFFER_SIZE = 1024
+BUFFER_SIZE = 4096
 
 class Downloader(threading.Thread):
 	""""""
@@ -79,7 +79,7 @@ class Downloader(threading.Thread):
 						self.status = cons.STATUS_CORRECT
 					else:
 						self.status = cons.STATUS_ERROR
-			except e:
+			except urllib2.HTTPError, e:
 				print "exception", e
 				f.close()
 				self.stop_flag = True
