@@ -80,6 +80,7 @@ class AnonymousRapidshare(AnonymousPlugin):
 			if parser.url:
 				return self.download(path, parser.url, file_name, parser.wait)
 			else:
+				self.add_wait()
 				print "Limit Exceded"
 		
 	def add_upload(self, file_name):
