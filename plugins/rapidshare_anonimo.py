@@ -35,6 +35,8 @@ SERVICE = "rapidshare.com"
 DOWNLOAD_SLOTS = 1
 UPLOAD_SLOTS = 1
 
+LIMIT_WAIT = 18000
+
 class DownloadFormParser(HTMLParser):
 	""""""
 	def __init__(self, url):
@@ -79,6 +81,8 @@ class AnonymousRapidshare(AnonymousPlugin):
 			parser = DownloadFormParser(link)
 			if parser.url:
 				return self.download(path, parser.url, file_name, parser.wait)
+			else:
+				print "Limit Exceded"
 		
 	def add_upload(self, file_name):
 		""""""

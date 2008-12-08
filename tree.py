@@ -158,7 +158,7 @@ class Tree(gtk.VBox):
 							if file.actual_size > 0:
 								model.set_value(file_iter, 6, str(file.actual_size)+file.size_unit)
 								package_actual_size += file.actual_size
-							model.set_value(file_iter, 7, str(file.total_size)+file.size_unit)
+							#model.set_value(file_iter, 7, str(file.total_size)+file.size_unit)
 							package_unit = file.size_unit
 							if file.speed > 1:
 								model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)

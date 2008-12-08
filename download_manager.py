@@ -40,10 +40,10 @@ class DownloadItem:
 		"""links = [(False, url, plugin)]"""
 		self.path = path
 		self.name = name
+		self.status = cons.STATUS_PEND
 		self.links = []
 		for url, plugin in links:
 			self.links.append(Link(url, plugin))
-		self.status = cons.STATUS_PEND
 		self.progress = 0
 		self.total_size = total_size
 		self.actual_size = 0
@@ -132,19 +132,20 @@ class DownloadManager:
 					plugin = link.plugin
 			if plugin:
 				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name)
-				download.update(status, progress, actual_size, unit, speed, time)
 				print download.name, status, progress, actual_size, unit, speed, time
-				if ((status == cons.STATUS_STOP) or (status == cons.STATUS_ERROR)):
-					link.active = False
-					download.progress = 0
-					link.plugin.return_download_slot()
-					self.pending_downloads.append(download)
-					self.active_downloads.remove(download)
-				elif status == cons.STATUS_CORRECT:
-					download.progress = 100
-					link.plugin.return_download_slot()
-					self.complete_downloads.append(download)
-					self.active_downloads.remove(download)
+				if status:
+					download.update(status, progress, actual_size, unit, speed, time)
+					if ((status == cons.STATUS_STOP) or (status == cons.STATUS_ERROR)):
+						link.active = False
+						download.progress = 0
+						link.plugin.return_download_slot()
+						self.pending_downloads.append(download)
+						self.active_downloads.remove(download)
+					elif status == cons.STATUS_CORRECT:
+						download.progress = 100
+						link.plugin.return_download_slot()
+						self.complete_downloads.append(download)
+						self.active_downloads.remove(download)
 
 	def scheduler(self):
 		""""""
