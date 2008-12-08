@@ -74,7 +74,7 @@ class DownloadManager:
 	def get_files(self):
 		""""""
 		result = []
-		for downloads in [self.active_downloads, self.complete_downloads]:
+		for downloads in [self.pending_downloads, self.active_downloads, self.complete_downloads]:
 			for download in downloads:
 				result.append(download)
 		self.update()
@@ -111,6 +111,9 @@ class DownloadManager:
 	def stop(self, name):
 		""""""
 		print "stoped"
+		for download in self.pending_downloads:
+			if name == download.name:
+				download.status = cons.STATUS_STOP
 		for download in self.active_downloads:
 			if name == download.name:
 				for link in download.links:

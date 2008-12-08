@@ -155,12 +155,14 @@ class Tree(gtk.VBox):
 							model.set_value(file_iter, 1, file.status)
 							model.set_value(file_iter, 4, file.progress)
 							package_progress += file.progress
-							model.set_value(file_iter, 6, str(file.actual_size)+file.size_unit)
-							package_actual_size += file.actual_size
-							package_unit = file.size_unit
+							if file.actual_size > 0:
+								model.set_value(file_iter, 6, str(file.actual_size)+file.size_unit)
+								package_actual_size += file.actual_size
 							model.set_value(file_iter, 7, str(file.total_size)+file.size_unit)
-							model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
-							package_speed += file.speed
+							package_unit = file.size_unit
+							if file.speed > 0:
+								model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
+								package_speed += file.speed
 							model.set_value(file_iter, 9, self.calculate_time(file.time))
 							link_iter = model.iter_children(file_iter)
 							while link_iter:
@@ -173,8 +175,10 @@ class Tree(gtk.VBox):
 								link_iter = model.iter_next(link_iter)
 								
 					model.set_value(package_iter, 4, int(package_progress/model.iter_n_children(package_iter)))
-					model.set_value(package_iter, 6, str(package_actual_size)+package_unit)
-					model.set_value(package_iter, 8, str(package_speed)+cons.UNIT_SPEED)
+					if package_actual_size > 0:
+						model.set_value(package_iter, 6, str(package_actual_size)+package_unit)
+					if package_speed > 0:
+						model.set_value(package_iter, 8, str(package_speed)+cons.UNIT_SPEED)
 					
 					file_iter = model.iter_next(file_iter)
 				package_iter = model.iter_next(package_iter)
@@ -196,6 +200,6 @@ class Tree(gtk.VBox):
 			result = str(hours) + "h" + str(minutes) + "m" + str(seconds) + "s"
 		elif minutes > 0:
 			result =  str(minutes) + "m" + str(seconds) + "s"
-		else:
+		elif seconds > 0:
 			result = str(seconds) + "s"
 		return result
