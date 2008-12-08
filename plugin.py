@@ -80,9 +80,11 @@ class Plugin(object):
 		if th:
 			actual_size, unit = self.get_size(th.actual_size)
 			if th.status == cons.STATUS_ACTIVE:
-				speed = th.get_speed()
-				time = int(float((th.total_size - th.actual_size)/1024)/float(speed))
 				progress = int((float(th.actual_size)/float(th.total_size))*100)
+				speed = th.get_speed()
+				if speed > 0:
+					time = int(float((th.total_size - th.actual_size)/1024)/float(speed))
+				time = 0
 			else:
 				progress = 0
 				speed = 0
