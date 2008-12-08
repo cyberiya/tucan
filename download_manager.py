@@ -135,7 +135,7 @@ class DownloadManager:
 				print download.name, status, progress, actual_size, unit, speed, time
 				if status:
 					download.update(status, progress, actual_size, unit, speed, time)
-					if status in [cons.STATUS_PEND, cons.STATUS_STOP, cons.STATUS_ERROR]
+					if status in [cons.STATUS_PEND, cons.STATUS_STOP, cons.STATUS_ERROR]:
 						link.active = False
 						download.progress = 0
 						link.plugin.return_download_slot()
