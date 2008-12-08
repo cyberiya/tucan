@@ -34,6 +34,8 @@ class Wait(gtk.Window):
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		self.set_transient_for(parent)
 		self.set_position(gtk.WIN_POS_CENTER)
+		self.set_property("skip-pager-hint", True)
+		self.set_property("skip-taskbar-hint", True)
 		self.set_resizable(False)
 		self.set_decorated(False)
 		self.set_size_request(300,100)
