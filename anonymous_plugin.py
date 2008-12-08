@@ -20,13 +20,18 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import time
+
 from plugin import Plugin
+
+WAIT_LIMIT = 300
 
 class AnonymousPlugin(Plugin):
 	""""""
 	def __init__(self, downloads, uploads):
 		""""""
 		Plugin.__init__(self)
+		self.end_wait = 0
 		self.max_downloads = downloads
 		self.max_uploads = uploads
 		self.download_slots = downloads
@@ -63,7 +68,13 @@ class AnonymousPlugin(Plugin):
 	def download_avaible(self):
 		""""""
 		if self.download_slots > 0:
-			return True
+			if time.time() > self.end_wait:
+				print "timeout", time.time()
+				return True
+			
+	def add_wait(self):
+		""""""
+		self.end_wait = time.time() + WAIT_LIMIT
 			
 	def return_download_slot(self):
 		""""""
