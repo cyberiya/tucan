@@ -163,6 +163,8 @@ class Tree(gtk.VBox):
 							if file.speed > 1:
 								model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
 								package_speed += file.speed
+							elif file.speed == 0:
+								model.set_value(file_iter, 8, None)
 							if file.status == cons.STATUS_CORRECT:
 								if not file.time > 0:
 									file.time = 1
@@ -182,7 +184,8 @@ class Tree(gtk.VBox):
 						model.set_value(package_iter, 6, str(package_actual_size)+package_unit)
 					if package_speed > 0:
 						model.set_value(package_iter, 8, str(package_speed)+cons.UNIT_SPEED)
-					
+					else:
+						model.set_value(package_iter, 8, None)
 					file_iter = model.iter_next(file_iter)
 				package_iter = model.iter_next(package_iter)
 		return True
