@@ -68,7 +68,6 @@ class DownloadManager:
 		self.pending_downloads = []
 		self.active_downloads = []
 		self.complete_downloads = []
-		self.plugins_wait = {}
 		self.timer = None
 		self.scheduling = False
 		
@@ -103,16 +102,11 @@ class DownloadManager:
 		for download in self.pending_downloads:
 			if name == download.name:
 				for link in download.links:
-					active = link.plugin.add_download(download.path, link.url, download.name)
-					if not active == None:
-						if active:
-							link.active = True
-							self.active_downloads.append(download)
-							self.pending_downloads.remove(download)
-							return True
-						else:
-							self.plugins_wait[link.plugin.__name__] = 18000
-							print "pongo el plugin en espera", link.plugin.__name__
+					if link.plugin.add_download(download.path, link.url, download.name):
+						link.active = True
+						self.active_downloads.append(download)
+						self.pending_downloads.remove(download)
+						return True
 					else:
 						download.status = cons.STATUS_PEND
 					
@@ -126,9 +120,6 @@ class DownloadManager:
 			if name == download.name:
 				for link in download.links:
 					if link.active:
-						if link.plugin.__name__ in self.plugins_wait:
-							del self.plugins_wait[link.plugin.__name__]
-							print "quito el plugin de la espera", link.plugin.__name__
 						if link.plugin.stop_download(download.name):
 							link.status = cons.STATUS_STOP
 							return True
