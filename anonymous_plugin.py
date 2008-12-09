@@ -69,6 +69,7 @@ class AnonymousPlugin(Plugin):
 		""""""
 		if self.download_slots > 0:
 			if time.time() > self.end_wait:
+				print "probando despues de pasar el limite"
 				return True
 			
 	def add_wait(self):
