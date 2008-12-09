@@ -100,6 +100,6 @@ class AnonymousMegaupload(AnonymousPlugin):
 					parser = CaptchaForm(url)
 					if parser.link:
 						name = parser.link.split("/").pop()
-		except urllib2.HTTPError, e:
+		except urllib2.URLError, e:
 			print e
 		return name, size, unit
