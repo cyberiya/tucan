@@ -60,9 +60,9 @@ class Downloader(threading.Thread):
 				self.wait -= 1
 				self.time_remaining = self.wait
 		if not self.stop_flag:
-			f = open(self.path + self.file, "w")
 			try:
 				handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER))
+				f = open(self.path + self.file, "w")
 				self.total_size = int(handle.info().getheader("Content-Length"))
 				self.start_time = time.time()
 				self.status = cons.STATUS_ACTIVE
@@ -81,7 +81,6 @@ class Downloader(threading.Thread):
 						self.status = cons.STATUS_ERROR
 			except urllib2.HTTPError, e:
 				print "exception", e
-				f.close()
 				self.stop_flag = True
 				self.status = cons.STATUS_PEND
 
