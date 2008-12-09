@@ -87,16 +87,19 @@ class AnonymousMegaupload(AnonymousPlugin):
 		name = None
 		size = 0
 		unit = None
-		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
-			if "<b>Filename:</b>" in line:
-				name = line.split("<b>Filename:</b>")[1].split("</div>")[0].strip()
-			elif "<b>Filesize:</b>" in line:
-				tmp = line.split("<b>Filesize:</b>")[1].split("</div>")[0].split(" ")
-				size = int(round(float(tmp[1])))
-				unit = tmp[2]
-		if name:
-			if ".." in name:
-				parser = CaptchaForm(url)
-				if parser.link:
-					name = parser.link.split("/").pop()
+		try:
+			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+				if "<b>Filename:</b>" in line:
+					name = line.split("<b>Filename:</b>")[1].split("</div>")[0].strip()
+				elif "<b>Filesize:</b>" in line:
+					tmp = line.split("<b>Filesize:</b>")[1].split("</div>")[0].split(" ")
+					size = int(round(float(tmp[1])))
+					unit = tmp[2]
+			if name:
+				if ".." in name:
+					parser = CaptchaForm(url)
+					if parser.link:
+						name = parser.link.split("/").pop()
+		except urllib2.HTTPError, e:
+			print e
 		return name, size, unit

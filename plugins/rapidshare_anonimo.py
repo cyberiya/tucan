@@ -93,10 +93,13 @@ class AnonymousRapidshare(AnonymousPlugin):
 		name = None
 		size = 0
 		unit = None
-		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
-			if "downloadlink" in line:
-				tmp = line.split(">")
-				name = tmp[1].split("<")[0].strip().split("/").pop()
-				size = int(tmp[2].split("<")[0].split(" ")[1])
-				unit = tmp[2].split("<")[0].split(" ")[2]
+		try:
+			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+				if "downloadlink" in line:
+					tmp = line.split(">")
+					name = tmp[1].split("<")[0].strip().split("/").pop()
+					size = int(tmp[2].split("<")[0].split(" ")[1])
+					unit = tmp[2].split("<")[0].split(" ")[2]
+		except urllib2.HTTPError, e:
+			print e
 		return name, size, unit
