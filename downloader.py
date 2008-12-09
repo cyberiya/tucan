@@ -48,6 +48,7 @@ class Downloader(threading.Thread):
 		self.speed = 0
 		self.tmp_time = 0
 		self.tmp_size = 0
+		self.limit_exceded = False
 		if cookie:
 			urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)))
 		
@@ -82,6 +83,7 @@ class Downloader(threading.Thread):
 			except urllib2.HTTPError, e:
 				print "exception", e
 				f.close()
+				self.limit_exceded = True
 				self.stop_flag = True
 				self.status = cons.STATUS_PEND
 
