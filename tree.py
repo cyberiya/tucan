@@ -24,6 +24,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gobject
+import pango
 
 import cons
 
@@ -51,8 +52,9 @@ class Tree(gtk.VBox):
 		self.treeview.append_column(tree_icon)
 				  
 		tree_name = gtk.TreeViewColumn('Name')
-		tree_name.set_max_width(350)
 		name_cell = gtk.CellRendererText()
+		name_cell.set_property("width-chars", 60)
+		name_cell.set_property("ellipsize", pango.ELLIPSIZE_MIDDLE)
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 3)
 		self.treeview.append_column(tree_name)
