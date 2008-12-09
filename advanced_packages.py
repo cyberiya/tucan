@@ -120,12 +120,13 @@ class AdvancedPackages(gtk.Dialog):
 			self.filechooser = gtk.FileChooserDialog('Select a Folder', self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
 			choose_button = gtk.Button(None, gtk.STOCK_OK)
 			self.filechooser.action_area.pack_start(choose_button)
-			choose_button.connect("clicked", self.on_choose, model.get_path(iter))
+			self.filechooser.connect("response", self.on_choose, model.get_path(iter))
+			choose_button.connect("clicked", self.on_choose, None, model.get_path(iter))
 			self.filechooser.set_position(gtk.WIN_POS_CENTER)
 			self.filechooser.show_all()
 			self.filechooser.run()
 			
-	def on_choose(self, widget, path):
+	def on_choose(self, widget, other, path):
 		""""""
 		self.change(None, path, self.filechooser.get_uri().split("file://").pop()+"/", 1)
 		self.filechooser.destroy()
