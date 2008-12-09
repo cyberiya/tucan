@@ -100,6 +100,6 @@ class AnonymousRapidshare(AnonymousPlugin):
 					name = tmp[1].split("<")[0].strip().split("/").pop()
 					size = int(tmp[2].split("<")[0].split(" ")[1])
 					unit = tmp[2].split("<")[0].split(" ")[2]
-		except urllib2.HTTPError, e:
+		except urllib2.URLError, e:
 			print e
 		return name, size, unit
