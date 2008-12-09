@@ -51,7 +51,8 @@ class Gui(gtk.Window, ServiceManager):
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		self.set_icon_from_file(cons.ICON_TUCAN)
 		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION)
-		self.maximize()
+		self.set_size_request(800, 500)
+		#self.maximize()
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
 		
