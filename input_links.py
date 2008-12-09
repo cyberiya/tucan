@@ -28,6 +28,7 @@ import HTMLParser
 import threading
 
 from message import Wait
+from advanced_packages import AdvancedPackages
 
 import cons
 
@@ -46,7 +47,7 @@ class ClipParser(HTMLParser.HTMLParser):
 
 class InputLinks(gtk.Dialog):
 	""""""
-	def __init__(self, sort, check, packages):
+	def __init__(self, sort, check, create, manage):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_DOWNLOAD)
@@ -58,7 +59,8 @@ class InputLinks(gtk.Dialog):
 		
 		self.sort_links = sort
 		self.check_links = check
-		self.packages = packages
+		self.create_packages = create
+		self.packages = manage
 		
 		#textview
 		frame = gtk.Frame("Paste links here:")
@@ -164,8 +166,21 @@ class InputLinks(gtk.Dialog):
 						tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
 		if not tmp == {}:
 			self.hide()
-			self.packages(tmp, self.advanced_button.get_active())
-		self.close()
+			packages = self.create_packages(tmp)
+			packages_info = None
+			if self.advanced_button.get_active():
+				w = AdvancedPackages(cons.DEFAULT_PATH, packages)
+				packages_info = w.packages
+				if packages_info:
+					self.packages(packages, packages_info)
+					self.close()
+				else:
+					self.show()
+			else:
+				self.packages(packages, [])
+				self.close()
+		else:
+			self.close()
 	
 	def check(self, wait):
 		""""""

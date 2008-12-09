@@ -36,13 +36,10 @@ from menu_bar import MenuBar
 from toolbar import Toolbar
 from tree import Tree
 from input_links import InputLinks
-from advanced_packages import AdvancedPackages
 
 from service_manager import ServiceManager
 
 import cons
-
-DEFAULT_PATH = os.path.expanduser("~") + "/"
 
 LINKS = {'megaupload.com': [('http://www.megaupload.com/?d=TF6TEHRR', 'D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 191, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=ERLE5HJ6', 'D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 191, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=9B8YV60U', 'D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 169, 'MB', 'AnonymousMegaupload')], 'rapidshare.com': [('http://rapidshare.com/files/158180946/D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 195, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/158180528/D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 195, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/158180616/D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 172, 'MB', 'AnonymousRapidshare')]}
 
@@ -119,18 +116,13 @@ class Gui(gtk.Window, ServiceManager):
 		
 	def add_links(self, button):
 		""""""
-		i = InputLinks(self.filter_service, self.link_check, self.manage_packages)
+		i = InputLinks(self.filter_service, self.link_check, self.create_packages, self.manage_packages)
 		
-	def manage_packages(self, links, advanced):
+	def manage_packages(self, packages, packages_info):
 		""""""
-		packages = self.create_packages(links)
 		tmp_packages = []
-		packages_info = []
-		if advanced:
-			w = AdvancedPackages(DEFAULT_PATH, packages)
-			packages_info = w.packages
 		if not len(packages_info) > 0:
-			packages_info = [(DEFAULT_PATH, name, None) for name, package_files in packages]
+			packages_info = [(cons.DEFAULT_PATH, name, None) for name, package_files in packages]
 		#create directories and password files
 		for info in packages_info:
 			package_path = info[0] + info[1] + "/"

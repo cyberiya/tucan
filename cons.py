@@ -20,6 +20,7 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 import sys
+import os
 
 # proyect constants
 TUCAN_VERSION = "0.2 alpha"
@@ -58,6 +59,7 @@ TYPE_UNSUPPORTED = "unsupported"
 #path constants
 PATH = sys.path[0]
 PATH_MEDIA = PATH + "/media/"
+DEFAULT_PATH = os.path.expanduser("~") + "/"
 
 #media constants
 ICON_TUCAN = PATH_MEDIA + "icon.svg"
