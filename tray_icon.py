@@ -31,7 +31,7 @@ class TrayIcon(gtk.StatusIcon):
 	def __init__(self, show, hide, menu):
 		""""""
 		gtk.StatusIcon.__init__(self)
-		self.set_tooltip("Tucan!")
+		self.set_tooltip("Tucan Manager - Version: " + cons.TUCAN_VERSION + cons.REVISION)
 		self.set_from_file(cons.ICON_TUCAN)
 		self.set_visible(True)
 		
