@@ -80,7 +80,7 @@ class Downloader(threading.Thread):
 					else:
 						self.status = cons.STATUS_ERROR
 			except urllib2.HTTPError, e:
-				print "exception", e
+				print "[%4d-%02d-%02d %02d:%02d:%02d] %s" % (lt[0], lt[1], lt[2], lt[3], lt[4], lt[5], e)
 				self.stop_flag = True
 				self.status = cons.STATUS_PEND
 
