@@ -71,7 +71,7 @@ class Gui(gtk.Window, ServiceManager):
 		#toolbar
 		download = "Add Downloads", gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_links
 		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.quit
-		clear = "Clear Complete", gtk.image_new_from_file(cons.ICON_CLEAR), self.not_implemented
+		clear = "Clear Complete", gtk.image_new_from_file(cons.ICON_CLEAR), self.clear_complete
 		up = "Move Up", gtk.image_new_from_file(cons.ICON_UP), self.not_implemented
 		down = "Move Down", gtk.image_new_from_file(cons.ICON_DOWN), self.not_implemented
 		start = "Start Selected", gtk.image_new_from_file(cons.ICON_START), self.start
@@ -155,7 +155,7 @@ class Gui(gtk.Window, ServiceManager):
 			else:
 				print "start package"
 				for item in self.downloads.package_files(model.get_iter(paths[0])):
-					print self.download_manager.start(item)
+					self.download_manager.start(item)
 
 	def stop(self, button):
 		"""Implementado solo para descargas"""
@@ -166,9 +166,13 @@ class Gui(gtk.Window, ServiceManager):
 			else:
 				print "stop package"
 				for item in self.downloads.package_files(model.get_iter(paths[0])):
-					print self.download_manager.stop(item)
+					self.download_manager.stop(item)
 
-				
+	def clear_complete(self, button):
+		"""Implementado solo para descargas"""
+		files = self.downloads.clear()
+		if len(files) > 0:
+			self.download_manager.clear(files)
 
 	def quit(self, dialog=None, response=None):
 		""""""
