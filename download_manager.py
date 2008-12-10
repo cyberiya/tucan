@@ -79,6 +79,14 @@ class DownloadManager:
 				result.append(download)
 		self.update()
 		return result
+		
+	def clear(self, files):
+		""""""
+		for name in files:
+			complete = [tmp.name for tmp in self.complete_downloads]
+			if name in complete:
+				print "Cleared ", name
+				del self.complete_downloads[complete.index(name)]
 
 	def add(self, path, name, links, total_size, size_unit):
 		""""""

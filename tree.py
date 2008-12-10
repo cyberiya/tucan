@@ -214,6 +214,27 @@ class Tree(gtk.VBox):
 				files.append(model.get_value(file_iter, 3))
 			file_iter = model.iter_next(file_iter)
 		return files
+		
+	def clear(self):
+		""""""
+		files = []
+		model = self.treeview.get_model()
+		package_iter = model.get_iter_root()
+		while package_iter:
+			file_iter = model.iter_children(package_iter)
+			tmp = []
+			cont = 0
+			while file_iter:
+				cont += 1
+				if model.get_value(file_iter, 1) == cons.STATUS_CORRECT:
+					tmp.append(model.get_value(file_iter, 3))
+				file_iter = model.iter_next(file_iter)
+			clear_package = package_iter
+			package_iter = model.iter_next(package_iter)
+			if len(tmp) == cont:
+				files += tmp
+				model.remove(clear_package)
+		return files
 
 	def calculate_time(self, time):
 		""""""
