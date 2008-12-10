@@ -112,7 +112,6 @@ class DownloadManager:
 					
 	def stop(self, name):
 		""""""
-		print "stoped"
 		for download in self.pending_downloads:
 			if name == download.name:
 				download.status = cons.STATUS_STOP
