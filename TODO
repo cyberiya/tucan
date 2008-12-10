@@ -1,7 +1,5 @@
 Tucan 0.2
 ----------------
-- Barra de estado.
-- Mejorar el TrayIcon con informacion de estado.
 - Menu contextual para las descargas.
 - Exportar e importar listas de paquetes.
 - Reorganizar el sistema de plugins.
