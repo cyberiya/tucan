@@ -1,0 +1,11 @@
+Tucan 0.2
+----------------
+- Barra de estado.
+- Mejorar el TrayIcon con informacion de estado.
+- Menu contextual para las descargas.
+- Exportar e importar listas de paquetes.
+- Reorganizar el sistema de plugins.
+- Ventana de preferencias.
+- Sistema de gestion de subidas.
+- Comentar. Rellenar todas las docstrings.
+- Soporte para Microsoft Windows.
