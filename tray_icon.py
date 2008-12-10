@@ -64,3 +64,10 @@ class TrayIcon(gtk.StatusIcon):
 	def popup_menu(self, statusicon, button, time):
 		""""""
 		self.menu.popup(None, None, gtk.status_icon_position_menu, button, time, self)
+		
+	def change_tooltip(self, statusbar, context, text):
+		""""""
+		#if context == "Downloads":
+		tmp = text.split("\t")
+		message = "Downloads: " + "".join(tmp[1:]) + "\n" + tmp[0].strip()
+		self.set_tooltip(message)

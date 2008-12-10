@@ -112,8 +112,7 @@ class Tree(gtk.VBox):
 		self.status_bar = gtk.Statusbar()
 		self.status_bar.set_has_resize_grip(False)
 		self.pack_start(self.status_bar, False)
-		self.status_bar.push(self.status_bar.get_context_id(""), "\t" + "No Downloads Active.")
-		self.status = None
+		self.status_bar.push(self.status_bar.get_context_id("Downloads"), " No Downloads Active.")
 		self.updating = False
 
 	def add_package(self, package_name, package_path, package):
@@ -201,9 +200,9 @@ class Tree(gtk.VBox):
 						model.set_value(package_iter, 8, None)
 					file_iter = model.iter_next(file_iter)
 				package_iter = model.iter_next(package_iter)
-			self.status = (total_speed, total_downloads, complete_downloads, active_downloads)
-			self.status_bar.pop(self.status_bar.get_context_id(""))
-			self.status_bar.push(self.status_bar.get_context_id(""), " Downstream %dKB/s \t Total %d \t Complete %d \t Active %d" % self.status)
+			self.status_bar.pop(self.status_bar.get_context_id("Downloads"))
+			self.status_bar.push(self.status_bar.get_context_id("Downloads"), " Downstream %dKB/s \tTotal %d \t Complete %d \t Active %d" %	(total_speed, total_downloads, complete_downloads, active_downloads)
+)
 		return True
 
 	def calculate_time(self, time):
