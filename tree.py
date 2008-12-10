@@ -117,7 +117,7 @@ class Tree(gtk.VBox):
 
 	def add_package(self, package_name, package_path, package):
 		"""
-		TreeStore(icon, status, path, name, progress, progress_visible, current_size, total_size, speed, time, services)
+		TreeStore(icon, status, None, name, progress, progress_visible, current_size, total_size, speed, time, services)
 		"""
 		package_size = 0
 		package_unit = cons.UNIT_KB
@@ -137,7 +137,7 @@ class Tree(gtk.VBox):
 		return package_iter
 		
 	def update(self):
-		"""(icon, status, path, name, progress, progress_visible, current_size, total_size, speed, time, services)"""
+		"""(icon, status, None, name, progress, progress_visible, current_size, total_size, speed, time, services)"""
 		files = self.get_files()
 		if len(files) > 0:
 			model = self.treeview.get_model()
@@ -169,8 +169,8 @@ class Tree(gtk.VBox):
 							if file.actual_size > 0:
 								model.set_value(file_iter, 6, str(file.actual_size)+file.size_unit)
 								package_actual_size += file.actual_size
+								package_unit = file.size_unit
 							#model.set_value(file_iter, 7, str(file.total_size)+file.size_unit)
-							package_unit = file.size_unit
 							if file.speed > 1:
 								model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
 								package_speed += file.speed
@@ -190,7 +190,6 @@ class Tree(gtk.VBox):
 										model.set_value(link_iter, 0, service_icon)
 								link_iter = model.iter_next(link_iter)
 					
-					total_speed += package_speed
 					model.set_value(package_iter, 4, int(package_progress/model.iter_n_children(package_iter)))
 					if package_actual_size > 0:
 						model.set_value(package_iter, 6, str(package_actual_size)+package_unit)
@@ -199,11 +198,22 @@ class Tree(gtk.VBox):
 					else:
 						model.set_value(package_iter, 8, None)
 					file_iter = model.iter_next(file_iter)
+				total_speed += package_speed
 				package_iter = model.iter_next(package_iter)
 			self.status_bar.pop(self.status_bar.get_context_id("Downloads"))
-			self.status_bar.push(self.status_bar.get_context_id("Downloads"), " Downstream %dKB/s \tTotal %d \t Complete %d \t Active %d" %	(total_speed, total_downloads, complete_downloads, active_downloads)
-)
+			self.status_bar.push(self.status_bar.get_context_id("Downloads"), " Downstream %dKB/s \tTotal %d \t Complete %d \t Active %d" %	(total_speed, total_downloads, complete_downloads, active_downloads))
 		return True
+		
+	def package_files(self, package_iter):
+		""""""
+		files = []
+		model = self.treeview.get_model()
+		file_iter = model.iter_children(package_iter)
+		while file_iter:
+			if not model.get_value(file_iter, 1) in [cons.STATUS_ACTIVE, cons.STATUS_WAIT, cons.STATUS_CORRECT]:
+				files.append(model.get_value(file_iter, 3))
+			file_iter = model.iter_next(file_iter)
+		return files
 
 	def calculate_time(self, time):
 		""""""

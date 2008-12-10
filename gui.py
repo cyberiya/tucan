@@ -153,7 +153,9 @@ class Gui(gtk.Window, ServiceManager):
 			if len(paths[0]) > 1:
 				print "start", self.download_manager.start(model.get_value(model.get_iter(paths[0]), 3))
 			else:
-				print "start package", paths[0]
+				print "start package"
+				for item in self.downloads.package_files(model.get_iter(paths[0])):
+					print self.download_manager.start(item)
 
 	def stop(self, button):
 		"""Implementado solo para descargas"""
@@ -162,7 +164,11 @@ class Gui(gtk.Window, ServiceManager):
 			if len(paths[0]) > 1:
 				print "stop", self.download_manager.stop(model.get_value(model.get_iter(paths[0]), 3))
 			else:
-				print "stop package", paths[0]
+				print "stop package"
+				for item in self.downloads.package_files(model.get_iter(paths[0])):
+					print self.download_manager.stop(item)
+
+				
 
 	def quit(self, dialog=None, response=None):
 		""""""
