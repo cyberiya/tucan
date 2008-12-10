@@ -41,6 +41,11 @@ from service_manager import ServiceManager
 
 import cons
 
+REVISION = ""
+rev = os.popen("svnversion").read().strip()
+if rev:
+	REVISION = " (REV " + rev + ")"
+	
 LINKS = {'megaupload.com': [('http://www.megaupload.com/?d=TF6TEHRR', 'D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 191, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=ERLE5HJ6', 'D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 191, 'MB', 'AnonymousMegaupload'), ('http://www.megaupload.com/?d=9B8YV60U', 'D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 169, 'MB', 'AnonymousMegaupload')], 'rapidshare.com': [('http://rapidshare.com/files/158180946/D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part1.rar', 195, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/158180528/D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part2.rar', 195, 'MB', 'AnonymousRapidshare'), ('http://rapidshare.com/files/158180616/D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 'D.S03E05.0TV.cHoPPaHoLiK.part3.rar', 172, 'MB', 'AnonymousRapidshare')]}
 
 class Gui(gtk.Window, ServiceManager):
@@ -50,7 +55,7 @@ class Gui(gtk.Window, ServiceManager):
 		ServiceManager.__init__(self)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		self.set_icon_from_file(cons.ICON_TUCAN)
-		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION)
+		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION + REVISION)
 		self.set_size_request(800, 500)
 		#self.maximize()
 		self.vbox = gtk.VBox()
