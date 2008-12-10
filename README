@@ -33,15 +33,12 @@
  Dependencias
 =========
 
- - python 2.5 (o superior)
-
- - módulos python:
-   - python-gtk2
-   - python-imaging (acceso anónimo de MegaUpload)
-
- - OCR
-   - tesseract (acceso anónimo de MegaUpload)
-
+ - python2.5
+ - python-gtk2
+ - python-imaging
+ - tesseract-ocr
+ - tesseract-ocr-eng
+ - librsvg2-common
 
 ===================
  Instalación
