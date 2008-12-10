@@ -113,6 +113,7 @@ class Tree(gtk.VBox):
 		self.status_bar.set_has_resize_grip(False)
 		self.pack_start(self.status_bar, False)
 		self.status_bar.push(self.status_bar.get_context_id(""), "\t" + "No Downloads Active.")
+		self.status = None
 		self.updating = False
 
 	def add_package(self, package_name, package_path, package):
@@ -142,6 +143,10 @@ class Tree(gtk.VBox):
 		if len(files) > 0:
 			model = self.treeview.get_model()
 			package_iter = model.get_iter_root()
+			active_downloads = 0
+			complete_downloads = 0
+			total_downloads = 0
+			total_speed = 0
 			while package_iter:
 				file_iter = model.iter_children(package_iter)
 				#package_status = model.set_value(package_iter, 0)
@@ -150,11 +155,16 @@ class Tree(gtk.VBox):
 				package_unit = cons.UNIT_KB
 				package_speed = 0
 				while file_iter:
+					total_downloads += 1
 					name = model.get_value(file_iter, 3)
 					for file in files:
 						if file.name == name:
 							model.set_value(file_iter, 0, self.icons[file.status])
 							model.set_value(file_iter, 1, file.status)
+							if file.status in [cons.STATUS_ACTIVE, cons.STATUS_WAIT]:
+								active_downloads += 1
+							elif file.status == cons.STATUS_CORRECT:
+								complete_downloads += 1
 							model.set_value(file_iter, 4, file.progress)
 							package_progress += file.progress
 							if file.actual_size > 0:
@@ -180,7 +190,8 @@ class Tree(gtk.VBox):
 											service_icon = self.active_service_icon
 										model.set_value(link_iter, 0, service_icon)
 								link_iter = model.iter_next(link_iter)
-								
+					
+					total_speed += package_speed
 					model.set_value(package_iter, 4, int(package_progress/model.iter_n_children(package_iter)))
 					if package_actual_size > 0:
 						model.set_value(package_iter, 6, str(package_actual_size)+package_unit)
@@ -190,6 +201,9 @@ class Tree(gtk.VBox):
 						model.set_value(package_iter, 8, None)
 					file_iter = model.iter_next(file_iter)
 				package_iter = model.iter_next(package_iter)
+			self.status = (total_speed, total_downloads, complete_downloads, active_downloads)
+			self.status_bar.pop(self.status_bar.get_context_id(""))
+			self.status_bar.push(self.status_bar.get_context_id(""), " Downstream %dKB/s \t Total %d \t Complete %d \t Active %d" % self.status)
 		return True
 
 	def calculate_time(self, time):

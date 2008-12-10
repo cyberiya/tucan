@@ -25,6 +25,11 @@ import os
 # proyect constants
 TUCAN_VERSION = "0.2 alpha"
 
+REVISION = ""
+rev = os.popen("svnversion").read().strip()
+if rev:
+	REVISION = " (REV " + rev + ")"
+
 # status constants
 STATUS_PEND = "pending"
 STATUS_ACTIVE = "active"
