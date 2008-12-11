@@ -73,6 +73,7 @@ class AnonymousPlugin(Plugin):
 			
 	def add_wait(self):
 		""""""
+		print "a esperar 5 minutos"
 		self.end_wait = time.time() + WAIT_LIMIT
 			
 	def return_download_slot(self):
