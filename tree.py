@@ -221,20 +221,43 @@ class Tree(gtk.VBox):
 		model = self.treeview.get_model()
 		package_iter = model.get_iter_root()
 		while package_iter:
-			file_iter = model.iter_children(package_iter)
-			tmp = []
-			cont = 0
-			while file_iter:
-				cont += 1
-				if model.get_value(file_iter, 1) == cons.STATUS_CORRECT:
-					tmp.append(model.get_value(file_iter, 3))
-				file_iter = model.iter_next(file_iter)
-			clear_package = package_iter
+			files += self.delete_package([cons.STATUS_CORRECT], package_iter)
 			package_iter = model.iter_next(package_iter)
-			if len(tmp) == cont:
-				files += tmp
-				model.remove(clear_package)
 		return files
+		
+	def delete_package(self, status, package_iter):
+		""""""
+		tmp = []
+		cont = 0
+		model = self.treeview.get_model()
+		file_iter = model.iter_children(package_iter)
+		while file_iter:
+			cont += 1
+			if model.get_value(file_iter, 1) in status:
+				tmp.append(model.get_value(file_iter, 3))
+			file_iter = model.iter_next(file_iter)
+		if len(tmp) == cont:
+			model.remove(package_iter)
+			tmp = []
+		return tmp
+	
+	def delete_file(self, status, iter):
+		""""""
+		model = self.treeview.get_model()
+		if model.get_value(iter, 1) in status:
+			model.remove(iter)
+			return model.get_value(iter, 3)
+			
+	def delete_link(self, status, iter):
+		""""""
+		result = None, None
+		model = self.treeview.get_model()
+		file_iter = model.iter_parent(iter)
+		if model.iter_n_children(file_iter) > 1:
+			result = model.get_value(file_iter, 3), model.get_value(iter, 3)
+			model.remove(iter)
+		return result
+		
 
 	def calculate_time(self, time):
 		""""""

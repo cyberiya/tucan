@@ -71,6 +71,15 @@ class DownloadManager:
 		self.timer = None
 		self.scheduling = False
 		
+	def delete_link(self, name, link):
+		""""""
+		for download in self.pending_downloads:
+			if download.name == name:
+				for url in download.links:
+					if link == url[1]:
+						del download.links[download.links.index(url)]
+						return True
+		
 	def get_files(self):
 		""""""
 		result = []

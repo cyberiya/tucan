@@ -180,7 +180,24 @@ class Gui(gtk.Window, ServiceManager):
 			
 	def remove(self, button):
 		"""Implementado solo para descargas"""
-		print "mierda"
+		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
+		status = [cons.STATUS_STOP, cons.STATUS_PEND, cons.STATUS_ERROR]
+		if len(paths) > 0:
+			if len(paths[0]) > 2:
+				print "remove link"
+				name, link = self.downloads.delete_link(status, model.get_iter(paths[0]))
+				if link:
+					print self.download_manager.delete_link(name, link)
+			elif len(paths[0]) > 1:
+				print "remove file"
+				name = self.downloads.delete_file(status, model.get_iter(paths[0]))
+				if name:
+					print self.download_manager.clear([name])
+			else:
+				print "remove package"
+				files = self.downloads.delete_package(status, model.get_iter(paths[0]))
+				if len(files) > 0:
+					print self.download_manager.clear(files)
 
 	def quit(self, dialog=None, response=None):
 		""""""
