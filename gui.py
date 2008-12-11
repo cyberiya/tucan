@@ -49,7 +49,8 @@ class Gui(gtk.Window, ServiceManager):
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		self.set_icon_from_file(cons.ICON_TUCAN)
 		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION + cons.REVISION)
-		self.set_size_request(800, 500)
+		self.set_position(gtk.WIN_POS_CENTER)
+		self.set_size_request(900, 500)
 		#self.maximize()
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
@@ -76,7 +77,10 @@ class Gui(gtk.Window, ServiceManager):
 		down = "Move Down", gtk.image_new_from_file(cons.ICON_DOWN), self.not_implemented
 		start = "Start Selected", gtk.image_new_from_file(cons.ICON_START), self.start
 		stop = "Stop Selected", gtk.image_new_from_file(cons.ICON_STOP), self.stop
-		self.vbox.pack_start(Toolbar([download, upload, clear, None, up, down, None, start, stop]), False)
+		remove = "Remove Selected", gtk.image_new_from_file(cons.ICON_REMOVE), self.remove
+		separator = (None, False)
+		expander = (None, True)
+		self.vbox.pack_start(Toolbar([download, upload, separator, remove, separator, up, down, separator, start, stop, expander, clear]), False)
 		
 		#trees
 		self.downloads = Tree(self.download_manager.get_files)
@@ -173,6 +177,10 @@ class Gui(gtk.Window, ServiceManager):
 		files = self.downloads.clear()
 		if len(files) > 0:
 			self.download_manager.clear(files)
+			
+	def remove(self, button):
+		"""Implementado solo para descargas"""
+		print "mierda"
 
 	def quit(self, dialog=None, response=None):
 		""""""
