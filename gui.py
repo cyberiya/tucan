@@ -73,8 +73,8 @@ class Gui(gtk.Window, ServiceManager):
 		download = "Add Downloads", gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_links
 		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.quit
 		clear = "Clear Complete", gtk.image_new_from_file(cons.ICON_CLEAR), self.clear_complete
-		up = "Move Up", gtk.image_new_from_file(cons.ICON_UP), self.not_implemented
-		down = "Move Down", gtk.image_new_from_file(cons.ICON_DOWN), self.not_implemented
+		up = "Move Up", gtk.image_new_from_file(cons.ICON_UP), self.move_up
+		down = "Move Down", gtk.image_new_from_file(cons.ICON_DOWN), self.move_down
 		start = "Start Selected", gtk.image_new_from_file(cons.ICON_START), self.start
 		stop = "Stop Selected", gtk.image_new_from_file(cons.ICON_STOP), self.stop
 		remove = "Remove Selected", gtk.image_new_from_file(cons.ICON_REMOVE), self.remove
@@ -177,7 +177,21 @@ class Gui(gtk.Window, ServiceManager):
 		files = self.downloads.clear()
 		if len(files) > 0:
 			self.download_manager.clear(files)
-			
+	
+	def move_up(self, button):
+		"""Implementado solo para descargas"""
+		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
+		if len(paths) > 0:
+			if not len(paths[0]) > 1:
+				print "move up", self.downloads.move_up(model.get_iter(paths[0]))
+
+	def move_down(self, button):
+		"""Implementado solo para descargas"""
+		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
+		if len(paths) > 0:
+			if not len(paths[0]) > 1:
+				print "move down", self.downloads.move_down(model.get_iter(paths[0]))
+
 	def remove(self, button):
 		"""Implementado solo para descargas"""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
