@@ -37,7 +37,7 @@ class Link:
 class DownloadItem:
 	""""""
 	def __init__(self, path, name, links, total_size, size_unit):
-		"""links = [(False, url, plugin)]"""
+		""""""
 		self.path = path
 		self.name = name
 		self.status = cons.STATUS_PEND
@@ -76,7 +76,7 @@ class DownloadManager:
 		for download in self.pending_downloads:
 			if download.name == name:
 				for url in download.links:
-					if link == url[1]:
+					if link == url.url:
 						del download.links[download.links.index(url)]
 						return True
 		
