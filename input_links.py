@@ -96,7 +96,7 @@ class InputLinks(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, int, str, str))
+		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, int, str, str, bool, bool))
 		scroll.add(self.treeview)
 		
 		self.treeview.set_rules_hint(True)
@@ -115,6 +115,14 @@ class InputLinks(gtk.Dialog):
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 2)
 		self.treeview.append_column(tree_name)
+		
+		tree_add = gtk.TreeViewColumn('Add')
+		add_cell = gtk.CellRendererToggle()
+		add_cell.connect("toggled", self.toggled)
+		tree_add.pack_start(add_cell, True)
+		tree_add.add_attribute(add_cell, 'active', 6)
+		tree_add.add_attribute(add_cell, 'visible', 7)
+		self.treeview.append_column(tree_add)
 		
 		#advanced checkbutton
 		self.advanced_button = gtk.CheckButton("Show advanced Package configuration.")
@@ -153,7 +161,15 @@ class InputLinks(gtk.Dialog):
 							self.textview.get_buffer().insert_at_cursor("\n".join(parser.url) + "\n")
 					except HTMLParser.HTMLParseError:
 						pass
-
+	def toggled(self, button, path):
+		""""""
+		model = self.treeview.get_model()
+		active = True
+		if button.get_active():
+			active = False
+		button.set_active(active)
+		model.set_value(model.get_iter(path), 6, active)
+		
 	def add_links(self, button):
 		""""""
 		tmp = {}
@@ -163,7 +179,8 @@ class InputLinks(gtk.Dialog):
 				tmp[column[2]] = []
 				for value in column.iterchildren():
 					if not value[1] == value[2]:
-						tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
+						if value[6]:
+							tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
 		if not tmp == {}:
 			self.hide()
 			packages = self.create_packages(tmp)
@@ -205,11 +222,11 @@ class InputLinks(gtk.Dialog):
 		for service, links in self.sort_links(link_list).items():
 			if not links == []:
 				if service == cons.TYPE_UNSUPPORTED:
-					service_iter = store.append(None, [unsupported_icon, service, service, 0, None, None])
+					service_iter = store.append(None, [unsupported_icon, service, service, 0, None, None, False, False])
 					for link in links:
-						store.append(service_iter, [unactive_icon, link, link, 0, None, None])
+						store.append(service_iter, [unactive_icon, link, link, 0, None, None, False, False])
 				else:
-					service_iter = store.append(None, [service_icon, service, service, 0, None, None])
+					service_iter = store.append(None, [service_icon, service, service, 0, None, None, False, False])
 					for link in links:
 						file_name, size, size_unit, plugin = self.check_links(link, service)
 						if file_name:
@@ -218,7 +235,7 @@ class InputLinks(gtk.Dialog):
 							icon = unactive_icon
 							file_name = link
 						print file_name, size, size_unit, plugin
-						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin])
+						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin, True, True])
 						self.treeview.expand_row(store.get_path(service_iter), True)
 		end_wait()
 		
