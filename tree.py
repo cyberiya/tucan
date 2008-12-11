@@ -228,15 +228,13 @@ class Tree(gtk.VBox):
 	def delete_package(self, status, package_iter):
 		""""""
 		tmp = []
-		cont = 0
 		model = self.treeview.get_model()
 		file_iter = model.iter_children(package_iter)
 		while file_iter:
-			cont += 1
 			if model.get_value(file_iter, 1) in status:
 				tmp.append(model.get_value(file_iter, 3))
 			file_iter = model.iter_next(file_iter)
-		if len(tmp) == cont:
+		if len(tmp) == model.iter_n_children(package_iter):
 			model.remove(package_iter)
 			tmp = []
 		return tmp
@@ -258,6 +256,26 @@ class Tree(gtk.VBox):
 			model.remove(iter)
 		return result
 		
+	def move_up(self, iter):
+		""""""
+		model = self.treeview.get_model()
+		package_iter = model.iter_parent(iter)
+		file_iter = model.iter_children(package_iter)
+		prev_iter = None
+		while ((file_iter) and (not model.get_path(file_iter) == model.get_path(iter))):
+			prev_iter = file_iter
+			file_iter = model.iter_next(file_iter)
+		if prev_iter:
+			model.move_before(iter, prev_iter)
+			return True
+
+	def move_down(self, iter):
+		""""""
+		model = self.treeview.get_model()
+		next_iter = model.iter_next(iter)
+		if next_iter:
+			model.move_after(iter, next_iter)
+			return True
 
 	def calculate_time(self, time):
 		""""""
