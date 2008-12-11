@@ -80,11 +80,11 @@ class Gui(gtk.Window, ServiceManager):
 		remove = "Remove Selected", gtk.image_new_from_file(cons.ICON_REMOVE), self.remove
 		separator = (None, False)
 		expander = (None, True)
-		self.vbox.pack_start(Toolbar([download, upload, separator, remove, separator, up, down, separator, start, stop, expander, clear]), False)
+		self.vbox.pack_start(Toolbar([download, upload, separator, remove, separator,start, stop, separator, up, down, expander, clear]), False)
 		
 		#trees
 		self.downloads = Tree(self.download_manager.get_files)
-		#self.uploads = Tree(self.get_plugin, "No Uploads Active.")
+		#self.uploads = Tree()
 		self.uploads = gtk.VBox()
 		
 		#pane
