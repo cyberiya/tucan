@@ -185,9 +185,12 @@ class Tree(gtk.VBox):
 								for tmp_link in file.links:
 									if tmp_link.url == model.get_value(link_iter, 3):
 										service_icon = self.unactive_service_icon
+										link_status = cons.STATUS_STOP
 										if tmp_link.active:
 											service_icon = self.active_service_icon
+											link_status = cons.STATUS_ACTIVE
 										model.set_value(link_iter, 0, service_icon)
+										model.set_value(link_iter, 1, link_status)
 								link_iter = model.iter_next(link_iter)
 					
 					model.set_value(package_iter, 4, int(package_progress/model.iter_n_children(package_iter)))
@@ -243,8 +246,10 @@ class Tree(gtk.VBox):
 		""""""
 		model = self.treeview.get_model()
 		if model.get_value(iter, 1) in status:
-			model.remove(iter)
-			return model.get_value(iter, 3)
+			if model.iter_n_children(model.iter_parent(iter)) > 1:
+				result = model.get_value(iter, 3)
+				model.remove(iter)
+				return result
 			
 	def delete_link(self, status, iter):
 		""""""
@@ -252,8 +257,9 @@ class Tree(gtk.VBox):
 		model = self.treeview.get_model()
 		file_iter = model.iter_parent(iter)
 		if model.iter_n_children(file_iter) > 1:
-			result = model.get_value(file_iter, 3), model.get_value(iter, 3)
-			model.remove(iter)
+			if model.get_value(iter, 1) == cons.STATUS_STOP:
+				result = model.get_value(file_iter, 3), model.get_value(iter, 3)
+				model.remove(iter)
 		return result
 		
 	def move_up(self, iter):
