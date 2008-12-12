@@ -55,6 +55,7 @@ class Plugin(object):
 		""""""
 		if file_name in self.active_downloads:
 			self.active_downloads[file_name].stop_flag = True
+			self.active_downloads[file_name]._Thread__stop()
 			self.active_downloads[file_name].status = cons.STATUS_STOP
 			return True
 	
@@ -62,6 +63,7 @@ class Plugin(object):
 		""""""
 		if file_name in self.active_uploads:
 			self.active_uploads[file_name].stop_flag = True
+			self.active_downloads[file_name]._Thread__stop()
 			self.active_uploads[file_name].status = cons.STATUS_STOP
 			return True
 
