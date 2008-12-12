@@ -224,8 +224,9 @@ class Tree(gtk.VBox):
 		model = self.treeview.get_model()
 		package_iter = model.get_iter_root()
 		while package_iter:
-			files += self.delete_package([cons.STATUS_CORRECT], package_iter)
+			tmp_iter = package_iter
 			package_iter = model.iter_next(package_iter)
+			files += self.delete_package([cons.STATUS_CORRECT], tmp_iter)
 		return files
 		
 	def delete_package(self, status, package_iter):
