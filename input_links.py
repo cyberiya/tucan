@@ -231,11 +231,13 @@ class InputLinks(gtk.Dialog):
 						file_name, size, size_unit, plugin = self.check_links(link, service)
 						if file_name:
 							icon = active_icon
+							marked = True
 						else:
 							icon = unactive_icon
+							marked = False
 							file_name = link
 						print file_name, size, size_unit, plugin
-						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin, True, True])
+						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin, marked, True])
 						self.treeview.expand_row(store.get_path(service_iter), True)
 		end_wait()
 		
