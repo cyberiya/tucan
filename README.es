@@ -1,47 +1,46 @@
 =======================================
  Tucan
 ===================
- 
- - Tucan is a free and opensource application designed for
-   automatic management of downloads and uploads at sites like:
- 
+
+ - Tucan es una aplicación para gestionar de forma totalmente automática
+   descargas y subidas en webs como:
+
    - http://rapidshare.com/
    - http://megaupload.com/
    - (...)
- 
- 
+
+
 ===================
- Characteristics
+ Características:
 =========
  
- - Written entirely in Python.
- - Graphical User Interface written with PyGTK (GTK+ toolkit).
- - Lightweight and fast.
- - Multiplatform (GNU/Linux, FreeBSD, Microsoft Windows ...).
- - Easy to expand through plugins.
- - Resolution of captchas (as anonymous access to megaupload).
- - Management of time between downloads (anonymous access).
- - Management of downloads and uploads with anonymous access
-   in rapidshare and megaupload.
- - Management of downloads and uploads with access premium
-   in rapidshare and megaupload.
- - Management of interchangeable links.
- 
- ... and much more ;)
- 
- 
+ - Escrito en python.
+ - Interfaz gráfica escrita usando la librería pyGTK.
+ - Ligero.
+ - Multiplataforma.
+ - Fácilmente ampliable con plugins.
+ - Resolución de captchas (acceso anónimo de MegaUpload).
+ - Gestión de descargas y subidas con accesos anónimos
+      en RapidShare y MegaUpload.
+ - Gestión de descargas y subidas con accesos premium
+      en RapidShare y MegaUpload.
+ - Gestión de links intercambiables.
+
+ ... y muchas mas cosas ;)
+
+
 ===================
- Depends
+ Dependencias
 =========
- 
+
  - Python >= 2.5
  - PyGTK
  - Python Imaging Library
  - Tesseract OCR with english language pack
  - SVG Rendering Library
- 
+
  --------------------------------------------------------------------------------------------------------
- | Package \ Distribution  |  Debian / Ubuntu  |       Gentoo       |     Arch     |       Fedora       |
+ | Paquete \ Distribucion  |  Debian / Ubuntu  |       Gentoo       |     Arch     |       Fedora       |
  --------------------------------------------------------------------------------------------------------
  | Python >= 2.5           | python2.5         | dev-lang/python    | python       | python             |
  --------------------------------------------------------------------------------------------------------
@@ -54,42 +53,25 @@
  --------------------------------------------------------------------------------------------------------
  | SVG Rendering Library   | librsvg2-common   | gnome-base/librsvg | librsvg      | librsvg2           |
  --------------------------------------------------------------------------------------------------------
- 
- 
+
 ===================
- Download
+ Instalación
 =========
- 
- - Development version (needs subversion):
- 
-   $ svn co https://forja.rediris.es/svn/cusl3-tucan/trunk
- 
- 
- - Stable version:
- 
-   https://forja.rediris.es/projects/cusl3-tucan/ -> Files
- 
- 
-===================
- Installation
-=========
- 
+
  # TODO
- 
- 
+
+
 ===================
- Usage
+ Uso
 =========
- 
- - At this moment... unpack and type:
- 
+
+ - Descomprimir y ejecutar:
+
    $ python tucan.py
- 
- 
+
 ===================
  Links
 =========
- 
+
  - http://tucaneando.wordpress.com/
  - http://cusl3-tucan.forja.rediris.es/
- - https://forja.rediris.es/projects/cusl3-tucan/
