@@ -105,15 +105,6 @@ class DownloadManager:
 			self.scheduler
 			return True
 	
-	def remove(self, name):
-		""""""
-		if name in [tmp.name for tmp in self.active_downloads]:
-			self.stop(name)
-		for download in self.pending_downloads:
-			if name == download.name:
-				self.pending_downloads.remove(download)
-				return True
-	
 	def start(self, name):
 		""""""
 		for download in self.pending_downloads:
