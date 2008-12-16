@@ -36,14 +36,16 @@ class Preferences(gtk.Dialog):
 		self.set_size_request(500,500)
 		
 		notebook = gtk.Notebook()
+		notebook.set_property("homogeneous", True)
 		self.vbox.pack_start(notebook)
 		for item in [cons.ICON_PREFERENCES_MAIN, cons.ICON_PREFERENCES_PLUGINS, cons.ICON_PREFERENCES_ADVANCED]:
 			vbox = gtk.VBox()
-			vbox.set_size_request(100, -1)
 			vbox.pack_start(gtk.image_new_from_file(item))
 			vbox.pack_start(gtk.Label(item))
 			vbox.show_all()
-			notebook.append_page(gtk.VBox(), vbox)
+			page = gtk.VBox()
+			notebook.append_page(page, vbox)
+			notebook.set_tab_label_packing(page, True, True, gtk.PACK_START)
 
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
