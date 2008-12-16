@@ -97,14 +97,28 @@ class Preferences(gtk.Dialog):
 		spinbutton.set_increments(1,0)
 		spinbutton.set_numeric(True)
 		hbox.pack_start(spinbutton, False, False, 10)
-		vbox1.pack_start(hbox, False, False, 5)
+		vbox1.pack_start(hbox, False, False)
 		
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_FOLDER))
 		vbox.pack_start(frame, False, False)
+		
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_LANGUAGE))
 		vbox.pack_start(frame, False, False)
+		hbox = gtk.HBox()
+		frame.add(hbox)
+		label = gtk.Label("Choose language: ")
+		hbox.pack_start(label, False, False, 10)
+		aspect = gtk.AspectFrame()
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
+		hbox.pack_start(aspect)
+		combobox = gtk.combo_box_new_text()
+		for lang in ["English", "French", "German", "Japanese", "Spanish"]:
+			combobox.append_text(lang)
+		combobox.set_active(0)
+		hbox.pack_start(combobox, False, False, 10)
+		
 		vbox.show_all()
 		return vbox
 
