@@ -77,10 +77,7 @@ class Gui(gtk.Window, ServiceManager):
 		down = "Move Down", gtk.image_new_from_file(cons.ICON_DOWN), self.move_down
 		start = "Start Selected", gtk.image_new_from_file(cons.ICON_START), self.start
 		stop = "Stop Selected", gtk.image_new_from_file(cons.ICON_STOP), self.stop
-		remove = "Remove Selected", gtk.image_new_from_file(cons.ICON_REMOVE), self.remove
-		separator = (None, False)
-		expander = (None, True)
-		self.vbox.pack_start(Toolbar([download, upload, separator, remove, separator,start, stop, separator, up, down, expander, clear]), False)
+		self.vbox.pack_start(Toolbar([download, upload, None, clear, None, up, down, None, start, stop]), False)
 		
 		#trees
 		self.downloads = Tree(self.download_manager.get_files)
@@ -93,7 +90,8 @@ class Gui(gtk.Window, ServiceManager):
 		self.pane.pack1(self.downloads, True)
 		self.pane.pack2(self.uploads, True)
 		self.pane.set_position(self.get_size()[1])
-
+		
+		self.connect("key-press-event", self.delete_key)
 		self.connect("delete_event", self.hide_on_delete)
 		self.show_all()
 		
@@ -102,6 +100,13 @@ class Gui(gtk.Window, ServiceManager):
 		self.tray_icon = TrayIcon(self.show, self.hide, tray_menu)
 		self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)
 		
+	def delete_key(self, window, event):
+		"""pressed del or backspace key"""
+		if event.keyval == 65535:
+			model, paths = self.downloads.treeview.get_selection().get_selected_rows()
+			if len(paths) > 0:
+				self.remove(paths[0])
+
 	def not_implemented(self, widget):
 		""""""
 		w = Message(cons.SEVERITY_WARNING, "Not Implemented!", "The functionality you are trying to use is not implemented yet.")
@@ -192,26 +197,25 @@ class Gui(gtk.Window, ServiceManager):
 			if not len(paths[0]) > 1:
 				print "move down", self.downloads.move_down(model.get_iter(paths[0]))
 
-	def remove(self, button):
+	def remove(self, path):
 		"""Implementado solo para descargas"""
-		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
+		model = self.downloads.treeview.get_model()
 		status = [cons.STATUS_STOP, cons.STATUS_PEND, cons.STATUS_ERROR]
-		if len(paths) > 0:
-			if len(paths[0]) > 2:
-				print "remove link"
-				name, link = self.downloads.delete_link(status, model.get_iter(paths[0]))
-				if link:
-					print self.download_manager.delete_link(name, link)
-			elif len(paths[0]) > 1:
-				print "remove file"
-				name = self.downloads.delete_file(status, model.get_iter(paths[0]))
-				if name:
-					print self.download_manager.clear([name])
-			else:
-				print "remove package"
-				files = self.downloads.delete_package(status, model.get_iter(paths[0]))
-				if len(files) > 0:
-					print self.download_manager.clear(files)
+		if len(path) > 2:
+			print "remove link"
+			name, link = self.downloads.delete_link(status, model.get_iter(path))
+			if link:
+				print self.download_manager.delete_link(name, link)
+		elif len(path) > 1:
+			print "remove file"
+			name = self.downloads.delete_file(status, model.get_iter(path))
+			if name:
+				print self.download_manager.clear([name])
+		else:
+			print "remove package"
+			files = self.downloads.delete_package(status, model.get_iter(path))
+			if len(files) > 0:
+				print self.download_manager.clear(files)
 
 	def quit(self, dialog=None, response=None):
 		""""""

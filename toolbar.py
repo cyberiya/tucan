@@ -31,11 +31,8 @@ class Toolbar(gtk.Toolbar):
 		gtk.Toolbar.__init__(self)
 		self.set_style(gtk.TOOLBAR_BOTH)
 		for button in list:
-			if button[0] == None:
+			if button == None:
 				item = gtk.SeparatorToolItem()
-				if button[1]:
-					item.set_draw(False)
-					item.set_expand(True)
 			else:
 				item = gtk.ToolButton(button[1], button[0])
 				item.connect("clicked", button[2])
