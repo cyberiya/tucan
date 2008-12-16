@@ -35,6 +35,8 @@ class Preferences(gtk.Dialog):
 		self.set_title("Preferences")
 		self.set_size_request(500,500)
 		
+		self.path = "/home/crak/downloads/"
+		
 		self.notebook = gtk.Notebook()
 		self.notebook.set_property("homogeneous", True)
 		self.vbox.pack_start(self.notebook)
@@ -69,6 +71,7 @@ class Preferences(gtk.Dialog):
 		
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_NETWORK))
+		frame.set_border_width(5)
 		vbox.pack_start(frame, False, False)
 		vbox1 = gtk.VBox()
 		frame.add(vbox1)
@@ -84,7 +87,7 @@ class Preferences(gtk.Dialog):
 		spinbutton.set_increments(1,0)
 		spinbutton.set_numeric(True)
 		hbox.pack_start(spinbutton, False, False, 10)
-		vbox1.pack_start(hbox, False, False, 5)
+		vbox1.pack_start(hbox, False, False, 2)
 		
 		hbox = gtk.HBox()
 		label = gtk.Label("Max simultaneous uploads: ")
@@ -97,14 +100,26 @@ class Preferences(gtk.Dialog):
 		spinbutton.set_increments(1,0)
 		spinbutton.set_numeric(True)
 		hbox.pack_start(spinbutton, False, False, 10)
-		vbox1.pack_start(hbox, False, False)
+		vbox1.pack_start(hbox, False, False, 2)
 		
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_FOLDER))
+		frame.set_border_width(5)
 		vbox.pack_start(frame, False, False)
+		hbox = gtk.HBox()
+		frame.add(hbox)
+		label = gtk.Label("Downloads Folder: " + self.path)
+		hbox.pack_start(label, False, False, 10)
+		bbox = gtk.HButtonBox()
+		bbox.set_layout(gtk.BUTTONBOX_END)
+		hbox.pack_start(bbox, True, True, 10)
+		button = gtk.Button(None, gtk.STOCK_OPEN)
+		button.connect("clicked", self.choose_path)
+		bbox.pack_start(button)
 		
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_LANGUAGE))
+		frame.set_border_width(5)
 		vbox.pack_start(frame, False, False)
 		hbox = gtk.HBox()
 		frame.add(hbox)
@@ -121,6 +136,25 @@ class Preferences(gtk.Dialog):
 		
 		vbox.show_all()
 		return vbox
+
+	def choose_path(self, button):
+		""""""
+		model, iter = self.treeview.get_selection().get_selected()
+		if iter:
+			self.filechooser = gtk.FileChooserDialog('Select a Folder', self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+			choose_button = gtk.Button(None, gtk.STOCK_OK)
+			self.filechooser.action_area.pack_start(choose_button)
+			#self.filechooser.connect("response", self.on_choose, model.get_path(iter))
+			#choose_button.connect("clicked", self.on_choose, None, model.get_path(iter))
+			self.filechooser.set_position(gtk.WIN_POS_CENTER)
+			self.filechooser.show_all()
+			self.filechooser.run()
+			
+	def on_choose(self, widget, other, path):
+		""""""
+		self.change(None, path, self.filechooser.get_uri().split("file://").pop()+"/", 1)
+		self.filechooser.destroy()
+		del self.filechooser
 
 	def init_services(self):
 		""""""
