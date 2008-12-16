@@ -69,7 +69,7 @@ class Preferences(gtk.Dialog):
 		
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_NETWORK))
-		vbox.pack_start(frame)
+		vbox.pack_start(frame, False, False)
 		vbox1 = gtk.VBox()
 		frame.add(vbox1)
 		
@@ -77,6 +77,7 @@ class Preferences(gtk.Dialog):
 		label = gtk.Label("Max simultaneous downloads: ")
 		hbox.pack_start(label, False, False, 10)
 		aspect = gtk.AspectFrame()
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		hbox.pack_start(aspect)
 		spinbutton = gtk.SpinButton()
 		spinbutton.set_range(1,10)
@@ -89,6 +90,7 @@ class Preferences(gtk.Dialog):
 		label = gtk.Label("Max simultaneous uploads: ")
 		hbox.pack_start(label, False, False, 10)
 		aspect = gtk.AspectFrame()
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		hbox.pack_start(aspect)
 		spinbutton = gtk.SpinButton()
 		spinbutton.set_range(1,10)
@@ -99,10 +101,10 @@ class Preferences(gtk.Dialog):
 		
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_FOLDER))
-		vbox.pack_start(frame)
+		vbox.pack_start(frame, False, False)
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_LANGUAGE))
-		vbox.pack_start(frame)
+		vbox.pack_start(frame, False, False)
 		vbox.show_all()
 		return vbox
 
