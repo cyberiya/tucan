@@ -79,8 +79,12 @@ class Gui(gtk.Window, ServiceManager):
 		stop = "Stop Selected", gtk.image_new_from_file(cons.ICON_STOP), self.stop
 		self.vbox.pack_start(Toolbar([download, upload, None, clear, None, up, down, None, start, stop]), False)
 		
+		delete = gtk.STOCK_REMOVE, self.delete
+		start = gtk.STOCK_MEDIA_PLAY, self.start
+		stop = gtk.STOCK_MEDIA_STOP, self.stop
+		
 		#trees
-		self.downloads = Tree(self.download_manager.get_files)
+		self.downloads = Tree([delete], self.download_manager.get_files)
 		#self.uploads = Tree()
 		self.uploads = gtk.VBox()
 		
@@ -101,11 +105,9 @@ class Gui(gtk.Window, ServiceManager):
 		self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)
 		
 	def delete_key(self, window, event):
-		"""pressed del or backspace key"""
+		"""pressed del key"""
 		if event.keyval == 65535:
-			model, paths = self.downloads.treeview.get_selection().get_selected_rows()
-			if len(paths) > 0:
-				self.remove(paths[0])
+			self.delete()
 
 	def not_implemented(self, widget):
 		""""""
@@ -197,25 +199,26 @@ class Gui(gtk.Window, ServiceManager):
 			if not len(paths[0]) > 1:
 				print "move down", self.downloads.move_down(model.get_iter(paths[0]))
 
-	def remove(self, path):
+	def delete(self, button=None):
 		"""Implementado solo para descargas"""
-		model = self.downloads.treeview.get_model()
+		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		status = [cons.STATUS_STOP, cons.STATUS_PEND, cons.STATUS_ERROR]
-		if len(path) > 2:
-			print "remove link"
-			name, link = self.downloads.delete_link(status, model.get_iter(path))
-			if link:
-				print self.download_manager.delete_link(name, link)
-		elif len(path) > 1:
-			print "remove file"
-			name = self.downloads.delete_file(status, model.get_iter(path))
-			if name:
-				print self.download_manager.clear([name])
-		else:
-			print "remove package"
-			files = self.downloads.delete_package(status, model.get_iter(path))
-			if len(files) > 0:
-				print self.download_manager.clear(files)
+		if len(paths) > 0:
+			if len(paths[0]) > 2:
+				print "remove link"
+				name, link = self.downloads.delete_link(status, model.get_iter(paths[0]))
+				if link:
+					print self.download_manager.delete_link(name, link)
+			elif len(paths[0]) > 1:
+				print "remove file"
+				name = self.downloads.delete_file(status, model.get_iter(paths[0]))
+				if name:
+					print self.download_manager.clear([name])
+			else:
+				print "remove package"
+				files = self.downloads.delete_package(status, model.get_iter(paths[0]))
+				if len(files) > 0:
+					print self.download_manager.clear(files)
 
 	def quit(self, dialog=None, response=None):
 		""""""

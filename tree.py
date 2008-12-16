@@ -30,7 +30,7 @@ import cons
 
 class Tree(gtk.VBox):
 	""""""
-	def __init__(self, get_files):
+	def __init__(self, menu, get_files):
 		""""""
 		gtk.VBox.__init__(self)
 		scroll = gtk.ScrolledWindow()
@@ -38,6 +38,17 @@ class Tree(gtk.VBox):
 		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str, int, bool, str, str, str, str, str))
 		scroll.add(self.treeview)
 		self.pack_start(scroll)
+		
+		self.menu = gtk.Menu()
+		for item in menu:
+			if item == None:
+				subitem = gtk.SeparatorMenuItem()
+			else:
+				subitem = gtk.ImageMenuItem(item[0])
+				subitem.connect("activate", item[1])
+			self.menu.append(subitem)
+		self.menu.show_all()
+		self.treeview.connect("button-press-event", self.mouse_menu)
 
 		self.get_files = get_files
 
@@ -114,6 +125,13 @@ class Tree(gtk.VBox):
 		self.pack_start(self.status_bar, False)
 		self.status_bar.push(self.status_bar.get_context_id("Downloads"), " No Downloads Active.")
 		self.updating = False
+		
+	def mouse_menu(self, widget, event):
+		"""right button"""
+		if event.button == 3:
+			model, paths = self.treeview.get_selection().get_selected_rows()
+			if len(paths) > 0:
+				self.menu.popup(None, None, None, event.button, event.time)
 
 	def add_package(self, package_name, package_path, package):
 		"""
