@@ -31,7 +31,7 @@ class Preferences(gtk.Dialog):
 	def __init__(self):
 		""""""
 		gtk.Dialog.__init__(self)
-		self.set_icon(self.render_icon(gtk.STOCK_PREFERENCES, gtk.ICON_SIZE_MENU))
+		self.set_icon_from_file(cons.ICON_PREFERENCES)
 		self.set_title("Preferences")
 		#self.set_resizable(False)
 		self.set_size_request(500,500)
@@ -71,12 +71,31 @@ class Preferences(gtk.Dialog):
 		vbox = gtk.VBox()
 		
 		frame = gtk.Frame()
+		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_LANGUAGE))
+		frame.set_border_width(5)
+		vbox.pack_start(frame, False, False)
+		hbox = gtk.HBox()
+		vbox1 = gtk.VBox()
+		frame.add(vbox1)
+		hbox = gtk.HBox()
+		vbox1.pack_start(hbox, False, False, 5)
+		label = gtk.Label("Choose language: ")
+		hbox.pack_start(label, False, False, 10)
+		aspect = gtk.AspectFrame()
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
+		hbox.pack_start(aspect)
+		combobox = gtk.combo_box_new_text()
+		for lang in ["English", "French", "German", "Japanese", "Spanish"]:
+			combobox.append_text(lang)
+		combobox.set_active(0)
+		hbox.pack_start(combobox, False, False, 10)
+
+		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_NETWORK))
 		frame.set_border_width(5)
 		vbox.pack_start(frame, False, False)
 		vbox1 = gtk.VBox()
 		frame.add(vbox1)
-		
 		hbox = gtk.HBox()
 		label = gtk.Label("Max simultaneous downloads: ")
 		hbox.pack_start(label, False, False, 10)
@@ -89,7 +108,6 @@ class Preferences(gtk.Dialog):
 		spinbutton.set_numeric(True)
 		hbox.pack_start(spinbutton, False, False, 10)
 		vbox1.pack_start(hbox, False, False, 2)
-		
 		hbox = gtk.HBox()
 		label = gtk.Label("Max simultaneous uploads: ")
 		hbox.pack_start(label, False, False, 10)
@@ -119,26 +137,6 @@ class Preferences(gtk.Dialog):
 		button = gtk.Button(None, gtk.STOCK_OPEN)
 		button.connect("clicked", self.choose_path)
 		bbox.pack_start(button)
-		
-		frame = gtk.Frame()
-		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_LANGUAGE))
-		frame.set_border_width(5)
-		vbox.pack_start(frame, False, False)
-		hbox = gtk.HBox()
-		vbox1 = gtk.VBox()
-		frame.add(vbox1)
-		hbox = gtk.HBox()
-		vbox1.pack_start(hbox, False, False, 5)
-		label = gtk.Label("Choose language: ")
-		hbox.pack_start(label, False, False, 10)
-		aspect = gtk.AspectFrame()
-		aspect.set_shadow_type(gtk.SHADOW_NONE)
-		hbox.pack_start(aspect)
-		combobox = gtk.combo_box_new_text()
-		for lang in ["English", "French", "German", "Japanese", "Spanish"]:
-			combobox.append_text(lang)
-		combobox.set_active(0)
-		hbox.pack_start(combobox, False, False, 10)
 		
 		vbox.show_all()
 		return vbox
