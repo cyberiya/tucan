@@ -34,4 +34,4 @@ if __name__ == "__main__":
 	f = open("tmp.jpg", "w")
 	f.write(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read())
 	f.close()
-	#print urllib2.urlopen(urllib2.Request("http://www.gigasize.com/get.php/3196987695/p3x03sp.avi")).read()
+	print urllib2.urlopen(urllib2.Request("http://www.gigasize.com/get.php/3196987695/p3x03sp.avi")).read()
