@@ -163,7 +163,45 @@ class Preferences(gtk.Dialog):
 
 	def init_services(self):
 		""""""
-		return gtk.VBox()
+		vbox = gtk.VBox()
+		
+		frame = gtk.Frame()
+		vbox.pack_start(frame)
+		frame.set_border_width(10)
+		scroll = gtk.ScrolledWindow()
+		frame.add(scroll)
+		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		store = gtk.ListStore(gtk.gdk.Pixbuf, str)
+		self.treeview = gtk.TreeView(store)
+		scroll.add(self.treeview)
+		
+		self.treeview.set_rules_hint(True)
+		self.treeview.set_headers_visible(False)
+		
+		tree_icon = gtk.TreeViewColumn('Icon') 
+		icon_cell = gtk.CellRendererPixbuf()
+		tree_icon.pack_start(icon_cell, True)
+		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
+		self.treeview.append_column(tree_icon)
+		
+		tree_name = gtk.TreeViewColumn('Name') 
+		name_cell = gtk.CellRendererText()
+		tree_name.pack_start(name_cell, True)
+		tree_name.add_attribute(name_cell, 'text', 1)
+		self.treeview.append_column(tree_name)
+		
+		#fill store
+		icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
+		for service in ["megaupload.com", "rapidshare.com"]:
+			store.append((icon, service))
+		
+		frame = gtk.Frame()
+		vbox.pack_start(frame)
+		frame.set_border_width(10)
+		vbox1 = gtk.VBox()
+		frame.add(vbox1)
+		
+		return vbox
 		
 	def init_advanced(self):
 		""""""
