@@ -33,7 +33,7 @@ class Preferences(gtk.Dialog):
 		gtk.Dialog.__init__(self)
 		self.set_icon(self.render_icon(gtk.STOCK_PREFERENCES, gtk.ICON_SIZE_MENU))
 		self.set_title("Preferences")
-		self.set_resizable(False)
+		#self.set_resizable(False)
 		self.set_size_request(500,500)
 		
 		self.path = "/home/crak/downloads/"
@@ -149,12 +149,12 @@ class Preferences(gtk.Dialog):
 		choose_button = gtk.Button(None, gtk.STOCK_OK)
 		self.filechooser.action_area.pack_start(choose_button)
 		self.filechooser.connect("response", self.on_choose, False)
-		choose_button.connect("clicked", self.on_choose, True)
+		choose_button.connect("clicked", self.on_choose, None, True)
 		self.filechooser.set_position(gtk.WIN_POS_CENTER)
 		self.filechooser.show_all()
 		self.filechooser.run()
 			
-	def on_choose(self, widget, choosed):
+	def on_choose(self, widget, response, choosed):
 		""""""
 		if choosed:
 			self.path = self.filechooser.get_uri().split("file://").pop()+"/"
@@ -219,12 +219,6 @@ class Preferences(gtk.Dialog):
 		button.connect("clicked", self.close)
 		bbox.pack_start(button)
 		
-		aspect = gtk.AspectFrame()
-		aspect.set_border_width(10)
-		aspect.set_shadow_type(gtk.SHADOW_NONE)
-		vbox.pack_start(aspect)
-
-		
 		return vbox
 
 	def toggled(self, button, path):
@@ -238,7 +232,19 @@ class Preferences(gtk.Dialog):
 
 	def init_advanced(self):
 		""""""
-		return gtk.VBox()
+		frame = gtk.Frame()
+		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ADVANCED))
+		frame.set_border_width(10)
+		hbox = gtk.HBox()
+		frame.add(hbox)
+		vbox = gtk.VBox()
+		hbox.pack_start(vbox, True, True, 10)
+		check = gtk.CheckButton("Close to tray.")
+		vbox.pack_start(check, False, False, 5)
+		check = gtk.CheckButton("Default advanced packages.")
+		vbox.pack_start(check, False, False, 5)
+		
+		return frame
 		
 	def close(self, widget=None, other=None):
 		""""""
