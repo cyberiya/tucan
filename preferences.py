@@ -33,6 +33,7 @@ class Preferences(gtk.Dialog):
 		gtk.Dialog.__init__(self)
 		self.set_icon(self.render_icon(gtk.STOCK_PREFERENCES, gtk.ICON_SIZE_MENU))
 		self.set_title("Preferences")
+		self.set_resizable(False)
 		self.set_size_request(500,500)
 		
 		self.path = "/home/crak/downloads/"
@@ -106,8 +107,10 @@ class Preferences(gtk.Dialog):
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_FOLDER))
 		frame.set_border_width(5)
 		vbox.pack_start(frame, False, False)
+		vbox1 = gtk.VBox()
+		frame.add(vbox1)
 		hbox = gtk.HBox()
-		frame.add(hbox)
+		vbox1.pack_start(hbox, False, False, 5)
 		label = gtk.Label("Downloads Folder: " + self.path)
 		hbox.pack_start(label, False, False, 10)
 		bbox = gtk.HButtonBox()
@@ -122,7 +125,10 @@ class Preferences(gtk.Dialog):
 		frame.set_border_width(5)
 		vbox.pack_start(frame, False, False)
 		hbox = gtk.HBox()
-		frame.add(hbox)
+		vbox1 = gtk.VBox()
+		frame.add(vbox1)
+		hbox = gtk.HBox()
+		vbox1.pack_start(hbox, False, False, 5)
 		label = gtk.Label("Choose language: ")
 		hbox.pack_start(label, False, False, 10)
 		aspect = gtk.AspectFrame()
@@ -139,20 +145,19 @@ class Preferences(gtk.Dialog):
 
 	def choose_path(self, button):
 		""""""
-		model, iter = self.treeview.get_selection().get_selected()
-		if iter:
-			self.filechooser = gtk.FileChooserDialog('Select a Folder', self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
-			choose_button = gtk.Button(None, gtk.STOCK_OK)
-			self.filechooser.action_area.pack_start(choose_button)
-			#self.filechooser.connect("response", self.on_choose, model.get_path(iter))
-			#choose_button.connect("clicked", self.on_choose, None, model.get_path(iter))
-			self.filechooser.set_position(gtk.WIN_POS_CENTER)
-			self.filechooser.show_all()
-			self.filechooser.run()
+		self.filechooser = gtk.FileChooserDialog('Select a Folder', self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+		choose_button = gtk.Button(None, gtk.STOCK_OK)
+		self.filechooser.action_area.pack_start(choose_button)
+		self.filechooser.connect("response", self.on_choose, False)
+		choose_button.connect("clicked", self.on_choose, True)
+		self.filechooser.set_position(gtk.WIN_POS_CENTER)
+		self.filechooser.show_all()
+		self.filechooser.run()
 			
-	def on_choose(self, widget, other, path):
+	def on_choose(self, widget, choosed):
 		""""""
-		self.change(None, path, self.filechooser.get_uri().split("file://").pop()+"/", 1)
+		if choosed:
+			self.path = self.filechooser.get_uri().split("file://").pop()+"/"
 		self.filechooser.destroy()
 		del self.filechooser
 
