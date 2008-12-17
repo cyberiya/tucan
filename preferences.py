@@ -166,12 +166,13 @@ class Preferences(gtk.Dialog):
 		vbox = gtk.VBox()
 		
 		frame = gtk.Frame()
+		frame.set_size_request(-1, 300)
 		vbox.pack_start(frame)
 		frame.set_border_width(10)
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		store = gtk.ListStore(gtk.gdk.Pixbuf, str)
+		store = gtk.ListStore(gtk.gdk.Pixbuf, str, bool)
 		self.treeview = gtk.TreeView(store)
 		scroll.add(self.treeview)
 		
@@ -180,32 +181,41 @@ class Preferences(gtk.Dialog):
 		
 		tree_icon = gtk.TreeViewColumn('Icon') 
 		icon_cell = gtk.CellRendererPixbuf()
+		icon_cell.set_property("width", 100)
 		tree_icon.pack_start(icon_cell, True)
 		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
 		self.treeview.append_column(tree_icon)
 		
-		tree_name = gtk.TreeViewColumn('Name') 
+		tree_name = gtk.TreeViewColumn('Name')
 		name_cell = gtk.CellRendererText()
+		name_cell.set_property("width", 300)
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 1)
 		self.treeview.append_column(tree_name)
 		
+		tree_enable = gtk.TreeViewColumn('Enable')
+		enable_cell = gtk.CellRendererToggle()
+		enable_cell.connect("toggled", self.toggled)
+		tree_enable.pack_start(enable_cell, False)
+		tree_enable.add_attribute(enable_cell, 'active', 2)
+		self.treeview.append_column(tree_enable)
+		
 		#fill store
 		icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
 		for service in ["megaupload.com", "rapidshare.com"]:
-			store.append((icon, service))
+			store.append((icon, service, True))
 		
 		frame = gtk.Frame()
 		frame.set_border_width(10)
 		frame.set_shadow_type(gtk.SHADOW_NONE)
 		vbox.pack_start(frame, False, False)
 		bbox = gtk.HButtonBox()
-		bbox.set_layout(gtk.BUTTONBOX_END)
+		bbox.set_layout(gtk.BUTTONBOX_START)
 		frame.add(bbox)
-		button = gtk.Button(None, gtk.STOCK_REMOVE)
+		button = gtk.Button(None, gtk.STOCK_ADD)
 		button.connect("clicked", self.close)
 		bbox.pack_start(button)
-		button = gtk.Button(None, gtk.STOCK_ADD)
+		button = gtk.Button(None, gtk.STOCK_REMOVE)
 		button.connect("clicked", self.close)
 		bbox.pack_start(button)
 		
@@ -216,7 +226,16 @@ class Preferences(gtk.Dialog):
 
 		
 		return vbox
-		
+
+	def toggled(self, button, path):
+		""""""
+		model = self.treeview.get_model()
+		active = True
+		if button.get_active():
+			active = False
+		button.set_active(active)
+		model.set_value(model.get_iter(path), 2, active)
+
 	def init_advanced(self):
 		""""""
 		return gtk.VBox()
