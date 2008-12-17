@@ -19,10 +19,28 @@
 ##	along with this program; if not, write to the Free Software
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
-
+import time
 import urllib
 import urllib2
 import cookielib
+
+from HTMLParser import HTMLParser
+
+class FormParser(HTMLParser):
+	""""""
+	def __init__(self, data):
+		""""""
+		HTMLParser.__init__(self)
+		self.form_action = None
+		self.feed(data)
+		self.close()
+		print self.form_action
+
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "form":
+			if ((len(attrs) == 3) and (attrs[2][1] == "formDownload")):
+				self.form_action = attrs[0][1]
 
 if __name__ == "__main__":
 	urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar())))
@@ -30,8 +48,20 @@ if __name__ == "__main__":
 	f = open("tmp.jpg", "w")
 	f.write(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read())
 	f.close()
+	
 	captcha = str(raw_input()).strip()
 	data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
 	handle = urllib2.urlopen(urllib2.Request("http://www.gigasize.com/formdownload.php"), data)
-	print handle.read()
+	f = FormParser(handle.read())
+	handle.close()
+	timer = 60
+	while timer > 0:
+		time.sleep(1)
+		timer -= 1
+		print timer
+	data = urllib.urlencode({"dlb": "Download"})
+	handle = urllib2.urlopen(urllib2.Request("http://www.gigasize.com" + f.form_action), data)
+	while len(data) > 0:
+		data = handle.read(1024)
+		print data
 	handle.close()
