@@ -196,10 +196,24 @@ class Preferences(gtk.Dialog):
 			store.append((icon, service))
 		
 		frame = gtk.Frame()
-		vbox.pack_start(frame)
 		frame.set_border_width(10)
-		vbox1 = gtk.VBox()
-		frame.add(vbox1)
+		frame.set_shadow_type(gtk.SHADOW_NONE)
+		vbox.pack_start(frame, False, False)
+		bbox = gtk.HButtonBox()
+		bbox.set_layout(gtk.BUTTONBOX_END)
+		frame.add(bbox)
+		button = gtk.Button(None, gtk.STOCK_REMOVE)
+		button.connect("clicked", self.close)
+		bbox.pack_start(button)
+		button = gtk.Button(None, gtk.STOCK_ADD)
+		button.connect("clicked", self.close)
+		bbox.pack_start(button)
+		
+		aspect = gtk.AspectFrame()
+		aspect.set_border_width(10)
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
+		vbox.pack_start(aspect)
+
 		
 		return vbox
 		
