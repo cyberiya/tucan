@@ -30,13 +30,14 @@ TEXT_PATH = "tmp.txt"
 
 class Tesseract:
 	""""""
-	def __init__(self, data):
+	def __init__(self, data, filter=None):
 		""""""
 		p = ImageFile.Parser()
 		p.feed(data)
 		image = p.close()
 		image = image.resize((180,60), Image.BICUBIC)
-		image = image.point(self.filter_pixel)
+		if filter:
+			image = image.point(self.filter_pixel)
 		image = ImageOps.grayscale(image)
 		image.save(IMAGE_PATH)
 	
@@ -45,7 +46,6 @@ class Tesseract:
 		if os.system("tesseract "+ IMAGE_PATH + " tmp") == 0:
 			f = file(TEXT_PATH, "r")
 			captcha = f.readline().strip()
-			print captcha
 			if len(captcha) == num_chars:
 				return captcha
 				

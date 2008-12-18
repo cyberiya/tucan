@@ -48,7 +48,7 @@ if __name__ == "__main__":
 	urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar())))
 	urllib2.urlopen(urllib2.Request("http://www.gigasize.com/get.php/3196987695/p3x03sp.avi"))
 
-	tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read())
+	tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read(), True)
 	captcha = tes.get_captcha(3)
 	
 	data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
