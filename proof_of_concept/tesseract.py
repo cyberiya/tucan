@@ -21,6 +21,7 @@
 ###############################################################################
 
 import os
+import Image
 import ImageFile
 import ImageOps
 
@@ -34,28 +35,28 @@ class Tesseract:
 		p = ImageFile.Parser()
 		p.feed(data)
 		image = p.close()
+		image = image.resize((180,60), Image.BICUBIC)
+		image = image.point(self.filter_pixel)
 		image = ImageOps.grayscale(image)
 		image.save(IMAGE_PATH)
 	
 	def get_captcha(self, num_chars):
-	""""""
-	if os.system("tesseract "+ IMAGE_PATH + " tmp") == 0:
-		f = file(TEXT_PATH, "r")
-		captcha = f.readline().strip()
-		if len(captcha) == num_chars:
-			return captcha
-	
+		""""""
+		if os.system("tesseract "+ IMAGE_PATH + " tmp") == 0:
+			f = file(TEXT_PATH, "r")
+			captcha = f.readline().strip()
+			print captcha
+			if len(captcha) == num_chars:
+				return captcha
+				
+	def filter_pixel(self, pixel):
+		""""""
+		if pixel > 50:
+			return 255
+		else:
+			return 1
+
 if __name__ == "__main__":
-	correct = []
-	incorrect = []
-	for archive in os.listdir("images"):
-		f = file("images/" + archive , "r")
-		t = Tesseract(f.read())
-		result = t.get_captcha(3)
-	if result:
-		correct.append((archive, result))
-	else:
-		incorrect.append((archive, result))
-	print len(incorrect)
-	for i in correct:
-		print i
+	f = file("tmp.jpg", "r")
+	t = Tesseract(f.read())
+	print t.get_captcha(3)
