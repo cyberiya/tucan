@@ -26,6 +26,8 @@ import cookielib
 
 from HTMLParser import HTMLParser
 
+from tesseract import Tesseract
+
 class FormParser(HTMLParser):
 	""""""
 	def __init__(self, data):
@@ -45,23 +47,23 @@ class FormParser(HTMLParser):
 if __name__ == "__main__":
 	urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar())))
 	urllib2.urlopen(urllib2.Request("http://www.gigasize.com/get.php/3196987695/p3x03sp.avi"))
-	f = open("tmp.jpg", "w")
-	f.write(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read())
-	f.close()
+
+	tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read())
+	captcha = tes.get_captcha(3)
 	
-	captcha = str(raw_input()).strip()
 	data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
 	handle = urllib2.urlopen(urllib2.Request("http://www.gigasize.com/formdownload.php"), data)
 	f = FormParser(handle.read())
 	handle.close()
-	timer = 60
-	while timer > 0:
-		time.sleep(1)
-		timer -= 1
-		print timer
-	data = urllib.urlencode({"dlb": "Download"})
-	handle = urllib2.urlopen(urllib2.Request("http://www.gigasize.com" + f.form_action), data)
-	while len(data) > 0:
-		data = handle.read(1024)
-		print data
-	handle.close()
+	if f.form_action:
+		timer = 60
+		while timer > 0:
+			time.sleep(1)
+			timer -= 1
+			print timer
+		data = urllib.urlencode({"dlb": "Download"})
+		handle = urllib2.urlopen(urllib2.Request("http://www.gigasize.com" + f.form_action), data)
+		while len(data) > 0:
+			data = handle.read(1024)
+			print data
+		handle.close()
