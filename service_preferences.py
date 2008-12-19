@@ -39,7 +39,8 @@ class ServicePreferences(gtk.Dialog):
 		self.vbox.pack_start(hbox, True, True, 5)
 		frame = gtk.Frame()
 		hbox.pack_start(frame, False, False, 10)
-		store = gtk.TreeStore(str)
+		
+		store = gtk.TreeStore(str, int)
 		treeview = gtk.TreeView(store)
 		treeview.get_selection().connect("changed", self.select)
 		frame.add(treeview)
@@ -53,11 +54,22 @@ class ServicePreferences(gtk.Dialog):
 		tree_name.add_attribute(name_cell, 'text', 0)
 		treeview.append_column(tree_name)
 		
+		self.notebook = gtk.Notebook()
+		hbox.pack_start(self.notebook, True, True, 10)
+		#self.notebook.set_show_tabs(False)
+		
+		cont = 0
 		for item in ["Downloads", "Uploads"]:
-			iter = store.append(None, [item])
+			iter = store.append(None, [item, -1])
 			for subitem in ["Anonymous", "User", "Premium"]:
-				store.append(iter, [subitem])
-		treeview.expand_all()
+				self.notebook.append_page(gtk.VBox(), None)
+				subiter = store.append(iter, [subitem, cont])
+				treeview.expand_to_path(store.get_path(subiter))
+				if cont == 0:
+					treeview.set_cursor_on_cell(store.get_path(subiter))
+				cont += 1
+		
+
 
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
@@ -79,9 +91,8 @@ class ServicePreferences(gtk.Dialog):
 			if child_iter:
 				selection.unselect_iter(iter)
 			else:
-				print "mierda"
-			
-		
+				self.notebook.set_current_page(model.get_value(iter, 1))
+
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
