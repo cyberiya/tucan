@@ -49,7 +49,7 @@ class AccountPreferences(gtk.VBox):
 		scroll = gtk.ScrolledWindow()
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		frame.add(scroll)
-		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str)
+		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool)
 		self.treeview = gtk.TreeView(store)
 		scroll.add(self.treeview)
 		
@@ -65,7 +65,7 @@ class AccountPreferences(gtk.VBox):
 		
 		tree_name = gtk.TreeViewColumn('User Name') 
 		name_cell = gtk.CellRendererText()
-		name_cell.set_property("width", 100)
+		name_cell.set_property("width", 120)
 		name_cell.set_property("editable", True)
 		name_cell.connect("edited", self.change, 1)
 		tree_name.pack_start(name_cell, True)
@@ -74,40 +74,73 @@ class AccountPreferences(gtk.VBox):
 
 		tree_pass = gtk.TreeViewColumn('Password') 
 		pass_cell = gtk.CellRendererText()
-		pass_cell.set_property("width", 100)
+		pass_cell.set_property("width", 120)
 		pass_cell.set_property("editable", True)
 		pass_cell.connect("edited", self.change, 2)
 		tree_pass.pack_start(pass_cell, True)
 		tree_pass.add_attribute(pass_cell, 'text', 2)
 		self.treeview.append_column(tree_pass)
 
-		self.active_service_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_MENU)
-		self.unactive_service_icon = self.treeview.render_icon(gtk.STOCK_NO, gtk.ICON_SIZE_MENU)
+		tree_enable = gtk.TreeViewColumn('Enable')
+		enable_cell = gtk.CellRendererToggle()
+		enable_cell.connect("toggled", self.toggled)
+		tree_enable.pack_start(enable_cell, False)
+		tree_enable.add_attribute(enable_cell, 'active', 3)
+		self.treeview.append_column(tree_enable)
+
+		self.active_service_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_LARGE_TOOLBAR)
+		self.unactive_service_icon = self.treeview.render_icon(gtk.STOCK_NO, gtk.ICON_SIZE_LARGE_TOOLBAR)
 		
 		for name, password in [("mierda", "puta"),("hostia", "cojones")]:
-			store.append([self.unactive_service_icon, name, password])
-			store.append([self.unactive_service_icon, name, password])
-			store.append([self.unactive_service_icon, name, password])
-			
+			store.append([self.unactive_service_icon, name, password, True])
+
 		frame = gtk.Frame()
 		frame.set_border_width(10)
 		frame.set_shadow_type(gtk.SHADOW_NONE)
 		self.pack_start(frame, False, False)
 		bbox = gtk.HButtonBox()
-		bbox.set_layout(gtk.BUTTONBOX_START)
+		bbox.set_layout(gtk.BUTTONBOX_EDGE)
 		frame.add(bbox)
 		button = gtk.Button(None, gtk.STOCK_ADD)
-		#button.connect("clicked", self.close)
+		button.connect("clicked", self.add)
 		bbox.pack_start(button)
 		button = gtk.Button(None, gtk.STOCK_REMOVE)
-		#button.connect("clicked", self.close)
+		button.connect("clicked", self.remove)
 		bbox.pack_start(button)
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		bbox.pack_start(aspect)
 		button = gtk.Button(None, gtk.STOCK_REFRESH)
-		#button.connect("clicked", self.close)
+		button.connect("clicked", self.check)
 		bbox.pack_start(button)
+		
+	def add(self, button):
+		""""""
+		model = self.treeview.get_model()
+		iter = model.append([self.unactive_service_icon, "None", "None", False])
+		self.treeview.set_cursor(model.get_path(iter), self.treeview.get_column(1), True)
+
+	def remove(self, button):
+		""""""
+		model, iter = self.treeview.get_selection().get_selected()
+		if iter:
+			model.remove(iter)
+
+	def check(self, button):
+		""""""
+		model, iter = self.treeview.get_selection().get_selected()
+		if iter:
+			print "download cookie", model.get_value(iter, 1), model.get_value(iter, 2)
+
+	def toggled(self, button, path):
+		""""""
+		model = self.treeview.get_model()
+		if button.get_active():
+			active = False
+		else:
+			active = True
+		button.set_active(active)
+		model.set_value(model.get_iter(path), 3, active)
 
 	def change(self, cellrenderertext, path, new_text, column):
 		""""""
