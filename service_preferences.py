@@ -41,6 +41,7 @@ class ServicePreferences(gtk.Dialog):
 		hbox.pack_start(frame, False, False, 10)
 		store = gtk.TreeStore(str)
 		treeview = gtk.TreeView(store)
+		treeview.get_selection().connect("changed", self.select)
 		frame.add(treeview)
 		
 		treeview.set_headers_visible(False)
@@ -48,7 +49,6 @@ class ServicePreferences(gtk.Dialog):
 		tree_name = gtk.TreeViewColumn('Name')
 		name_cell = gtk.CellRendererText()
 		name_cell.set_property("width", 100)
-		name_cell.set_property("mode", gtk.CELL_RENDERER_MODE_EDITABLE)
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 0)
 		treeview.append_column(tree_name)
@@ -70,6 +70,17 @@ class ServicePreferences(gtk.Dialog):
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
+		
+	def select(self, selection):
+		""""""
+		model, iter = selection.get_selected()
+		if iter:
+			child_iter = model.iter_children(iter)
+			if child_iter:
+				selection.unselect_iter(iter)
+			else:
+				print "mierda"
+			
 		
 	def close(self, widget=None, other=None):
 		""""""
