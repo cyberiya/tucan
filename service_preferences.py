@@ -26,6 +26,72 @@ import gtk
 
 import cons
 
+class AnonymousPreferences(gtk.VBox):
+	""""""
+	def __init__(self, name):
+		""""""
+		gtk.VBox.__init__(self)
+		label = gtk.Label(name)
+		self.pack_start(label)
+
+class AccountPreferences(gtk.VBox):
+	""""""
+	def __init__(self, name):
+		""""""
+		gtk.VBox.__init__(self)
+		label = gtk.Label(name)
+		self.pack_start(label, False, False, 10)
+		
+		frame = gtk.Frame()
+		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ACCOUNT))
+		frame.set_border_width(5)
+		self.pack_start(frame, False, False)
+		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str)
+		self.treeview = gtk.TreeView(store)
+		frame.add(self.treeview)
+		
+		self.treeview.set_rules_hint(True)
+		self.treeview.set_headers_visible(False)		
+
+		tree_icon = gtk.TreeViewColumn('Active') 
+		icon_cell = gtk.CellRendererPixbuf()
+		icon_cell.set_property("width", 50)
+		tree_icon.pack_start(icon_cell, True)
+		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
+		self.treeview.append_column(tree_icon)
+		
+		tree_name = gtk.TreeViewColumn('User Name') 
+		name_cell = gtk.CellRendererText()
+		name_cell.set_property("width", 100)
+		name_cell.set_property("editable", True)
+		name_cell.connect("edited", self.change, 1)
+		tree_name.pack_start(name_cell, True)
+		tree_name.add_attribute(name_cell, 'text', 1)
+		self.treeview.append_column(tree_name)
+
+		tree_pass = gtk.TreeViewColumn('Password') 
+		pass_cell = gtk.CellRendererText()
+		pass_cell.set_property("width", 100)
+		pass_cell.set_property("editable", True)
+		pass_cell.connect("edited", self.change, 2)
+		tree_pass.pack_start(pass_cell, True)
+		tree_pass.add_attribute(pass_cell, 'text', 2)
+		self.treeview.append_column(tree_pass)
+
+		self.active_service_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_MENU)
+		self.unactive_service_icon = self.treeview.render_icon(gtk.STOCK_NO, gtk.ICON_SIZE_MENU)
+		
+		for name, password in [("mierda", "puta"),("hostia", "cojones")]:
+			store.append([self.unactive_service_icon, name, password])
+			store.append([self.unactive_service_icon, name, password])
+			store.append([self.unactive_service_icon, name, password])
+
+
+	def change(self, cellrenderertext, path, new_text, column):
+		""""""
+		model = self.treeview.get_model()
+		model.set_value(model.get_iter(path), column, new_text)
+
 class ServicePreferences(gtk.Dialog):
 	""""""
 	def __init__(self, name, icon):
@@ -62,10 +128,11 @@ class ServicePreferences(gtk.Dialog):
 		for item in ["Downloads", "Uploads"]:
 			iter = store.append(None, [item, -1])
 			for subitem in ["Anonymous", "User", "Premium"]:
+				page = gtk.VBox()
 				if subitem == "Anonymous":
-					page = self.init_anonymous_preferences(subitem + " " + item)
+					page = AnonymousPreferences(subitem + " " + item)
 				else:
-					page = self.init_account_preferences(subitem + " " + item)
+					page = AccountPreferences(subitem + " " + item)
 				self.notebook.append_page(page, None)
 				subiter = store.append(iter, [subitem, cont])
 				treeview.expand_to_path(store.get_path(subiter))
@@ -94,20 +161,6 @@ class ServicePreferences(gtk.Dialog):
 				selection.select_iter(child_iter)
 			else:
 				self.notebook.set_current_page(model.get_value(iter, 1))
-
-	def init_anonymous_preferences(self, name):
-		""""""
-		vbox = gtk.VBox()
-		label = gtk.Label(name)
-		vbox.pack_start(label)
-		return vbox
-		
-	def init_account_preferences(self, name):
-		""""""
-		vbox = gtk.VBox()
-		label = gtk.Label(name)
-		vbox.pack_start(label)
-		return vbox
 
 	def close(self, widget=None, other=None):
 		""""""
