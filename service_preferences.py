@@ -44,11 +44,14 @@ class AccountPreferences(gtk.VBox):
 		
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ACCOUNT))
-		frame.set_border_width(5)
-		self.pack_start(frame, False, False)
+		frame.set_border_width(10)
+		self.pack_start(frame)
+		scroll = gtk.ScrolledWindow()
+		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		frame.add(scroll)
 		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str)
 		self.treeview = gtk.TreeView(store)
-		frame.add(self.treeview)
+		scroll.add(self.treeview)
 		
 		self.treeview.set_rules_hint(True)
 		self.treeview.set_headers_visible(False)		
@@ -85,7 +88,26 @@ class AccountPreferences(gtk.VBox):
 			store.append([self.unactive_service_icon, name, password])
 			store.append([self.unactive_service_icon, name, password])
 			store.append([self.unactive_service_icon, name, password])
-
+			
+		frame = gtk.Frame()
+		frame.set_border_width(10)
+		frame.set_shadow_type(gtk.SHADOW_NONE)
+		self.pack_start(frame, False, False)
+		bbox = gtk.HButtonBox()
+		bbox.set_layout(gtk.BUTTONBOX_START)
+		frame.add(bbox)
+		button = gtk.Button(None, gtk.STOCK_ADD)
+		#button.connect("clicked", self.close)
+		bbox.pack_start(button)
+		button = gtk.Button(None, gtk.STOCK_REMOVE)
+		#button.connect("clicked", self.close)
+		bbox.pack_start(button)
+		aspect = gtk.AspectFrame()
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
+		bbox.pack_start(aspect)
+		button = gtk.Button(None, gtk.STOCK_REFRESH)
+		#button.connect("clicked", self.close)
+		bbox.pack_start(button)
 
 	def change(self, cellrenderertext, path, new_text, column):
 		""""""
