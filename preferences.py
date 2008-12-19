@@ -197,6 +197,7 @@ class Preferences(gtk.Dialog):
 		tree_enable.pack_start(enable_cell, False)
 		tree_enable.add_attribute(enable_cell, 'active', 2)
 		self.treeview.append_column(tree_enable)
+		self.treeview.connect("row-activated", self.service_config)
 		
 		#fill store
 		icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
@@ -227,6 +228,11 @@ class Preferences(gtk.Dialog):
 			active = False
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 2, active)
+		
+	def service_config(self, treeview, path, view_column):
+		""""""
+		model = treeview.get_model()
+		print model.get_value(model.get_iter(path), 1)
 
 	def init_advanced(self):
 		""""""
