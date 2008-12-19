@@ -56,13 +56,17 @@ class ServicePreferences(gtk.Dialog):
 		
 		self.notebook = gtk.Notebook()
 		hbox.pack_start(self.notebook, True, True, 10)
-		#self.notebook.set_show_tabs(False)
+		self.notebook.set_show_tabs(False)
 		
 		cont = 0
 		for item in ["Downloads", "Uploads"]:
 			iter = store.append(None, [item, -1])
 			for subitem in ["Anonymous", "User", "Premium"]:
-				self.notebook.append_page(gtk.VBox(), None)
+				if subitem == "Anonymous":
+					page = self.init_anonymous_preferences(subitem + " " + item)
+				else:
+					page = self.init_account_preferences(subitem + " " + item)
+				self.notebook.append_page(page, None)
 				subiter = store.append(iter, [subitem, cont])
 				treeview.expand_to_path(store.get_path(subiter))
 				if cont == 0:
@@ -90,6 +94,20 @@ class ServicePreferences(gtk.Dialog):
 				selection.select_iter(child_iter)
 			else:
 				self.notebook.set_current_page(model.get_value(iter, 1))
+
+	def init_anonymous_preferences(self, name):
+		""""""
+		vbox = gtk.VBox()
+		label = gtk.Label(name)
+		vbox.pack_start(label)
+		return vbox
+		
+	def init_account_preferences(self, name):
+		""""""
+		vbox = gtk.VBox()
+		label = gtk.Label(name)
+		vbox.pack_start(label)
+		return vbox
 
 	def close(self, widget=None, other=None):
 		""""""
