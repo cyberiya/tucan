@@ -68,8 +68,6 @@ class ServicePreferences(gtk.Dialog):
 				if cont == 0:
 					treeview.set_cursor_on_cell(store.get_path(subiter))
 				cont += 1
-		
-
 
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
@@ -89,7 +87,7 @@ class ServicePreferences(gtk.Dialog):
 		if iter:
 			child_iter = model.iter_children(iter)
 			if child_iter:
-				selection.unselect_iter(iter)
+				selection.select_iter(child_iter)
 			else:
 				self.notebook.set_current_page(model.get_value(iter, 1))
 
