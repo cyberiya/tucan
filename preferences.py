@@ -223,9 +223,10 @@ class Preferences(gtk.Dialog):
 	def toggled(self, button, path):
 		""""""
 		model = self.treeview.get_model()
-		active = True
 		if button.get_active():
 			active = False
+		else:
+			active = True
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 2, active)
 		
