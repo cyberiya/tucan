@@ -66,6 +66,11 @@ class Preferences(gtk.Dialog):
 		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS, str(self.max_downloads.get_value_as_int()))
 		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_UPLOADS, str(self.max_uploads.get_value_as_int()))
 		self.config.set(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER, self.downloads_folder.get_label())
+		
+		self.config.set(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE, str(self.tray_close.get_active()))
+		self.config.set(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES, str(self.advanced_packages.get_active()))
+		self.config.set(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS, str(self.show_uploads.get_active()))
+		
 		self.config.save()
 		self.close()
 
@@ -263,13 +268,19 @@ class Preferences(gtk.Dialog):
 		frame.add(hbox)
 		vbox = gtk.VBox()
 		hbox.pack_start(vbox, True, True, 10)
-		check = gtk.CheckButton("Close to tray.")
-		vbox.pack_start(check, False, False, 5)
-		check = gtk.CheckButton("Default advanced packages.")
-		vbox.pack_start(check, False, False, 5)
-		check = gtk.CheckButton("Show uploads.")
-		vbox.pack_start(check, False, False, 5)
 		
+		self.tray_close = gtk.CheckButton("Close to tray.")
+		vbox.pack_start(self.tray_close, False, False, 5)
+		self.tray_close.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE))
+
+		self.advanced_packages = gtk.CheckButton("Default advanced packages.")
+		vbox.pack_start(self.advanced_packages, False, False, 5)
+		self.advanced_packages.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES))
+
+		self.show_uploads = gtk.CheckButton("Show uploads.")
+		vbox.pack_start(self.show_uploads, False, False, 5)
+		self.show_uploads.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS))
+			
 		return frame
 		
 	def close(self, widget=None, other=None):
