@@ -76,6 +76,7 @@ class AccountPreferences(InfoPreferences):
 		frame.set_border_width(10)
 		self.pack_start(frame, False, False, 1)
 		scroll = gtk.ScrolledWindow()
+		scroll.set_size_request(-1, 110)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		frame.add(scroll)
 		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool)
@@ -83,7 +84,7 @@ class AccountPreferences(InfoPreferences):
 		scroll.add(self.treeview)
 		
 		self.treeview.set_rules_hint(True)
-		self.treeview.set_headers_visible(False)		
+		#self.treeview.set_headers_visible(False)		
 
 		tree_icon = gtk.TreeViewColumn('Active') 
 		icon_cell = gtk.CellRendererPixbuf()
