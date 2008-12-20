@@ -25,10 +25,13 @@ pygtk.require('2.0')
 import gtk
 
 import cons
+import configuration
+
+LANGUAGES = ["English", "French", "German", "Japanese", "Spanish"]
 
 class Preferences(gtk.Dialog):
 	""""""
-	def __init__(self):
+	def __init__(self, configuration):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_PREFERENCES)
@@ -36,7 +39,7 @@ class Preferences(gtk.Dialog):
 		#self.set_resizable(False)
 		self.set_size_request(500,500)
 		
-		self.path = "/home/crak/downloads/"
+		self.config = configuration
 		
 		self.notebook = gtk.Notebook()
 		self.notebook.set_property("homogeneous", True)
@@ -51,12 +54,21 @@ class Preferences(gtk.Dialog):
 		self.action_area.pack_start(cancel_button)
 		self.action_area.pack_start(save_button)
 		cancel_button.connect("clicked", self.close)
-		save_button.connect("clicked", self.close)
+		save_button.connect("clicked", self.save)
 		
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
 		
+	def save(self, button):
+		""""""
+		self.config.set(configuration.SECTION_MAIN, configuration.OPTION_LANGUAGE, LANGUAGES[self.language.get_active()])
+		self.config.set(configuration.SECTION_MAIN, configuration.OPTION_MAX_DOWNLOADS, str(self.max_downloads.get_value_as_int()))
+		self.config.set(configuration.SECTION_MAIN, configuration.OPTION_MAX_UPLOADS, str(self.max_uploads.get_value_as_int()))
+		self.config.set(configuration.SECTION_MAIN, configuration.OPTION_DOWNLOADS_FOLDER, self.downloads_folder.get_label())
+		self.config.save()
+		self.close()
+
 	def new_page(self, tab_name, tab_image, page):
 		""""""
 		vbox = gtk.VBox()
@@ -84,11 +96,11 @@ class Preferences(gtk.Dialog):
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		hbox.pack_start(aspect)
-		combobox = gtk.combo_box_new_text()
-		for lang in ["English", "French", "German", "Japanese", "Spanish"]:
-			combobox.append_text(lang)
-		combobox.set_active(0)
-		hbox.pack_start(combobox, False, False, 10)
+		self.language = gtk.combo_box_new_text()
+		for lang in LANGUAGES:
+			self.language.append_text(lang)
+		self.language.set_active(LANGUAGES.index(self.config.get(configuration.SECTION_MAIN, configuration.OPTION_LANGUAGE)))
+		hbox.pack_start(self.language, False, False, 10)
 
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_NETWORK))
@@ -102,11 +114,12 @@ class Preferences(gtk.Dialog):
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		hbox.pack_start(aspect)
-		spinbutton = gtk.SpinButton()
-		spinbutton.set_range(1,10)
-		spinbutton.set_increments(1,0)
-		spinbutton.set_numeric(True)
-		hbox.pack_start(spinbutton, False, False, 10)
+		self.max_downloads = gtk.SpinButton(None, 1, 0)
+		self.max_downloads.set_range(1,10)
+		self.max_downloads.set_increments(1,0)
+		self.max_downloads.set_numeric(True)
+		self.max_downloads.set_value(self.config.getint(configuration.SECTION_MAIN, configuration.OPTION_MAX_DOWNLOADS))
+		hbox.pack_start(self.max_downloads, False, False, 10)
 		vbox1.pack_start(hbox, False, False, 2)
 		hbox = gtk.HBox()
 		label = gtk.Label("Max simultaneous uploads: ")
@@ -114,11 +127,12 @@ class Preferences(gtk.Dialog):
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		hbox.pack_start(aspect)
-		spinbutton = gtk.SpinButton()
-		spinbutton.set_range(1,10)
-		spinbutton.set_increments(1,0)
-		spinbutton.set_numeric(True)
-		hbox.pack_start(spinbutton, False, False, 10)
+		self.max_uploads = gtk.SpinButton(None, 1, 0)
+		self.max_uploads.set_range(1,10)
+		self.max_uploads.set_increments(1,0)
+		self.max_uploads.set_numeric(True)
+		self.max_uploads.set_value(self.config.getint(configuration.SECTION_MAIN, configuration.OPTION_MAX_UPLOADS))
+		hbox.pack_start(self.max_uploads, False, False, 10)
 		vbox1.pack_start(hbox, False, False, 2)
 		
 		frame = gtk.Frame()
@@ -129,8 +143,12 @@ class Preferences(gtk.Dialog):
 		frame.add(vbox1)
 		hbox = gtk.HBox()
 		vbox1.pack_start(hbox, False, False, 5)
-		label = gtk.Label("Downloads Folder: " + self.path)
+		
+		label = gtk.Label("Downloads Folder: ")
 		hbox.pack_start(label, False, False, 10)
+		path = self.config.get(configuration.SECTION_MAIN, configuration.OPTION_DOWNLOADS_FOLDER)
+		self.downloads_folder = gtk.Label(path)
+		hbox.pack_start(self.downloads_folder, False, False, 10)
 		bbox = gtk.HButtonBox()
 		bbox.set_layout(gtk.BUTTONBOX_END)
 		hbox.pack_start(bbox, True, True, 10)
@@ -155,7 +173,8 @@ class Preferences(gtk.Dialog):
 	def on_choose(self, widget, response, choosed):
 		""""""
 		if choosed:
-			self.path = self.filechooser.get_uri().split("file://").pop()+"/"
+			path = self.filechooser.get_uri().split("file://").pop()+"/"
+			self.downloads_folder.set_label(path)
 		self.filechooser.destroy()
 		del self.filechooser
 
@@ -248,6 +267,8 @@ class Preferences(gtk.Dialog):
 		vbox.pack_start(check, False, False, 5)
 		check = gtk.CheckButton("Default advanced packages.")
 		vbox.pack_start(check, False, False, 5)
+		check = gtk.CheckButton("Show uploads.")
+		vbox.pack_start(check, False, False, 5)
 		
 		return frame
 		
@@ -256,4 +277,4 @@ class Preferences(gtk.Dialog):
 		self.destroy()
 	
 if __name__ == "__main__":
-	x = Preferences()
+	x = Preferences(configuration.Configuration())

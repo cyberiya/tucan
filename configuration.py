@@ -33,33 +33,49 @@ COMMENT = """# Tucan Manager's default configuration.
 # Dont change anything unless you really know what are doing, 
 # instead use the preferences dialog of the GUI."""
 
-DEFAULTS = {"main": {"language": "English", "max_downloads": "5", "max_uploads": "5", "downloads_folder": cons.DEFAULT_PATH}
-	, "services": {}
-	, "advanced": {"tray_close": "True", "advanced_packages": "True"}}
+SECTION_MAIN = "main"
+SECTION_SERVICES = "services"
+SECTION_ADVANCED = "advanced"
+
+OPTION_LANGUAGE = "language"
+OPTION_MAX_DOWNLOADS = "max_downloads"
+OPTION_MAX_UPLOADS = "max_uploads"
+OPTION_DOWNLOADS_FOLDER = "downloads_folder"
+OPTION_TRAY_CLOSE = "tray_close"
+OPTION_ADVANCED_PACKAGES = "advanced_packages"
+OPTION_SHOW_UPLOADS = "show_uploads"
+
+DEFAULTS = {SECTION_MAIN: {OPTION_LANGUAGE: "English", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_UPLOADS: "5", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH}
+	, SECTION_SERVICES: {}
+	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "False", OPTION_ADVANCED_PACKAGES: "False", OPTION_SHOW_UPLOADS: "False"}}
 
 class Configuration(SafeConfigParser):
 	""""""
 	def __init__(self):
 		""""""
 		SafeConfigParser.__init__(self)
+		self.configured = True
 		if not os.path.exists(DEFAULT_PATH):
 			os.mkdir(DEFAULT_PATH)
 		if not os.path.exists(DEFAULT_PATH + CONF):
 			self.create_config()
+			self.configured = False
 		else:
 			self.read(DEFAULT_PATH + CONF)
 			if not self.check_config():
 				self.create_config()
+				self.configured = False
 
 	def check_config(self):
 		""""""
 		for section, options in DEFAULTS.items():
 			if self.has_section(section):
-				for option, value in self.items(section):
-					if not option in options:
+				for option, value in options.items():
+					if not option in [option for option, value in self.items(section)]:
 						return False
 			else:
 				return False
+		return True
 		
 	def create_config(self):
 		""""""
@@ -73,5 +89,13 @@ class Configuration(SafeConfigParser):
 		self.write(f)
 		f.close()
 		
+	def save(self):
+		""""""
+		f = open(DEFAULT_PATH + CONF, "w")
+		self.write(f)
+		f.close()
+
+
 if __name__ == "__main__":
 	c = Configuration()
+	print c.configured
