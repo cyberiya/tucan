@@ -26,26 +26,48 @@ import gtk
 
 import cons
 
-class AnonymousPreferences(gtk.VBox):
+class InfoPreferences(gtk.VBox):
 	""""""
 	def __init__(self, name):
 		""""""
-		gtk.VBox.__init__(self)
-		label = gtk.Label(name)
-		self.pack_start(label)
-
-class AccountPreferences(gtk.VBox):
-	""""""
-	def __init__(self, name):
-		""""""
-		gtk.VBox.__init__(self)
-		label = gtk.Label(name)
-		self.pack_start(label, False, False, 10)
+		NAME = "Rapidshare Anonimo"
+		VERSION = "0.1"
+		AUTHOR = "Crak"
 		
+		gtk.VBox.__init__(self)
+		vbox = gtk.VBox()
+		
+		frame = gtk.Frame()
+		label = gtk.Label()
+		label.set_markup("<big><b>" + NAME + "</b></big>")
+		frame.set_label_widget(label)
+		frame.set_border_width(10)
+		self.pack_start(frame)
+		frame.add(vbox)
+
+		hbox = gtk.HBox()
+		label = gtk.Label()
+		label.set_markup("<b>Version: </b>")
+		hbox.pack_start(label, False, False, 10)
+		label = gtk.Label(VERSION)
+		hbox.pack_start(label, False, False, 10)
+		label = gtk.Label()
+		label.set_markup("<b>Author: </b>")
+		hbox.pack_start(label, False, False, 10)
+		label = gtk.Label(AUTHOR)
+		hbox.pack_start(label, False, False, 10)
+		vbox.pack_start(hbox, False, False, 5)
+
+class AccountPreferences(InfoPreferences):
+	""""""
+	def __init__(self, name):
+		""""""
+		InfoPreferences.__init__(self, name)
+
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ACCOUNT))
 		frame.set_border_width(10)
-		self.pack_start(frame)
+		self.pack_start(frame, False, False, 1)
 		scroll = gtk.ScrolledWindow()
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		frame.add(scroll)
@@ -91,8 +113,8 @@ class AccountPreferences(gtk.VBox):
 		self.active_service_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_LARGE_TOOLBAR)
 		self.unactive_service_icon = self.treeview.render_icon(gtk.STOCK_NO, gtk.ICON_SIZE_LARGE_TOOLBAR)
 		
-		for name, password in [("mierda", "puta"),("hostia", "cojones")]:
-			store.append([self.unactive_service_icon, name, password, True])
+		for name, password in [("sda09sd", "hyt34fg"),("53ds23", "h8t5")]:
+			store.append([self.active_service_icon, name, password, True])
 
 		frame = gtk.Frame()
 		frame.set_border_width(10)
@@ -124,7 +146,10 @@ class AccountPreferences(gtk.VBox):
 		""""""
 		model, iter = self.treeview.get_selection().get_selected()
 		if iter:
+			next_iter = model.iter_next(iter)
 			model.remove(iter)
+			if next_iter:
+				self.treeview.set_cursor_on_cell(model.get_path(next_iter))
 
 	def check(self, button):
 		""""""
@@ -185,7 +210,7 @@ class ServicePreferences(gtk.Dialog):
 			for subitem in ["Anonymous", "User", "Premium"]:
 				page = gtk.VBox()
 				if subitem == "Anonymous":
-					page = AnonymousPreferences(subitem + " " + item)
+					page = InfoPreferences(subitem + " " + item)
 				else:
 					page = AccountPreferences(subitem + " " + item)
 				self.notebook.append_page(page, None)
