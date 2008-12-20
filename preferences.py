@@ -25,7 +25,7 @@ pygtk.require('2.0')
 import gtk
 
 import cons
-import configuration
+import config
 
 LANGUAGES = ["English", "French", "German", "Japanese", "Spanish"]
 
@@ -62,10 +62,10 @@ class Preferences(gtk.Dialog):
 		
 	def save(self, button):
 		""""""
-		self.config.set(configuration.SECTION_MAIN, configuration.OPTION_LANGUAGE, LANGUAGES[self.language.get_active()])
-		self.config.set(configuration.SECTION_MAIN, configuration.OPTION_MAX_DOWNLOADS, str(self.max_downloads.get_value_as_int()))
-		self.config.set(configuration.SECTION_MAIN, configuration.OPTION_MAX_UPLOADS, str(self.max_uploads.get_value_as_int()))
-		self.config.set(configuration.SECTION_MAIN, configuration.OPTION_DOWNLOADS_FOLDER, self.downloads_folder.get_label())
+		self.config.set(config.SECTION_MAIN, config.OPTION_LANGUAGE, LANGUAGES[self.language.get_active()])
+		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS, str(self.max_downloads.get_value_as_int()))
+		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_UPLOADS, str(self.max_uploads.get_value_as_int()))
+		self.config.set(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER, self.downloads_folder.get_label())
 		self.config.save()
 		self.close()
 
@@ -99,7 +99,7 @@ class Preferences(gtk.Dialog):
 		self.language = gtk.combo_box_new_text()
 		for lang in LANGUAGES:
 			self.language.append_text(lang)
-		self.language.set_active(LANGUAGES.index(self.config.get(configuration.SECTION_MAIN, configuration.OPTION_LANGUAGE)))
+		self.language.set_active(LANGUAGES.index(self.config.get(config.SECTION_MAIN, config.OPTION_LANGUAGE)))
 		hbox.pack_start(self.language, False, False, 10)
 
 		frame = gtk.Frame()
@@ -118,7 +118,7 @@ class Preferences(gtk.Dialog):
 		self.max_downloads.set_range(1,10)
 		self.max_downloads.set_increments(1,0)
 		self.max_downloads.set_numeric(True)
-		self.max_downloads.set_value(self.config.getint(configuration.SECTION_MAIN, configuration.OPTION_MAX_DOWNLOADS))
+		self.max_downloads.set_value(self.config.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS))
 		hbox.pack_start(self.max_downloads, False, False, 10)
 		vbox1.pack_start(hbox, False, False, 2)
 		hbox = gtk.HBox()
@@ -131,7 +131,7 @@ class Preferences(gtk.Dialog):
 		self.max_uploads.set_range(1,10)
 		self.max_uploads.set_increments(1,0)
 		self.max_uploads.set_numeric(True)
-		self.max_uploads.set_value(self.config.getint(configuration.SECTION_MAIN, configuration.OPTION_MAX_UPLOADS))
+		self.max_uploads.set_value(self.config.getint(config.SECTION_MAIN, config.OPTION_MAX_UPLOADS))
 		hbox.pack_start(self.max_uploads, False, False, 10)
 		vbox1.pack_start(hbox, False, False, 2)
 		
@@ -146,7 +146,7 @@ class Preferences(gtk.Dialog):
 		
 		label = gtk.Label("Downloads Folder: ")
 		hbox.pack_start(label, False, False, 10)
-		path = self.config.get(configuration.SECTION_MAIN, configuration.OPTION_DOWNLOADS_FOLDER)
+		path = self.config.get(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER)
 		self.downloads_folder = gtk.Label(path)
 		hbox.pack_start(self.downloads_folder, False, False, 10)
 		bbox = gtk.HButtonBox()
@@ -277,4 +277,4 @@ class Preferences(gtk.Dialog):
 		self.destroy()
 	
 if __name__ == "__main__":
-	x = Preferences(configuration.Configuration())
+	x = Preferences(config.Config())

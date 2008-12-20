@@ -49,7 +49,7 @@ DEFAULTS = {SECTION_MAIN: {OPTION_LANGUAGE: "English", OPTION_MAX_DOWNLOADS: "5"
 	, SECTION_SERVICES: {}
 	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "False", OPTION_ADVANCED_PACKAGES: "False", OPTION_SHOW_UPLOADS: "False"}}
 
-class Configuration(SafeConfigParser):
+class Config(SafeConfigParser):
 	""""""
 	def __init__(self):
 		""""""
@@ -97,5 +97,5 @@ class Configuration(SafeConfigParser):
 
 
 if __name__ == "__main__":
-	c = Configuration()
+	c = Config()
 	print c.configured
