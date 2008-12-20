@@ -28,18 +28,14 @@ import cons
 
 class InfoPreferences(gtk.VBox):
 	""""""
-	def __init__(self, name):
-		""""""
-		NAME = "Rapidshare Anonimo"
-		VERSION = "0.1"
-		AUTHOR = "Crak"
-		
+	def __init__(self, name, author, version, info):
+		""""""	
 		gtk.VBox.__init__(self)
 		vbox = gtk.VBox()
 		
 		frame = gtk.Frame()
 		label = gtk.Label()
-		label.set_markup("<big><b>" + NAME + "</b></big>")
+		label.set_markup("<big><b>" + name + "</b></big>")
 		frame.set_label_widget(label)
 		frame.set_border_width(10)
 		self.pack_start(frame)
@@ -47,23 +43,34 @@ class InfoPreferences(gtk.VBox):
 
 		hbox = gtk.HBox()
 		label = gtk.Label()
-		label.set_markup("<b>Version: </b>")
+		label.set_markup("<b>Author:</b>")
 		hbox.pack_start(label, False, False, 10)
-		label = gtk.Label(VERSION)
-		hbox.pack_start(label, False, False, 10)
+		label = gtk.Label(author)
+		hbox.pack_start(label, False)
+		aspect = gtk.AspectFrame()
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
+		hbox.pack_start(aspect)
 		label = gtk.Label()
-		label.set_markup("<b>Author: </b>")
-		hbox.pack_start(label, False, False, 10)
-		label = gtk.Label(AUTHOR)
+		label.set_markup("<b>Version:</b>")
+		hbox.pack_start(label, False)
+		label = gtk.Label(version)
 		hbox.pack_start(label, False, False, 10)
 		vbox.pack_start(hbox, False, False, 5)
-
+		
+		for name, value in info:
+			hbox = gtk.HBox()
+			label = gtk.Label()
+			label.set_markup("<b>" + name + "</b>")
+			hbox.pack_start(label, False, False, 10)
+			label = gtk.Label(value)
+			hbox.pack_start(label, False)
+			vbox.pack_start(hbox, False, False, 5)
+			
 class AccountPreferences(InfoPreferences):
 	""""""
-	def __init__(self, name):
+	def __init__(self, name, author, version, info, accounts):
 		""""""
-		InfoPreferences.__init__(self, name)
-
+		InfoPreferences.__init__(self, name, author, version, info)
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ACCOUNT))
 		frame.set_border_width(10)
@@ -113,8 +120,11 @@ class AccountPreferences(InfoPreferences):
 		self.active_service_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_LARGE_TOOLBAR)
 		self.unactive_service_icon = self.treeview.render_icon(gtk.STOCK_NO, gtk.ICON_SIZE_LARGE_TOOLBAR)
 		
-		for name, password in [("sda09sd", "hyt34fg"),("53ds23", "h8t5")]:
-			store.append([self.active_service_icon, name, password, True])
+		for name, password, enabled in accounts:
+			icon = self.unactive_service_icon
+			if enabled:
+				icon = self.active_service_icon
+			store.append([icon, name, password, enabled])
 
 		frame = gtk.Frame()
 		frame.set_border_width(10)
@@ -174,11 +184,11 @@ class AccountPreferences(InfoPreferences):
 
 class ServicePreferences(gtk.Dialog):
 	""""""
-	def __init__(self, name, icon):
+	def __init__(self, service, icon):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon(icon)
-		self.set_title(name)
+		self.set_title(service)
 		self.set_size_request(600, 400)
 		
 		hbox = gtk.HBox()
@@ -210,9 +220,9 @@ class ServicePreferences(gtk.Dialog):
 			for subitem in ["Anonymous", "User", "Premium"]:
 				page = gtk.VBox()
 				if subitem == "Anonymous":
-					page = InfoPreferences(subitem + " " + item)
+					page = InfoPreferences((subitem + " " + item), "Crak", "0.1", [("Slots:", 1), ("Captcha:", "No")])
 				else:
-					page = AccountPreferences(subitem + " " + item)
+					page = AccountPreferences((subitem + " " + item), "Crak", "0.1", [], [("sda09sd", "hyt34fg", True),("53ds23", "h8t5", False)])
 				self.notebook.append_page(page, None)
 				subiter = store.append(iter, [subitem, cont])
 				treeview.expand_to_path(store.get_path(subiter))
