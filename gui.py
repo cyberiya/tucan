@@ -135,8 +135,7 @@ class Gui(gtk.Window, ServiceManager):
 			packages_info = [(cons.DEFAULT_PATH, name, None) for name, package_files in packages]
 		#create directories and password files
 		for info in packages_info:
-			package_path = info[0] + info[1] + "/"
-			package_path = package_path.replace(" ", "_")
+			package_path = info[0] + info[1].replace(" ", "_") + "/"
 			if not os.path.exists(package_path):
 				os.mkdir(package_path)
 			if info[2]:
@@ -146,9 +145,8 @@ class Gui(gtk.Window, ServiceManager):
 		#add packages to gui and manager
 		for package_name, package_downloads in packages:
 			info = packages_info[packages.index((package_name, package_downloads))]
-			package_name = info[1]
+			package_name = info[1].replace(" ", "_")
 			package_path = info[0] + info[1] + "/"
-			package_path = package_path.replace(" ", "_")
 			self.downloads.add_package(package_name, package_path, package_downloads)
 			for download in package_downloads:
 				tmp = []

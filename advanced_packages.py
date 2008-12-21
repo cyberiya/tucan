@@ -128,7 +128,7 @@ class AdvancedPackages(gtk.Dialog):
 			
 	def on_choose(self, widget, other, path):
 		""""""
-		self.change(None, path, self.filechooser.get_uri().split("file://").pop()+"/", 1)
+		self.change(None, path, self.filechooser.get_filename() + "/", 1)
 		self.filechooser.destroy()
 		del self.filechooser
 

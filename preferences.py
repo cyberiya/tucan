@@ -185,8 +185,7 @@ class Preferences(gtk.Dialog):
 	def on_choose(self, widget, response, choosed):
 		""""""
 		if choosed:
-			path = self.filechooser.get_uri().split("file://").pop()+"/"
-			self.downloads_folder.set_label(path)
+			self.downloads_folder.set_label(self.filechooser.get_filename() + "/")
 		self.filechooser.destroy()
 		del self.filechooser
 

@@ -93,11 +93,7 @@ class Config(SafeConfigParser):
 	def get_service(self, service):
 		""""""
 		return None, True
-		
-	def enable_service(self, service):
-		""""""
-		print "joder"
-	
+
 	def save(self):
 		""""""
 		f = open(DEFAULT_PATH + CONF, "w")
