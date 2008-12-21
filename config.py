@@ -41,12 +41,13 @@ OPTION_LANGUAGE = "language"
 OPTION_MAX_DOWNLOADS = "max_downloads"
 OPTION_MAX_UPLOADS = "max_uploads"
 OPTION_DOWNLOADS_FOLDER = "downloads_folder"
+
 OPTION_TRAY_CLOSE = "tray_close"
 OPTION_ADVANCED_PACKAGES = "advanced_packages"
 OPTION_SHOW_UPLOADS = "show_uploads"
 
 DEFAULTS = {SECTION_MAIN: {OPTION_LANGUAGE: "English", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_UPLOADS: "5", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH}
-	, SECTION_SERVICES: {}
+	, SECTION_SERVICES: {"rapidshare.com": "False", "megaupload.com": "False"}
 	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "False", OPTION_ADVANCED_PACKAGES: "False", OPTION_SHOW_UPLOADS: "False"}}
 
 class Config(SafeConfigParser):
@@ -89,12 +90,19 @@ class Config(SafeConfigParser):
 		self.write(f)
 		f.close()
 		
+	def get_service(self, service):
+		""""""
+		return None, True
+		
+	def enable_service(self, service):
+		""""""
+		print "joder"
+	
 	def save(self):
 		""""""
 		f = open(DEFAULT_PATH + CONF, "w")
 		self.write(f)
 		f.close()
-
 
 if __name__ == "__main__":
 	c = Config()

@@ -23,6 +23,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 
 import cons
 import config
@@ -66,6 +67,12 @@ class Preferences(gtk.Dialog):
 		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS, str(self.max_downloads.get_value_as_int()))
 		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_UPLOADS, str(self.max_uploads.get_value_as_int()))
 		self.config.set(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER, self.downloads_folder.get_label())
+		
+		model = self.treeview.get_model()
+		iter = model.get_iter_root()
+		while iter:
+			self.config.set(config.SECTION_SERVICES, model.get_value(iter, 1), str(model.get_value(iter, 2)))
+			iter = model.iter_next(iter)
 		
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE, str(self.tray_close.get_active()))
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES, str(self.advanced_packages.get_active()))
@@ -194,7 +201,7 @@ class Preferences(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		store = gtk.ListStore(gtk.gdk.Pixbuf, str, bool)
+		store = gtk.ListStore(gtk.gdk.Pixbuf, str, bool, gobject.TYPE_PYOBJECT)
 		self.treeview = gtk.TreeView(store)
 		scroll.add(self.treeview)
 		
@@ -225,8 +232,9 @@ class Preferences(gtk.Dialog):
 		
 		#fill store
 		icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
-		for service in ["megaupload.com", "rapidshare.com"]:
-			store.append((icon, service, True))
+		for service in self.config.options(config.SECTION_SERVICES):
+			service_config, service_enabled = self.config.get_service(service)
+			store.append((icon, service, service_enabled, service_config))
 		
 		frame = gtk.Frame()
 		frame.set_border_width(10)
