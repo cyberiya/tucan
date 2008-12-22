@@ -146,7 +146,7 @@ class Gui(gtk.Window, ServiceManager):
 		for package_name, package_downloads in packages:
 			info = packages_info[packages.index((package_name, package_downloads))]
 			package_name = info[1].replace(" ", "_")
-			package_path = info[0] + info[1] + "/"
+			package_path = info[0] + package_name + "/"
 			self.downloads.add_package(package_name, package_path, package_downloads)
 			for download in package_downloads:
 				tmp = []
