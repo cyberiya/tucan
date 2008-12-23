@@ -154,7 +154,7 @@ class AccountPreferences(InfoPreferences):
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		bbox.pack_start(aspect)
-		button = gtk.Button(None, gtk.STOCK_REFRESH)
+		button = gtk.Button(None, gtk.STOCK_CONNECT)
 		button.connect("clicked", self.check)
 		bbox.pack_start(button)
 		

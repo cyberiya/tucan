@@ -56,16 +56,16 @@ class Wait(gtk.Window):
 
 class Message(gtk.Dialog):
 	""""""
-	def __init__(self, severity, title, message):
+	def __init__(self, severity, title, message, accept=False):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_title(title)
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_resizable(False)
-		self.set_size_request(300, -1)
+		self.set_size_request(350, -1)
 		
 		hbox = gtk.HBox()
-		self.vbox.pack_start(hbox, True, True, 5)
+		self.vbox.pack_start(hbox, True, True, 10)
 		icon = gtk.STOCK_DIALOG_INFO
 		if severity == cons.SEVERITY_WARNING:
 			icon = gtk.STOCK_DIALOG_WARNING
@@ -75,18 +75,29 @@ class Message(gtk.Dialog):
 		self.set_icon(self.render_icon(icon, gtk.ICON_SIZE_MENU))
 		
 		label = gtk.Label(message)
-		hbox.pack_start(label, True, True)
+		hbox.pack_start(label, True, True, 10)
 		label.set_width_chars(40)
 		label.set_line_wrap(True) 
 		
 		#action area
-		close_button = gtk.Button(None, gtk.STOCK_CLOSE)
-		self.action_area.pack_start(close_button)
-		close_button.connect("clicked", self.close)
-		
+		if accept:
+			self.accepted = False
+			ok_button = gtk.Button(None, gtk.STOCK_OK)
+			self.action_area.pack_start(ok_button)
+			ok_button.connect("clicked", self.accept)
+		else:
+			close_button = gtk.Button(None, gtk.STOCK_CLOSE)
+			self.action_area.pack_start(close_button)
+			close_button.connect("clicked", self.close)
+			
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
+		
+	def accept(self, button):
+		""""""
+		self.accepted = True
+		self.close()
 		
 	def close(self, widget=None, other=None):
 		""""""
