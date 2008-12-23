@@ -96,7 +96,7 @@ class ServiceConfig(SafeConfigParser):
 				if ((self.has_section(SECTION_USER_DOWNLOAD)) and (len(self.items(SECTION_USER_DOWNLOAD)) > 0)):
 					downloads.append((SECTION_USER_DOWNLOAD, cons.TYPE_USER))
 				if ((self.has_section(SECTION_PREMIUM_DOWNLOAD)) and (len(self.items(SECTION_PREMIUM_DOWNLOAD)) > 0)):
-					downloads.append((SECTION_USER_DOWNLOAD, cons.TYPE_PREMIUM))
+					downloads.append((SECTION_PREMIUM_DOWNLOAD, cons.TYPE_PREMIUM))
 				if len(downloads) > 0:
 					result[SECTION_DOWNLOADS] = downloads
 		if self.has_section(SECTION_UPLOADS):
@@ -122,11 +122,11 @@ class ServiceConfig(SafeConfigParser):
 				f.close()
 		return result
 
-	def set_accounts(self, section, dict):
+	def set_accounts(self, section, accounts):
 		""""""
 		if self.has_section(section):
 			f = open(self.path + self.get(section, OPTION_ACCOUNTS), "w")
-			pickle.dump(dict, f)
+			pickle.dump(accounts, f)
 			f.close()
 
 	def save(self):

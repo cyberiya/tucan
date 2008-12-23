@@ -28,6 +28,8 @@ import gobject
 import cons
 import config
 
+from service_preferences import ServicePreferences
+
 LANGUAGES = ["English", "French", "German", "Japanese", "Spanish"]
 
 class Preferences(gtk.Dialog):
@@ -73,7 +75,7 @@ class Preferences(gtk.Dialog):
 		while iter:
 			if not self.config.has_option(config.SECTION_SERVICES, model.get_value(iter,1)):
 				self.config.set(config.SECTION_SERVICES, model.get_value(iter,1), model.get_value(iter, 3))
-			configuration = model.get_value(iter, 4)
+			configuration = model.get_value(iter, 3)
 			configuration.enable(model.get_value(iter, 2))
 			iter = model.iter_next(iter)
 		
@@ -203,7 +205,7 @@ class Preferences(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		store = gtk.ListStore(gtk.gdk.Pixbuf, str, bool, str, gobject.TYPE_PYOBJECT)
+		store = gtk.ListStore(gtk.gdk.Pixbuf, str, bool, gobject.TYPE_PYOBJECT)
 		self.treeview = gtk.TreeView(store)
 		scroll.add(self.treeview)
 		self.treeview.connect("row-activated", self.service_preferences)
@@ -233,12 +235,12 @@ class Preferences(gtk.Dialog):
 		self.treeview.append_column(tree_enable)
 		
 		#fill store
-		for icon_path, name, enabled, path, configuration in self.config.get_services():
+		for icon_path, name, enabled, configuration in self.config.get_services():
 			if icon_path:
 				icon = gtk.gdk.pixbuf_new_from_file(icon_path)
 			else:
 				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
-			store.append((icon, name, enabled, path, configuration))
+			store.append((icon, name, enabled, configuration))
 		
 		frame = gtk.Frame()
 		frame.set_border_width(10)
@@ -269,7 +271,10 @@ class Preferences(gtk.Dialog):
 	def service_preferences(self, treeview, path, view_column):
 		""""""
 		model = treeview.get_model()
-		print model.get_value(model.get_iter(path), 1)
+		icon = model.get_value(model.get_iter(path), 0)
+		name = model.get_value(model.get_iter(path), 1)
+		config = model.get_value(model.get_iter(path), 3)
+		ServicePreferences(name, icon, config)
 
 	def init_advanced(self):
 		""""""
