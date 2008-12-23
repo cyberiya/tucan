@@ -62,7 +62,7 @@ class Message(gtk.Dialog):
 		self.set_title(title)
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_resizable(False)
-		self.set_size_request(300,110)
+		self.set_size_request(300, -1)
 		
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, True, True, 5)
@@ -71,7 +71,7 @@ class Message(gtk.Dialog):
 			icon = gtk.STOCK_DIALOG_WARNING
 		elif severity == cons.SEVERITY_ERROR:
 			icon = gtk.STOCK_DIALOG_ERROR
-		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG), False, False, 0)
+		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG), False, False, 10)
 		self.set_icon(self.render_icon(icon, gtk.ICON_SIZE_MENU))
 		
 		label = gtk.Label(message)
@@ -91,7 +91,3 @@ class Message(gtk.Dialog):
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
-
-if __name__ == "__main__":
-	g = Wait("Checking links, please wait.", None)
-	gtk.main()
