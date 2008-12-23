@@ -22,6 +22,7 @@
 
 import os
 import pickle
+import base64
 
 from ConfigParser import SafeConfigParser
 
@@ -117,16 +118,19 @@ class ServiceConfig(SafeConfigParser):
 		result = {}
 		if self.has_section(section):
 			if os.path.exists(self.path + self.get(section, OPTION_ACCOUNTS)):
-				f = open(self.path + self.get(section, OPTION_ACCOUNTS))
-				result = pickle.load(f)
-				f.close()
+				try:
+					f = open(self.path + self.get(section, OPTION_ACCOUNTS), "rb")
+					result = pickle.loads(base64.b64decode((f.read())))
+					f.close()
+				except EOFError, e:
+					print e
 		return result
 
 	def set_accounts(self, section, accounts):
 		""""""
 		if self.has_section(section):
-			f = open(self.path + self.get(section, OPTION_ACCOUNTS), "w")
-			pickle.dump(accounts, f)
+			f = open(self.path + self.get(section, OPTION_ACCOUNTS), "wb")
+			f.write(base64.b64encode(pickle.dumps(accounts)))
 			f.close()
 
 	def save(self):
