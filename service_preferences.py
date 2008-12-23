@@ -79,6 +79,7 @@ class AccountPreferences(InfoPreferences):
 	def __init__(self, section, config):
 		""""""
 		InfoPreferences.__init__(self, section, config, True)
+
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ACCOUNT))
 		frame.set_border_width(10)
@@ -87,7 +88,7 @@ class AccountPreferences(InfoPreferences):
 		scroll.set_size_request(-1, 110)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		frame.add(scroll)
-		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool)
+		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool, bool)
 		self.treeview = gtk.TreeView(store)
 		scroll.add(self.treeview)
 		
@@ -129,11 +130,13 @@ class AccountPreferences(InfoPreferences):
 		self.active_service_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_LARGE_TOOLBAR)
 		self.unactive_service_icon = self.treeview.render_icon(gtk.STOCK_NO, gtk.ICON_SIZE_LARGE_TOOLBAR)
 		
-		for name, password, enabled in accounts:
+		accounts = config.get_accounts(section)
+		for name in accounts.keys():
+			active, password, enabled = accounts[name]
 			icon = self.unactive_service_icon
-			if enabled:
+			if active:
 				icon = self.active_service_icon
-			store.append([icon, name, password, enabled])
+			store.append([icon, name, password, enabled, active])
 
 		frame = gtk.Frame()
 		frame.set_border_width(10)
@@ -158,7 +161,7 @@ class AccountPreferences(InfoPreferences):
 	def add(self, button):
 		""""""
 		model = self.treeview.get_model()
-		iter = model.append([self.unactive_service_icon, "None", "None", False])
+		iter = model.append([self.unactive_service_icon, "None", "None", False, False])
 		self.treeview.set_cursor(model.get_path(iter), self.treeview.get_column(1), True)
 
 	def remove(self, button):
@@ -190,6 +193,16 @@ class AccountPreferences(InfoPreferences):
 		""""""
 		model = self.treeview.get_model()
 		model.set_value(model.get_iter(path), column, new_text)
+		
+	def get_accounts(self):
+		""""""
+		model = self.treeview.get_model()
+		iter = model.get_iter_root()
+		accounts = {}
+		while iter:
+			accounts[model.get_value(iter, 1)] = (model.get_value(iter, 4), model.get_value(iter, 2), model.get_value(iter, 3))
+			iter = model.iter_next(iter)
+		return accounts
 
 class ServicePreferences(gtk.Dialog):
 	""""""
@@ -200,56 +213,56 @@ class ServicePreferences(gtk.Dialog):
 		self.set_title(service)
 		self.set_size_request(600, 400)
 		
+		self.config = config
+		
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, True, True, 5)
 		frame = gtk.Frame()
 		hbox.pack_start(frame, False, False, 10)
 		
-		store = gtk.TreeStore(str, int)
-		treeview = gtk.TreeView(store)
-		treeview.get_selection().connect("changed", self.select)
-		frame.add(treeview)
+		store = gtk.TreeStore(str, str, int)
+		self.treeview = gtk.TreeView(store)
+		self.treeview.get_selection().connect("changed", self.select)
+		frame.add(self.treeview)
 		
-		treeview.set_headers_visible(False)
+		self.treeview.set_headers_visible(False)
 		
 		tree_name = gtk.TreeViewColumn('Name')
 		name_cell = gtk.CellRendererText()
 		name_cell.set_property("width", 100)
 		tree_name.pack_start(name_cell, True)
-		tree_name.add_attribute(name_cell, 'text', 0)
-		treeview.append_column(tree_name)
+		tree_name.add_attribute(name_cell, 'text', 1)
+		self.treeview.append_column(tree_name)
 		
 		self.notebook = gtk.Notebook()
 		hbox.pack_start(self.notebook, True, True, 10)
 		self.notebook.set_show_tabs(False)
 		
 		cont = 0
-		plugins = config.get_plugins()
+		plugins = self.config.get_plugins()
 		plugin_types = plugins.keys()
 		plugin_types.sort()
 		for item in plugin_types:
-			iter = store.append(None, [item, -1])
+			iter = store.append(None, [None, item, -1])
 			for section_name, section_type in plugins[item]:
 				page = gtk.VBox()
 				if section_type == cons.TYPE_ANONYMOUS:
-					page = InfoPreferences(section_name, config)
+					page = InfoPreferences(section_name, self.config)
 				else:
-					pass
-					#page = AccountPreferences(section_name, config)
+					page = AccountPreferences(section_name, self.config)
 				self.notebook.append_page(page, None)
-				subiter = store.append(iter, [section_type, cont])
-				treeview.expand_to_path(store.get_path(subiter))
+				subiter = store.append(iter, [section_name, section_type, cont])
+				self.treeview.expand_to_path(store.get_path(subiter))
 				if cont == 0:
-					treeview.set_cursor_on_cell(store.get_path(subiter))
+					self.treeview.set_cursor_on_cell(store.get_path(subiter))
 				cont += 1
-
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
-		ok_button = gtk.Button(None, gtk.STOCK_OK)
+		save_button = gtk.Button(None, gtk.STOCK_SAVE)
 		self.action_area.pack_start(cancel_button)
-		self.action_area.pack_start(ok_button)
+		self.action_area.pack_start(save_button)
 		cancel_button.connect("clicked", self.close)
-		ok_button.connect("clicked", self.close)
+		save_button.connect("clicked", self.save)
 		
 		self.connect("response", self.close)
 		self.show_all()
@@ -263,7 +276,21 @@ class ServicePreferences(gtk.Dialog):
 			if child_iter:
 				selection.select_iter(child_iter)
 			else:
-				self.notebook.set_current_page(model.get_value(iter, 1))
+				self.notebook.set_current_page(model.get_value(iter, 2))
+				
+	def save(self, button):
+		""""""
+		model = self.treeview.get_model()
+		iter = model.get_iter_root()
+		while iter:
+			child_iter = model.iter_children(iter)
+			while child_iter:
+				page = self.notebook.get_nth_page((model.get_value(iter, 2)))
+				if ((page) and not (model.get_value(child_iter, 1) == cons.TYPE_ANONYMOUS)):
+					self.config.set_accounts(model.get_value(child_iter, 0), page.get_accounts())
+				child_iter = model.iter_next(child_iter)
+			iter = model.iter_next(iter)
+		self.close()
 
 	def close(self, widget=None, other=None):
 		""""""

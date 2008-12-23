@@ -100,7 +100,7 @@ class Config(SafeConfigParser):
 				icon = config.get_icon()
 				name = config.get(service_config.SECTION_MAIN, service_config.OPTION_NAME)
 				enabled = config.getboolean(service_config.SECTION_MAIN, service_config.OPTION_ENABLED)
-				result.append((icon, name, enabled, path, config))
+				result.append((icon, name, enabled, config))
 		return result
 
 	def save(self):
