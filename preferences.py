@@ -29,6 +29,7 @@ import cons
 import config
 
 from service_preferences import ServicePreferences
+from message import Message
 
 LANGUAGES = ["English", "French", "German", "Japanese", "Spanish"]
 
@@ -73,10 +74,10 @@ class Preferences(gtk.Dialog):
 		model = self.treeview.get_model()
 		iter = model.get_iter_root()
 		while iter:
-			if not self.config.has_option(config.SECTION_SERVICES, model.get_value(iter,1)):
-				self.config.set(config.SECTION_SERVICES, model.get_value(iter,1), model.get_value(iter, 3))
 			configuration = model.get_value(iter, 3)
 			configuration.enable(model.get_value(iter, 2))
+			if not self.config.has_option(config.SECTION_SERVICES, model.get_value(iter,1)):
+				self.config.set(config.SECTION_SERVICES, model.get_value(iter,1), configuration.path)
 			iter = model.iter_next(iter)
 		
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE, str(self.tray_close.get_active()))
@@ -170,29 +171,39 @@ class Preferences(gtk.Dialog):
 		bbox.set_layout(gtk.BUTTONBOX_END)
 		hbox.pack_start(bbox, True, True, 10)
 		button = gtk.Button(None, gtk.STOCK_OPEN)
-		button.connect("clicked", self.choose_path)
+		button.connect("clicked", self.choose_path, self.on_choose_folder)
 		bbox.pack_start(button)
 		
 		vbox.show_all()
 		return vbox
 
-	def choose_path(self, button):
+	def choose_path(self, button, choose_callback):
 		""""""
 		self.filechooser = gtk.FileChooserDialog('Select a Folder', self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+		self.filechooser.action_area.set_layout(gtk.BUTTONBOX_EDGE)
+		self.filechooser.set_show_hidden(False)
+		hidden_button = gtk.CheckButton("Show hidden files.")
+		self.filechooser.action_area.pack_start(hidden_button)
+		hidden_button.connect("clicked", self.show_hidden)
 		choose_button = gtk.Button(None, gtk.STOCK_OK)
 		self.filechooser.action_area.pack_start(choose_button)
-		self.filechooser.connect("response", self.on_choose, False)
-		choose_button.connect("clicked", self.on_choose, None, True)
+		self.filechooser.connect("response", choose_callback, False)
+		choose_button.connect("clicked", choose_callback, None, True)
 		self.filechooser.set_position(gtk.WIN_POS_CENTER)
 		self.filechooser.show_all()
 		self.filechooser.run()
-			
-	def on_choose(self, widget, response, choosed):
+		
+	def show_hidden(self, button):
+		""""""
+		self.filechooser.set_show_hidden(button.get_active())
+
+	def on_choose_folder(self, widget, response, choosed):
 		""""""
 		if choosed:
 			self.downloads_folder.set_label(self.filechooser.get_filename() + "/")
 		self.filechooser.destroy()
 		del self.filechooser
+
 
 	def init_services(self):
 		""""""
@@ -236,11 +247,7 @@ class Preferences(gtk.Dialog):
 		
 		#fill store
 		for icon_path, name, enabled, configuration in self.config.get_services():
-			if icon_path:
-				icon = gtk.gdk.pixbuf_new_from_file(icon_path)
-			else:
-				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
-			store.append((icon, name, enabled, configuration))
+			self.add_service(icon_path, name, enabled, configuration)
 		
 		frame = gtk.Frame()
 		frame.set_border_width(10)
@@ -250,14 +257,45 @@ class Preferences(gtk.Dialog):
 		bbox.set_layout(gtk.BUTTONBOX_START)
 		frame.add(bbox)
 		button = gtk.Button(None, gtk.STOCK_ADD)
-		button.connect("clicked", self.close)
+		button.connect("clicked", self.choose_path, self.on_choose_service)
 		bbox.pack_start(button)
 		button = gtk.Button(None, gtk.STOCK_REMOVE)
-		button.connect("clicked", self.close)
+		button.connect("clicked", self.delete_service)
 		bbox.pack_start(button)
 		
 		return vbox
 		
+	def add_service(self, icon_path, name, enabled, configuration):
+		""""""
+		if configuration:
+			if icon_path:
+				icon = gtk.gdk.pixbuf_new_from_file(icon_path)
+			else:
+				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
+			self.treeview.get_model().append((icon, name, enabled, configuration))
+		else:
+			Message(cons.SEVERITY_ERROR, "Not supported!", "The choosed directory isn't a service, or it's not configured.")
+
+	def on_choose_service(self, widget, response, choosed):
+		""""""
+		path = self.filechooser.get_filename() + "/"
+		self.filechooser.destroy()
+		if choosed:
+			model = self.treeview.get_model()
+			icon_path, name, enabled, configuration = self.config.service(path)
+			self.add_service(icon_path, name, enabled, configuration)
+		del self.filechooser
+		
+	def delete_service(self, button):
+		""""""
+		model, iter = self.treeview.get_selection().get_selected()
+		if iter:
+			next_iter = model.iter_next(iter)
+			self.config.remove_option(config.SECTION_SERVICES, model.get_value(iter, 1))
+			model.remove(iter)
+			if next_iter:
+				self.treeview.set_cursor_on_cell(model.get_path(next_iter))
+
 	def toggled(self, button, path):
 		""""""
 		model = self.treeview.get_model()

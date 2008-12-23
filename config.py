@@ -95,14 +95,20 @@ class Config(SafeConfigParser):
 		""""""
 		result = []
 		for service, path in self.items(SECTION_SERVICES):
-			config = service_config.ServiceConfig(path)
-			if config.check_config():
-				icon = config.get_icon()
-				name = config.get(service_config.SECTION_MAIN, service_config.OPTION_NAME)
-				enabled = config.getboolean(service_config.SECTION_MAIN, service_config.OPTION_ENABLED)
-				result.append((icon, name, enabled, config))
+			result.append(self.service(path))
 		return result
 
+	def service(self, path):
+		""""""
+		result = None, None, None, None
+		config = service_config.ServiceConfig(path)
+		if config.check_config():
+			icon = config.get_icon()
+			name = config.get(service_config.SECTION_MAIN, service_config.OPTION_NAME)
+			enabled = config.getboolean(service_config.SECTION_MAIN, service_config.OPTION_ENABLED)
+			result = icon, name, enabled, config
+		return result
+		
 	def save(self):
 		""""""
 		f = open(DEFAULT_PATH + CONF, "w")
