@@ -302,7 +302,9 @@ class Preferences(gtk.Dialog):
 		if button.get_active():
 			active = False
 		else:
-			active = True
+			tos = "Before using this service, you must accept it's terms of service at " + model.get_value(model.get_iter(path), 1)
+			m = Message(cons.SEVERITY_INFO, "Terms of service", tos, True)
+			active = m.accepted
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 2, active)
 		
