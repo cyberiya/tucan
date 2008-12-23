@@ -56,9 +56,9 @@ MINUTE = 60
 HOUR = 3600
 
 #service type constans
-TYPE_ANONYMOUS = "anonymous"
-TYPE_USER = "user"
-TYPE_PREMIUM = "premium"
+TYPE_ANONYMOUS = "AnonymousPlugin"
+TYPE_USER = "UserPlugin"
+TYPE_PREMIUM = "PremiumPlugin"
 TYPE_UNSUPPORTED = "unsupported"
 
 #path constants
