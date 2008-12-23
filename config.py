@@ -24,6 +24,7 @@ import os
 
 from ConfigParser import SafeConfigParser
 
+import service_config
 import cons
 
 DEFAULT_PATH = cons.DEFAULT_PATH + ".tucan/"
@@ -47,7 +48,7 @@ OPTION_ADVANCED_PACKAGES = "advanced_packages"
 OPTION_SHOW_UPLOADS = "show_uploads"
 
 DEFAULTS = {SECTION_MAIN: {OPTION_LANGUAGE: "English", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_UPLOADS: "5", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH}
-	, SECTION_SERVICES: {"rapidshare.com": "False", "megaupload.com": "False"}
+	, SECTION_SERVICES: {}
 	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "False", OPTION_ADVANCED_PACKAGES: "False", OPTION_SHOW_UPLOADS: "False"}}
 
 class Config(SafeConfigParser):
@@ -90,9 +91,17 @@ class Config(SafeConfigParser):
 		self.write(f)
 		f.close()
 		
-	def get_service(self, service):
+	def get_services(self):
 		""""""
-		return None, True
+		result = []
+		for service, path in self.items(SECTION_SERVICES):
+			config = service_config.ServiceConfig(path)
+			if config.check_config():
+				icon = config.get_icon()
+				name = config.get(service_config.SECTION_MAIN, service_config.OPTION_NAME)
+				enabled = config.getboolean(service_config.SECTION_MAIN, service_config.OPTION_ENABLED)
+				result.append((icon, name, enabled, path, config))
+		return result
 
 	def save(self):
 		""""""
