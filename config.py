@@ -27,7 +27,7 @@ from ConfigParser import SafeConfigParser
 import service_config
 import cons
 
-DEFAULT_PATH = cons.DEFAULT_PATH + ".tucan/"
+DEFAULT_PATH = os.path.expanduser("~") + "/.tucan/"
 CONF = "tucan.conf"
 
 COMMENT = """# Tucan Manager's default configuration.
