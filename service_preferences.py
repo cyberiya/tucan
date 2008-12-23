@@ -24,18 +24,19 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
+import service_config
 import cons
 
 class InfoPreferences(gtk.VBox):
 	""""""
-	def __init__(self, name, author, version, info):
+	def __init__(self, section, config, accounts=False):
 		""""""	
 		gtk.VBox.__init__(self)
 		vbox = gtk.VBox()
 		
 		frame = gtk.Frame()
 		label = gtk.Label()
-		label.set_markup("<big><b>" + name + "</b></big>")
+		label.set_markup("<big><b>" + config.get(section, service_config.OPTION_NAME) + "</b></big>")
 		frame.set_label_widget(label)
 		frame.set_border_width(10)
 		self.pack_start(frame)
@@ -45,7 +46,7 @@ class InfoPreferences(gtk.VBox):
 		label = gtk.Label()
 		label.set_markup("<b>Author:</b>")
 		hbox.pack_start(label, False, False, 10)
-		label = gtk.Label(author)
+		label = gtk.Label(config.get(section, service_config.OPTION_AUTHOR))
 		hbox.pack_start(label, False)
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
@@ -53,24 +54,31 @@ class InfoPreferences(gtk.VBox):
 		label = gtk.Label()
 		label.set_markup("<b>Version:</b>")
 		hbox.pack_start(label, False)
-		label = gtk.Label(version)
+		label = gtk.Label(config.get(section, service_config.OPTION_VERSION))
 		hbox.pack_start(label, False, False, 10)
 		vbox.pack_start(hbox, False, False, 5)
 		
-		for name, value in info:
+		if not accounts:
 			hbox = gtk.HBox()
 			label = gtk.Label()
-			label.set_markup("<b>" + name + "</b>")
+			label.set_markup("<b>Slots:</b>")
 			hbox.pack_start(label, False, False, 10)
-			label = gtk.Label(value)
+			label = gtk.Label(config.get(section, service_config.OPTION_SLOTS))
+			hbox.pack_start(label, False)
+			vbox.pack_start(hbox, False, False, 5)
+			hbox = gtk.HBox()
+			label = gtk.Label()
+			label.set_markup("<b>Captcha:</b>")
+			hbox.pack_start(label, False, False, 10)
+			label = gtk.Label(config.get(section, service_config.OPTION_CAPTCHA))
 			hbox.pack_start(label, False)
 			vbox.pack_start(hbox, False, False, 5)
 			
 class AccountPreferences(InfoPreferences):
 	""""""
-	def __init__(self, name, author, version, info, accounts):
+	def __init__(self, section, config):
 		""""""
-		InfoPreferences.__init__(self, name, author, version, info)
+		InfoPreferences.__init__(self, section, config, True)
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ACCOUNT))
 		frame.set_border_width(10)
@@ -185,7 +193,7 @@ class AccountPreferences(InfoPreferences):
 
 class ServicePreferences(gtk.Dialog):
 	""""""
-	def __init__(self, service, icon):
+	def __init__(self, service, icon, config):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon(icon)
@@ -216,16 +224,20 @@ class ServicePreferences(gtk.Dialog):
 		self.notebook.set_show_tabs(False)
 		
 		cont = 0
-		for item in ["Downloads", "Uploads"]:
+		plugins = config.get_plugins()
+		plugin_types = plugins.keys()
+		plugin_types.sort()
+		for item in plugin_types:
 			iter = store.append(None, [item, -1])
-			for subitem in ["Anonymous", "User", "Premium"]:
+			for section_name, section_type in plugins[item]:
 				page = gtk.VBox()
-				if subitem == "Anonymous":
-					page = InfoPreferences((subitem + " " + item), "Crak", "0.1", [("Slots:", 1), ("Captcha:", "No")])
+				if section_type == cons.TYPE_ANONYMOUS:
+					page = InfoPreferences(section_name, config)
 				else:
-					page = AccountPreferences((subitem + " " + item), "Crak", "0.1", [], [("sda09sd", "hyt34fg", True),("53ds23", "h8t5", False)])
+					pass
+					#page = AccountPreferences(section_name, config)
 				self.notebook.append_page(page, None)
-				subiter = store.append(iter, [subitem, cont])
+				subiter = store.append(iter, [section_type, cont])
 				treeview.expand_to_path(store.get_path(subiter))
 				if cont == 0:
 					treeview.set_cursor_on_cell(store.get_path(subiter))
@@ -258,4 +270,4 @@ class ServicePreferences(gtk.Dialog):
 		self.destroy()
 	
 if __name__ == "__main__":
-	x = ServicePreferences("rapidshare.com", gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING))
+	x = ServicePreferences("rapidshare.com", gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING), service_config.ServiceConfig("/home/crak/.tucan/plugins/megaupload/"))
