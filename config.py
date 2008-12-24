@@ -21,6 +21,7 @@
 ###############################################################################
 
 import os
+import shutil
 
 from ConfigParser import SafeConfigParser
 
@@ -28,7 +29,10 @@ import service_config
 import cons
 
 DEFAULT_PATH = os.path.expanduser("~") + "/.tucan/"
+
 CONF = "tucan.conf"
+PLUGINS = "plugins/"
+DEFAULT_PLUGINS = "default_plugins/"
 
 COMMENT = """# Tucan Manager's default configuration.
 # Dont change anything unless you really know what are doing, 
@@ -59,6 +63,8 @@ class Config(SafeConfigParser):
 		self.configured = True
 		if not os.path.exists(DEFAULT_PATH):
 			os.mkdir(DEFAULT_PATH)
+		if not os.path.exists(DEFAULT_PATH + PLUGINS):
+			shutil.copytree(os.getcwdu() + "/" + DEFAULT_PLUGINS, DEFAULT_PATH + PLUGINS)
 		if not os.path.exists(DEFAULT_PATH + CONF):
 			self.create_config()
 			self.configured = False
@@ -100,13 +106,13 @@ class Config(SafeConfigParser):
 
 	def service(self, path):
 		""""""
-		result = None, None, None, None
+		result = path, None, None, None, None
 		config = service_config.ServiceConfig(path)
 		if config.check_config():
 			icon = config.get_icon()
 			name = config.get(service_config.SECTION_MAIN, service_config.OPTION_NAME)
 			enabled = config.getboolean(service_config.SECTION_MAIN, service_config.OPTION_ENABLED)
-			result = icon, name, enabled, config
+			result = path, icon, name, enabled, config
 		return result
 		
 	def save(self):

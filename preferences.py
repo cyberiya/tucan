@@ -40,7 +40,6 @@ class Preferences(gtk.Dialog):
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_PREFERENCES)
 		self.set_title("Preferences")
-		#self.set_resizable(False)
 		self.set_size_request(500,500)
 		
 		self.config = configuration
@@ -246,8 +245,8 @@ class Preferences(gtk.Dialog):
 		self.treeview.append_column(tree_enable)
 		
 		#fill store
-		for icon_path, name, enabled, configuration in self.config.get_services():
-			self.add_service(icon_path, name, enabled, configuration)
+		for path, icon_path, name, enabled, configuration in self.config.get_services():
+			self.add_service(path, icon_path, name, enabled, configuration)
 		
 		frame = gtk.Frame()
 		frame.set_border_width(10)
@@ -265,7 +264,7 @@ class Preferences(gtk.Dialog):
 		
 		return vbox
 		
-	def add_service(self, icon_path, name, enabled, configuration):
+	def add_service(self, path, icon_path, name, enabled, configuration):
 		""""""
 		if configuration:
 			if icon_path:
@@ -274,7 +273,7 @@ class Preferences(gtk.Dialog):
 				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
 			self.treeview.get_model().append((icon, name, enabled, configuration))
 		else:
-			Message(cons.SEVERITY_ERROR, "Not supported!", "The choosed directory isn't a service, or it's not configured.")
+			Message(cons.SEVERITY_ERROR, path , "The choosed directory isn't a service, or it's not configured.")
 
 	def on_choose_service(self, widget, response, choosed):
 		""""""
@@ -283,7 +282,7 @@ class Preferences(gtk.Dialog):
 		if choosed:
 			model = self.treeview.get_model()
 			icon_path, name, enabled, configuration = self.config.service(path)
-			self.add_service(icon_path, name, enabled, configuration)
+			self.add_service(path, icon_path, name, enabled, configuration)
 		del self.filechooser
 		
 	def delete_service(self, button):
