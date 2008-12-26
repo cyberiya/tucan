@@ -179,6 +179,7 @@ class Preferences(gtk.Dialog):
 	def choose_path(self, button, choose_callback):
 		""""""
 		self.filechooser = gtk.FileChooserDialog('Select a Folder', self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+		#self.filechooser.set_filename(filename)
 		self.filechooser.action_area.set_layout(gtk.BUTTONBOX_EDGE)
 		self.filechooser.set_show_hidden(False)
 		hidden_button = gtk.CheckButton("Show hidden files.")

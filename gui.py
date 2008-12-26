@@ -32,8 +32,13 @@ import gobject
 from about import About
 from message import Message
 from tray_icon import TrayIcon
+
 from menu_bar import MenuBar
 from toolbar import Toolbar
+
+from config import Config
+from sessions import Sessions
+
 from tree import Tree
 from input_links import InputLinks
 
@@ -55,8 +60,12 @@ class Gui(gtk.Window, ServiceManager):
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
 		
+		#configuration
+		configuration = Config()
+		
 		#menu items
-		menu_import = "Import", self.not_implemented
+		menu_load_session = "Load Session", self.load_session
+		menu_save_session = "Save Session", self.save_session
 		menu_quit = gtk.STOCK_QUIT, self.quit
 		menu_help = gtk.STOCK_HELP, self.help
 		menu_about = gtk.STOCK_ABOUT, About
@@ -64,14 +73,14 @@ class Gui(gtk.Window, ServiceManager):
 		hide_uploads = gtk.CheckMenuItem("Hide Uploads"), self.resize_pane, True
 		
 		#menubar
-		file_menu = "File", [menu_import, None, menu_quit]
+		file_menu = "File", [menu_load_session, menu_save_session, None, menu_quit]
 		view_menu = "View", [hide_uploads, None, menu_preferences]
 		help_menu = "Help", [menu_help, menu_about]
 		self.vbox.pack_start(MenuBar([file_menu, view_menu, help_menu]), False)
 
 		#toolbar
 		download = "Add Downloads", gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_links
-		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.quit
+		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.not_implemented
 		clear = "Clear Complete", gtk.image_new_from_file(cons.ICON_CLEAR), self.clear_complete
 		up = "Move Up", gtk.image_new_from_file(cons.ICON_UP), self.move_up
 		down = "Move Down", gtk.image_new_from_file(cons.ICON_DOWN), self.move_down
@@ -79,12 +88,13 @@ class Gui(gtk.Window, ServiceManager):
 		stop = "Stop Selected", gtk.image_new_from_file(cons.ICON_STOP), self.stop
 		self.vbox.pack_start(Toolbar([download, upload, None, clear, None, up, down, None, start, stop]), False)
 		
+		copy = gtk.STOCK_COPY, self.copy_clipboard
 		delete = gtk.STOCK_REMOVE, self.delete
 		start = gtk.STOCK_MEDIA_PLAY, self.start
 		stop = gtk.STOCK_MEDIA_STOP, self.stop
 		
 		#trees
-		self.downloads = Tree([delete], self.download_manager.get_files)
+		self.downloads = Tree([copy, None, delete], self.download_manager.get_files)
 		#self.uploads = Tree()
 		self.uploads = gtk.VBox()
 		
@@ -128,6 +138,28 @@ class Gui(gtk.Window, ServiceManager):
 		""""""
 		i = InputLinks(self.filter_service, self.link_check, self.create_packages, self.manage_packages)
 		
+	def copy_clipboard(self, button):
+		""""""
+		model, iter = self.downloads.treeview.get_selection().get_selected()
+		if iter:
+			link_list = self.downloads.get_links(iter)
+			clipboard = gtk.Clipboard()
+			clipboard.clear()
+			clipboard.set_text("\n".join(link_list))
+	
+	def load_session(self, button):
+		""""""
+		s = Sessions()
+		packages, info = s.load_default_session()
+		if not packages == None:
+			self.manage_packages(packages, info)
+			
+	def save_session(self, button):
+		""""""
+		s = Sessions()
+		packages, info = self.downloads.get_packages()
+		s.save_default_session(packages, info)
+		
 	def manage_packages(self, packages, packages_info):
 		""""""
 		tmp_packages = []
@@ -147,7 +179,7 @@ class Gui(gtk.Window, ServiceManager):
 			info = packages_info[packages.index((package_name, package_downloads))]
 			package_name = info[1].replace(" ", "_")
 			package_path = info[0] + package_name + "/"
-			self.downloads.add_package(package_name, package_path, package_downloads)
+			self.downloads.add_package(package_name, package_path, package_downloads, info[2])
 			for download in package_downloads:
 				tmp = []
 				for service in download[2]:
