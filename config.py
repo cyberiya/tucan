@@ -63,8 +63,6 @@ class Config(SafeConfigParser):
 		self.configured = True
 		if not os.path.exists(DEFAULT_PATH):
 			os.mkdir(DEFAULT_PATH)
-		if not os.path.exists(DEFAULT_PATH + PLUGINS):
-			shutil.copytree(os.getcwdu() + "/" + DEFAULT_PLUGINS, DEFAULT_PATH + PLUGINS)
 		if not os.path.exists(DEFAULT_PATH + CONF):
 			self.create_config()
 			self.configured = False
@@ -73,6 +71,14 @@ class Config(SafeConfigParser):
 			if not self.check_config():
 				self.create_config()
 				self.configured = False
+		if not os.path.exists(DEFAULT_PATH + PLUGINS):
+			shutil.copytree(os.getcwdu() + "/" + DEFAULT_PLUGINS, DEFAULT_PATH + PLUGINS)
+			for service in os.listdir(DEFAULT_PATH + PLUGINS):
+				if os.path.isdir(DEFAULT_PATH + PLUGINS + service):
+					path, icon, name, enabled, config = self.service(DEFAULT_PATH + PLUGINS + service + "/")
+					if name:
+						self.set(SECTION_SERVICES, name, path)
+			self.save()
 
 	def check_config(self):
 		""""""
@@ -92,11 +98,8 @@ class Config(SafeConfigParser):
 				self.add_section(section)
 			for option, value in options.items():
 				self.set(section, option, value)
-		f = open(DEFAULT_PATH + CONF, "w")
-		f.write(COMMENT + "\n\n")
-		self.write(f)
-		f.close()
-		
+		self.save(True)
+
 	def get_services(self):
 		""""""
 		result = []
@@ -115,9 +118,11 @@ class Config(SafeConfigParser):
 			result = path, icon, name, enabled, config
 		return result
 		
-	def save(self):
+	def save(self, comment=False):
 		""""""
 		f = open(DEFAULT_PATH + CONF, "w")
+		if comment:
+			f.write(COMMENT + "\n\n")
 		self.write(f)
 		f.close()
 

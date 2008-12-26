@@ -204,7 +204,6 @@ class Preferences(gtk.Dialog):
 		self.filechooser.destroy()
 		del self.filechooser
 
-
 	def init_services(self):
 		""""""
 		vbox = gtk.VBox()
