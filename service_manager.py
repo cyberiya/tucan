@@ -179,4 +179,4 @@ class ServiceManager:
 
 if __name__ == "__main__":
 	s = ServiceManager()
-	s.prueba()
+	#s.prueba()
