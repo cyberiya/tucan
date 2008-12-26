@@ -133,14 +133,14 @@ class Tree(gtk.VBox):
 			if len(paths) > 0:
 				self.menu.popup(None, None, None, event.button, event.time)
 
-	def add_package(self, package_name, package_path, package):
+	def add_package(self, package_name, package_path, package, password):
 		"""
-		TreeStore(icon, status, None, name, progress, progress_visible, current_size, total_size, speed, time, services)
+		TreeStore(icon, status, password, name, progress, progress_visible, current_size, total_size, speed, time, services)
 		"""
 		package_size = 0
 		package_unit = cons.UNIT_KB
 		model = self.treeview.get_model()
-		package_iter = model.append(None, [self.package_icon, cons.STATUS_PEND, None, package_name, 0, True, None, None, None, None, package_path])
+		package_iter = model.append(None, [self.package_icon, cons.STATUS_PEND, password, package_name, 0, True, None, None, None, None, package_path])
 		for item in package:
 			package_size += item[3]
 			package_unit = item[4]
@@ -224,7 +224,63 @@ class Tree(gtk.VBox):
 			self.status_bar.pop(self.status_bar.get_context_id("Downloads"))
 			self.status_bar.push(self.status_bar.get_context_id("Downloads"), " Downstream %dKB/s \tTotal %d \t Complete %d \t Active %d" %	(total_speed, total_downloads, complete_downloads, active_downloads))
 		return True
-		
+
+	def get_packages(self):
+		""""""
+		model = self.treeview.get_model()
+		package_iter = model.get_iter_root()
+		packages = []
+		info = []
+		while package_iter:
+			files = []
+			file_iter = model.iter_children(package_iter)
+			while file_iter:
+				if not model.get_value(file_iter, 1) == cons.STATUS_CORRECT:
+					links = []
+					plugins = []
+					link_iter = model.iter_children(file_iter)
+					while link_iter:
+						links.append(model.get_value(link_iter, 3))
+						plugins.append(model.get_value(link_iter, 10))
+						link_iter = model.iter_next(link_iter)
+					name = model.get_value(file_iter, 3)
+					tmp = model.get_value(file_iter, 7)
+					for unit in [cons.UNIT_KB, cons.UNIT_MB]:
+						tmp_size = tmp.split(unit)
+						if len(tmp_size) > 1:
+							size_unit = unit
+							size = int(tmp_size[0])
+							break
+					tmp = model.get_value(file_iter, 10)
+					tmp = tmp.split(",")
+					service_list = []
+					for service in tmp:
+						service_list.append(service.split("\'")[1])
+					files.append((links, name, service_list, size, size_unit, plugins))
+				file_iter = model.iter_next(file_iter)
+			name = model.get_value(package_iter, 3)
+			packages.append((name, files))
+			info.append((model.get_value(package_iter, 10), name, model.get_value(package_iter, 2)))
+			package_iter = model.iter_next(package_iter) 
+		return packages, info
+
+	def get_links(self, iter):
+		""""""
+		links = []
+		model = self.treeview.get_model()
+		file_iter = model.iter_children(iter)
+		if not file_iter:
+			links.append(model.get_value(iter, 3))
+		while file_iter:
+			link_iter = model.iter_children(file_iter)
+			if not link_iter:
+				links.append(model.get_value(file_iter, 3))
+			while link_iter:
+				links.append(model.get_value(link_iter, 3))
+				link_iter = model.iter_next(link_iter)
+			file_iter = model.iter_next(file_iter)
+		return links
+
 	def package_files(self, package_iter):
 		""""""
 		files = []

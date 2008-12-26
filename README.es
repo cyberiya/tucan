@@ -2,7 +2,7 @@
  Tucan
 ===================
  
- - Tucan es una aplicación libre y de codigo abierto diseñada para
+ - Tucan es una aplicación libre y de código abierto diseñada para
    la gestión automática de descargas y subidas en webs como:
  
    - http://rapidshare.com/
@@ -11,7 +11,7 @@
  
  
 ===================
- Características:
+ Características
 =========
  
  - Escrito enteramente en python.
@@ -41,7 +41,7 @@
  - SVG Rendering Library
  
  --------------------------------------------------------------------------------------------------------
- | Paquete \ Distribucion  |  Debian / Ubuntu  |       Gentoo       |     Arch     |       Fedora       |
+ | Paquete \ Distribución  |  Debian / Ubuntu  |       Gentoo       |     Arch     |       Fedora       |
  --------------------------------------------------------------------------------------------------------
  | Python >= 2.5           | python2.5         | dev-lang/python    | python       | python             |
  --------------------------------------------------------------------------------------------------------
