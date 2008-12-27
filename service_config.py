@@ -32,6 +32,10 @@ SECTION_MAIN = "main"
 SECTION_DOWNLOADS = "downloads"
 SECTION_UPLOADS = "uploads"
 
+TYPE_ANONYMOUS = "anonymous"
+TYPE_USER = "user"
+TYPE_PREMIUM = "premium"
+
 SECTION_ANONYMOUS_DOWNLOAD = "anonymous_download"
 SECTION_USER_DOWNLOAD = "user_download"
 SECTION_PREMIUM_DOWNLOAD = "premium_download"
@@ -86,32 +90,26 @@ class ServiceConfig(SafeConfigParser):
 			if not self.get(SECTION_MAIN, OPTION_ICON) == "None":
 				return self.path + self.get(SECTION_MAIN, OPTION_ICON)
 				
-	def get_plugins(self):
+				
+	def get_plugins(self, main_section, sections):
 		""""""
-		result = {}
-		if self.has_section(SECTION_DOWNLOADS):
-			if self.getboolean(SECTION_DOWNLOADS, OPTION_AVAIBLE):
-				downloads = []
-				if ((self.has_section(SECTION_ANONYMOUS_DOWNLOAD)) and (len(self.items(SECTION_ANONYMOUS_DOWNLOAD)) > 0)):
-					downloads.append((SECTION_ANONYMOUS_DOWNLOAD, cons.TYPE_ANONYMOUS))
-				if ((self.has_section(SECTION_USER_DOWNLOAD)) and (len(self.items(SECTION_USER_DOWNLOAD)) > 0)):
-					downloads.append((SECTION_USER_DOWNLOAD, cons.TYPE_USER))
-				if ((self.has_section(SECTION_PREMIUM_DOWNLOAD)) and (len(self.items(SECTION_PREMIUM_DOWNLOAD)) > 0)):
-					downloads.append((SECTION_PREMIUM_DOWNLOAD, cons.TYPE_PREMIUM))
-				if len(downloads) > 0:
-					result[SECTION_DOWNLOADS] = downloads
-		if self.has_section(SECTION_UPLOADS):
-			if self.getboolean(SECTION_UPLOADS, OPTION_AVAIBLE):
-				uploads = []
-				if ((self.has_section(SECTION_ANONYMOUS_UPLOAD)) and (len(self.items(SECTION_ANONYMOUS_UPLOAD)) > 0)):
-					uploads.append((SECTION_ANONYMOUS_UPLOAD, cons.TYPE_ANONYMOUS))
-				if ((self.has_section(SECTION_USER_UPLOAD)) and (len(self.items(SECTION_USER_UPLOAD)) > 0)):
-					uploads.append((SECTION_USER_UPLOAD, cons.TYPE_USER))
-				if ((self.has_section(SECTION_PREMIUM_UPLOAD)) and (len(self.items(SECTION_PREMIUM_UPLOAD)) > 0)):
-					uploads.append((SECTION_PREMIUM_UPLOAD, cons.TYPE_PREMIUM))
-				if len(uploads) > 0:
-					result[SECTION_UPLOADS] = uploads
+		result = []
+		if self.has_section(main_section):
+			if self.getboolean(main_section, OPTION_AVAIBLE):
+				for section, section_type in sections:
+					if ((self.has_section(section)) and (len(self.items(section)) > 0)):
+						result.append((section, self.get(section, OPTION_NAME), section_type))
 		return result
+				
+	def get_download_plugins(self):
+		""""""
+		sections = [(SECTION_ANONYMOUS_DOWNLOAD, TYPE_ANONYMOUS), (SECTION_USER_DOWNLOAD, TYPE_USER), (SECTION_PREMIUM_DOWNLOAD, TYPE_PREMIUM)]
+		return self.get_plugins(SECTION_DOWNLOADS, sections)
+					
+	def get_upload_plugins(self):
+		""""""
+		sections = [(SECTION_ANONYMOUS_UPLOAD, TYPE_ANONYMOUS), (SECTION_USER_UPLOAD, TYPE_USER), (SECTION_PREMIUM_UPLOAD, TYPE_PREMIUM)]
+		return self.get_plugins(SECTION_UPLOADS, sections)
 
 	def get_accounts(self, section):
 		""""""

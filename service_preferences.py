@@ -29,14 +29,14 @@ import cons
 
 class InfoPreferences(gtk.VBox):
 	""""""
-	def __init__(self, section, config, accounts=False):
+	def __init__(self, section, name, config, accounts=False):
 		""""""	
 		gtk.VBox.__init__(self)
 		vbox = gtk.VBox()
 		
 		frame = gtk.Frame()
 		label = gtk.Label()
-		label.set_markup("<big><b>" + config.get(section, service_config.OPTION_NAME) + "</b></big>")
+		label.set_markup("<big><b>" + name + "</b></big>")
 		frame.set_label_widget(label)
 		frame.set_border_width(10)
 		self.pack_start(frame)
@@ -76,9 +76,9 @@ class InfoPreferences(gtk.VBox):
 			
 class AccountPreferences(InfoPreferences):
 	""""""
-	def __init__(self, section, config):
+	def __init__(self, section, name, config):
 		""""""
-		InfoPreferences.__init__(self, section, config, True)
+		InfoPreferences.__init__(self, section, name, config, True)
 
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ACCOUNT))
@@ -239,19 +239,23 @@ class ServicePreferences(gtk.Dialog):
 		self.notebook.set_show_tabs(False)
 		
 		cont = 0
-		plugins = self.config.get_plugins()
-		plugin_types = plugins.keys()
-		plugin_types.sort()
-		for item in plugin_types:
+		plugin_list = []
+		plugins = self.config.get_download_plugins()
+		if plugins:
+			plugin_list.append(("Download", plugins))
+		plugins = self.config.get_upload_plugins()
+		if plugins:
+			plugin_list.append(("Upload", plugins))
+		for item, plugins in plugin_list:
 			iter = store.append(None, [None, item, -1])
-			for section_name, section_type in plugins[item]:
+			for section, section_name, section_type in plugins:
 				page = gtk.VBox()
-				if section_type == cons.TYPE_ANONYMOUS:
-					page = InfoPreferences(section_name, self.config)
+				if section_type == service_config.TYPE_ANONYMOUS:
+					page = InfoPreferences(section, section_name, self.config)
 				else:
-					page = AccountPreferences(section_name, self.config)
+					page = AccountPreferences(section, section_name, self.config)
 				self.notebook.append_page(page, None)
-				subiter = store.append(iter, [section_name, section_type, cont])
+				subiter = store.append(iter, [section, section_type, cont])
 				self.treeview.expand_to_path(store.get_path(subiter))
 				if cont == 0:
 					self.treeview.set_cursor_on_cell(store.get_path(subiter))
