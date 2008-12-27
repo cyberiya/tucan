@@ -22,6 +22,7 @@
 
 import urlparse
 import re
+import sys
 
 import cons
 
@@ -30,9 +31,36 @@ from download_manager import DownloadManager
 from plugin import Plugin
 from plugins import *
 
+class Service:
+	""""""
+	def __init__(self, name):
+		""""""
+		self.name = name
+		self.download_plugins = []
+		self.check_links = []
+		self.upload_plugins = []
+		self.check_files = []
+
 class ServiceManager:
 	""""""
-	def __init__(self):
+	def __init__(self, configuration):
+		""""""
+		self.services = []
+		for path, icon, service, enabled, config in configuration.get_services():
+			s = Service(service)
+			if enabled:
+				sys.path.append(path)
+				for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
+					module = __import__(plugin_module, None, None, [''])
+					s.download_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
+				for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
+					module = __import__(plugin_module, None, None, [''])
+					s.upload_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
+				self.services.append(s)
+		for service in self.services:
+			print service.name, service.download_plugins
+		
+	def mierda(self):
 		""""""
 		self.download_manager = DownloadManager(self.get_plugin)
 		self.services = []
@@ -178,5 +206,6 @@ class ServiceManager:
 			time.sleep(5)
 
 if __name__ == "__main__":
-	s = ServiceManager()
+	from config import Config
+	s = ServiceManager(Config())
 	#s.prueba()
