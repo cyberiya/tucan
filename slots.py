@@ -20,17 +20,33 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import cons
+import time
 
-from plugin import Plugin
+WAIT_LIMIT = 300
 
-class AnonymousDownload(Plugin):
+class Slots:
 	""""""
-	def __init__(self):
+	def __init__(self, slots):
 		""""""
 		Plugin.__init__(self)
-		print "mierda"
+		self.end_wait = 0
+		self.max = slots
+		self.slots = slots
 		
-	def mierda(self):
+	def get_slot(self):
 		""""""
-		print "yata!"
+		if self.slots > 0:
+			if time.time() > self.end_wait:
+				self.download_slots -= 1
+				return True
+			
+	def add_wait(self):
+		""""""
+		print "a esperar 5 minutos"
+		self.end_wait = time.time() + WAIT_LIMIT
+			
+	def return_slot(self):
+		""""""
+		if self.slots < self.max:
+			self.slots += 1
+			return True

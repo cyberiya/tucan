@@ -29,7 +29,6 @@ import cons
 from download_manager import DownloadManager
 
 from plugin import Plugin
-from plugins import *
 
 class Service:
 	""""""
@@ -40,6 +39,12 @@ class Service:
 		self.check_links = []
 		self.upload_plugins = []
 		self.check_files = []
+		
+	def get_download_plugin(self):
+		""""""
+		print self.name
+		for plugin, plugin_type in self.download_plugins:
+			print plugin
 
 class ServiceManager:
 	""""""
@@ -58,8 +63,8 @@ class ServiceManager:
 					s.upload_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
 				self.services.append(s)
 		for service in self.services:
-			print service.name, service.download_plugins
-		
+			print service.get_download_plugin()
+
 	def mierda(self):
 		""""""
 		self.download_manager = DownloadManager(self.get_plugin)

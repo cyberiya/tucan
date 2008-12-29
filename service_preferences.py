@@ -250,7 +250,7 @@ class ServicePreferences(gtk.Dialog):
 			iter = store.append(None, [None, item, -1])
 			for section, section_name, section_type in plugins:
 				page = gtk.VBox()
-				if section_type == service_config.TYPE_ANONYMOUS:
+				if section_type == cons.TYPE_ANONYMOUS:
 					page = InfoPreferences(section, section_name, self.config)
 				else:
 					page = AccountPreferences(section, section_name, self.config)
