@@ -28,7 +28,6 @@ class Slots:
 	""""""
 	def __init__(self, slots):
 		""""""
-		Plugin.__init__(self)
 		self.end_wait = 0
 		self.max = slots
 		self.slots = slots
@@ -37,7 +36,7 @@ class Slots:
 		""""""
 		if self.slots > 0:
 			if time.time() > self.end_wait:
-				self.download_slots -= 1
+				self.slots -= 1
 				return True
 			
 	def add_wait(self):
