@@ -34,7 +34,6 @@ from slots import Slots
 import cons
 
 WAIT = 60
-RETRY = 10
 
 class FormParser(HTMLParser):
 	""""""
@@ -44,14 +43,12 @@ class FormParser(HTMLParser):
 		self.form_action = None
 		self.feed(data)
 		self.close()
-		print self.form_action
 
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "form":
 			if ((len(attrs) == 3) and (attrs[2][1] == "formDownload")):
 				self.form_action = attrs[0][1]
-				
 				
 	def return_handle(self):
 		""""""
@@ -91,4 +88,3 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		if self.stop(file_name):
 			print self.return_slot()
-	
