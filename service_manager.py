@@ -62,9 +62,6 @@ class ServiceManager:
 					module = __import__(plugin_module, None, None, [''])
 					s.upload_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
 				self.services.append(s)
-#		for service in self.services:
-#			if service.check_links:
-#				print service.check_links.check("http://www.gigasize.com/get.php?d=726jhznl0pc")
 
 	def prueba(self):
 		""""""
