@@ -20,43 +20,31 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-# Service configuration template.
-# This file defines how a service behaves.
-# Plugin developers must create a service folder with this config.
-# Service configuration template.
-# This file defines how a service behaves.
-# Plugin developers must create a service folder with this config.
+import urllib2
 
-[main]
-name = service
-enabled = False
-icon = None
+import captcha
+import cons
 
-[downloads]
-avaible = False
-check_links = None
-
-[uploads]
-avaible = False
-check_files = None
-
-[anonymous_download]
-name = Name
-author = None
-version = 0
-slots = 0
-captcha = False
-
-[user_download]
-
-[premium_download]
-name = None
-author = None
-version = 0
-accounts = None
-
-[anonymous_upload]
-
-[user_upload]
-
-[premium_upload]
+class CheckLinks:
+	""""""
+	def check(self, url):
+		""""""
+		name = None
+		size = 0
+		unit = None
+		try:
+			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+				if "<b>Filename:</b>" in line:
+					name = line.split("<b>Filename:</b>")[1].split("</div>")[0].strip()
+				elif "<b>Filesize:</b>" in line:
+					tmp = line.split("<b>Filesize:</b>")[1].split("</div>")[0].split(" ")
+					size = int(round(float(tmp[1])))
+					unit = tmp[2]
+			if name:
+				if ".." in name:
+					parser = captcha.CaptchaForm(url)
+					if parser.link:
+						name = parser.link.split("/").pop()
+		except urllib2.URLError, e:
+			print e
+		return name, size, unit
