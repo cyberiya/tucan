@@ -237,7 +237,7 @@ class InputLinks(gtk.Dialog):
 							marked = False
 							file_name = link
 						print file_name, size, size_unit
-						store.append(service_iter, [icon, link, file_name, size, size_unit, service, marked, True])
+						store.append(service_iter, [icon, link, file_name, size, size_unit, None, marked, True])
 						self.treeview.expand_row(store.get_path(service_iter), True)
 		end_wait()
 		

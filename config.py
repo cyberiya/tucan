@@ -61,6 +61,7 @@ class Config(SafeConfigParser):
 		""""""
 		SafeConfigParser.__init__(self)
 		self.configured = True
+		self.plugins_path = DEFAULT_PATH + PLUGINS
 		if not os.path.exists(DEFAULT_PATH):
 			os.mkdir(DEFAULT_PATH)
 		if not os.path.exists(DEFAULT_PATH + CONF):
@@ -75,7 +76,8 @@ class Config(SafeConfigParser):
 			shutil.copytree(os.getcwdu() + "/" + DEFAULT_PLUGINS, DEFAULT_PATH + PLUGINS)
 			for service in os.listdir(DEFAULT_PATH + PLUGINS):
 				if os.path.isdir(DEFAULT_PATH + PLUGINS + service):
-					path, icon, name, enabled, config = self.service(DEFAULT_PATH + PLUGINS + service + "/")
+					path = DEFAULT_PATH + PLUGINS + service + "/"
+					package, icon, name, enabled, config = self.service(path)
 					if name:
 						self.set(SECTION_SERVICES, name, path)
 			self.save()
@@ -109,13 +111,14 @@ class Config(SafeConfigParser):
 
 	def service(self, path):
 		""""""
-		result = path, None, None, None, None
+		result = None, None, None, None, None
 		config = service_config.ServiceConfig(path)
 		if config.check_config():
 			icon = config.get_icon()
 			name = config.get(service_config.SECTION_MAIN, service_config.OPTION_NAME)
 			enabled = config.getboolean(service_config.SECTION_MAIN, service_config.OPTION_ENABLED)
-			result = path, icon, name, enabled, config
+			tmp = path.split("/")
+			result = tmp[len(tmp)-2], icon, name, enabled, config
 		return result
 		
 	def save(self, comment=False):

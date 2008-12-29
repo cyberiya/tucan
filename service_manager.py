@@ -44,23 +44,23 @@ class ServiceManager:
 		""""""
 		self.download_manager = DownloadManager()
 		self.services = []
-		for path, icon, service, enabled, config in configuration.get_services():
+		sys.path.append(configuration.plugins_path)
+		for package, icon, service, enabled, config in configuration.get_services():
 			s = Service(service)
 			if enabled:
-				sys.path.append(path)
 				check_module, check_name = config.check_links()
 				if check_name:
-					module = __import__(check_module, None, None, [''])
+					module = __import__(package + "." + check_module, None, None, [''])
 					s.check_links = eval("module" + "." + check_name + "()")
 				for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
-					module = __import__(plugin_module, None, None, [''])
+					module = __import__(package + "." + plugin_module, None, None, [''])
 					s.download_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
 				check_module, check_name = config.check_files()
 				if check_name:
-					module = __import__(check_module, None, None, [''])
+					module = __import__(package + "." + check_module, None, None, [''])
 					s.check_files = eval("module" + "." + check_name + "()")
 				for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
-					module = __import__(plugin_module, None, None, [''])
+					module = __import__(package + "." + lugin_module, None, None, [''])
 					s.upload_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
 				self.services.append(s)
 
