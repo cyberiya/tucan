@@ -120,17 +120,6 @@ class ServiceManager:
 				if not found:
 						services[cons.TYPE_UNSUPPORTED].append(link)
 		return services
-		
-	def link_check(self, link, service):
-		"""return (active, file_name, int_size, size_unit, plugin)"""
-		plugin_name, plugin = self.get_plugin(service)
-		name, size, unit = plugin.check_link(link)
-		if unit == cons.UNIT_KB:
-			tmp_size = int(size/1024)
-			if tmp_size > 0:
-				size = tmp_size
-				unit = cons.UNIT_MB
-		return name, size, unit, plugin_name
 
 	def create_packages(self, dict):
 		""""""
