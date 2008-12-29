@@ -62,9 +62,8 @@ class DownloadItem:
 
 class DownloadManager:
 	""""""
-	def __init__(self, get_plugin):
+	def __init__(self):
 		""""""
-		self.get_plugin = get_plugin
 		self.pending_downloads = []
 		self.active_downloads = []
 		self.complete_downloads = []
@@ -110,8 +109,8 @@ class DownloadManager:
 		for download in self.pending_downloads:
 			if name == download.name:
 				for link in download.links:
-					print link.plugin.__name__
-					if link.plugin.add_download(download.path, link.url, download.name):
+					print name
+					if link.plugin.add(download.path, link.url, download.name):
 						link.active = True
 						self.active_downloads.append(download)
 						self.pending_downloads.remove(download)

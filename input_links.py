@@ -228,7 +228,7 @@ class InputLinks(gtk.Dialog):
 				else:
 					service_iter = store.append(None, [service_icon, service, service, 0, None, None, False, False])
 					for link in links:
-						file_name, size, size_unit, plugin = self.check_links(link, service)
+						file_name, size, size_unit = self.check_links(service)(link)
 						if file_name:
 							icon = active_icon
 							marked = True
@@ -236,8 +236,8 @@ class InputLinks(gtk.Dialog):
 							icon = unactive_icon
 							marked = False
 							file_name = link
-						print file_name, size, size_unit, plugin
-						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin, marked, True])
+						print file_name, size, size_unit
+						store.append(service_iter, [icon, link, file_name, size, size_unit, service, marked, True])
 						self.treeview.expand_row(store.get_path(service_iter), True)
 		end_wait()
 		
