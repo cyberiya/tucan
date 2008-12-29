@@ -50,7 +50,10 @@ class Gui(gtk.Window, ServiceManager):
 	""""""
 	def __init__(self):
 		""""""
-		ServiceManager.__init__(self)
+		#configuration
+		configuration = Config()
+
+		ServiceManager.__init__(self, configuration)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		self.set_icon_from_file(cons.ICON_TUCAN)
 		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION + cons.REVISION)
@@ -59,9 +62,6 @@ class Gui(gtk.Window, ServiceManager):
 		#self.maximize()
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
-		
-		#configuration
-		configuration = Config()
 		
 		#menu items
 		menu_load_session = "Load Session", self.load_session
@@ -136,7 +136,7 @@ class Gui(gtk.Window, ServiceManager):
 		
 	def add_links(self, button):
 		""""""
-		i = InputLinks(self.filter_service, self.link_check, self.create_packages, self.manage_packages)
+		i = InputLinks(self.filter_service, self.get_check_links, self.create_packages, self.manage_packages)
 		
 	def copy_clipboard(self, button):
 		""""""
@@ -183,7 +183,7 @@ class Gui(gtk.Window, ServiceManager):
 			for download in package_downloads:
 				tmp = []
 				for service in download[2]:
-					plugin_name, plugin = self.get_plugin(service)
+					plugin, plugin_name = self.get_download_plugin(service)
 					tmp.append((download[0][download[2].index(service)], plugin))
 				self.download_manager.add(package_path, download[1], tmp, download[3], download[4])
 			

@@ -42,6 +42,7 @@ class ServiceManager:
 	""""""
 	def __init__(self, configuration):
 		""""""
+		self.download_manager = DownloadManager()
 		self.services = []
 		for path, icon, service, enabled, config in configuration.get_services():
 			s = Service(service)
