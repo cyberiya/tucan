@@ -152,7 +152,7 @@ class DownloadManager:
 						self.active_downloads.remove(download)
 					elif status == cons.STATUS_CORRECT:
 						download.progress = 100
-						link.plugin.return_download_slot()
+						link.plugin.return_slot()
 						self.complete_downloads.append(download)
 						self.active_downloads.remove(download)
 
