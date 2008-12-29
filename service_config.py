@@ -32,10 +32,6 @@ SECTION_MAIN = "main"
 SECTION_DOWNLOADS = "downloads"
 SECTION_UPLOADS = "uploads"
 
-TYPE_ANONYMOUS = "anonymous"
-TYPE_USER = "user"
-TYPE_PREMIUM = "premium"
-
 SECTION_ANONYMOUS_DOWNLOAD = "anonymous_download"
 SECTION_USER_DOWNLOAD = "user_download"
 SECTION_PREMIUM_DOWNLOAD = "premium_download"
@@ -103,12 +99,12 @@ class ServiceConfig(SafeConfigParser):
 				
 	def get_download_plugins(self):
 		""""""
-		sections = [(SECTION_ANONYMOUS_DOWNLOAD, TYPE_ANONYMOUS), (SECTION_USER_DOWNLOAD, TYPE_USER), (SECTION_PREMIUM_DOWNLOAD, TYPE_PREMIUM)]
+		sections = [(SECTION_ANONYMOUS_DOWNLOAD, cons.TYPE_ANONYMOUS), (SECTION_USER_DOWNLOAD, cons.TYPE_USER), (SECTION_PREMIUM_DOWNLOAD, cons.TYPE_PREMIUM)]
 		return self.get_plugins(SECTION_DOWNLOADS, sections)
 					
 	def get_upload_plugins(self):
 		""""""
-		sections = [(SECTION_ANONYMOUS_UPLOAD, TYPE_ANONYMOUS), (SECTION_USER_UPLOAD, TYPE_USER), (SECTION_PREMIUM_UPLOAD, TYPE_PREMIUM)]
+		sections = [(SECTION_ANONYMOUS_UPLOAD, cons.TYPE_ANONYMOUS), (SECTION_USER_UPLOAD, cons.TYPE_USER), (SECTION_PREMIUM_UPLOAD, cons.TYPE_PREMIUM)]
 		return self.get_plugins(SECTION_UPLOADS, sections)
 
 	def get_accounts(self, section):
