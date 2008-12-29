@@ -281,7 +281,7 @@ class Preferences(gtk.Dialog):
 		self.filechooser.destroy()
 		if choosed:
 			model = self.treeview.get_model()
-			icon_path, name, enabled, configuration = self.config.service(path)
+			package, icon_path, name, enabled, configuration = self.config.service(path)
 			self.add_service(path, icon_path, name, enabled, configuration)
 		del self.filechooser
 		
