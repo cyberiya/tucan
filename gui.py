@@ -32,6 +32,7 @@ import gobject
 from about import About
 from message import Message
 from tray_icon import TrayIcon
+from preferences import Preferences
 
 from menu_bar import MenuBar
 from toolbar import Toolbar
@@ -51,9 +52,12 @@ class Gui(gtk.Window, ServiceManager):
 	def __init__(self):
 		""""""
 		#configuration
-		configuration = Config()
+		self.configuration = Config()
+		self.preferences_shown =  False
+		if not self.configuration.configured:
+			self.preferences()
 
-		ServiceManager.__init__(self, configuration)
+		ServiceManager.__init__(self, self.configuration)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		self.set_icon_from_file(cons.ICON_TUCAN)
 		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION + cons.REVISION)
@@ -69,7 +73,7 @@ class Gui(gtk.Window, ServiceManager):
 		menu_quit = gtk.STOCK_QUIT, self.quit
 		menu_help = gtk.STOCK_HELP, self.help
 		menu_about = gtk.STOCK_ABOUT, About
-		menu_preferences = gtk.STOCK_PREFERENCES, self.not_implemented
+		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
 		hide_uploads = gtk.CheckMenuItem("Hide Uploads"), self.resize_pane, True
 		
 		#menubar
@@ -118,6 +122,13 @@ class Gui(gtk.Window, ServiceManager):
 		"""pressed del key"""
 		if event.keyval == 65535:
 			self.delete()
+			
+	def preferences(self, button=None):
+		""""""
+		if not self.preferences_shown:
+			self.preferences_shown = True
+			Preferences(self.configuration)
+			self.preferences_shown =  False
 
 	def not_implemented(self, widget):
 		""""""
