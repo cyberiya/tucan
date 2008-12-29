@@ -20,10 +20,43 @@
 ##	Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import cons
+import time
+import urllib
+import urllib2
+import cookielib
 
+from HTMLParser import HTMLParser
+
+from tesseract import Tesseract
 from download_plugin import DownloadPlugin
 from slots import Slots
+
+import cons
+
+WAIT = 60
+RETRY = 10
+
+class FormParser(HTMLParser):
+	""""""
+	def __init__(self, data):
+		""""""
+		HTMLParser.__init__(self)
+		self.form_action = None
+		self.feed(data)
+		self.close()
+		print self.form_action
+
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "form":
+			if ((len(attrs) == 3) and (attrs[2][1] == "formDownload")):
+				self.form_action = attrs[0][1]
+				
+				
+	def return_handle(self):
+		""""""
+		data = urllib.urlencode({"dlb": "Download"})
+		return urllib2.urlopen(urllib2.Request("http://www.gigasize.com" + self.form_action), data)
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
@@ -36,10 +69,26 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		if self.get_slot():
 			print path, link, file_name
-		else:
-			self.add_wait()
-			
+			urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar())))
+			urllib2.urlopen(urllib2.Request(link))
+			captcha = None
+			form = None
+			while not captcha and not form:
+				tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read(), True)
+				captcha = tes.get_captcha(3)
+				data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
+				handle = urllib2.urlopen(urllib2.Request("http://www.gigasize.com/formdownload.php"), data)
+				f = FormParser(handle.read())
+				handle.close()
+				form = f.form_action
+			if self.start(path, link, file_name, WAIT, None, f.return_handle):
+				return True
+			else:
+				print "Limit Exceded"
+				self.add_wait()
+
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):
 			print self.return_slot()
+	

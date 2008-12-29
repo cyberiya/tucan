@@ -32,9 +32,10 @@ BUFFER_SIZE = 4096
 
 class Downloader(threading.Thread):
 	""""""
-	def __init__(self, path, url, file_name, wait=None, cookie=None):
+	def __init__(self, path, url, file_name, wait=None, cookie=None, handler=None):
 		""""""
 		threading.Thread.__init__(self)
+		self.get_handler = handler
 		self.status = cons.STATUS_PEND
 		self.path = path
 		self.url = url
@@ -61,7 +62,10 @@ class Downloader(threading.Thread):
 				self.time_remaining = self.wait
 		if not self.stop_flag:
 			try:
-				handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER))
+				if self.get_handler:
+					handle = self.get_handler()
+				else:
+					handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER))
 				f = open(self.path + self.file, "w")
 				self.total_size = int(handle.info().getheader("Content-Length"))
 				self.start_time = time.time()

@@ -37,12 +37,6 @@ class Service:
 		self.check_links = None
 		self.upload_plugins = []
 		self.check_files = None
-		
-	def get_download_plugin(self):
-		""""""
-		print self.name
-		for plugin, plugin_type in self.download_plugins:
-			print plugin.add("/mierda", "cojones", "puta")
 
 class ServiceManager:
 	""""""
@@ -68,54 +62,48 @@ class ServiceManager:
 					module = __import__(plugin_module, None, None, [''])
 					s.upload_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
 				self.services.append(s)
-		for service in self.services:
-			if service.check_links:
-				print service.check_links.check("http://www.gigasize.com/get.php?d=726jhzl0pc")
-	
-	def mierda(self):
-		""""""
-		self.download_manager = DownloadManager(self.get_plugin)
-		self.services = []
-		self.anonymous_plugins = {}
-		self.user_plugins = {}
-		self.premium_plugins = {}
-		for plugin in Plugin.__subclasses__():
-			if plugin.__name__ == cons.TYPE_ANONYMOUS:
-				self.init_plugin(plugin, self.anonymous_plugins)
-			elif plugin.__name__ == cons.TYPE_USER:
-				self.init_plugin(plugin, self.user_plugins)
-			elif plugin.__name__ == cons.TYPE_PREMIUM:
-				self.init_plugin(plugin, self.premium_plugins)
+#		for service in self.services:
+#			if service.check_links:
+#				print service.check_links.check("http://www.gigasize.com/get.php?d=726jhznl0pc")
 
-	def init_plugin(self, plugin_type, dict):
+	def prueba(self):
 		""""""
-		for plugin in plugin_type.__subclasses__():
-			dict[plugin.__name__] = plugin()
-			if not dict[plugin.__name__].service in self.services:
-				self.services.append(dict[plugin.__name__].service)
-		
-	def get_plugin(self, service, name=None):
-		""""""
-		result = None, None
+		import time
+		link = "http://www.gigasize.com/get.php?d=726jhznl0pc"
+		service = "gigasize.com"
+		name, size, unit = self.get_check_links(service)(link)
 		if name:
-			if name in self.anonymous_plugins:
-				result = name, self.anonymous_plugins[name]
-			elif name in self.user_plugins:
-				result = name, self.user_plugins[name]
-			elif name in self.premium_plugins:
-				result = name, self.premium_plugins[name]
-		elif service in self.services:
-			for plugin_name, plugin in self.anonymous_plugins.items():
-				if plugin.service == service:
-					result = plugin_name, plugin
-			for plugin_name, plugin in self.user_plugins.items():
-				if plugin.service == service:
-					result = plugin_name, plugin
-			for plugin_name, plugin in self.premium_plugins.items():
-				if plugin.service == service:
-					result = plugin_name, plugin
-		return result
-					
+			plugin, plugin_type = self.get_download_plugin(service)
+			print plugin_type
+			print plugin.add("/home/crak/downloads/", link, name)
+		while len(plugin.active_downloads) > 0:
+			print plugin.get_status(name)
+			time.sleep(2)
+
+	def get_download_plugin(self, service_name):
+		""""""
+		for service in self.services:
+			if ((service.name == service_name) and (len(service.download_plugins) > 0)):
+				return service.download_plugins[0]
+
+	def get_upload_plugin(self, service_name):
+		""""""
+		for service in self.services:
+			if ((service.name == service_name) and (len(service.upload_plugins) > 0)):
+				return service.upload_plugins[0]
+		
+	def get_check_links(self, service_name):
+		""""""
+		for service in self.services:
+			if service.name == service_name:
+				return service.check_links.check
+
+	def get_check_files(self, service_name):
+		""""""
+		for service in self.services:
+			if service.name == service_name:
+				return service.check_files.check
+
 	def filter_service(self, links):
 		""""""
 		services = {cons.TYPE_UNSUPPORTED: []}
@@ -125,12 +113,12 @@ class ServiceManager:
 			if urlparse.urlparse(link).scheme == "http":
 				link = "http" + link.split("http").pop()
 				for service in self.services:
-					if link.find(service) > 0:
+					if link.find(service.name) > 0:
 						found = True
-						if service in services:
-							services[service].append(link)
+						if service.name in services:
+							services[service.name].append(link)
 						else:
-							services[service] = [link]
+							services[service.name] = [link]
 				if not found:
 						services[cons.TYPE_UNSUPPORTED].append(link)
 		return services
@@ -205,19 +193,8 @@ class ServiceManager:
 	def stop_all(self):
 		""""""
 		self.download_manager.quit()
-	
-	def prueba(self):
-		""""""
-		import time
-		plugin = self.anonymous_plugins["AnonymousMegaupload"]
-		link = "http://www.megaupload.com/?d=QNVY9GXH"
-		name, size, size_unit = plugin.check_link(link)
-		print plugin.add_download("/home/crak/downloads/", link, name)
-		while len(plugin.active_downloads) > 0:
-			print plugin.get_status(name)
-			time.sleep(5)
 
 if __name__ == "__main__":
 	from config import Config
 	s = ServiceManager(Config())
-	#s.prueba()
+	s.prueba()

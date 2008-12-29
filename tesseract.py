@@ -21,7 +21,7 @@
 ###############################################################################
 
 import os
-
+import Image
 import ImageFile
 import ImageOps
 
@@ -30,11 +30,14 @@ TEXT_PATH = "tmp.txt"
 
 class Tesseract:
 	""""""
-	def __init__(self, data):
+	def __init__(self, data, filter=None):
 		""""""
 		p = ImageFile.Parser()
 		p.feed(data)
 		image = p.close()
+		image = image.resize((180,60), Image.BICUBIC)
+		if filter:
+			image = image.point(self.filter_pixel)
 		image = ImageOps.grayscale(image)
 		image.save(IMAGE_PATH)
 	
@@ -45,3 +48,15 @@ class Tesseract:
 			captcha = f.readline().strip()
 			if len(captcha) == num_chars:
 				return captcha
+				
+	def filter_pixel(self, pixel):
+		""""""
+		if pixel > 50:
+			return 255
+		else:
+			return 1
+
+if __name__ == "__main__":
+	f = file("tmp.jpg", "r")
+	t = Tesseract(f.read())
+	print t.get_captcha(3)
