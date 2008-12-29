@@ -21,17 +21,21 @@
 ###############################################################################
 
 import os
+import tempfile
+
 import Image
 import ImageFile
 import ImageOps
 
-IMAGE_PATH = "tmp.tif"
-TEXT_PATH = "tmp.txt"
+IMAGE_SUFFIX = ".tif"
+TEXT_SUFFIX = ".txt"
 
 class Tesseract:
 	""""""
 	def __init__(self, data, filter=None):
 		""""""
+		self.image = tempfile.NamedTemporaryFile(suffix=IMAGE_SUFFIX)
+		self.text = tempfile.NamedTemporaryFile(suffix=TEXT_SUFFIX)
 		p = ImageFile.Parser()
 		p.feed(data)
 		image = p.close()
@@ -39,13 +43,13 @@ class Tesseract:
 		if filter:
 			image = image.point(self.filter_pixel)
 		image = ImageOps.grayscale(image)
-		image.save(IMAGE_PATH)
+		image.save(self.image.name)
 	
 	def get_captcha(self, num_chars):
 		""""""
-		if os.system("tesseract "+ IMAGE_PATH + " tmp") == 0:
-			f = file(TEXT_PATH, "r")
-			captcha = f.readline().strip()
+		if os.system("tesseract "+ self.image.name + " " + self.text.name.split(TEXT_SUFFIX)[0]) == 0:
+			captcha = self.text.file.readline().strip()
+			self.text.file.close()
 			if len(captcha) == num_chars:
 				return captcha
 				
@@ -57,6 +61,6 @@ class Tesseract:
 			return 1
 
 if __name__ == "__main__":
-	f = file("tmp.jpg", "r")
+	f = file("tmp.png", "r")
 	t = Tesseract(f.read())
 	print t.get_captcha(3)
