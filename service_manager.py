@@ -28,23 +28,21 @@ import cons
 
 from download_manager import DownloadManager
 
-from plugin import Plugin
-
 class Service:
 	""""""
 	def __init__(self, name):
 		""""""
 		self.name = name
 		self.download_plugins = []
-		self.check_links = []
+		self.check_links = None
 		self.upload_plugins = []
-		self.check_files = []
+		self.check_files = None
 		
 	def get_download_plugin(self):
 		""""""
 		print self.name
 		for plugin, plugin_type in self.download_plugins:
-			print plugin
+			print plugin.add("/mierda", "cojones", "puta")
 
 class ServiceManager:
 	""""""
@@ -55,16 +53,25 @@ class ServiceManager:
 			s = Service(service)
 			if enabled:
 				sys.path.append(path)
+				check_module, check_name = config.check_links()
+				if check_name:
+					module = __import__(check_module, None, None, [''])
+					s.check_links = eval("module" + "." + check_name + "()")
 				for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
 					module = __import__(plugin_module, None, None, [''])
 					s.download_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
+				check_module, check_name = config.check_files()
+				if check_name:
+					module = __import__(check_module, None, None, [''])
+					s.check_files = eval("module" + "." + check_name + "()")
 				for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
 					module = __import__(plugin_module, None, None, [''])
 					s.upload_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
 				self.services.append(s)
 		for service in self.services:
-			print service.get_download_plugin()
-
+			if service.check_links:
+				print service.check_links.check("http://www.gigasize.com/get.php?d=726jhzl0pc")
+	
 	def mierda(self):
 		""""""
 		self.download_manager = DownloadManager(self.get_plugin)

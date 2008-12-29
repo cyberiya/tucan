@@ -26,7 +26,7 @@ from downloader import Downloader
 
 import cons
 
-class DwonloadPlugin(object):
+class DownloadPlugin(object):
 	""""""
 	def __init__(self):
 		""""""

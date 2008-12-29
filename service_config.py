@@ -85,8 +85,21 @@ class ServiceConfig(SafeConfigParser):
 		if self.has_option(SECTION_MAIN, OPTION_ICON):
 			if not self.get(SECTION_MAIN, OPTION_ICON) == "None":
 				return self.path + self.get(SECTION_MAIN, OPTION_ICON)
-				
-				
+
+	def check_links(self):
+		""""""
+		check = None
+		if self.getboolean(SECTION_DOWNLOADS, OPTION_AVAIBLE):
+			check = self.get(SECTION_DOWNLOADS, OPTION_CHECK_LINKS)
+		return OPTION_CHECK_LINKS, check
+			
+	def check_files(self):
+		""""""
+		check = None
+		if self.getboolean(SECTION_UPLOADS, OPTION_AVAIBLE):
+			check = self.get(SECTION_UPLOADS, OPTION_CHECK_FILES)
+		return OPTION_CHECK_FILES, check
+
 	def get_plugins(self, main_section, sections):
 		""""""
 		result = []
@@ -96,7 +109,7 @@ class ServiceConfig(SafeConfigParser):
 					if ((self.has_section(section)) and (len(self.items(section)) > 0)):
 						result.append((section, self.get(section, OPTION_NAME), section_type))
 		return result
-				
+
 	def get_download_plugins(self):
 		""""""
 		sections = [(SECTION_ANONYMOUS_DOWNLOAD, cons.TYPE_ANONYMOUS), (SECTION_USER_DOWNLOAD, cons.TYPE_USER), (SECTION_PREMIUM_DOWNLOAD, cons.TYPE_PREMIUM)]
