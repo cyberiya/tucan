@@ -32,10 +32,10 @@ class DownloadPlugin(object):
 		""""""
 		self.active_downloads = {}
 
-	def start(self, path, url, file_name, wait=None, cookie=None):
+	def start(self, path, url, file_name, wait=None, cookie=None, handler=None):
 		""""""
 		if not file_name in self.active_downloads:
-			th = Downloader(path, url, file_name, wait, cookie)
+			th = Downloader(path, url, file_name, wait, cookie, handler)
 			th.start()
 			self.active_downloads[file_name] = th
 			return True
