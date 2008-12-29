@@ -70,7 +70,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			urllib2.urlopen(urllib2.Request(link))
 			captcha = None
 			form = None
-			while not captcha and not form:
+			while ((not captcha) and (not form)):
 				tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read(), True)
 				captcha = tes.get_captcha(3)
 				data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
