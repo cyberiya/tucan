@@ -127,7 +127,7 @@ class DownloadManager:
 			if name == download.name:
 				for link in download.links:
 					if link.active:
-						if link.plugin.stop_download(download.name):
+						if link.plugin.stop(download.name):
 							link.status = cons.STATUS_STOP
 							return True
 	
@@ -147,7 +147,7 @@ class DownloadManager:
 							link.plugin.add_wait()
 						link.active = False
 						download.progress = 0
-						link.plugin.return_download_slot()
+						link.plugin.return_slot()
 						self.pending_downloads.append(download)
 						self.active_downloads.remove(download)
 					elif status == cons.STATUS_CORRECT:
