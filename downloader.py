@@ -32,10 +32,10 @@ BUFFER_SIZE = 4096
 
 class Downloader(threading.Thread):
 	""""""
-	def __init__(self, path, url, file_name, wait, cookie, handler):
+	def __init__(self, path, url, file_name, wait, cookie, form):
 		""""""
 		threading.Thread.__init__(self)
-		self.get_handler = handler
+		self.get_handler = form.get_handle
 		self.status = cons.STATUS_PEND
 		self.path = path
 		self.url = url
