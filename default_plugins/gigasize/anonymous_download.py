@@ -48,13 +48,12 @@ class FormParser(HTMLParser):
 		""""""
 		if tag == "form":
 			if ((len(attrs) == 3) and (attrs[2][1] == "formDownload")):
+				print attrs
 				self.form_action = attrs[0][1]
-				print self.form_action
 				
 	def get_handle(self):
 		""""""
 		data = urllib.urlencode({"dlb": "Download"})
-		print self.form_action
 		return urllib2.urlopen(urllib2.Request("http://www.gigasize.com" + self.form_action), data)
 
 class AnonymousDownload(DownloadPlugin, Slots):
@@ -80,6 +79,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				f = FormParser(handle.read())
 				handle.close()
 				form = f.form_action
+				print "while", captcha, form
 			if self.start(path, link, file_name, WAIT, None, f):
 				return True
 			else:

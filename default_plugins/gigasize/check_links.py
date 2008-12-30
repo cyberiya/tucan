@@ -46,7 +46,7 @@ class CheckLinks(HTMLParser):
 		""""""
 		name = None
 		size = 0
-		unit = None
+		unit = None			
 		for line in urllib2.urlopen(url).readlines():
 			if not self.active:
 				self.feed(line)
@@ -64,5 +64,7 @@ class CheckLinks(HTMLParser):
 					elif cons.UNIT_GB in tmp:
 						unit = cons.UNIT_GB
 						size = int(float(tmp.split(cons.UNIT_GB)[0]))
+		if not "get.php?d=" in url:
+			name = url.split("/").pop()
 		self.close()
 		return name, size, unit
