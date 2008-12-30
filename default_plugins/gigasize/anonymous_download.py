@@ -48,7 +48,6 @@ class FormParser(HTMLParser):
 		""""""
 		if tag == "form":
 			if ((len(attrs) == 3) and (attrs[2][1] == "formDownload")):
-				print attrs
 				self.form_action = attrs[0][1]
 				
 	def get_handle(self):
@@ -71,7 +70,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			urllib2.urlopen(urllib2.Request(link))
 			captcha = None
 			form = None
-			while ((not captcha) and (not form)):
+			while ((captcha == None) and (form == None)):
 				tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read(), True)
 				captcha = tes.get_captcha(3)
 				data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
