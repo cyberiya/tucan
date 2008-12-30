@@ -50,7 +50,7 @@ class FormParser(HTMLParser):
 			if ((len(attrs) == 3) and (attrs[2][1] == "formDownload")):
 				self.form_action = attrs[0][1]
 				
-	def return_handle(self):
+	def get_handle(self):
 		""""""
 		data = urllib.urlencode({"dlb": "Download"})
 		return urllib2.urlopen(urllib2.Request("http://www.gigasize.com" + self.form_action), data)
@@ -78,7 +78,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				f = FormParser(handle.read())
 				handle.close()
 				form = f.form_action
-			if self.start(path, link, file_name, WAIT, None, f.return_handle):
+			if self.start(path, link, file_name, WAIT, None, f):
 				return True
 			else:
 				print "Limit Exceded"
