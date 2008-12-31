@@ -7,6 +7,7 @@
  
    - http://rapidshare.com/
    - http://megaupload.com/
+   - http://gigasize.com/
    - (...)
  
  
@@ -18,12 +19,13 @@
  - Graphical User Interface written with PyGTK (GTK+ toolkit).
  - Lightweight and fast.
  - Multiplatform (GNU/Linux, FreeBSD, Microsoft Windows ...).
- - Easy to expand through plugins.
- - Resolution of captchas (as anonymous access to megaupload).
+ - Easy to expand with plugins.
+ - Resolution of captchas (as anonymous access to
+   megaupload or gigasize).
  - Management of time between downloads (anonymous access).
  - Management of downloads and uploads with anonymous access
    in rapidshare and megaupload.
- - Management of downloads and uploads with access premium
+ - Management of downloads and uploads with premium access
    in rapidshare and megaupload.
  - Management of interchangeable links.
  
