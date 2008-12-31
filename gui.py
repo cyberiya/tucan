@@ -151,7 +151,9 @@ class Gui(gtk.Window, ServiceManager):
 		
 	def add_links(self, button):
 		""""""
-		InputLinks(self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES))
+		default_path = self.configuration.get(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER)
+		show_advanced_packages = self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES)
+		InputLinks(default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, show_advanced_packages)
 		
 	def copy_clipboard(self, button):
 		""""""

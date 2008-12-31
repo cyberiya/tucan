@@ -47,12 +47,14 @@ class ClipParser(HTMLParser.HTMLParser):
 
 class InputLinks(gtk.Dialog):
 	""""""
-	def __init__(self, sort, check, create, manage, show_advanced_packages):
+	def __init__(self, path, sort, check, create, manage, show_advanced_packages):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_DOWNLOAD)
 		self.set_title("Input Links")
 		self.set_size_request(600,500)
+		
+		self.default_path = path
 		
 		self.clipboard = gtk.clipboard_get()
 		self.clipboard.request_targets(self.get_clipboard)
@@ -186,7 +188,7 @@ class InputLinks(gtk.Dialog):
 			packages = self.create_packages(tmp)
 			packages_info = None
 			if self.advanced_button.get_active():
-				w = AdvancedPackages(cons.DEFAULT_PATH, packages)
+				w = AdvancedPackages(self.default_path, packages)
 				packages_info = w.packages
 				if packages_info:
 					self.packages(packages, packages_info)
