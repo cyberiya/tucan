@@ -37,7 +37,7 @@ from preferences import Preferences
 from menu_bar import MenuBar
 from toolbar import Toolbar
 
-from config import Config
+import config
 from sessions import Sessions
 
 from tree import Tree
@@ -52,7 +52,7 @@ class Gui(gtk.Window, ServiceManager):
 	def __init__(self):
 		""""""
 		#configuration
-		self.configuration = Config()
+		self.configuration = config.Config()
 		self.preferences_shown =  False
 		if not self.configuration.configured:
 			self.preferences()
@@ -63,7 +63,6 @@ class Gui(gtk.Window, ServiceManager):
 		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION + cons.REVISION)
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(900, 500)
-		#self.maximize()
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
 		
@@ -74,11 +73,11 @@ class Gui(gtk.Window, ServiceManager):
 		menu_help = gtk.STOCK_HELP, self.help
 		menu_about = gtk.STOCK_ABOUT, About
 		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
-		hide_uploads = gtk.CheckMenuItem("Hide Uploads"), self.resize_pane, True
+		show_uploads = gtk.CheckMenuItem("Show Uploads"), self.resize_pane, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS)
 		
 		#menubar
 		file_menu = "File", [menu_load_session, menu_save_session, None, menu_quit]
-		view_menu = "View", [hide_uploads, None, menu_preferences]
+		view_menu = "View", [show_uploads, None, menu_preferences]
 		help_menu = "Help", [menu_help, menu_about]
 		self.vbox.pack_start(MenuBar([file_menu, view_menu, help_menu]), False)
 
@@ -110,7 +109,12 @@ class Gui(gtk.Window, ServiceManager):
 		self.pane.set_position(self.get_size()[1])
 		
 		self.connect("key-press-event", self.delete_key)
-		self.connect("delete_event", self.hide_on_delete)
+		
+		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE):
+			self.connect("delete_event", self.hide_on_delete)
+		else:
+			self.connect("delete_event", self.quit)
+		
 		self.show_all()
 		
 		#trayicon
@@ -137,9 +141,9 @@ class Gui(gtk.Window, ServiceManager):
 	def resize_pane(self, checkbox):
 		""""""
 		if checkbox.get_active():
-			self.pane.set_position(self.get_size()[1])
-		else:
 			self.pane.set_position(-1)
+		else:
+			self.pane.set_position(self.get_size()[1])
 		
 	def help(self, widget):
 		""""""
@@ -147,7 +151,7 @@ class Gui(gtk.Window, ServiceManager):
 		
 	def add_links(self, button):
 		""""""
-		i = InputLinks(self.filter_service, self.get_check_links, self.create_packages, self.manage_packages)
+		InputLinks(self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES))
 		
 	def copy_clipboard(self, button):
 		""""""
