@@ -62,7 +62,7 @@ class Downloader(threading.Thread):
 				self.time_remaining = self.wait
 		if not self.stop_flag:
 			try:
-				if self.get_handler:
+				if self.form:
 					handle = self.form.get_handle()
 				else:
 					handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER))
