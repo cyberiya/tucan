@@ -329,6 +329,10 @@ class Preferences(gtk.Dialog):
 		vbox.pack_start(self.tray_close, False, False, 5)
 		self.tray_close.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE))
 
+		self.save_session = gtk.CheckButton("Save session on close.")
+		vbox.pack_start(self.save_session, False, False, 5)
+		self.save_session.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION))
+
 		self.advanced_packages = gtk.CheckButton("Default advanced packages.")
 		vbox.pack_start(self.advanced_packages, False, False, 5)
 		self.advanced_packages.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES))

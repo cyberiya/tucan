@@ -47,7 +47,7 @@ class ClipParser(HTMLParser.HTMLParser):
 
 class InputLinks(gtk.Dialog):
 	""""""
-	def __init__(self, sort, check, create, manage):
+	def __init__(self, sort, check, create, manage, show_advanced_packages):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_DOWNLOAD)
@@ -126,7 +126,7 @@ class InputLinks(gtk.Dialog):
 		
 		#advanced checkbutton
 		self.advanced_button = gtk.CheckButton("Show advanced Package configuration.")
-		#self.advanced_button.set_active(True)
+		self.advanced_button.set_active(show_advanced_packages)
 		self.vbox.pack_start(self.advanced_button, False)
 		
 		#action area

@@ -35,7 +35,7 @@ class Downloader(threading.Thread):
 	def __init__(self, path, url, file_name, wait, cookie, form):
 		""""""
 		threading.Thread.__init__(self)
-		self.get_handler = form.get_handle
+		self.form = form
 		self.status = cons.STATUS_PEND
 		self.path = path
 		self.url = url
@@ -63,7 +63,7 @@ class Downloader(threading.Thread):
 		if not self.stop_flag:
 			try:
 				if self.get_handler:
-					handle = self.get_handler()
+					handle = self.form.get_handle()
 				else:
 					handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER))
 				f = open(self.path + self.file, "w")
