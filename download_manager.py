@@ -62,8 +62,9 @@ class DownloadItem:
 
 class DownloadManager:
 	""""""
-	def __init__(self):
+	def __init__(self, max):
 		""""""
+		self.max_downloads = max
 		self.pending_downloads = []
 		self.active_downloads = []
 		self.complete_downloads = []
@@ -162,7 +163,7 @@ class DownloadManager:
 			print "scheduling"
 			self.scheduling = True
 			if len(self.pending_downloads) > 0:
-				if len(self.active_downloads) < MAX_DOWNLOADS:
+				if len(self.active_downloads) < self.max_downloads:
 					for download in self.pending_downloads:
 						if not download.status == cons.STATUS_STOP:
 							print self.start(download.name)
