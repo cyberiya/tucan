@@ -79,8 +79,9 @@ class Preferences(gtk.Dialog):
 			if not self.config.has_option(config.SECTION_SERVICES, model.get_value(iter,1)):
 				self.config.set(config.SECTION_SERVICES, model.get_value(iter,1), configuration.path)
 			iter = model.iter_next(iter)
-		
+
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE, str(self.tray_close.get_active()))
+		self.config.set(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION, str(self.save_session.get_active()))
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES, str(self.advanced_packages.get_active()))
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS, str(self.show_uploads.get_active()))
 		
