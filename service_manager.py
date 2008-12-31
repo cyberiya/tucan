@@ -42,7 +42,7 @@ class ServiceManager:
 	""""""
 	def __init__(self, configuration):
 		""""""
-		self.download_manager = DownloadManager()
+		self.download_manager = DownloadManager(configuration.get(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS))
 		self.services = []
 		sys.path.append(configuration.plugins_path)
 		for package, icon, service, enabled, config in configuration.get_services():
