@@ -7,6 +7,7 @@
  
    - http://rapidshare.com/
    - http://megaupload.com/
+   - http://gigasize.com/
    - (...)
  
  
@@ -19,8 +20,9 @@
  - Ligero y rápido.
  - Multiplataforma (GNU/Linux, FreeBSD, Microsoft Windows ...).
  - Fácil de ampliar con plugins.
- - Resolución de captchas (como el acceso anónimo de megaupload).
- - Gestión de tiempos entre descargas (acceso anónimo).
+ - Resolución de captchas (como los accesos anónimos de
+   megaupload o gigasize).
+ - Gestión de tiempos entre descargas (accesos anónimos).
  - Gestión de descargas y subidas con accesos anónimos
    en rapidshare y megaupload.
  - Gestión de descargas y subidas con accesos premium
