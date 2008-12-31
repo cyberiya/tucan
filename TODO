@@ -1,7 +1,6 @@
 Tucan 0.2
 ----------------
-- Reorganizar el sistema de plugins.
-- Ventana de preferencias.
+- Implementar un TreeModel para las descargas. 
 - Sistema de gestion de subidas.
 - Comentar. Rellenar todas las docstrings.
 - Soporte para Microsoft Windows.
