@@ -255,7 +255,7 @@ class Preferences(gtk.Dialog):
 		frame.set_shadow_type(gtk.SHADOW_NONE)
 		vbox.pack_start(frame, False, False)
 		bbox = gtk.HButtonBox()
-		bbox.set_layout(gtk.BUTTONBOX_START)
+		bbox.set_layout(gtk.BUTTONBOX_EDGE)
 		frame.add(bbox)
 		button = gtk.Button(None, gtk.STOCK_ADD)
 		button.connect("clicked", self.choose_path, self.on_choose_service)
@@ -263,9 +263,21 @@ class Preferences(gtk.Dialog):
 		button = gtk.Button(None, gtk.STOCK_REMOVE)
 		button.connect("clicked", self.delete_service)
 		bbox.pack_start(button)
+		aspect = gtk.AspectFrame()
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
+		bbox.pack_start(aspect)
+		button = gtk.Button(None, gtk.STOCK_INFO)
+		button.connect("clicked", self.service_info)
+		bbox.pack_start(button)
 		
 		return vbox
-		
+
+	def service_info(self, button):
+		""""""
+		model, iter = self.treeview.get_selection().get_selected()
+		if iter:
+			self.service_preferences(None, model.get_path(iter))
+
 	def add_service(self, path, icon_path, name, enabled, configuration):
 		""""""
 		if configuration:
@@ -309,9 +321,9 @@ class Preferences(gtk.Dialog):
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 2, active)
 		
-	def service_preferences(self, treeview, path, view_column):
+	def service_preferences(self, treeview, path, view_column=None):
 		""""""
-		model = treeview.get_model()
+		model = self.treeview.get_model()
 		icon = model.get_value(model.get_iter(path), 0)
 		name = model.get_value(model.get_iter(path), 1)
 		config = model.get_value(model.get_iter(path), 3)
