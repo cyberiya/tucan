@@ -24,9 +24,10 @@ import urlparse
 import re
 import sys
 
-import cons
-
+from config import SECTION_MAIN, OPTION_MAX_DOWNLOADS
 from download_manager import DownloadManager
+
+import cons
 
 class Service:
 	""""""
@@ -42,7 +43,7 @@ class ServiceManager:
 	""""""
 	def __init__(self, configuration):
 		""""""
-		self.download_manager = DownloadManager(configuration.get(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS))
+		self.download_manager = DownloadManager(configuration.get(SECTION_MAIN, OPTION_MAX_DOWNLOADS))
 		self.services = []
 		sys.path.append(configuration.plugins_path)
 		for package, icon, service, enabled, config in configuration.get_services():
