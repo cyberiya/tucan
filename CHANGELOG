@@ -1,0 +1,52 @@
+Tucan 0.3 Alpha Not released.
+------------------------------
+- GUI support for Preferences.
+- New plugin system.
+- New Anonymous Rapidshare plugin.
+- New Anonymous Megupload plugin.
+- Anonymous Gigasize plugin.
+- CHANGELOG.
+
+Tucan 0.2.2 Alpha 2008-12-26.
+------------------------------
+- Download's contextual menu.
+- Preferences Window.
+- Service Preferences Window.
+- Main configuration.
+- Service configuration.
+- Accounts configuration.
+- Copy download links.
+- Sessions.
+- Path problem solved.
+
+Tucan 0.2.1 Alpha 2008-12-14.
+------------------------------
+- About Window.
+- Clear Completed Toolbar button.
+- Almost all Toolbar's buttons implemented.
+- InputLinks selectable links.
+- Delete downloads.
+- Statusbar and TrayIcon show downloads status.
+- Megaupload ellipsize problem solved.
+- Rapidshare ellipsize problem solved.
+- Incorrect links problem solved.
+- TODO.
+
+Tucan 0.2 Alpha 2008-12-08.
+----------------------------
+- New Main Window.
+- AdvancedPackages Window.
+- Package manager.
+- Limit Exceeded exceptions.
+- README.
+
+Tucan 0.1 Alpha Not released.
+------------------------------
+- Main Window.
+- InputLinks Window.
+- TrayIcon.
+- Download scheduler.
+- Basic plugin system.
+- Anonymous Rapidshare plugin.
+- Anonymous Megupload plugin.
+- LICENSE.
