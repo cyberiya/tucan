@@ -1,10 +1,11 @@
-Tucan 0.3 Alpha Not released.
+Tucan 0.3 Alpha 2009-01-03.
 ------------------------------
 - GUI support for Preferences.
 - New plugin system.
 - New Anonymous Rapidshare plugin.
 - New Anonymous Megupload plugin.
 - Anonymous Gigasize plugin.
+- Sessions package path problem solved.
 - CHANGELOG.
 
 Tucan 0.2.2 Alpha 2008-12-26.
