@@ -31,13 +31,17 @@ class CheckLinks(HTMLParser):
 		""""""
 		HTMLParser.__init__(self)
 		self.active = False
+		self.unable = False
 
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "div":
 			if ((len(attrs) > 0) and (attrs[0][1] == "dldcontent")):
 				self.active = True
-	
+			elif ((len(attrs) > 0) and (attrs[0][1] == "downloadError")):
+				if len(attrs) > 1:
+					self.unable = True
+		
 	def close(self):
 		HTMLParser.close(self)
 		self.active = False
@@ -66,5 +70,8 @@ class CheckLinks(HTMLParser):
 						size = int(float(tmp.split(cons.UNIT_GB)[0]))
 				if not "get.php?d=" in url:
 					name = url.split("/").pop()
+		if self.unable:
+			name = url
+			size = -1
 		self.close()
 		return name, size, unit
