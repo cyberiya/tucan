@@ -269,6 +269,8 @@ class Gui(gtk.Window, ServiceManager):
 
 	def quit(self, dialog=None, response=None):
 		""""""
+		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
+			self.save_session(None)
 		self.hide()
 		self.stop_all()
 		gtk.main_quit()
