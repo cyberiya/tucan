@@ -255,7 +255,7 @@ class InputLinks(gtk.Dialog):
 		wait.destroy()
 	
 	def cancel(self, window, event):
-		""""""
+		"""Esc key"""
 		if event.keyval == 65307:
 			window.progress.set_text("Check Canceled!")
 			self.cancel_check = True
