@@ -43,18 +43,19 @@ class CaptchaForm:
 	def get_link(self):
 		""""""
 		c_parser = CaptchaParser(self.url)
-		handle = urllib2.urlopen(urllib2.Request(c_parser.form_action + c_parser.captcha))
-		tes = Tesseract(handle.read())
-		handle.close()
-		self.captcha = tes.get_captcha(3)
-		if self.captcha:
-			form = {"d": c_parser.form_d, "imagecode": c_parser.form_imagecode, "megavar": c_parser.form_megavar, "imagestring" : self.captcha.strip()}
-			data = urllib.urlencode(form)
-			handle = urllib2.urlopen(c_parser.form_action, data)
-			u_parser = UrlParser(handle.read())
+		if ((c_parser.form_action) and (c_parser.captcha)):
+			handle = urllib2.urlopen(urllib2.Request(c_parser.form_action + c_parser.captcha))
+			tes = Tesseract(handle.read())
 			handle.close()
-			if  u_parser.tmp_url:
-				self.link = u_parser.get_url()
+			self.captcha = tes.get_captcha(3)
+			if self.captcha:
+				form = {"d": c_parser.form_d, "imagecode": c_parser.form_imagecode, "megavar": c_parser.form_megavar, "imagestring" : self.captcha.strip()}
+				data = urllib.urlencode(form)
+				handle = urllib2.urlopen(c_parser.form_action, data)
+				u_parser = UrlParser(handle.read())
+				handle.close()
+				if  u_parser.tmp_url:
+					self.link = u_parser.get_url()
 
 class CaptchaParser(HTMLParser):
 	""""""
