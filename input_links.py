@@ -232,16 +232,17 @@ class InputLinks(gtk.Dialog):
 					service_iter = store.append(None, [service_icon, service, service, 0, None, None, False, False])
 					for link in links:
 						file_name, size, size_unit = self.check_links(service)(link)
+						print file_name, size, size_unit
 						if file_name:
-							if size_unit:
+							if size > 0:
 								icon = active_icon
 								marked = True
 							else:
-								icon = checked_icon
+								icon = unchecked_icon
 								marked = False
 						else:
 							icon = unactive_icon
-							marked = False, 
+							marked = False
 							file_name = link
 						print file_name, size, size_unit
 						store.append(service_iter, [icon, link, file_name, size, size_unit, None, marked, marked])
