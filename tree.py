@@ -260,7 +260,8 @@ class Tree(gtk.VBox):
 				file_iter = model.iter_next(file_iter)
 			name = model.get_value(package_iter, 3)
 			packages.append((name, files))
-			info.append((model.get_value(package_iter, 10), name, model.get_value(package_iter, 2)))
+			path = model.get_value(package_iter, 10).split(name)[0]
+			info.append((path, name, model.get_value(package_iter, 2)))
 			package_iter = model.iter_next(package_iter) 
 		return packages, info
 
