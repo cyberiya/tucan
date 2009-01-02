@@ -77,7 +77,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				f = FormParser(handle.read())
 				handle.close()
 				form = f.form_action
-				print "while", captcha, form
+				print "Captcha: ", captcha, form
 			if self.start(path, link, file_name, WAIT, None, f):
 				return True
 			else:

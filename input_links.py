@@ -219,6 +219,7 @@ class InputLinks(gtk.Dialog):
 		service_icon = self.treeview.render_icon(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
 		unsupported_icon = self.treeview.render_icon(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_MENU)
 		active_icon = self.treeview.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
+		unchecked_icon = self.treeview.render_icon(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_MENU)
 		unactive_icon = self.treeview.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
 		
 		for service, links in self.sort_links(link_list).items():
@@ -232,14 +233,18 @@ class InputLinks(gtk.Dialog):
 					for link in links:
 						file_name, size, size_unit = self.check_links(service)(link)
 						if file_name:
-							icon = active_icon
-							marked = True
+							if size_unit:
+								icon = active_icon
+								marked = True
+							else:
+								icon = checked_icon
+								marked = False
 						else:
 							icon = unactive_icon
-							marked = False
+							marked = False, 
 							file_name = link
 						print file_name, size, size_unit
-						store.append(service_iter, [icon, link, file_name, size, size_unit, None, marked, True])
+						store.append(service_iter, [icon, link, file_name, size, size_unit, None, marked, marked])
 						self.treeview.expand_row(store.get_path(service_iter), True)
 		end_wait()
 		
