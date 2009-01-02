@@ -54,11 +54,12 @@ class InputLinks(gtk.Dialog):
 		self.set_title("Input Links")
 		self.set_size_request(600,500)
 		
-		self.default_path = path
+		self.cancel_check = False
 		
 		self.clipboard = gtk.clipboard_get()
 		self.clipboard.request_targets(self.get_clipboard)
-		
+
+		self.default_path = path
 		self.sort_links = sort
 		self.check_links = check
 		self.create_packages = create
@@ -204,17 +205,17 @@ class InputLinks(gtk.Dialog):
 	def check(self, wait):
 		""""""
 		w = Wait("Checking links, please wait.", self)
-		th = threading.Thread(group=None, target=self.check_all, name=None, args=(w.destroy,))
+		th = threading.Thread(group=None, target=self.check_all, name=None, args=(w,))
 		th.start()
 		
-	def check_all(self, end_wait):
+	def check_all(self, wait):
 		""""""
+		wait.connect("key-press-event", self.cancel)
 		store = self.treeview.get_model()
 		store.clear()
 		buffer = self.textview.get_buffer()
 		start, end = buffer.get_bounds()
 		link_list = [link.strip() for link in buffer.get_text(start, end).split("\n")]
-		buffer.set_text("")
 		
 		service_icon = self.treeview.render_icon(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
 		unsupported_icon = self.treeview.render_icon(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_MENU)
@@ -231,8 +232,11 @@ class InputLinks(gtk.Dialog):
 				else:
 					service_iter = store.append(None, [service_icon, service, service, 0, None, None, False, False])
 					for link in links:
+						if self.cancel_check:
+							self.cancel_check = False
+							wait.destroy()
+							raise Exception("Check Links cancelled")
 						file_name, size, size_unit = self.check_links(service)(link)
-						print file_name, size, size_unit
 						if file_name:
 							if size > 0:
 								icon = active_icon
@@ -247,8 +251,15 @@ class InputLinks(gtk.Dialog):
 						print file_name, size, size_unit
 						store.append(service_iter, [icon, link, file_name, size, size_unit, None, marked, marked])
 						self.treeview.expand_row(store.get_path(service_iter), True)
-		end_wait()
-		
+		buffer.set_text("")
+		wait.destroy()
+	
+	def cancel(self, window, event):
+		""""""
+		if event.keyval == 65307:
+			window.progress.set_text("Check Canceled!")
+			self.cancel_check = True
+	
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
