@@ -83,7 +83,7 @@ class Gui(gtk.Window, ServiceManager):
 
 		#toolbar
 		download = "Add Downloads", gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_links
-		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.quit
+		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.not_implemented
 		clear = "Clear Complete", gtk.image_new_from_file(cons.ICON_CLEAR), self.clear_complete
 		up = "Move Up", gtk.image_new_from_file(cons.ICON_UP), self.move_up
 		down = "Move Down", gtk.image_new_from_file(cons.ICON_DOWN), self.move_down
