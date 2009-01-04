@@ -2,8 +2,8 @@
  Tucan
 ===================
  
- - Tucan es una aplicación libre y de código abierto diseñada para
-   la gestión automática de descargas y subidas en webs como:
+ - Tucan es una aplicación libre y de código abierto diseñada para la
+   gestión automática de descargas y subidas en sitios de hosting como:
  
    - http://rapidshare.com/
    - http://megaupload.com/
@@ -16,20 +16,59 @@
 =========
  
  - Escrito enteramente en python.
- - Interfaz gráfica de usuario escrita con PyGTK (GTK+ toolkit).
- - Ligero y rápido.
+ - Interfaz gráfica de usuario escrita en PyGTK (GTK+ toolkit).
  - Multiplataforma (GNU/Linux, FreeBSD, Microsoft Windows ...).
  - Fácil de ampliar con plugins.
- - Resolución de captchas (como los accesos anónimos de
+ - Ligero y rápido.	
+ - Gestión de esperas entre descargas (accesos anónimos).
+ - Reconocimiento de captchas donde se necesite (como en los accesos anónimos de
    megaupload o gigasize).
- - Gestión de tiempos entre descargas (accesos anónimos).
- - Gestión de descargas y subidas con accesos anónimos
-   en rapidshare y megaupload.
- - Gestión de descargas y subidas con accesos premium
-   en rapidshare y megaupload.
  - Gestión de links intercambiables.
  
- ... y muchas mas cosas ;)
+ 
+===================
+ Plugins
+=========
+ 
+ - http://rapidshare.com/
+    - Descargas:
+       - Acceso Anónimo: Disponible = Sí (captcha = No)
+       - Acceso Premium: Disponible = Todavía no
+ 
+    - Subidas: Disponible = Todavía no
+ 
+ 
+ - http://megaupload.com/
+    - Desacargas:
+       - Acceso Anónimo: Disponible = Sí (captcha = Sí)
+       - Acceso Premium: Disponible = Todavía no
+ 
+    - Subidas: Disponible = Todavía no
+ 
+ 
+ - http://gigasize.com/
+    - Descargas:
+       - Acceso Anónimo: Disponible = Sí (captcha = Sí)
+       - Acceso Premium: Disponible = No
+ 
+    - Subidas: Disponible = No
+ 
+ 
+===================
+ Tips & Tricks
+=========
+ 
+ - Antes de ejecutar una nueva versión, se recomienda eliminar el directorio
+   ~/.tucan/ si existe.
+ - La primera vez que se ejecuta Tucan (no existe el directorio ~/.tucan/), aparece
+   la ventana de Preferencias.
+ - Antes de usar un servicio, éste debe estar activado en la pestaña
+   "Configuración de Servicio" de la ventana Preferencias.
+ 
+ 
+ - Acceso anónimo de http://gigasize.com/:
+   - gigasize.com no permite comprobar links si ya hay un link descargándose de este
+     servicio.
  
  
 ===================
@@ -39,7 +78,7 @@
  - Python >= 2.5
  - PyGTK
  - Python Imaging Library
- - Tesseract OCR with english language pack
+ - Tesseract OCR con English language pack
  - SVG Rendering Library
  
  --------------------------------------------------------------------------------------------------------
@@ -64,7 +103,7 @@
  
  - Versión de desarrollo (se necesita subversion):
  
-   $ svn co https://forja.rediris.es/svn/cusl3-tucan/trunk
+   $ svn co https://forja.rediris.es/svn/cusl3-tucan/trunk tucan
  
  
  - Versión estable:
@@ -83,7 +122,7 @@
  Uso
 =========
  
- - Descomprimir y ejecutar:
+ - De momento... descomprimir y ejecutar:
  
    $ python tucan.py
  
