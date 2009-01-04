@@ -36,11 +36,11 @@ LANGUAGES = ["English"]
 
 class Preferences(gtk.Dialog):
 	""""""
-	def __init__(self, configuration):
+	def __init__(self, configuration, show_services=False):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_PREFERENCES)
-		self.set_title("Preferences")
+		self.set_title("Tucan Preferences")
 		self.set_size_request(500,500)
 		
 		self.config = configuration
@@ -51,7 +51,7 @@ class Preferences(gtk.Dialog):
 		self.new_page("General Configuration", cons.ICON_PREFERENCES_MAIN, self.init_main())
 		self.new_page("Service Configuration", cons.ICON_PREFERENCES_SERVICES, self.init_services())
 		self.new_page("Advanced Configuration", cons.ICON_PREFERENCES_ADVANCED, self.init_advanced())
-
+		
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
 		save_button = gtk.Button(None, gtk.STOCK_SAVE)
@@ -62,6 +62,10 @@ class Preferences(gtk.Dialog):
 		
 		self.connect("response", self.close)
 		self.show_all()
+		
+		if show_services:
+			self.notebook.set_current_page(1)
+		
 		self.run()
 		
 	def save(self, button):
