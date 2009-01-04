@@ -53,9 +53,9 @@ class Gui(gtk.Window, ServiceManager):
 		""""""
 		#configuration
 		self.configuration = config.Config()
-		self.preferences_shown =  False
 		if not self.configuration.configured:
-			self.preferences()
+			Preferences(self.configuration, True)
+		self.preferences_shown =  False
 
 		ServiceManager.__init__(self, self.configuration)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
