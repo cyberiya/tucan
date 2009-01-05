@@ -181,7 +181,8 @@ class Gui(gtk.Window, ServiceManager):
 		""""""
 		tmp_packages = []
 		if not len(packages_info) > 0:
-			packages_info = [(cons.DEFAULT_PATH, name, None) for name, package_files in packages]
+			default_path = self.configuration.get(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER)
+			packages_info = [(default_path, name, None) for name, package_files in packages]
 		#create directories and password files
 		for info in packages_info:
 			package_path = info[0] + info[1].replace(" ", "_") + "/"
