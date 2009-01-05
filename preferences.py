@@ -274,6 +274,16 @@ class Preferences(gtk.Dialog):
 		button.connect("clicked", self.service_info)
 		bbox.pack_start(button)
 		
+		frame = gtk.Frame()
+		frame.set_border_width(10)
+		frame.set_shadow_type(gtk.SHADOW_NONE)
+		vbox.pack_start(frame, False, False)
+		hbox = gtk.HBox()
+		frame.add(hbox)
+		label = gtk.Label()
+		hbox.pack_start(label, False)
+		label.set_markup("<i>* You must restart Tucan for the changes to take effect.</i>")
+		
 		return vbox
 
 	def service_info(self, button):
