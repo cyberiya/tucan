@@ -228,7 +228,7 @@ class InputLinks(gtk.Dialog):
 				if service == cons.TYPE_UNSUPPORTED:
 					service_iter = store.append(None, [unsupported_icon, service, service, 0, None, None, False, False])
 					for link in links:
-						store.append(service_iter, [unactive_icon, link, link, 0, None, None, False, False])
+						store.append(service_iter, [unchecked_icon, link, link, 0, None, None, False, False])
 				else:
 					service_iter = store.append(None, [service_icon, service, service, 0, None, None, False, False])
 					for link in links:
