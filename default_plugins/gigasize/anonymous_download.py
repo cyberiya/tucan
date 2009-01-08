@@ -27,6 +27,9 @@ import cookielib
 
 from HTMLParser import HTMLParser
 
+import Image
+import ImageOps
+
 from tesseract import Tesseract
 from download_plugin import DownloadPlugin
 from slots import Slots
@@ -70,19 +73,34 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			urllib2.urlopen(urllib2.Request(link))
 			form = None
 			while not form:
-				tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read(), True)
-				captcha = tes.get_captcha(3)
-				data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
-				handle = urllib2.urlopen(urllib2.Request("http://www.gigasize.com/formdownload.php"), data)
-				f = FormParser(handle.read())
-				handle.close()
-				form = f.form_action
-				print "Captcha: ", captcha, form
+				tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read(), self.filter_image)
+				captcha = tes.get_captcha()
+				if len(captcha) == 3:
+					data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
+					handle = urllib2.urlopen(urllib2.Request("http://www.gigasize.com/formdownload.php"), data)
+					f = FormParser(handle.read())
+					handle.close()
+					form = f.form_action
+					print "Captcha: ", captcha, form
 			if self.start(path, link, file_name, WAIT, None, f):
 				return True
 			else:
 				print "Limit Exceded"
 				self.add_wait()
+				
+	def filter_image(self, image):
+		""""""
+		image = image.resize((180,60), Image.BICUBIC)
+		image = image.point(self.filter_pixel)
+		image = ImageOps.grayscale(image)
+		return image
+		
+	def filter_pixel(self, pixel):
+		""""""
+		if pixel > 50:
+			return 255
+		else:
+			return 1
 
 	def delete(self, file_name):
 		""""""
