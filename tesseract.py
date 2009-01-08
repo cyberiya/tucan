@@ -23,9 +23,7 @@
 import os
 import tempfile
 
-import Image
 import ImageFile
-import ImageOps
 
 IMAGE_SUFFIX = ".tif"
 TEXT_SUFFIX = ".txt"
@@ -38,27 +36,18 @@ class Tesseract:
 		self.text = tempfile.NamedTemporaryFile(suffix=TEXT_SUFFIX)
 		p = ImageFile.Parser()
 		p.feed(data)
-		image = p.close()
-		image = image.resize((180,60), Image.BICUBIC)
 		if filter:
-			image = image.point(self.filter_pixel)
-		image = ImageOps.grayscale(image)
+			image = filter(p.close())
+		else:
+			image = p.close()
 		image.save(self.image.name)
 	
-	def get_captcha(self, num_chars):
+	def get_captcha(self):
 		""""""
 		if os.system("tesseract "+ self.image.name + " " + self.text.name.split(TEXT_SUFFIX)[0]) == 0:
 			captcha = self.text.file.readline().strip()
 			self.text.file.close()
-			if len(captcha) == num_chars:
-				return captcha
-				
-	def filter_pixel(self, pixel):
-		""""""
-		if pixel > 50:
-			return 255
-		else:
-			return 1
+			return captcha
 
 if __name__ == "__main__":
 	f = file("tmp.png", "r")
