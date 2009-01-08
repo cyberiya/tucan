@@ -26,6 +26,9 @@ import urllib2
 
 from HTMLParser import HTMLParser
 
+import Image
+import ImageOps
+
 from tesseract import Tesseract
 
 class CaptchaForm:
@@ -45,10 +48,10 @@ class CaptchaForm:
 		c_parser = CaptchaParser(self.url)
 		if ((c_parser.form_action) and (c_parser.captcha)):
 			handle = urllib2.urlopen(urllib2.Request(c_parser.form_action + c_parser.captcha))
-			tes = Tesseract(handle.read())
+			tes = Tesseract(handle.read(), self.filter_image)
 			handle.close()
-			self.captcha = tes.get_captcha(3)
-			if self.captcha:
+			self.captcha = tes.get_captcha()
+			if len(self.captcha) == 3:
 				form = {"d": c_parser.form_d, "imagecode": c_parser.form_imagecode, "megavar": c_parser.form_megavar, "imagestring" : self.captcha.strip()}
 				data = urllib.urlencode(form)
 				handle = urllib2.urlopen(c_parser.form_action, data)
@@ -56,6 +59,11 @@ class CaptchaForm:
 				handle.close()
 				if  u_parser.tmp_url:
 					self.link = u_parser.get_url()
+	def filter_image(self, image):
+		""""""
+		image = image.resize((180,60), Image.BICUBIC)
+		image = ImageOps.grayscale(image)
+		return image
 
 class CaptchaParser(HTMLParser):
 	""""""
