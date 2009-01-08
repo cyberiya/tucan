@@ -90,14 +90,15 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				
 	def filter_image(self, image):
 		""""""
-		image = image.resize((180,60), Image.BICUBIC)
+		image = image.resize((120,40), Image.BICUBIC)
+		image = image.crop((30,9,86,32))
 		image = image.point(self.filter_pixel)
 		image = ImageOps.grayscale(image)
 		return image
 		
 	def filter_pixel(self, pixel):
 		""""""
-		if pixel > 50:
+		if pixel > 60:
 			return 255
 		else:
 			return 1
