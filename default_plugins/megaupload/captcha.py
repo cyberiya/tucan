@@ -61,7 +61,7 @@ class CaptchaForm:
 					self.link = u_parser.get_url()
 	def filter_image(self, image):
 		""""""
-		image = image.resize((180,60), Image.BICUBIC)
+		image = image.resize((140,64), Image.BICUBIC)
 		image = ImageOps.grayscale(image)
 		return image
 
