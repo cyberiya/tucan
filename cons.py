@@ -68,6 +68,7 @@ PATH_MEDIA = PATH + "/media/"
 DEFAULT_PATH = os.path.expanduser("~") + "/"
 
 #localization constants
+NAME_LOCALES = "tucan"
 PATH_LOCALES = PATH + "/i18n"
 
 #media constants
