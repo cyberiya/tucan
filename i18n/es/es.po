@@ -105,43 +105,43 @@ msgstr ""
 
 #: ./preferences.py:51
 msgid "General Configuration"
-msgstr ""
+msgstr "Configuracion Principal"
 
 #: ./preferences.py:52
 msgid "Service Configuration"
-msgstr ""
+msgstr "Configuracion de Servicios"
 
 #: ./preferences.py:53
 msgid "Advanced Configuration"
-msgstr ""
+msgstr "Configuracion Avanzada"
 
 #: ./preferences.py:117
 msgid "Choose language: "
-msgstr ""
+msgstr "Escoje lenguaje: "
 
 #: ./preferences.py:135
 msgid "Max simultaneous downloads: "
-msgstr ""
+msgstr "Descargas simultaneas: "
 
 #: ./preferences.py:170
 msgid "Downloads Folder: "
-msgstr ""
+msgstr "Directorio de Descargas: "
 
 #: ./preferences.py:191
 msgid "Show hidden files."
-msgstr ""
+msgstr "Mostrar archivos ocultos."
 
 #: ./preferences.py:281
 msgid "Restart Tucan to apply service changes."
-msgstr ""
+msgstr "Reinicia Tucan para aplicar los cambios a los servicios."
 
 #: ./preferences.py:300
 msgid "The choosed directory isn't a service, or it's not configured."
-msgstr ""
+msgstr "El directorio escojido no es un servicio compatible."
 
 #: ./preferences.py:328
 msgid "Before using this service, you must accept it's terms of service at "
-msgstr ""
+msgstr "Antes de usar el servicio, debes aceptar sus terminos en "
 
 #: ./preferences.py:329
 msgid "Terms of service"
@@ -149,19 +149,19 @@ msgstr ""
 
 #: ./preferences.py:352
 msgid "Close to tray."
-msgstr ""
+msgstr "Cerrar al tray."
 
 #: ./preferences.py:356
 msgid "Save session on close."
-msgstr ""
+msgstr "Salvar sesion al cerrar."
 
 #: ./preferences.py:360
 msgid "Default advanced packages."
-msgstr ""
+msgstr "Mostrar por defecto AdvancedPackages."
 
 #: ./preferences.py:364
 msgid "Show uploads."
-msgstr ""
+msgstr "Mostrar subidas."
 
 #: ./service_preferences.py:47
 msgid "Author"
