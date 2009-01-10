@@ -29,13 +29,14 @@ import gettext
 
 from gui import Gui
 
+import cons
+
 if __name__ == "__main__":
 	name = "tucan"
-	path = "/home/crak/tucan/trunk/i18n"
-	gettext.bindtextdomain(name, path)
+	gettext.bindtextdomain(name, cons.PATH_LOCALES)
 	gettext.textdomain(name)
-	lang = gettext.translation(name, path, languages=["es"])
-	#lang = gettext.translation(name, path, languages=["en"])
+	lang = gettext.translation(name, cons.PATH_LOCALES, languages=["es"])
+	#lang = gettext.translation(name, cons.PATH_LOCALES, languages=["en"])
 	lang.install()
 	_ = lang.ugettext
 	g = Gui()
