@@ -48,9 +48,9 @@ class Preferences(gtk.Dialog):
 		self.notebook = gtk.Notebook()
 		self.notebook.set_property("homogeneous", True)
 		self.vbox.pack_start(self.notebook)
-		self.new_page("General Configuration", cons.ICON_PREFERENCES_MAIN, self.init_main())
-		self.new_page("Service Configuration", cons.ICON_PREFERENCES_SERVICES, self.init_services())
-		self.new_page("Advanced Configuration", cons.ICON_PREFERENCES_ADVANCED, self.init_advanced())
+		self.new_page(_("General Configuration"), cons.ICON_PREFERENCES_MAIN, self.init_main())
+		self.new_page(_("Service Configuration"), cons.ICON_PREFERENCES_SERVICES, self.init_services())
+		self.new_page(_("Advanced Configuration"), cons.ICON_PREFERENCES_ADVANCED, self.init_advanced())
 		
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
@@ -114,7 +114,7 @@ class Preferences(gtk.Dialog):
 		frame.add(vbox1)
 		hbox = gtk.HBox()
 		vbox1.pack_start(hbox, False, False, 5)
-		label = gtk.Label("Choose language: ")
+		label = gtk.Label(_("Choose language: "))
 		hbox.pack_start(label, False, False, 10)
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
@@ -132,7 +132,7 @@ class Preferences(gtk.Dialog):
 		vbox1 = gtk.VBox()
 		frame.add(vbox1)
 		hbox = gtk.HBox()
-		label = gtk.Label("Max simultaneous downloads: ")
+		label = gtk.Label(_("Max simultaneous downloads: "))
 		hbox.pack_start(label, False, False, 10)
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
@@ -145,7 +145,7 @@ class Preferences(gtk.Dialog):
 		hbox.pack_start(self.max_downloads, False, False, 10)
 		vbox1.pack_start(hbox, False, False, 2)
 		#hbox = gtk.HBox()
-		#label = gtk.Label("Max simultaneous uploads: ")
+		#label = gtk.Label(_("Max simultaneous uploads: "))
 		#hbox.pack_start(label, False, False, 10)
 		#aspect = gtk.AspectFrame()
 		#aspect.set_shadow_type(gtk.SHADOW_NONE)
@@ -167,7 +167,7 @@ class Preferences(gtk.Dialog):
 		hbox = gtk.HBox()
 		vbox1.pack_start(hbox, False, False, 5)
 		
-		label = gtk.Label("Downloads Folder: ")
+		label = gtk.Label(_("Downloads Folder: "))
 		hbox.pack_start(label, False, False, 10)
 		path = self.config.get(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER)
 		self.downloads_folder = gtk.Label(path)
@@ -184,11 +184,11 @@ class Preferences(gtk.Dialog):
 
 	def choose_path(self, button, choose_callback):
 		""""""
-		self.filechooser = gtk.FileChooserDialog('Select a Folder', self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+		self.filechooser = gtk.FileChooserDialog(_('Select a Folder'), self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
 		#self.filechooser.set_filename(filename)
 		self.filechooser.action_area.set_layout(gtk.BUTTONBOX_EDGE)
 		self.filechooser.set_show_hidden(False)
-		hidden_button = gtk.CheckButton("Show hidden files.")
+		hidden_button = gtk.CheckButton(_("Show hidden files."))
 		self.filechooser.action_area.pack_start(hidden_button)
 		hidden_button.connect("clicked", self.show_hidden)
 		choose_button = gtk.Button(None, gtk.STOCK_OK)
@@ -278,7 +278,7 @@ class Preferences(gtk.Dialog):
 		vbox.pack_start(hbox, False, False, 5)
 		label = gtk.Label()
 		hbox.pack_start(label, False, False, 10)
-		label.set_markup("<i>* Restart Tucan to apply service changes.</i>")
+		label.set_markup("<i>* " + _("Restart Tucan to apply service changes.") + "</i>")
 		
 		return vbox
 
@@ -297,7 +297,7 @@ class Preferences(gtk.Dialog):
 				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
 			self.treeview.get_model().append((icon, name, enabled, configuration))
 		else:
-			Message(cons.SEVERITY_ERROR, path , "The choosed directory isn't a service, or it's not configured.")
+			Message(cons.SEVERITY_ERROR, path , _("The choosed directory isn't a service, or it's not configured."))
 
 	def on_choose_service(self, widget, response, choosed):
 		""""""
@@ -325,8 +325,8 @@ class Preferences(gtk.Dialog):
 		if button.get_active():
 			active = False
 		else:
-			tos = "Before using this service, you must accept it's terms of service at " + model.get_value(model.get_iter(path), 1)
-			m = Message(cons.SEVERITY_INFO, "Terms of service", tos, True)
+			tos = _("Before using this service, you must accept it's terms of service at ") + model.get_value(model.get_iter(path), 1)
+			m = Message(cons.SEVERITY_INFO, _("Terms of service"), tos, True)
 			active = m.accepted
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 2, active)
@@ -349,19 +349,19 @@ class Preferences(gtk.Dialog):
 		vbox = gtk.VBox()
 		hbox.pack_start(vbox, True, True, 10)
 		
-		self.tray_close = gtk.CheckButton("Close to tray.")
+		self.tray_close = gtk.CheckButton(_("Close to tray."))
 		vbox.pack_start(self.tray_close, False, False, 5)
 		self.tray_close.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE))
 
-		self.save_session = gtk.CheckButton("Save session on close.")
+		self.save_session = gtk.CheckButton(_("Save session on close."))
 		vbox.pack_start(self.save_session, False, False, 5)
 		self.save_session.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION))
 
-		self.advanced_packages = gtk.CheckButton("Default advanced packages.")
+		self.advanced_packages = gtk.CheckButton(_("Default advanced packages."))
 		vbox.pack_start(self.advanced_packages, False, False, 5)
 		self.advanced_packages.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES))
 
-		self.show_uploads = gtk.CheckButton("Show uploads.")
+		self.show_uploads = gtk.CheckButton(_("Show uploads."))
 		vbox.pack_start(self.show_uploads, False, False, 5)
 		self.show_uploads.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS))
 			

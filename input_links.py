@@ -51,7 +51,7 @@ class InputLinks(gtk.Dialog):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_DOWNLOAD)
-		self.set_title("Input Links")
+		self.set_title(_("Input Links"))
 		self.set_size_request(600,500)
 		
 		self.cancel_check = False
@@ -66,7 +66,7 @@ class InputLinks(gtk.Dialog):
 		self.packages = manage
 		
 		#textview
-		frame = gtk.Frame("Paste links here:")
+		frame = gtk.Frame(_("Paste links here:"))
 		self.vbox.pack_start(frame)
 		frame.set_border_width(10)
 		hbox = gtk.HBox()
@@ -85,7 +85,7 @@ class InputLinks(gtk.Dialog):
 		vbox = gtk.VBox()
 		check_image = gtk.image_new_from_file(cons.ICON_CHECK)
 		vbox.pack_start(check_image)
-		check_label = gtk.Label("Check Links")
+		check_label = gtk.Label(_("Check Links"))
 		vbox.pack_start(check_label)
 		check_button = gtk.Button()
 		check_button.add(vbox)
@@ -128,7 +128,7 @@ class InputLinks(gtk.Dialog):
 		self.treeview.append_column(tree_add)
 		
 		#advanced checkbutton
-		self.advanced_button = gtk.CheckButton("Show advanced Package configuration.")
+		self.advanced_button = gtk.CheckButton(_("Show advanced Package configuration."))
 		self.advanced_button.set_active(show_advanced_packages)
 		self.vbox.pack_start(self.advanced_button, False)
 		
@@ -204,7 +204,7 @@ class InputLinks(gtk.Dialog):
 	
 	def check(self, wait):
 		""""""
-		w = Wait("Checking links, please wait.", self)
+		w = Wait(_("Checking links, please wait."), self)
 		th = threading.Thread(group=None, target=self.check_all, name=None, args=(w,))
 		th.start()
 		
@@ -257,7 +257,7 @@ class InputLinks(gtk.Dialog):
 	def cancel(self, window, event):
 		"""Esc key"""
 		if event.keyval == 65307:
-			window.progress.set_text("Check Canceled!")
+			window.progress.set_text(_("Check Canceled!"))
 			self.cancel_check = True
 	
 	def close(self, widget=None, other=None):

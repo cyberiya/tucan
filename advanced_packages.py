@@ -27,7 +27,6 @@ import gtk
 import cons
 
 PACKAGES = [('D.S03E06.LOL.cHoPPaHoLiK.part', [(['http://www.megaupload.com/?d=UE8EQ0JZ', 'http://rapidshare.com/files/160153330/D.S03E06.LOL.cHoPPaHoLiK.part1.rar'], 'D.S03E06.LOL.cHoPPaHoLiK.part1.rar', ['megaupload.com', 'rapidshare.com'], 200, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare']), (['http://www.megaupload.com/?d=2MCQZBP4', 'http://rapidshare.com/files/160153273/D.S03E06.LOL.cHoPPaHoLiK.part2.rar'], 'D.S03E06.LOL.cHoPPaHoLiK.part2.rar', ['megaupload.com', 'rapidshare.com'], 200, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare']), (['http://www.megaupload.com/?d=QNVY9GXH', 'http://rapidshare.com/files/160153250/D.S03E06.LOL.cHoPPaHoLiK.part3.rar'], 'D.S03E06.LOL.cHoPPaHoLiK.part3.rar', ['megaupload.com', 'rapidshare.com'], 150, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare'])]), ('D.S03E07.LOL.cHoPPaHoLiK.part', [(['http://www.megaupload.com/?d=0UGD9XIW', 'http://rapidshare.com/files/169034268/D.S03E07.LOL.cHoPPaHoLiK.part1.rar'], 'D.S03E07.LOL.cHoPPaHoLiK.part1.rar', ['megaupload.com', 'rapidshare.com'], 191, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare']), (['http://www.megaupload.com/?d=AGF6MW15', 'http://rapidshare.com/files/169034282/D.S03E07.LOL.cHoPPaHoLiK.part2.rar'], 'D.S03E07.LOL.cHoPPaHoLiK.part2.rar', ['megaupload.com', 'rapidshare.com'], 191, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare']), (['http://www.megaupload.com/?d=3IWUNAJT', 'http://rapidshare.com/files/169034298/D.S03E07.LOL.cHoPPaHoLiK.part3.rar'], 'D.S03E07.LOL.cHoPPaHoLiK.part3.rar', ['megaupload.com', 'rapidshare.com'], 169, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare'])])]
-PATH = "/home/crak/downloads/"
 
 class AdvancedPackages(gtk.Dialog):
 	""""""
@@ -35,7 +34,7 @@ class AdvancedPackages(gtk.Dialog):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_PACKAGE)
-		self.set_title("Advanced Packages")
+		self.set_title(_("Advanced Packages"))
 		self.set_size_request(600,400)
 		
 		self.packages = []
@@ -94,7 +93,7 @@ class AdvancedPackages(gtk.Dialog):
 		hbox.pack_start(path_button, False, False, 10)
 		path_button.set_size_request(90,40)
 		path_button.connect("clicked", self.choose_path)
-		path_label = gtk.Label("Choose new path for selected Package.")
+		path_label = gtk.Label(_("Choose new path for selected Package."))
 		hbox.pack_start(path_label, False, False, 10)
 		
 		#action area
@@ -117,7 +116,7 @@ class AdvancedPackages(gtk.Dialog):
 		""""""
 		model, iter = self.treeview.get_selection().get_selected()
 		if iter:
-			self.filechooser = gtk.FileChooserDialog('Select a Folder', self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+			self.filechooser = gtk.FileChooserDialog(_('Select a Folder'), self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
 			choose_button = gtk.Button(None, gtk.STOCK_OK)
 			self.filechooser.action_area.pack_start(choose_button)
 			self.filechooser.connect("response", self.on_choose, model.get_path(iter))
@@ -140,7 +139,3 @@ class AdvancedPackages(gtk.Dialog):
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
-	
-if __name__ == "__main__":
-	x = AdvancedPackages(PATH, PACKAGES)
-	gtk.main()
