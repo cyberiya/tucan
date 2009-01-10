@@ -51,7 +51,7 @@ class CheckLinks(HTMLParser):
 		name = None
 		size = 0
 		unit = None			
-		for line in urllib2.urlopen(url).readlines():
+		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
 			if not self.active:
 				self.feed(line)
 			else:
