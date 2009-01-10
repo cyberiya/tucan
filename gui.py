@@ -52,14 +52,14 @@ import cons
 class Gui(gtk.Window, ServiceManager):
 	""""""
 	def __init__(self):
-		""""""
-		#configuration
-		self.configuration = config.Config()
-		
+		""""""		
 		#i18n
 		gettext.bindtextdomain(cons.NAME_LOCALES, cons.PATH_LOCALES)
 		gettext.textdomain(cons.NAME_LOCALES)
 		__builtin__._ = gettext.gettext
+
+		#configuration
+		self.configuration = config.Config()
 
 		#show preferences if not configured
 		if not self.configuration.configured:
