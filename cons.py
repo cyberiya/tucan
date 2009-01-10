@@ -67,6 +67,9 @@ PATH = sys.path[0]
 PATH_MEDIA = PATH + "/media/"
 DEFAULT_PATH = os.path.expanduser("~") + "/"
 
+#localization constants
+PATH_LOCALES = PATH + "/i18n"
+
 #media constants
 ICON_TUCAN = PATH_MEDIA + "icon.svg"
 ICON_DOWNLOAD = PATH_MEDIA + "document-save.svg"
