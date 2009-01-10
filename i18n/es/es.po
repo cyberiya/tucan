@@ -21,19 +21,19 @@ msgstr ""
 
 #: ./advanced_packages.py:96
 msgid "Choose new path for selected Package."
-msgstr ""
+msgstr "Escoja directorio para el paquete seleccionado."
 
 #: ./advanced_packages.py:119 ./preferences.py:187
 msgid "Select a Folder"
-msgstr ""
+msgstr "Escoja un directorio"
 
 #: ./gui.py:70
 msgid "Load Session"
-msgstr "Cargar Sesion"
+msgstr "Cargar Sesión"
 
 #: ./gui.py:71
 msgid "Save Session"
-msgstr "Salvar Sesion"
+msgstr "Salvar Sesión"
 
 #: ./gui.py:76
 msgid "Show Uploads"
@@ -61,7 +61,7 @@ msgstr "Añadir Subidas"
 
 #: ./gui.py:87
 msgid "Clear Complete"
-msgstr "Limpiar Completados"
+msgstr "Limpiar Completos"
 
 #: ./gui.py:88
 msgid "Move Up"
@@ -73,11 +73,11 @@ msgstr "Mover Abajo"
 
 #: ./gui.py:90
 msgid "Start Selected"
-msgstr "Comenzar Seleccionados"
+msgstr "Comenzar Sel."
 
 #: ./gui.py:91
 msgid "Stop Selected"
-msgstr "Parar Seleccionados"
+msgstr "Parar Sel."
 
 #: ./input_links.py:54
 msgid "Input Links"
@@ -85,39 +85,39 @@ msgstr ""
 
 #: ./input_links.py:69
 msgid "Paste links here:"
-msgstr ""
+msgstr "Pegue aquí los enlaces:"
 
 #: ./input_links.py:88
 msgid "Check Links"
-msgstr ""
+msgstr "Comprobar Enlaces"
 
 #: ./input_links.py:131
 msgid "Show advanced Package configuration."
-msgstr ""
+msgstr "Mostrar configuración de paquetes avanzada."
 
 #: ./input_links.py:207
 msgid "Checking links, please wait."
-msgstr ""
+msgstr "Comprobando enlaces, espere por favor."
 
 #: ./input_links.py:260
 msgid "Check Canceled!"
-msgstr ""
+msgstr "¡Comprobacion Cancelada!"
 
 #: ./preferences.py:51
 msgid "General Configuration"
-msgstr "Configuracion Principal"
+msgstr "General"
 
 #: ./preferences.py:52
 msgid "Service Configuration"
-msgstr "Configuracion de Servicios"
+msgstr "Servicios"
 
 #: ./preferences.py:53
 msgid "Advanced Configuration"
-msgstr "Configuracion Avanzada"
+msgstr "Avanzada"
 
 #: ./preferences.py:117
 msgid "Choose language: "
-msgstr "Escoje lenguaje: "
+msgstr "Escoja lenguaje: "
 
 #: ./preferences.py:135
 msgid "Max simultaneous downloads: "
@@ -133,7 +133,7 @@ msgstr "Mostrar archivos ocultos."
 
 #: ./preferences.py:281
 msgid "Restart Tucan to apply service changes."
-msgstr "Reinicia Tucan para aplicar los cambios a los servicios."
+msgstr "Reinicie Tucan para aplicar los cambios a los servicios."
 
 #: ./preferences.py:300
 msgid "The choosed directory isn't a service, or it's not configured."
@@ -141,7 +141,7 @@ msgstr "El directorio escojido no es un servicio compatible."
 
 #: ./preferences.py:328
 msgid "Before using this service, you must accept it's terms of service at "
-msgstr "Antes de usar el servicio, debes aceptar sus terminos en "
+msgstr "Antes de usar el servicio, debes aceptar sus términos en "
 
 #: ./preferences.py:329
 msgid "Terms of service"
@@ -153,7 +153,7 @@ msgstr "Cerrar al tray."
 
 #: ./preferences.py:356
 msgid "Save session on close."
-msgstr "Salvar sesion al cerrar."
+msgstr "Salvar sesión al cerrar."
 
 #: ./preferences.py:360
 msgid "Default advanced packages."
@@ -165,11 +165,11 @@ msgstr "Mostrar subidas."
 
 #: ./service_preferences.py:47
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #: ./service_preferences.py:55
 msgid "Version"
-msgstr ""
+msgstr "Versión"
 
 #: ./service_preferences.py:64
 msgid "Slots"
@@ -178,4 +178,3 @@ msgstr ""
 #: ./service_preferences.py:71
 msgid "Captcha"
 msgstr ""
-
