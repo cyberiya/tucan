@@ -23,6 +23,7 @@
 import os
 import webbrowser
 import time
+import gettext
 
 import pygtk
 pygtk.require('2.0')
@@ -59,6 +60,16 @@ class Gui(gtk.Window, ServiceManager):
 
 		ServiceManager.__init__(self, self.configuration)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
+		
+		name = "tucan"
+		gettext.bindtextdomain(cons.NAME_LOCALES, cons.PATH_LOCALES)
+		gettext.textdomain(cons.NAME_LOCALES)
+		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=["es"])
+		#lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=["en"])
+		lang.install()
+		_ = lang.ugettext
+
+		
 		self.set_icon_from_file(cons.ICON_TUCAN)
 		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION + cons.REVISION)
 		self.set_position(gtk.WIN_POS_CENTER)
