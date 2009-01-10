@@ -54,21 +54,22 @@ class Gui(gtk.Window, ServiceManager):
 		""""""
 		#configuration
 		self.configuration = config.Config()
+		
+		#localization
+		gettext.bindtextdomain(cons.NAME_LOCALES, cons.PATH_LOCALES)
+		gettext.textdomain(cons.NAME_LOCALES)
+		#lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=["es"])
+		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=["en"])
+		lang.install()
+		_ = lang.ugettext
+
+		#show preferences if not configured
 		if not self.configuration.configured:
 			Preferences(self.configuration, True)
 		self.preferences_shown =  False
 
 		ServiceManager.__init__(self, self.configuration)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
-		
-		name = "tucan"
-		gettext.bindtextdomain(cons.NAME_LOCALES, cons.PATH_LOCALES)
-		gettext.textdomain(cons.NAME_LOCALES)
-		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=["es"])
-		#lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=["en"])
-		lang.install()
-		_ = lang.ugettext
-
 		
 		self.set_icon_from_file(cons.ICON_TUCAN)
 		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION + cons.REVISION)
