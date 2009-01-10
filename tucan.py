@@ -25,9 +25,19 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
+import gettext
+
 from gui import Gui
 
 if __name__ == "__main__":
+	name = "tucan"
+	path = "/home/crak/tucan/trunk/i18n"
+	gettext.bindtextdomain(name, path)
+	gettext.textdomain(name)
+	lang = gettext.translation(name, path, languages=["es"])
+	#lang = gettext.translation(name, path, languages=["en"])
+	lang.install()
+	_ = lang.ugettext
 	g = Gui()
 	gobject.threads_init()
 	gtk.main()

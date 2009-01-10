@@ -67,28 +67,28 @@ class Gui(gtk.Window, ServiceManager):
 		self.add(self.vbox)
 		
 		#menu items
-		menu_load_session = "Load Session", self.load_session
-		menu_save_session = "Save Session", self.save_session
+		menu_load_session = _("Load Session"), self.load_session
+		menu_save_session = _("Save Session"), self.save_session
 		menu_quit = gtk.STOCK_QUIT, self.quit
 		menu_help = gtk.STOCK_HELP, self.help
 		menu_about = gtk.STOCK_ABOUT, About
 		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
-		show_uploads = gtk.CheckMenuItem("Show Uploads"), self.resize_pane, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS)
+		show_uploads = gtk.CheckMenuItem(_("Show Uploads")), self.resize_pane, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS)
 		
 		#menubar
-		file_menu = "File", [menu_load_session, menu_save_session, None, menu_quit]
-		view_menu = "View", [show_uploads, None, menu_preferences]
-		help_menu = "Help", [menu_help, menu_about]
+		file_menu = _("File"), [menu_load_session, menu_save_session, None, menu_quit]
+		view_menu = _("View"), [show_uploads, None, menu_preferences]
+		help_menu = _("Help"), [menu_help, menu_about]
 		self.vbox.pack_start(MenuBar([file_menu, view_menu, help_menu]), False)
 
 		#toolbar
-		download = "Add Downloads", gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_links
-		upload = "Add Uploads", gtk.image_new_from_file(cons.ICON_UPLOAD), self.quit
-		clear = "Clear Complete", gtk.image_new_from_file(cons.ICON_CLEAR), self.clear_complete
-		up = "Move Up", gtk.image_new_from_file(cons.ICON_UP), self.move_up
-		down = "Move Down", gtk.image_new_from_file(cons.ICON_DOWN), self.move_down
-		start = "Start Selected", gtk.image_new_from_file(cons.ICON_START), self.start
-		stop = "Stop Selected", gtk.image_new_from_file(cons.ICON_STOP), self.stop
+		download = _("Add Downloads"), gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_links
+		upload = _("Add Uploads"), gtk.image_new_from_file(cons.ICON_UPLOAD), self.quit
+		clear = _("Clear Complete"), gtk.image_new_from_file(cons.ICON_CLEAR), self.clear_complete
+		up = _("Move Up"), gtk.image_new_from_file(cons.ICON_UP), self.move_up
+		down = _("Move Down"), gtk.image_new_from_file(cons.ICON_DOWN), self.move_down
+		start = _("Start Selected"), gtk.image_new_from_file(cons.ICON_START), self.start
+		stop = _("Stop Selected"), gtk.image_new_from_file(cons.ICON_STOP), self.stop
 		self.vbox.pack_start(Toolbar([download, upload, None, clear, None, up, down, None, start, stop]), False)
 		
 		copy = gtk.STOCK_COPY, self.copy_clipboard
