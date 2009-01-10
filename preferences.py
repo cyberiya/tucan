@@ -20,6 +20,8 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import gettext
+
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -31,8 +33,8 @@ import config
 from service_preferences import ServicePreferences
 from message import Message
 
-LANGUAGES = ["English"]
-#LANGUAGES = ["English", "French", "German", "Japanese", "Spanish"]
+LANGUAGES = [("English", "en"), ("Spanish", "es")]
+#["English", "French", "German", "Japanese", "Spanish"]
 
 class Preferences(gtk.Dialog):
 	""""""
@@ -70,7 +72,7 @@ class Preferences(gtk.Dialog):
 		
 	def save(self, button):
 		""""""
-		self.config.set(config.SECTION_MAIN, config.OPTION_LANGUAGE, LANGUAGES[self.language.get_active()])
+		self.config.set(config.SECTION_MAIN, config.OPTION_LANGUAGE, [lang[1] for lang in LANGUAGES][self.language.get_active()])
 		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS, str(self.max_downloads.get_value_as_int()))
 		#self.config.set(config.SECTION_MAIN, config.OPTION_MAX_UPLOADS, str(self.max_uploads.get_value_as_int()))
 		self.config.set(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER, self.downloads_folder.get_label())
@@ -120,9 +122,9 @@ class Preferences(gtk.Dialog):
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		hbox.pack_start(aspect)
 		self.language = gtk.combo_box_new_text()
-		for lang in LANGUAGES:
+		for lang in [lang[0] for lang in LANGUAGES]:
 			self.language.append_text(lang)
-		self.language.set_active(LANGUAGES.index(self.config.get(config.SECTION_MAIN, config.OPTION_LANGUAGE)))
+		self.language.set_active([lang[1] for lang in LANGUAGES].index(self.config.get(config.SECTION_MAIN, config.OPTION_LANGUAGE)))
 		hbox.pack_start(self.language, False, False, 10)
 
 		frame = gtk.Frame()
@@ -181,7 +183,7 @@ class Preferences(gtk.Dialog):
 		
 		vbox.show_all()
 		return vbox
-
+		
 	def choose_path(self, button, choose_callback):
 		""""""
 		self.filechooser = gtk.FileChooserDialog(_('Select a Folder'), self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)

@@ -23,6 +23,7 @@
 import os
 import webbrowser
 import time
+import __builtin__
 import gettext
 
 import pygtk
@@ -55,18 +56,19 @@ class Gui(gtk.Window, ServiceManager):
 		#configuration
 		self.configuration = config.Config()
 		
-		#localization
+		#i18n
 		gettext.bindtextdomain(cons.NAME_LOCALES, cons.PATH_LOCALES)
 		gettext.textdomain(cons.NAME_LOCALES)
-		#lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=["es"])
-		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=["en"])
-		lang.install()
-		_ = lang.ugettext
+		__builtin__._ = gettext.gettext
 
 		#show preferences if not configured
 		if not self.configuration.configured:
 			Preferences(self.configuration, True)
 		self.preferences_shown =  False
+		
+		#l10n
+		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=[self.configuration.get(config.SECTION_MAIN, config.OPTION_LANGUAGE)])
+		lang.install()
 
 		ServiceManager.__init__(self, self.configuration)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
