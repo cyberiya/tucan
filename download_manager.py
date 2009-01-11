@@ -165,7 +165,7 @@ class DownloadManager:
 			if len(self.pending_downloads) > 0:
 				if len(self.active_downloads) < self.max_downloads:
 					for download in self.pending_downloads:
-						if not download.status == cons.STATUS_STOP:
+						if not download.status in [cons.STATUS_STOP, cons.STATUS_ERROR]:
 							print self.start(download.name)
 			if self.timer:
 				self.timer.cancel()
