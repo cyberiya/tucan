@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2009-01-10 04:03+CET\n"
+"POT-Creation-Date: 2009-01-11 22:54+CET\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,59 +23,63 @@ msgstr ""
 msgid "Choose new path for selected Package."
 msgstr ""
 
-#: ./advanced_packages.py:119 ./preferences.py:187
+#: ./file_chooser.py:33
 msgid "Select a Folder"
 msgstr ""
 
-#: ./gui.py:70
+#: ./file_chooser.py:40
+msgid "Show hidden files."
+msgstr ""
+
+#: ./gui.py:84
 msgid "Load Session"
 msgstr ""
 
-#: ./gui.py:71
+#: ./gui.py:85
 msgid "Save Session"
 msgstr ""
 
-#: ./gui.py:76
+#: ./gui.py:90
 msgid "Show Uploads"
 msgstr ""
 
-#: ./gui.py:79
+#: ./gui.py:93
 msgid "File"
 msgstr ""
 
-#: ./gui.py:80
+#: ./gui.py:94
 msgid "View"
 msgstr ""
 
-#: ./gui.py:81
+#: ./gui.py:95
 msgid "Help"
 msgstr ""
 
-#: ./gui.py:85
+#: ./gui.py:99
 msgid "Add Downloads"
 msgstr ""
 
-#: ./gui.py:86
+#: ./gui.py:100
 msgid "Add Uploads"
 msgstr ""
 
-#: ./gui.py:87
+#: ./gui.py:101
 msgid "Clear Complete"
 msgstr ""
 
-#: ./gui.py:88
+#: ./gui.py:102
 msgid "Move Up"
 msgstr ""
 
-#: ./gui.py:89
+#: ./gui.py:103
 msgid "Move Down"
 msgstr ""
 
-#: ./gui.py:90
+#: ./gui.py:104
 msgid "Start Selected"
 msgstr ""
 
-#: ./gui.py:91
+#: ./gui.py:105
 msgid "Stop Selected"
 msgstr ""
 
@@ -103,63 +107,59 @@ msgstr ""
 msgid "Check Canceled!"
 msgstr ""
 
-#: ./preferences.py:51
+#: ./preferences.py:54
 msgid "General Configuration"
 msgstr ""
 
-#: ./preferences.py:52
+#: ./preferences.py:55
 msgid "Service Configuration"
 msgstr ""
 
-#: ./preferences.py:53
+#: ./preferences.py:56
 msgid "Advanced Configuration"
 msgstr ""
 
-#: ./preferences.py:117
+#: ./preferences.py:120
 msgid "Choose language: "
 msgstr ""
 
-#: ./preferences.py:135
+#: ./preferences.py:138
 msgid "Max simultaneous downloads: "
 msgstr ""
 
-#: ./preferences.py:170
+#: ./preferences.py:173
 msgid "Downloads Folder: "
 msgstr ""
 
-#: ./preferences.py:191
-msgid "Show hidden files."
-msgstr ""
-
-#: ./preferences.py:281
+#: ./preferences.py:260
 msgid "Restart Tucan to apply service changes."
 msgstr ""
 
-#: ./preferences.py:300
+#: ./preferences.py:279
 msgid "The choosed directory isn't a service, or it's not configured."
 msgstr ""
 
-#: ./preferences.py:328
+#: ./preferences.py:307
 msgid "Before using this service, you must accept it's terms of service at "
 msgstr ""
 
-#: ./preferences.py:329
+#: ./preferences.py:308
 msgid "Terms of service"
 msgstr ""
 
-#: ./preferences.py:352
+#: ./preferences.py:331
 msgid "Close to tray."
 msgstr ""
 
-#: ./preferences.py:356
+#: ./preferences.py:335
 msgid "Save session on close."
 msgstr ""
 
-#: ./preferences.py:360
+#: ./preferences.py:339
 msgid "Default advanced packages."
 msgstr ""
 
-#: ./preferences.py:364
+#: ./preferences.py:343
 msgid "Show uploads."
 msgstr ""
 

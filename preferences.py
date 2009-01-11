@@ -185,7 +185,7 @@ class Preferences(gtk.Dialog):
 		vbox.show_all()
 		return vbox
 		
-	def choose_path(self, button):
+	def choose_path(self, button, ):
 		""""""
 		FileChooser(self, self.downloads_folder.set_label, self.downloads_folder.get_label())
 
@@ -241,7 +241,7 @@ class Preferences(gtk.Dialog):
 		bbox.set_layout(gtk.BUTTONBOX_EDGE)
 		frame.add(bbox)
 		button = gtk.Button(None, gtk.STOCK_ADD)
-		button.connect("clicked", self.choose_path, self.on_choose_service)
+		button.connect("clicked", self.choose_service)
 		bbox.pack_start(button)
 		button = gtk.Button(None, gtk.STOCK_REMOVE)
 		button.connect("clicked", self.delete_service)
@@ -278,15 +278,15 @@ class Preferences(gtk.Dialog):
 		else:
 			Message(cons.SEVERITY_ERROR, path , _("The choosed directory isn't a service, or it's not configured."))
 
-	def on_choose_service(self, widget, response, choosed):
+	def choose_service(self, button):
 		""""""
-		path = self.filechooser.get_filename() + "/"
-		self.filechooser.destroy()
-		if choosed:
-			model = self.treeview.get_model()
-			package, icon_path, name, enabled, configuration = self.config.service(path)
-			self.add_service(path, icon_path, name, enabled, configuration)
-		del self.filechooser
+		FileChooser(self, self.on_choose)
+		
+	def on_choose(self, service_path):
+		""""""
+		model = self.treeview.get_model()
+		package, icon_path, name, enabled, configuration = self.config.service(service_path)
+		self.add_service(service_path, icon_path, name, enabled, configuration)
 		
 	def delete_service(self, button):
 		""""""

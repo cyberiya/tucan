@@ -1,5 +1,8 @@
 Tucan 0.3.1 Alpha 2009-01-11.
 ------------------------------
+- FileChooser dialog.
+- Preferences shown if not configured.
+- Improved Captcha recognition.
 - Internazionalization.
 - Spanish Localization.
 - English Localization.
