@@ -58,16 +58,17 @@
  Tips & Tricks
 =========
  
- - Before running a new version, it's recommended to remove the directory ~/.tucan/
-   if exists.
- - The first time you run Tucan (without directory ~/.tucan/), the Preferences window
-   appears.
- - Before running a service, it must be enabled in "Service Configuration" in the
-   Preferences window.
+ - Before running a new version, it's recommended to remove the directory
+   ~/.tucan/ if exists.
+ - The first time you run Tucan (without directory ~/.tucan/), the Preferences
+   window appears.
+ - Before running a service, it must be enabled in "Service Configuration" in
+   the Preferences window.
  
  
  - Anonymous access to http://gigasize.com/:
-   - gigasize.com disallows checking links if an active link is already downloading.
+   - gigasize.com disallows checking links if an active link is already downloading
+     from this service.
  
  
 ===================
@@ -77,23 +78,38 @@
  - Python >= 2.5
  - PyGTK
  - Python Imaging Library
- - Tesseract OCR with english language pack
+ - Tesseract OCR (with the english language pack)
  - SVG Rendering Library
  
- --------------------------------------------------------------------------------------------------------
- | Package \ Distribution  |  Debian / Ubuntu  |       Gentoo       |     Arch     |       Fedora       |
- --------------------------------------------------------------------------------------------------------
- | Python >= 2.5           | python2.5         | dev-lang/python    | python       | python             |
- --------------------------------------------------------------------------------------------------------
- | PyGTK                   | python-gtk2       | dev-python/pygtk   | pygtk        | pygtk2             |
- --------------------------------------------------------------------------------------------------------
- | Python Imaging Library  | python-imaging    | dev-python/imaging | pil          | python-imaging     |
- --------------------------------------------------------------------------------------------------------
- | Tesseract OCR           | tesseract-ocr     | app-text/tesseract | tesseract    | tesseract          |
- | (english language pack) | tesseract-ocr-eng |    (linguas_en)    |              | tesseract-langpack |
- --------------------------------------------------------------------------------------------------------
- | SVG Rendering Library   | librsvg2-common   | gnome-base/librsvg | librsvg      | librsvg2           |
- --------------------------------------------------------------------------------------------------------
+ --------------------------------------------------------------------------------
+ | Package \ Distribution  |  Debian / Ubuntu  |       Gentoo       |   Arch    |
+ --------------------------------------------------------------------------------
+ | Python >= 2.5           | python2.5         | dev-lang/python    | python    |
+ --------------------------------------------------------------------------------
+ | PyGTK                   | python-gtk2       | dev-python/pygtk   | pygtk     |
+ --------------------------------------------------------------------------------
+ | Python Imaging Library  | python-imaging    | dev-python/imaging | pil       |
+ --------------------------------------------------------------------------------
+ | Tesseract OCR           | tesseract-ocr     | app-text/tesseract | tesseract |
+ | (english language pack) | tesseract-ocr-eng |    (linguas_en)    |           |
+ --------------------------------------------------------------------------------
+ | SVG Rendering Library   | librsvg2-common   | gnome-base/librsvg | librsvg   |
+ --------------------------------------------------------------------------------
+ 
+ ---------------------------------------
+ |       Fedora       |    OpenSuSE    |
+ ---------------------------------------
+ | python             | python         |
+ ---------------------------------------
+ | pygtk2             | python-gtk     |
+ ---------------------------------------
+ | python-imaging     | python-imaging |
+ ---------------------------------------
+ | tesseract          | tesseract      |
+ | tesseract-langpack |                |
+ ---------------------------------------
+ | librsvg2           | librsvg        |
+ ---------------------------------------
  
  
 ===================
