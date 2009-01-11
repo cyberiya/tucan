@@ -288,7 +288,7 @@ class Tree(gtk.VBox):
 		model = self.treeview.get_model()
 		file_iter = model.iter_children(package_iter)
 		while file_iter:
-			if not model.get_value(file_iter, 1) in [cons.STATUS_ACTIVE, cons.STATUS_WAIT, cons.STATUS_CORRECT]:
+			if model.get_value(file_iter, 1) not in [cons.STATUS_ACTIVE, cons.STATUS_WAIT, cons.STATUS_CORRECT]:
 				files.append(model.get_value(file_iter, 3))
 			file_iter = model.iter_next(file_iter)
 		return files

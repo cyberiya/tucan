@@ -68,7 +68,7 @@ class CheckLinks(HTMLParser):
 					elif cons.UNIT_GB in tmp:
 						unit = cons.UNIT_GB
 						size = int(float(tmp.split(cons.UNIT_GB)[0]))
-				if not "get.php?d=" in url:
+				if "get.php?d=" not in url:
 					name = url.split("/").pop()
 		if self.unable:
 			name = url

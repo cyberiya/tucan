@@ -88,7 +88,7 @@ class Config(SafeConfigParser):
 		for section, options in DEFAULTS.items():
 			if self.has_section(section):
 				for option, value in options.items():
-					if not option in [option for option, value in self.items(section)]:
+					if option not in [option for option, value in self.items(section)]:
 						return False
 			else:
 				return False

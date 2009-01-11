@@ -132,7 +132,7 @@ class ServiceManager:
 				for tmp_link in files:
 					if link[1] == tmp_link[1]:
 						found = True
-						if not service in tmp_link[2]:
+						if service not in tmp_link[2]:
 							tmp_link[2].append(service)
 							tmp_link[0].append(link[0])
 							tmp_link[5].append(link[4])

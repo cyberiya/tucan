@@ -77,7 +77,7 @@ msgstr "Comenzar Sel."
 
 #: ./gui.py:91
 msgid "Stop Selected"
-msgstr "Parar Sel."
+msgstr "Detener Sel."
 
 #: ./input_links.py:54
 msgid "Input Links"
