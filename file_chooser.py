@@ -31,13 +31,12 @@ class FileChooser(gtk.FileChooserDialog):
 	def __init__(self, parent, func, default_path=None):
 		""""""
 		gtk.FileChooserDialog.__init__(self, _("Select a Folder"), parent, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
-		
 		if default_path:
 			self.set_filename(default_path)
 		
 		self.action_area.set_layout(gtk.BUTTONBOX_EDGE)
-		self.set_show_hidden(False)
 		hidden_button = gtk.CheckButton(_("Show hidden files."))
+		hidden_button.set_active(self.get_show_hidden())
 		self.action_area.pack_start(hidden_button)
 		hidden_button.connect("clicked", self.show_hidden)
 		
