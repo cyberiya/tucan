@@ -24,9 +24,9 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-import cons
+from file_chooser import FileChooser
 
-PACKAGES = [('D.S03E06.LOL.cHoPPaHoLiK.part', [(['http://www.megaupload.com/?d=UE8EQ0JZ', 'http://rapidshare.com/files/160153330/D.S03E06.LOL.cHoPPaHoLiK.part1.rar'], 'D.S03E06.LOL.cHoPPaHoLiK.part1.rar', ['megaupload.com', 'rapidshare.com'], 200, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare']), (['http://www.megaupload.com/?d=2MCQZBP4', 'http://rapidshare.com/files/160153273/D.S03E06.LOL.cHoPPaHoLiK.part2.rar'], 'D.S03E06.LOL.cHoPPaHoLiK.part2.rar', ['megaupload.com', 'rapidshare.com'], 200, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare']), (['http://www.megaupload.com/?d=QNVY9GXH', 'http://rapidshare.com/files/160153250/D.S03E06.LOL.cHoPPaHoLiK.part3.rar'], 'D.S03E06.LOL.cHoPPaHoLiK.part3.rar', ['megaupload.com', 'rapidshare.com'], 150, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare'])]), ('D.S03E07.LOL.cHoPPaHoLiK.part', [(['http://www.megaupload.com/?d=0UGD9XIW', 'http://rapidshare.com/files/169034268/D.S03E07.LOL.cHoPPaHoLiK.part1.rar'], 'D.S03E07.LOL.cHoPPaHoLiK.part1.rar', ['megaupload.com', 'rapidshare.com'], 191, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare']), (['http://www.megaupload.com/?d=AGF6MW15', 'http://rapidshare.com/files/169034282/D.S03E07.LOL.cHoPPaHoLiK.part2.rar'], 'D.S03E07.LOL.cHoPPaHoLiK.part2.rar', ['megaupload.com', 'rapidshare.com'], 191, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare']), (['http://www.megaupload.com/?d=3IWUNAJT', 'http://rapidshare.com/files/169034298/D.S03E07.LOL.cHoPPaHoLiK.part3.rar'], 'D.S03E07.LOL.cHoPPaHoLiK.part3.rar', ['megaupload.com', 'rapidshare.com'], 169, 'MB', ['AnonymousMegaupload', 'AnonymousRapidshare'])])]
+import cons
 
 class AdvancedPackages(gtk.Dialog):
 	""""""
@@ -116,20 +116,13 @@ class AdvancedPackages(gtk.Dialog):
 		""""""
 		model, iter = self.treeview.get_selection().get_selected()
 		if iter:
-			self.filechooser = gtk.FileChooserDialog(_('Select a Folder'), self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
-			choose_button = gtk.Button(None, gtk.STOCK_OK)
-			self.filechooser.action_area.pack_start(choose_button)
-			self.filechooser.connect("response", self.on_choose, model.get_path(iter))
-			choose_button.connect("clicked", self.on_choose, None, model.get_path(iter))
-			self.filechooser.set_position(gtk.WIN_POS_CENTER)
-			self.filechooser.show_all()
-			self.filechooser.run()
+			FileChooser(self, self.on_choose, model.get_value(iter, 1))
 			
-	def on_choose(self, widget, other, path):
+	def on_choose(self, folder_path):
 		""""""
-		self.change(None, path, self.filechooser.get_filename() + "/", 1)
-		self.filechooser.destroy()
-		del self.filechooser
+		model, iter = self.treeview.get_selection().get_selected()
+		if iter:
+			model.set_value(iter, 1, folder_path)
 
 	def change(self, cellrenderertext, path, new_text, column):
 		""""""

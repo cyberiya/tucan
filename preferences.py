@@ -32,6 +32,7 @@ import config
 
 from service_preferences import ServicePreferences
 from message import Message
+from file_chooser import FileChooser
 
 LANGUAGES = [("English", "en"), ("Spanish", "es")]
 #["English", "French", "German", "Japanese", "Spanish"]
@@ -178,39 +179,15 @@ class Preferences(gtk.Dialog):
 		bbox.set_layout(gtk.BUTTONBOX_END)
 		hbox.pack_start(bbox, True, True, 10)
 		button = gtk.Button(None, gtk.STOCK_OPEN)
-		button.connect("clicked", self.choose_path, self.on_choose_folder)
+		button.connect("clicked", self.choose_path)
 		bbox.pack_start(button)
 		
 		vbox.show_all()
 		return vbox
 		
-	def choose_path(self, button, choose_callback):
+	def choose_path(self, button):
 		""""""
-		self.filechooser = gtk.FileChooserDialog(_('Select a Folder'), self, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
-		#self.filechooser.set_filename(filename)
-		self.filechooser.action_area.set_layout(gtk.BUTTONBOX_EDGE)
-		self.filechooser.set_show_hidden(False)
-		hidden_button = gtk.CheckButton(_("Show hidden files."))
-		self.filechooser.action_area.pack_start(hidden_button)
-		hidden_button.connect("clicked", self.show_hidden)
-		choose_button = gtk.Button(None, gtk.STOCK_OK)
-		self.filechooser.action_area.pack_start(choose_button)
-		self.filechooser.connect("response", choose_callback, False)
-		choose_button.connect("clicked", choose_callback, None, True)
-		self.filechooser.set_position(gtk.WIN_POS_CENTER)
-		self.filechooser.show_all()
-		self.filechooser.run()
-		
-	def show_hidden(self, button):
-		""""""
-		self.filechooser.set_show_hidden(button.get_active())
-
-	def on_choose_folder(self, widget, response, choosed):
-		""""""
-		if choosed:
-			self.downloads_folder.set_label(self.filechooser.get_filename() + "/")
-		self.filechooser.destroy()
-		del self.filechooser
+		FileChooser(self, self.downloads_folder.set_label, self.downloads_folder.get_label())
 
 	def init_services(self):
 		""""""
@@ -374,4 +351,6 @@ class Preferences(gtk.Dialog):
 		self.destroy()
 	
 if __name__ == "__main__":
+	import gettext
+	_ = gettext.gettext
 	x = Preferences(config.Config())
