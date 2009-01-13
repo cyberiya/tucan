@@ -28,6 +28,10 @@ class Accounts:
 		""""""
 		self.config = config
 		self.section = section
+		self.active = False
+		for account in self.config.get_accounts(self.section).values():
+			if account[2]:
+				self.active = True
 		
 	def get_cookie(self):
 		""""""
