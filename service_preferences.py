@@ -23,6 +23,7 @@
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 
 import service_config
 import cons
@@ -76,9 +77,11 @@ class InfoPreferences(gtk.VBox):
 			
 class AccountPreferences(InfoPreferences):
 	""""""
-	def __init__(self, section, name, config):
+	def __init__(self, section, name, config, get_cookie):
 		""""""
 		InfoPreferences.__init__(self, section, name, config, True)
+		
+		self.get_cookie = get_cookie
 
 		frame = gtk.Frame()
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ACCOUNT))
@@ -88,7 +91,7 @@ class AccountPreferences(InfoPreferences):
 		scroll.set_size_request(-1, 110)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		frame.add(scroll)
-		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool, bool)
+		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool, bool, gobject.TYPE_PYOBJECT)
 		self.treeview = gtk.TreeView(store)
 		scroll.add(self.treeview)
 		
@@ -124,6 +127,7 @@ class AccountPreferences(InfoPreferences):
 		enable_cell = gtk.CellRendererToggle()
 		enable_cell.connect("toggled", self.toggled)
 		tree_enable.pack_start(enable_cell, False)
+		tree_enable.add_attribute(enable_cell, 'visible', 4)
 		tree_enable.add_attribute(enable_cell, 'active', 3)
 		self.treeview.append_column(tree_enable)
 
@@ -132,11 +136,14 @@ class AccountPreferences(InfoPreferences):
 		
 		accounts = config.get_accounts(section)
 		for name in accounts.keys():
-			active, password, enabled = accounts[name]
-			icon = self.unactive_service_icon
-			if active:
+			cookie, password, enabled = accounts[name]
+			if cookie:
 				icon = self.active_service_icon
-			store.append([icon, name, password, enabled, active])
+				active = True
+			else:
+				icon = self.unactive_service_icon
+				active = False
+			store.append([icon, name, password, enabled, active, cookie])
 
 		frame = gtk.Frame()
 		frame.set_border_width(10)
@@ -161,7 +168,7 @@ class AccountPreferences(InfoPreferences):
 	def add(self, button):
 		""""""
 		model = self.treeview.get_model()
-		iter = model.append([self.unactive_service_icon, "None", "None", False, False])
+		iter = model.append([self.unactive_service_icon, "None", "None", False, False, None])
 		self.treeview.set_cursor(model.get_path(iter), self.treeview.get_column(1), True)
 
 	def remove(self, button):
@@ -177,7 +184,18 @@ class AccountPreferences(InfoPreferences):
 		""""""
 		model, iter = self.treeview.get_selection().get_selected()
 		if iter:
-			print "download cookie", model.get_value(iter, 1), model.get_value(iter, 2)
+			cookie = self.get_cookie(model.get_value(iter, 1), model.get_value(iter, 2))
+			if cookie:
+				cookie = cookie._cookies
+				icon = self.active_service_icon
+				active = True
+			else:
+				icon = self.unactive_service_icon
+				active = False
+			model.set_value(iter, 0, icon)
+			model.set_value(iter, 3, active)
+			model.set_value(iter, 4, active)
+			model.set_value(iter, 5, cookie)
 
 	def toggled(self, button, path):
 		""""""
@@ -200,7 +218,7 @@ class AccountPreferences(InfoPreferences):
 		iter = model.get_iter_root()
 		accounts = {}
 		while iter:
-			accounts[model.get_value(iter, 1)] = (model.get_value(iter, 4), model.get_value(iter, 2), model.get_value(iter, 3))
+			accounts[model.get_value(iter, 1)] = (model.get_value(iter, 5), model.get_value(iter, 2), model.get_value(iter, 3))
 			iter = model.iter_next(iter)
 		return accounts
 
@@ -253,7 +271,14 @@ class ServicePreferences(gtk.Dialog):
 				if section_type == cons.TYPE_ANONYMOUS:
 					page = InfoPreferences(section, section_name, self.config)
 				else:
-					page = AccountPreferences(section, section_name, self.config)
+					if section_type == cons.TYPE_USER:					
+						module, name = config.user_cookie()
+					elif section_type == cons.TYPE_PREMIUM:
+						module, name = config.premium_cookie()
+					if name:
+						module = __import__(service.split(".")[0] + "." + module, None, None, [''])
+						get_cookie = eval("module" + "." + name + "()").get_cookie
+					page = AccountPreferences(section, section_name, self.config, get_cookie)
 				self.notebook.append_page(page, None)
 				subiter = store.append(iter, [section, section_type, cont])
 				self.treeview.expand_to_path(store.get_path(subiter))

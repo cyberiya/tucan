@@ -62,10 +62,7 @@ class Downloader(threading.Thread):
 				self.time_remaining = self.wait
 		if not self.stop_flag:
 			try:
-				if self.form:
-					handle = self.form.get_handle()
-				else:
-					handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER))
+				handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER), self.form)
 				f = open(self.path + self.file, "w")
 				self.total_size = int(handle.info().getheader("Content-Length"))
 				self.start_time = time.time()

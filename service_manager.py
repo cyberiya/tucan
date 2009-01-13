@@ -45,10 +45,12 @@ class ServiceManager:
 		""""""
 		self.download_manager = DownloadManager(configuration.get(SECTION_MAIN, OPTION_MAX_DOWNLOADS))
 		self.services = []
-		sys.path.append(configuration.plugins_path)
+		if not configuration.plugins_path in sys.path:
+			sys.path.append(configuration.plugins_path)
 		for package, icon, service, enabled, config in configuration.get_services():
 			s = Service(service)
 			if enabled:
+				#download plugins
 				check_module, check_name = config.check_links()
 				if check_name:
 					module = __import__(package + "." + check_module, None, None, [''])
@@ -57,11 +59,12 @@ class ServiceManager:
 					module = __import__(package + "." + plugin_module, None, None, [''])
 					s.download_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
 				check_module, check_name = config.check_files()
+				#upload plugins
 				if check_name:
 					module = __import__(package + "." + check_module, None, None, [''])
 					s.check_files = eval("module" + "." + check_name + "()")
 				for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
-					module = __import__(package + "." + lugin_module, None, None, [''])
+					module = __import__(package + "." + plugin_module, None, None, [''])
 					s.upload_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
 				self.services.append(s)
 
