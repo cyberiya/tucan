@@ -20,24 +20,26 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+from accounts import Accounts
+from service_config import SECTION_PREMIUM_DOWNLOAD
 from download_plugin import DownloadPlugin
 
 import cons
 
-class PremiumDownload(DownloadPlugin):
+class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
-	def __init__(self):
+	def __init__(self, config):
 		""""""
-		#DownloadPlugin.__init__(self)
+		Accounts.__init__(self, config, SECTION_PREMIUM_DOWNLOAD)
+		DownloadPlugin.__init__(self)
 		
 	def add(self, path, link, file_name):
 		""""""
-		if self.get_slot():
-			parser = captcha.CaptchaForm(link)
-			if parser.link:
-				return self.start(path, parser.link, file_name, WAIT)
+		cookie = self.get_cookie()
+		print "premium", file_name, cookie
+		if cookie:
+			return self.start(path, link, file_name, None, cookie)
 
 	def delete(self, file_name):
 		""""""
-		if self.stop(file_name):
-			print self.return_slot()
+		print self.stop(file_name)
