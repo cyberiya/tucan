@@ -34,9 +34,13 @@ class Service:
 	def __init__(self, name):
 		""""""
 		self.name = name
-		self.download_plugins = []
+		self.anonymous_download_plugin = None
+		self.user_download_plugin = None
+		self.premium_download_plugin = None
 		self.check_links = None
-		self.upload_plugins = []
+		self.anonymous_upload_plugins = None
+		self.user_upload_plugins = None
+		self.premium_upload_plugins = None
 		self.check_files = None
 
 class ServiceManager:
@@ -57,7 +61,12 @@ class ServiceManager:
 					s.check_links = eval("module" + "." + check_name + "()")
 				for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
 					module = __import__(package + "." + plugin_module, None, None, [''])
-					s.download_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
+					if plugin_type == cons.TYPE_ANONYMOUS:
+						s.anonymous_download_plugin = eval("module" + "." + plugin_name + "()")
+					elif plugin_type == cons.TYPE_USER:
+						s.user_download_plugin = eval("module" + "." + plugin_name + "()")
+					elif plugin_type == cons.TYPE_PREMIUM:
+						s.premium_download_plugin = eval("module" + "." + plugin_name + "(config)")
 				check_module, check_name = config.check_files()
 				#upload plugins
 				if check_name:
@@ -65,7 +74,12 @@ class ServiceManager:
 					s.check_files = eval("module" + "." + check_name + "()")
 				for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
 					module = __import__(package + "." + plugin_module, None, None, [''])
-					s.upload_plugins.append((eval("module" + "." + plugin_name + "()"), plugin_type))
+					if plugin_type == cons.TYPE_ANONYMOUS:
+						s.anonymous_upload_plugin = eval("module" + "." + plugin_name + "()")
+					elif plugin_type == cons.TYPE_USER:
+						s.user_upload_plugin = eval("module" + "." + plugin_name + "()")
+					elif plugin_type == cons.TYPE_PREMIUM:
+						s.premium_upload_plugin = eval("module" + "." + plugin_name + "(config)")
 				self.services.append(s)
 
 	def prueba(self):
@@ -85,14 +99,17 @@ class ServiceManager:
 	def get_download_plugin(self, service_name):
 		""""""
 		for service in self.services:
-			if ((service.name == service_name) and (len(service.download_plugins) > 0)):
-				return service.download_plugins[0]
+			if service.name == service_name:
+				if service.premium_download_plugin:
+					return service.premium_download_plugin, cons.TYPE_PREMIUM
+				else:
+					return service.anonymous_download_plugin, cons.TYPE_ANONYMOUS
 
 	def get_upload_plugin(self, service_name):
 		""""""
 		for service in self.services:
-			if ((service.name == service_name) and (len(service.upload_plugins) > 0)):
-				return service.upload_plugins[0]
+			if service.name == service_name:
+				return service.anonymous_upload_plugin
 		
 	def get_check_links(self, service_name):
 		""""""

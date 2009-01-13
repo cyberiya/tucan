@@ -44,7 +44,7 @@ class Downloader(threading.Thread):
 		self.stop_flag = False
 		self.start_time = time.time()
 		self.time_remaining = 0
-		self.total_size = 0
+		self.total_size = 1
 		self.actual_size = 0
 		self.speed = 0
 		self.tmp_time = 0
@@ -62,11 +62,11 @@ class Downloader(threading.Thread):
 				self.time_remaining = self.wait
 		if not self.stop_flag:
 			try:
+				self.status = cons.STATUS_ACTIVE
 				handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER), self.form)
 				f = open(self.path + self.file, "w")
 				self.total_size = int(handle.info().getheader("Content-Length"))
 				self.start_time = time.time()
-				self.status = cons.STATUS_ACTIVE
 				data = "None"
 				while ((len(data) > 0) and not self.stop_flag):
 					data = handle.read(BUFFER_SIZE)

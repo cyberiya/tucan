@@ -20,8 +20,20 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import cookielib
+
 class Accounts:
 	""""""
-	def __init__(self):
+	def __init__(self, config, section):
 		""""""
+		self.config = config
+		self.section = section
 		
+	def get_cookie(self):
+		""""""
+		for account in self.config.get_accounts(self.section).values():
+			if account[2]:
+				cookie = cookielib.CookieJar()
+				cookie._cookies = account[0]
+				return cookie
+			
