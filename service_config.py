@@ -44,6 +44,9 @@ OPTION_NAME = "name"
 OPTION_ICON = "icon"
 OPTION_ENABLED = "enabled"
 
+OPTION_PREMIUM_COOKIE = "premium_cookie"
+OPTION_USER_COOKIE = "user_cookie"
+
 OPTION_AVAIBLE = "avaible"
 OPTION_CHECK_LINKS = "check_links"
 OPTION_CHECK_FILES = "check_files"
@@ -85,6 +88,20 @@ class ServiceConfig(SafeConfigParser):
 		if self.has_option(SECTION_MAIN, OPTION_ICON):
 			if not self.get(SECTION_MAIN, OPTION_ICON) == "None":
 				return self.path + self.get(SECTION_MAIN, OPTION_ICON)
+
+	def premium_cookie(self):
+		""""""
+		get_cookie = None
+		if self.has_option(SECTION_MAIN, OPTION_PREMIUM_COOKIE):
+			get_cookie = self.get(SECTION_MAIN, OPTION_PREMIUM_COOKIE)
+		return OPTION_PREMIUM_COOKIE, get_cookie
+
+	def user_cookie(self):
+		""""""
+		get_cookie = None
+		if self.has_option(SECTION_MAIN, OPTION_USER_COOKIE):
+			get_cookie = self.get(SECTION_MAIN, OPTION_USER_COOKIE)
+		return OPTION_USER_COOKIE, get_cookie
 
 	def check_links(self):
 		""""""

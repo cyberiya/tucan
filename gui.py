@@ -20,6 +20,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import sys
 import os
 import webbrowser
 import time
@@ -60,6 +61,7 @@ class Gui(gtk.Window, ServiceManager):
 
 		#configuration
 		self.configuration = config.Config()
+		sys.path.append(self.configuration.plugins_path)
 
 		#show preferences if not configured
 		if not self.configuration.configured:
@@ -97,7 +99,7 @@ class Gui(gtk.Window, ServiceManager):
 
 		#toolbar
 		download = _("Add Downloads"), gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_links
-		upload = _("Add Uploads"), gtk.image_new_from_file(cons.ICON_UPLOAD), self.not_implemented
+		upload = _("Add Uploads"), gtk.image_new_from_file(cons.ICON_UPLOAD), self.quit
 		clear = _("Clear Complete"), gtk.image_new_from_file(cons.ICON_CLEAR), self.clear_complete
 		up = _("Move Up"), gtk.image_new_from_file(cons.ICON_UP), self.move_up
 		down = _("Move Down"), gtk.image_new_from_file(cons.ICON_DOWN), self.move_down

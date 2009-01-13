@@ -20,30 +20,8 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import captcha
-
-from download_plugin import DownloadPlugin
-from slots import Slots
-
-import cons
-
-WAIT = 45
-
-class AnonymousDownload(DownloadPlugin, Slots):
+class Accounts:
 	""""""
 	def __init__(self):
 		""""""
-		Slots.__init__(self, 1)
-		DownloadPlugin.__init__(self)
 		
-	def add(self, path, link, file_name):
-		""""""
-		if self.get_slot():
-			parser = captcha.CaptchaForm(link)
-			if parser.link:
-				return self.start(path, parser.link, file_name, WAIT)
-
-	def delete(self, file_name):
-		""""""
-		if self.stop(file_name):
-			print self.return_slot()

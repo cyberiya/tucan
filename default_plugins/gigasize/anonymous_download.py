@@ -53,11 +53,6 @@ class FormParser(HTMLParser):
 			if ((len(attrs) == 3) and (attrs[2][1] == "formDownload")):
 				self.form_action = attrs[0][1]
 				
-	def get_handle(self):
-		""""""
-		data = urllib.urlencode({"dlb": "Download"})
-		return urllib2.urlopen(urllib2.Request("http://www.gigasize.com" + self.form_action), data)
-
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def __init__(self):
@@ -69,7 +64,8 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		if self.get_slot():
 			print path, link, file_name
-			urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar())))
+			cookie = cookielib.CookieJar()
+			urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)))
 			urllib2.urlopen(urllib2.Request(link))
 			form = None
 			while not form:
@@ -82,7 +78,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 					handle.close()
 					form = f.form_action
 					print "Captcha: ", captcha, form
-			if self.start(path, link, file_name, WAIT, None, f):
+			if self.start(path, "http://www.gigasize.com" + form, file_name, WAIT, cookie, urllib.urlencode({"dlb": "Download"})):
 				return True
 			else:
 				print "Limit Exceded"
