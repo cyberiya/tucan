@@ -51,7 +51,7 @@ class DownloadItem:
 		self.speed = 0
 		self.time = 0
 		
-	def update(self, status, progress, actual_size, size_unit, speed, time):
+	def update(self, status=cons.STATUS_STOP, progress=0, actual_size=0, size_unit=None, speed=0, time=0):
 		""""""
 		self.status = status
 		self.progress = progress
@@ -129,7 +129,10 @@ class DownloadManager:
 				for link in download.links:
 					if link.active:
 						if link.plugin.stop(download.name):
-							link.status = cons.STATUS_STOP
+							link.active = False
+							download.update()
+							self.pending_downloads.append(download)
+							self.active_downloads.remove(download)
 							return True
 	
 	def update(self):
@@ -146,11 +149,7 @@ class DownloadManager:
 					if status in [cons.STATUS_PEND, cons.STATUS_STOP, cons.STATUS_ERROR]:
 						if status == cons.STATUS_PEND:
 							link.plugin.add_wait()
-						link.active = False
-						download.progress = 0
-						link.plugin.return_slot()
-						self.pending_downloads.append(download)
-						self.active_downloads.remove(download)
+						self.stop(download.name)
 					elif status == cons.STATUS_CORRECT:
 						download.progress = 100
 						link.plugin.return_slot()
@@ -166,7 +165,7 @@ class DownloadManager:
 				if len(self.active_downloads) < self.max_downloads:
 					for download in self.pending_downloads:
 						if download.status not in [cons.STATUS_STOP, cons.STATUS_ERROR]:
-							print self.start(download.name)
+							print self.start(download.name), self.max_downloads
 			if self.timer:
 				self.timer.cancel()
 			self.timer = threading.Timer(15, self.scheduler)
@@ -179,4 +178,5 @@ class DownloadManager:
 			self.scheduling = True
 			self.timer.cancel()
 		for download in self.active_downloads:
-			print self.stop(download.name)
+			for link in download.links:
+				link.plugin.stop_all()
