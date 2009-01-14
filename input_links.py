@@ -183,6 +183,7 @@ class InputLinks(gtk.Dialog):
 				for value in column.iterchildren():
 					if not value[1] == value[2]:
 						if value[6]:
+							print value[1], value[2], value[3], value[4], value[5]
 							tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
 		if not tmp == {}:
 			self.hide()
@@ -236,7 +237,8 @@ class InputLinks(gtk.Dialog):
 							self.cancel_check = False
 							wait.destroy()
 							raise Exception("Check Links cancelled")
-						file_name, size, size_unit = self.check_links(service)(link)
+						check, plugin_type = self.check_links(service) 
+						file_name, size, size_unit = check(link)
 						if file_name:
 							if size > 0:
 								icon = active_icon
@@ -249,7 +251,7 @@ class InputLinks(gtk.Dialog):
 							marked = False
 							file_name = link
 						print file_name, size, size_unit
-						store.append(service_iter, [icon, link, file_name, size, size_unit, None, marked, marked])
+						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin_type, marked, marked])
 						self.treeview.expand_row(store.get_path(service_iter), True)
 		buffer.set_text("")
 		wait.destroy()

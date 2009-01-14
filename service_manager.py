@@ -115,7 +115,10 @@ class ServiceManager:
 		""""""
 		for service in self.services:
 			if service.name == service_name:
-				return service.check_links.check
+				if ((service.premium_download_plugin) and (service.premium_download_plugin.active)):
+					return service.check_links.check, cons.TYPE_PREMIUM
+				else:
+					return service.check_links.check, cons.TYPE_ANONYMOUS
 
 	def get_check_files(self, service_name):
 		""""""
@@ -156,7 +159,6 @@ class ServiceManager:
 							tmp_link[2].append(service)
 							tmp_link[0].append(link[0])
 							tmp_link[5].append(link[4])
-							print "hostia puta cojones", link[4]
 				if not found:
 					files.append(([link[0]], link[1], [service], link[2], link[3], [link[4]]))
 		while len(files) > 0:
