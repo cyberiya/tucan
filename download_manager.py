@@ -143,7 +143,6 @@ class DownloadManager:
 					plugin = link.plugin
 			if plugin:
 				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name)
-				print download.name, status, progress, actual_size, unit, speed, time
 				if status:
 					download.update(status, progress, actual_size, unit, speed, time)
 					if status in [cons.STATUS_PEND, cons.STATUS_STOP, cons.STATUS_ERROR]:

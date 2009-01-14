@@ -235,7 +235,7 @@ class Tree(gtk.VBox):
 			files = []
 			file_iter = model.iter_children(package_iter)
 			while file_iter:
-				if not model.get_value(file_iter, 1) == cons.STATUS_CORRECT:
+				if model.get_value(file_iter, 1) != cons.STATUS_CORRECT:
 					links = []
 					plugins = []
 					link_iter = model.iter_children(file_iter)
@@ -344,7 +344,7 @@ class Tree(gtk.VBox):
 		package_iter = model.iter_parent(iter)
 		file_iter = model.iter_children(package_iter)
 		prev_iter = None
-		while ((file_iter) and (not model.get_path(file_iter) == model.get_path(iter))):
+		while ((file_iter) and (model.get_path(file_iter) != model.get_path(iter))):
 			prev_iter = file_iter
 			file_iter = model.iter_next(file_iter)
 		if prev_iter:
