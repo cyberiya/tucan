@@ -36,7 +36,6 @@ class PremiumDownload(DownloadPlugin, Accounts):
 	def add(self, path, link, file_name):
 		""""""
 		cookie = self.get_cookie()
-		print "premium", file_name, cookie
 		if cookie:
 			return self.start(path, link, file_name, None, cookie)
 

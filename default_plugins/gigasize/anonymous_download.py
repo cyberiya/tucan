@@ -65,15 +65,15 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		if self.get_slot():
 			print path, link, file_name
 			cookie = cookielib.CookieJar()
-			urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)))
-			urllib2.urlopen(urllib2.Request(link))
+			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+			opener.open(urllib2.Request(link))
 			form = None
 			while not form:
 				tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read(), self.filter_image)
 				captcha = tes.get_captcha()
 				if len(captcha) == 3:
 					data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
-					handle = urllib2.urlopen(urllib2.Request("http://www.gigasize.com/formdownload.php"), data)
+					handle = opener.open(urllib2.Request("http://www.gigasize.com/formdownload.php"), data)
 					f = FormParser(handle.read())
 					handle.close()
 					form = f.form_action

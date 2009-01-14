@@ -156,6 +156,7 @@ class ServiceManager:
 							tmp_link[2].append(service)
 							tmp_link[0].append(link[0])
 							tmp_link[5].append(link[4])
+							print "hostia puta cojones", link[4]
 				if not found:
 					files.append(([link[0]], link[1], [service], link[2], link[3], [link[4]]))
 		while len(files) > 0:
