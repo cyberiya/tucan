@@ -147,12 +147,13 @@ class DownloadManager:
 				if status:
 					download.update(status, progress, actual_size, unit, speed, time)
 					if status in [cons.STATUS_PEND, cons.STATUS_STOP, cons.STATUS_ERROR]:
-						if status == cons.STATUS_PEND:
+						if ((status == cons.STATUS_PEND) and ("add_wait" in dir(link.plugin))):
 							link.plugin.add_wait()
 						self.stop(download.name)
 					elif status == cons.STATUS_CORRECT:
+						if "return_slot" in dir(link.plugin):
+							link.plugin.return_slot()
 						download.progress = 100
-						link.plugin.return_slot()
 						self.complete_downloads.append(download)
 						self.active_downloads.remove(download)
 

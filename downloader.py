@@ -49,8 +49,9 @@ class Downloader(threading.Thread):
 		self.speed = 0
 		self.tmp_time = 0
 		self.tmp_size = 0
+		self.opener = None
 		if cookie:
-			urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)))
+			self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 		
 	def run(self):
 		""""""
@@ -63,9 +64,12 @@ class Downloader(threading.Thread):
 		if not self.stop_flag:
 			try:
 				self.status = cons.STATUS_ACTIVE
-				handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER), self.form)
-				f = open(self.path + self.file, "w")
+				if self.opener:
+					handle = self.opener.open(urllib2.Request(self.url, None, HEADER), self.form)
+				else:
+					handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER), self.form)
 				self.total_size = int(handle.info().getheader("Content-Length"))
+				f = open(self.path + self.file, "w")
 				self.start_time = time.time()
 				data = "None"
 				while ((len(data) > 0) and not self.stop_flag):
