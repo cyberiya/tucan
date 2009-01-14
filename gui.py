@@ -184,7 +184,7 @@ class Gui(gtk.Window, ServiceManager):
 		""""""
 		s = Sessions()
 		packages, info = s.load_default_session()
-		if not packages == None:
+		if packages != None:
 			self.manage_packages(packages, info)
 			
 	def save_session(self, button):

@@ -178,14 +178,14 @@ class InputLinks(gtk.Dialog):
 		tmp = {}
 		store = self.treeview.get_model()
 		for column in store:
-			if not column[2] == cons.TYPE_UNSUPPORTED:
+			if column[2] != cons.TYPE_UNSUPPORTED:
 				tmp[column[2]] = []
 				for value in column.iterchildren():
-					if not value[1] == value[2]:
+					if value[1] != value[2]:
 						if value[6]:
 							print value[1], value[2], value[3], value[4], value[5]
 							tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
-		if not tmp == {}:
+		if tmp != {}:
 			self.hide()
 			packages = self.create_packages(tmp)
 			packages_info = None
@@ -225,7 +225,7 @@ class InputLinks(gtk.Dialog):
 		unactive_icon = self.treeview.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
 		
 		for service, links in self.sort_links(link_list).items():
-			if not links == []:
+			if links != []:
 				if service == cons.TYPE_UNSUPPORTED:
 					service_iter = store.append(None, [unsupported_icon, service, service, 0, None, None, False, False])
 					for link in links:

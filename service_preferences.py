@@ -315,7 +315,7 @@ class ServicePreferences(gtk.Dialog):
 			child_iter = model.iter_children(iter)
 			while child_iter:
 				page = self.notebook.get_nth_page((model.get_value(iter, 2)))
-				if ((page) and not (model.get_value(child_iter, 1) == cons.TYPE_ANONYMOUS)):
+				if ((page) and (model.get_value(child_iter, 1) != cons.TYPE_ANONYMOUS)):
 					self.config.set_accounts(model.get_value(child_iter, 0), page.get_accounts())
 				child_iter = model.iter_next(child_iter)
 			iter = model.iter_next(iter)

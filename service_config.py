@@ -86,7 +86,7 @@ class ServiceConfig(SafeConfigParser):
 	def get_icon(self):
 		""""""
 		if self.has_option(SECTION_MAIN, OPTION_ICON):
-			if not self.get(SECTION_MAIN, OPTION_ICON) == "None":
+			if self.get(SECTION_MAIN, OPTION_ICON) != "None":
 				return self.path + self.get(SECTION_MAIN, OPTION_ICON)
 
 	def premium_cookie(self):
