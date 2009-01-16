@@ -29,7 +29,6 @@ import cons
 
 NAME = "Tucan"
 COPYRIGHT = u"© 2008 The Tucan Project"
-WEBPAGE = "http://cusl3-tucan.forja.rediris.es/"
 AUTHORS = ["Fran Lupion Crakotak(at)yahoo.es", "Paco Salido beakman(at)riseup.net", "JM Cordero betic0(at)gmail.com"]
 LICENSE = """	
 	This program is free software: you can redistribute it and/or modify
@@ -58,7 +57,7 @@ class About(gtk.AboutDialog):
 		self.set_version(cons.TUCAN_VERSION)
 		self.set_copyright(COPYRIGHT)
 		self.set_license(LICENSE)
-		self.set_website(WEBPAGE)
+		self.set_website(cons.WEBPAGE)
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()

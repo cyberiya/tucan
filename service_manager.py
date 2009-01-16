@@ -49,8 +49,8 @@ class ServiceManager:
 		""""""
 		self.download_manager = DownloadManager(configuration.get(SECTION_MAIN, OPTION_MAX_DOWNLOADS))
 		self.services = []
-		if not configuration.plugins_path in sys.path:
-			sys.path.append(configuration.plugins_path)
+		if cons.PLUGIN_PATH not in sys.path:
+			sys.path.append(cons.PLUGIN_PATH)
 		for package, icon, service, enabled, config in configuration.get_services():
 			s = Service(service)
 			if enabled:
