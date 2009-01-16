@@ -28,8 +28,6 @@ from ConfigParser import SafeConfigParser
 import service_config
 import cons
 
-DEFAULT_PATH = os.path.expanduser("~") + "/.tucan/"
-
 CONF = "tucan.conf"
 PLUGINS = "plugins/"
 DEFAULT_PLUGINS = "default_plugins/"
@@ -62,22 +60,22 @@ class Config(SafeConfigParser):
 		""""""
 		SafeConfigParser.__init__(self)
 		self.configured = True
-		self.plugins_path = DEFAULT_PATH + PLUGINS
-		if not os.path.exists(DEFAULT_PATH):
-			os.mkdir(DEFAULT_PATH)
-		if not os.path.exists(DEFAULT_PATH + CONF):
+		self.plugins_path = cons.PLUGIN_PATH + PLUGINS
+		if not os.path.exists(cons.PLUGIN_PATH):
+			os.mkdir(cons.PLUGIN_PATH)
+		if not os.path.exists(cons.PLUGIN_PATH + CONF):
 			self.create_config()
 			self.configured = False
 		else:
-			self.read(DEFAULT_PATH + CONF)
+			self.read(cons.PLUGIN_PATH + CONF)
 			if not self.check_config():
 				self.create_config()
 				self.configured = False
-		if not os.path.exists(DEFAULT_PATH + PLUGINS):
-			shutil.copytree(os.getcwdu() + "/" + DEFAULT_PLUGINS, DEFAULT_PATH + PLUGINS)
-			for service in os.listdir(DEFAULT_PATH + PLUGINS):
-				if os.path.isdir(DEFAULT_PATH + PLUGINS + service):
-					path = DEFAULT_PATH + PLUGINS + service + "/"
+		if not os.path.exists(cons.PLUGIN_PATH + PLUGINS):
+			shutil.copytree(cons.PATH + "/" + DEFAULT_PLUGINS, cons.PLUGIN_PATH + PLUGINS)
+			for service in os.listdir(cons.PLUGIN_PATH + PLUGINS):
+				if os.path.isdir(cons.PLUGIN_PATH + PLUGINS + service):
+					path = cons.PLUGIN_PATH + PLUGINS + service + "/"
 					package, icon, name, enabled, config = self.service(path)
 					if name:
 						self.set(SECTION_SERVICES, name, path)
@@ -124,7 +122,7 @@ class Config(SafeConfigParser):
 		
 	def save(self, comment=False):
 		""""""
-		f = open(DEFAULT_PATH + CONF, "w")
+		f = open(cons.PLUGIN_PATH + CONF, "w")
 		if comment:
 			f.write(COMMENT + "\n\n")
 		self.write(f)

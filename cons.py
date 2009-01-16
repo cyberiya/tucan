@@ -64,14 +64,17 @@ TYPE_UNSUPPORTED = "unsupported"
 
 #path constants
 PATH = sys.path[0]
-PATH_MEDIA = PATH + "/media/"
 DEFAULT_PATH = os.path.expanduser("~") + "/"
+
+#plugin constants
+PLUGIN_PATH = DEFAULT_PATH + "/.tucan/"
 
 #localization constants
 NAME_LOCALES = "tucan"
 PATH_LOCALES = PATH + "/i18n"
 
 #media constants
+PATH_MEDIA = PATH + "/media/"
 ICON_TUCAN = PATH_MEDIA + "icon.svg"
 ICON_DOWNLOAD = PATH_MEDIA + "document-save.svg"
 ICON_UPLOAD = PATH_MEDIA + "system-software-update.svg"
