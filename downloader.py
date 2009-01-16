@@ -65,7 +65,7 @@ class Downloader(threading.Thread):
 		if not self.stop_flag:
 			try:
 				self.status = cons.STATUS_ACTIVE
-				socket.setdefaulttimeout(60)
+				socket.setdefaulttimeout(30)
 				if self.opener:
 					handle = self.opener.open(urllib2.Request(self.url, None, HEADER), self.form)
 				else:
@@ -87,11 +87,7 @@ class Downloader(threading.Thread):
 						self.status = cons.STATUS_CORRECT
 					else:
 						self.status = cons.STATUS_ERROR
-			except socket.timeout, e:
-				print self.file, e
-				self.stop_flag = True
-				self.status = cons.STATUS_ERROR
-			except TypeError, e:
+			except (TypeError, socket.timeout, urllib2.URLError), e:
 				print self.file, e
 				self.stop_flag = True
 				self.status = cons.STATUS_ERROR
