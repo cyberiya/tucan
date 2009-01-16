@@ -61,7 +61,7 @@ class Gui(gtk.Window, ServiceManager):
 
 		#configuration
 		self.configuration = config.Config()
-		sys.path.append(self.configuration.plugins_path)
+		sys.path.append(cons.CONFIG_PATH)
 
 		#show preferences if not configured
 		if not self.configuration.configured:
@@ -163,7 +163,7 @@ class Gui(gtk.Window, ServiceManager):
 		
 	def help(self, widget):
 		""""""
-		webbrowser.open("http://cusl3-tucan.forja.rediris.es/")
+		webbrowser.open(cons.WEBPAGE)
 		
 	def add_links(self, button):
 		""""""
@@ -201,7 +201,7 @@ class Gui(gtk.Window, ServiceManager):
 			packages_info = [(default_path, name, None) for name, package_files in packages]
 		#create directories and password files
 		for info in packages_info:
-			package_path = info[0] + info[1].replace(" ", "_") + "/"
+			package_path = os.path.join(info[0], info[1].replace(" ", "_"), "")
 			if not os.path.exists(package_path):
 				os.mkdir(package_path)
 			if info[2]:
@@ -212,7 +212,7 @@ class Gui(gtk.Window, ServiceManager):
 		for package_name, package_downloads in packages:
 			info = packages_info[packages.index((package_name, package_downloads))]
 			package_name = info[1].replace(" ", "_")
-			package_path = info[0] + package_name + "/"
+			package_path = os.path.join(info[0], package_name, "")
 			self.downloads.add_package(package_name, package_path, package_downloads, info[2])
 			for download in package_downloads:
 				tmp = []

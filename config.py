@@ -29,8 +29,6 @@ import service_config
 import cons
 
 CONF = "tucan.conf"
-PLUGINS = "plugins/"
-DEFAULT_PLUGINS = "default_plugins/"
 
 COMMENT = """# Tucan Manager's default configuration.
 # Dont change anything unless you really know what are doing, 
@@ -60,22 +58,21 @@ class Config(SafeConfigParser):
 		""""""
 		SafeConfigParser.__init__(self)
 		self.configured = True
-		self.plugins_path = cons.PLUGIN_PATH + PLUGINS
-		if not os.path.exists(cons.PLUGIN_PATH):
-			os.mkdir(cons.PLUGIN_PATH)
-		if not os.path.exists(cons.PLUGIN_PATH + CONF):
+		if not os.path.exists(cons.CONFIG_PATH):
+			os.mkdir(cons.CONFIG_PATH)
+		if not os.path.exists(cons.CONFIG_PATH + CONF):
 			self.create_config()
 			self.configured = False
 		else:
-			self.read(cons.PLUGIN_PATH + CONF)
+			self.read(cons.CONFIG_PATH + CONF)
 			if not self.check_config():
 				self.create_config()
 				self.configured = False
-		if not os.path.exists(cons.PLUGIN_PATH + PLUGINS):
-			shutil.copytree(cons.PATH + "/" + DEFAULT_PLUGINS, cons.PLUGIN_PATH + PLUGINS)
-			for service in os.listdir(cons.PLUGIN_PATH + PLUGINS):
-				if os.path.isdir(cons.PLUGIN_PATH + PLUGINS + service):
-					path = cons.PLUGIN_PATH + PLUGINS + service + "/"
+		if not os.path.exists(cons.PLUGIN_PATH):
+			shutil.copytree(cons.DEFAULT_PLUGINS, cons.PLUGIN_PATH)
+			for service in os.listdir(cons.PLUGIN_PATH):
+				if os.path.isdir(cons.PLUGIN_PATH + service):
+					path = os.path.join(cons.PLUGIN_PATH, service, "")
 					package, icon, name, enabled, config = self.service(path)
 					if name:
 						self.set(SECTION_SERVICES, name, path)
@@ -116,13 +113,12 @@ class Config(SafeConfigParser):
 			icon = config.get_icon()
 			name = config.get(service_config.SECTION_MAIN, service_config.OPTION_NAME)
 			enabled = config.getboolean(service_config.SECTION_MAIN, service_config.OPTION_ENABLED)
-			tmp = path.split("/")
-			result = tmp[len(tmp)-2], icon, name, enabled, config
+			result = os.path.split(os.path.split(path)[0])[1], icon, name, enabled, config
 		return result
 		
 	def save(self, comment=False):
 		""""""
-		f = open(cons.PLUGIN_PATH + CONF, "w")
+		f = open(cons.CONFIG_PATH + CONF, "w")
 		if comment:
 			f.write(COMMENT + "\n\n")
 		self.write(f)

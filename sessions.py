@@ -27,7 +27,6 @@ from ConfigParser import SafeConfigParser
 
 import cons
 
-DEFAULT_PATH = os.path.expanduser("~") + "/.tucan/"
 LAST_SESSION = "last.session"
 
 SECTION_DOWNLOADS = "downloads"
@@ -42,11 +41,11 @@ class Sessions(SafeConfigParser):
 	""""""		
 	def load_default_session(self):
 		""""""
-		return self.load_session(DEFAULT_PATH + LAST_SESSION)
+		return self.load_session(cons.CONFIG_PATH + LAST_SESSION)
 		
 	def save_default_session(self, packages, info):
 		""""""
-		self.save_session(DEFAULT_PATH + LAST_SESSION, packages, info)
+		self.save_session(cons.CONFIG_PATH + LAST_SESSION, packages, info)
 		
 	def load_session(self, path):
 		""""""

@@ -23,8 +23,9 @@
 import sys
 import os
 
-# proyect constants
+# project constants
 TUCAN_VERSION = "0.3 alpha"
+WEBPAGE = "http://cusl3-tucan.forja.rediris.es/"
 
 REVISION = ""
 rev = os.popen("svnversion").read().strip()
@@ -63,18 +64,20 @@ TYPE_PREMIUM = "Premium"
 TYPE_UNSUPPORTED = "unsupported"
 
 #path constants
-PATH = sys.path[0]
-DEFAULT_PATH = os.path.expanduser("~") + "/"
+PATH = os.path.join(sys.path[0], "")
+DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "")
+CONFIG_PATH = os.path.join(DEFAULT_PATH, ".tucan" ,"")
 
 #plugin constants
-PLUGIN_PATH = DEFAULT_PATH + "/.tucan/"
+PLUGIN_PATH = os.path.join(CONFIG_PATH, "plugins", "")
+DEFAULT_PLUGINS = os.path.join(PATH, "default_plugins", "")
 
 #localization constants
 NAME_LOCALES = "tucan"
-PATH_LOCALES = PATH + "/i18n"
+PATH_LOCALES = os.path.join(PATH, "i18n")
 
 #media constants
-PATH_MEDIA = PATH + "/media/"
+PATH_MEDIA = os.path.join(PATH, "media", "")
 ICON_TUCAN = PATH_MEDIA + "icon.svg"
 ICON_DOWNLOAD = PATH_MEDIA + "document-save.svg"
 ICON_UPLOAD = PATH_MEDIA + "system-software-update.svg"

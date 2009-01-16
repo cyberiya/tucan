@@ -20,6 +20,8 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import os
+
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -56,7 +58,7 @@ class FileChooser(gtk.FileChooserDialog):
 
 	def on_choose_folder(self, button, func):
 		""""""
-		func(self.get_filename() + "/")
+		func(os.path.join(self.get_filename(), ""))
 		self.close()
 		
 	def close(self, widget=None, response=None):
