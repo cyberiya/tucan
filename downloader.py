@@ -20,6 +20,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import socket
 import urllib2
 import threading
 import time
@@ -64,10 +65,12 @@ class Downloader(threading.Thread):
 		if not self.stop_flag:
 			try:
 				self.status = cons.STATUS_ACTIVE
+				socket.setdefaulttimeout(60)
 				if self.opener:
 					handle = self.opener.open(urllib2.Request(self.url, None, HEADER), self.form)
 				else:
 					handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER), self.form)
+				socket.setdefaulttimeout(None)
 				self.total_size = int(handle.info().getheader("Content-Length"))
 				f = open(self.path + self.file, "w")
 				self.start_time = time.time()
@@ -84,8 +87,12 @@ class Downloader(threading.Thread):
 						self.status = cons.STATUS_CORRECT
 					else:
 						self.status = cons.STATUS_ERROR
+			except socket.timeout, e:
+				print self.file, e
+				self.stop_flag = True
+				self.status = cons.STATUS_ERROR
 			except TypeError, e:
-				print e
+				print self.file, e
 				self.stop_flag = True
 				self.status = cons.STATUS_ERROR
 			except urllib2.HTTPError, e:
