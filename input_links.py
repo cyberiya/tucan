@@ -212,7 +212,7 @@ class InputLinks(gtk.Dialog):
 		
 	def check_all(self, wait):
 		""""""
-		gtk.gdk.threads_enter()
+
 		store = self.treeview.get_model()
 		store.clear()
 		buffer = self.textview.get_buffer()
@@ -224,22 +224,22 @@ class InputLinks(gtk.Dialog):
 		active_icon = self.treeview.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
 		unchecked_icon = self.treeview.render_icon(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_MENU)
 		unactive_icon = self.treeview.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
-		gtk.gdk.threads_leave()
+
 		
 		for service, links in self.sort_links(link_list).items():
 			if links != []:
 				if service == cons.TYPE_UNSUPPORTED:
-					gtk.gdk.threads_enter()
+			
 					service_iter = store.append(None, [unsupported_icon, service, service, 0, None, None, False, False])
-					gtk.gdk.threads_leave()
+			
 					for link in links:
-						gtk.gdk.threads_enter()
+				
 						store.append(service_iter, [unchecked_icon, link, link, 0, None, None, False, False])
-						gtk.gdk.threads_leave()
+				
 				else:
-					gtk.gdk.threads_enter()
+			
 					service_iter = store.append(None, [service_icon, service, service, 0, None, None, False, False])
-					gtk.gdk.threads_leave()
+			
 					for link in links:
 						if self.cancel_check:
 							self.cancel_check = False
@@ -259,14 +259,13 @@ class InputLinks(gtk.Dialog):
 							marked = False
 							file_name = link
 						print file_name, size, size_unit
-						gtk.gdk.threads_enter()
+				
 						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin_type, marked, marked])
 						self.treeview.expand_row(store.get_path(service_iter), True)
-						gtk.gdk.threads_leave()
-		gtk.gdk.threads_enter()
+				
 		buffer.set_text("")
 		wait.destroy()
-		gtk.gdk.threads_leave()
+
 	
 	def cancel(self, window, event):
 		"""Esc key"""
