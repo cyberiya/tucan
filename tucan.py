@@ -31,6 +31,4 @@ from gui import Gui
 if __name__ == "__main__":
 	gtk.gdk.threads_init()
 	g = Gui()
-	gtk.gdk.threads_enter()
 	gtk.main()
-	gtk.gdk.threads_leave()
