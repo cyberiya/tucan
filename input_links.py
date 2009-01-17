@@ -26,6 +26,7 @@ import threading
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 
 from message import Wait
 from advanced_packages import AdvancedPackages
@@ -264,7 +265,7 @@ class InputLinks(gtk.Dialog):
 						self.treeview.expand_row(store.get_path(service_iter), True)
 				
 		buffer.set_text("")
-		wait.destroy()
+		gobject.idle_add(wait.destroy)
 
 	
 	def cancel(self, window, event):
