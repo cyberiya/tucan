@@ -71,7 +71,7 @@ class Config(SafeConfigParser):
 		if not os.path.exists(cons.PLUGIN_PATH):
 			shutil.copytree(cons.DEFAULT_PLUGINS, cons.PLUGIN_PATH)
 			for service in os.listdir(cons.PLUGIN_PATH):
-				if os.path.isdir(cons.PLUGIN_PATH + service):
+				if os.path.isdir(os.path.join(cons.PLUGIN_PATH, service)):
 					path = os.path.join(cons.PLUGIN_PATH, service, "")
 					package, icon, name, enabled, config = self.service(path)
 					if name:

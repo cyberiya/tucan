@@ -69,7 +69,7 @@ DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "")
 CONFIG_PATH = os.path.join(DEFAULT_PATH, ".tucan" ,"")
 
 #plugin constants
-PLUGIN_PATH = os.path.join(CONFIG_PATH, "plugins", "")
+PLUGIN_PATH = os.path.join(CONFIG_PATH, "plugins")
 DEFAULT_PLUGINS = os.path.join(PATH, "default_plugins", "")
 
 #localization constants
