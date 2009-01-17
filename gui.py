@@ -61,7 +61,7 @@ class Gui(gtk.Window, ServiceManager):
 
 		#configuration
 		self.configuration = config.Config()
-		sys.path.append(cons.CONFIG_PATH)
+		sys.path.append(cons.PLUGIN_PATH)
 
 		#show preferences if not configured
 		if not self.configuration.configured:
