@@ -20,6 +20,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import sys
 import os
 import tempfile
 
@@ -33,7 +34,9 @@ class Tesseract:
 	def __init__(self, data, filter=None):
 		""""""
 		self.image = tempfile.NamedTemporaryFile(suffix=IMAGE_SUFFIX)
+		self.image.close()
 		self.text = tempfile.NamedTemporaryFile(suffix=TEXT_SUFFIX)
+		self.image.close()
 		p = ImageFile.Parser()
 		p.feed(data)
 		if filter:
@@ -45,7 +48,7 @@ class Tesseract:
 	def get_captcha(self):
 		""""""
 		if "win" in sys.platform:
-			clean = os.system(os.path.join(sys.path[0],"") + "tesseract.exe " + self.text.name.split(TEXT_SUFFIX)[0])
+			clean = os.system(os.path.join(sys.path[0],"tesseract", "tesseract.exe") + " " + self.text.name.split(TEXT_SUFFIX)[0])
 		else:
 			clean = os.system("tesseract "+ self.image.name + " " + self.text.name.split(TEXT_SUFFIX)[0])
 		if clean == 0:
