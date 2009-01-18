@@ -25,7 +25,10 @@ import os
 import tempfile
 
 import ImageFile
+import Image
 import TiffImagePlugin
+
+import cons
 
 IMAGE_SUFFIX = ".tif"
 TEXT_SUFFIX = ".txt"
@@ -35,14 +38,14 @@ class Tesseract:
 	def __init__(self, data, filter=None):
 		""""""
 		if "win" in sys.platform:
-			self.image_name = os.path.join(sys.path[0],"tesseract", "tmp.tif")
-			self.text_name = os.path.join(sys.path[0],"tesseract", "tmp")
-			self.tesseract = os.path.join(sys.path[0],"tesseract", "tesseract.exe")
+			self.image_name = os.path.join(cons.CONFIG_PATH, "tmp.tif")
+			self.text_name = os.path.join(cons.CONFIG_PATH, "tmp")
+			self.tesseract = os.path.join(cons.PATH, "tesseract", "tesseract.exe")
 		else:
 			self.text = tempfile.NamedTemporaryFile(suffix=TEXT_SUFFIX)
 			self.image = tempfile.NamedTemporaryFile(suffix=IMAGE_SUFFIX)
 			self.image_name = self.image.name
-			self.text_name = self.text.name
+			self.text_name = self.text.name.split(TEXT_SUFFIX)[0]
 			self.tesseract = "tesseract"
 		p = ImageFile.Parser()
 		p.feed(data)
@@ -56,7 +59,7 @@ class Tesseract:
 		""""""
 		captcha = ""
 		if "win" in sys.platform:
-			if os.system(self.tesseract + " " + self.image_name + " " + self.text_name)== 0:
+			if os.system(self.tesseract + " " + self.image_name + " " + self.text_name) == 0:
 				f = file(self.text_name + TEXT_SUFFIX, "r")
 				captcha = f.readline().strip()
 				f.close()
