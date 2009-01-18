@@ -47,6 +47,7 @@ class Tesseract:
 	
 	def get_captcha(self):
 		""""""
+		captcha = ""
 		if "win" in sys.platform:
 			clean = os.system(os.path.join(sys.path[0],"tesseract", "tesseract.exe") + " " + self.text.name.split(TEXT_SUFFIX)[0])
 		else:
@@ -54,7 +55,7 @@ class Tesseract:
 		if clean == 0:
 			captcha = self.text.file.readline().strip()
 			self.text.file.close()
-			return captcha
+		return captcha
 
 if __name__ == "__main__":
 	f = file("tmp.png", "r")
