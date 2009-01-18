@@ -65,8 +65,8 @@ TYPE_UNSUPPORTED = "unsupported"
 
 #path constants
 PATH = os.path.join(sys.path[0], "")
-if sys.path[0] not in sys.path:
-	sys.path.insert(0, sys.path[0])
+if os.path.abspath(os.path.dirname(sys.argv[0])) not in sys.path:
+	sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))
 DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "")
 CONFIG_PATH = os.path.join(DEFAULT_PATH, ".tucan" ,"")
 
