@@ -38,8 +38,6 @@ class Tesseract:
 	def __init__(self, data, filter=None):
 		""""""
 		if "win" in sys.platform:
-			if PATH not in sys.path:
-				sys.path.insert(0, cons.PATH)
 			self.image_name = os.path.join(cons.CONFIG_PATH, "tmp.tif")
 			self.text_name = os.path.join(cons.CONFIG_PATH, "tmp")
 			self.tesseract = os.path.join(cons.PATH, "tesseract", "tesseract.exe")
