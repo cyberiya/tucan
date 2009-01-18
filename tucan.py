@@ -29,6 +29,6 @@ import gobject
 from gui import Gui
 
 if __name__ == "__main__":
-	gtk.gdk.threads_init()
+	gobject.threads_init()
 	g = Gui()
 	gtk.main()
