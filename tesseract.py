@@ -33,28 +33,38 @@ class Tesseract:
 	""""""
 	def __init__(self, data, filter=None):
 		""""""
-		self.image = tempfile.NamedTemporaryFile(suffix=IMAGE_SUFFIX)
-		self.image.close()
-		self.text = tempfile.NamedTemporaryFile(suffix=TEXT_SUFFIX)
-		self.image.close()
+		if "win" in sys.platform:
+			self.image_name = os.path.join(sys.path[0],"tesseract", "tmp.tif")
+			self.text_name = os.path.join(sys.path[0],"tesseract", "tmp")
+			self.tesseract = os.path.join(sys.path[0],"tesseract", "tesseract.exe")
+		else:
+			self.text = tempfile.NamedTemporaryFile(suffix=TEXT_SUFFIX)
+			self.image = tempfile.NamedTemporaryFile(suffix=IMAGE_SUFFIX)
+			self.image_name = self.image.name
+			self.text_name = self.text.name
+			self.tesseract = "tesseract"
 		p = ImageFile.Parser()
 		p.feed(data)
 		if filter:
 			image = filter(p.close())
 		else:
 			image = p.close()
-		image.save(self.image.name)
+		image.save(self.image_name)
 	
 	def get_captcha(self):
 		""""""
 		captcha = ""
 		if "win" in sys.platform:
-			clean = os.system(os.path.join(sys.path[0],"tesseract", "tesseract.exe") + " " + self.text.name.split(TEXT_SUFFIX)[0])
+			if os.system(self.tesseract + " " + self.image_name + " " + self.text_name)== 0:
+				f = file(self.text_name + ".txt", "r")
+				captcha = f.readline().strip()
+				f.close()
+				print captcha
 		else:
-			clean = os.system("tesseract "+ self.image.name + " " + self.text.name.split(TEXT_SUFFIX)[0])
-		if clean == 0:
-			captcha = self.text.file.readline().strip()
+			if os.system(self.tesseract + " " + self.image_name + " " + self.text_name) == 0:
+				captcha = self.text.file.readline().strip()
 			self.text.file.close()
+			self.image.file.close()
 		return captcha
 
 if __name__ == "__main__":
