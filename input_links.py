@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion Crakotak(at)yahoo.es
+## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
 ## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
 ## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
 ##
@@ -244,7 +244,7 @@ class InputLinks(gtk.Dialog):
 					for link in links:
 						if self.cancel_check:
 							self.cancel_check = False
-							wait.destroy()
+							gobject.idle_add(wait.destroy)
 							raise Exception("Check Links cancelled")
 						check, plugin_type = self.check_links(service) 
 						file_name, size, size_unit = check(link)

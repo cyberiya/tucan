@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion Crakotak(at)yahoo.es
+## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
 ## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
 ## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
 ##
@@ -50,7 +50,7 @@ OPTION_SAVE_SESSION = "save_session"
 
 DEFAULTS = {SECTION_MAIN: {OPTION_LANGUAGE: "en", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_UPLOADS: "5", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH}
 	, SECTION_SERVICES: {}
-	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "True", OPTION_SAVE_SESSION: "False", OPTION_ADVANCED_PACKAGES: "False", OPTION_SHOW_UPLOADS: "False"}}
+	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "False", OPTION_SAVE_SESSION: "False", OPTION_ADVANCED_PACKAGES: "False", OPTION_SHOW_UPLOADS: "False"}}
 
 class Config(SafeConfigParser):
 	""""""

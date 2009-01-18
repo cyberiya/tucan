@@ -2,7 +2,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion Crakotak(at)yahoo.es
+## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
 ## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
 ## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
 ##
