@@ -56,10 +56,9 @@ class Tesseract:
 		captcha = ""
 		if "win" in sys.platform:
 			if os.system(self.tesseract + " " + self.image_name + " " + self.text_name)== 0:
-				f = file(self.text_name + ".txt", "r")
+				f = file(self.text_name + TEXT_SUFFIX, "r")
 				captcha = f.readline().strip()
 				f.close()
-				print captcha
 		else:
 			if os.system(self.tesseract + " " + self.image_name + " " + self.text_name) == 0:
 				captcha = self.text.file.readline().strip()
