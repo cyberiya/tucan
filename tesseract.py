@@ -38,9 +38,9 @@ class Tesseract:
 	def __init__(self, data, filter=None):
 		""""""
 		if "win" in sys.platform:
-			self.image_name = os.path.join(cons.PATH, "tmp.tif")
-			self.text_name = os.path.join(cons.PATH, "tmp")
-			self.tesseract = os.path.join(cons.PATH, "tesseract", "tesseract.exe")
+			self.image_name = os.path.join(sys.path[0], "tmp.tif")
+			self.text_name = os.path.join(sys.path[0], "tmp")
+			self.tesseract = os.path.join(sys.path[0], "tesseract", "tesseract.exe")
 		else:
 			self.text = tempfile.NamedTemporaryFile(suffix=TEXT_SUFFIX)
 			self.image = tempfile.NamedTemporaryFile(suffix=IMAGE_SUFFIX)
