@@ -64,9 +64,12 @@ TYPE_PREMIUM = "Premium"
 TYPE_UNSUPPORTED = "unsupported"
 
 #path constants
-PATH = os.path.join(sys.path[0], "")
-if os.path.abspath(os.path.dirname(sys.argv[0])) not in sys.path:
-	sys.path.insert(0, os.path.abspath(os.path.dirname(sys.argv[0])))
+if "win" in sys.platform:
+	PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
+	if PATH not in sys.path:
+		sys.path.insert(0, PATH)
+else:
+	PATH = os.path.join(sys.path[0], "")
 DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "")
 CONFIG_PATH = os.path.join(DEFAULT_PATH, ".tucan" ,"")
 
