@@ -25,6 +25,7 @@ import os
 import tempfile
 
 import ImageFile
+import TiffImagePlugin
 
 IMAGE_SUFFIX = ".tif"
 TEXT_SUFFIX = ".txt"
