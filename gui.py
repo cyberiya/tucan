@@ -289,6 +289,7 @@ class Gui(gtk.Window, ServiceManager):
 		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
 			self.save_session(None)
 		self.hide()
+		self.tray_icon.set_visible(False)
 		self.stop_all()
 		gtk.main_quit()
 	
