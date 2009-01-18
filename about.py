@@ -2,7 +2,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion Crakotak(at)yahoo.es
+## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
 ## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
 ## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
 ##
@@ -28,8 +28,8 @@ import gtk
 import cons
 
 NAME = "Tucan"
-COPYRIGHT = u"© 2008 The Tucan Project"
-AUTHORS = ["Fran Lupion Crakotak(at)yahoo.es", "Paco Salido beakman(at)riseup.net", "JM Cordero betic0(at)gmail.com"]
+COPYRIGHT = u"© 2008-2009 The Tucan Project"
+AUTHORS = ["Fran Lupion crakotaku(at)yahoo.es", "Paco Salido beakman(at)riseup.net", "JM Cordero betic0(at)gmail.com"]
 LICENSE = """	
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by

@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion Crakotak(at)yahoo.es
+## Copyright (C) 2008-2009 Fran Lupion Crakotaku(at)yahoo.es
 ## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
 ## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
 ##
@@ -38,6 +38,8 @@ class Tesseract:
 	def __init__(self, data, filter=None):
 		""""""
 		if "win" in sys.platform:
+			if PATH not in sys.path:
+				sys.path.insert(0, cons.PATH)
 			self.image_name = os.path.join(cons.CONFIG_PATH, "tmp.tif")
 			self.text_name = os.path.join(cons.CONFIG_PATH, "tmp")
 			self.tesseract = os.path.join(cons.PATH, "tesseract", "tesseract.exe")
@@ -45,7 +47,7 @@ class Tesseract:
 			self.text = tempfile.NamedTemporaryFile(suffix=TEXT_SUFFIX)
 			self.image = tempfile.NamedTemporaryFile(suffix=IMAGE_SUFFIX)
 			self.image_name = self.image.name
-			self.text_name = self.text.name.split(TEXT_SUFFIX)[0]
+			self.text_name = self.text.name.rsplit(TEXT_SUFFIX, 1)[0]
 			self.tesseract = "tesseract"
 		p = ImageFile.Parser()
 		p.feed(data)
