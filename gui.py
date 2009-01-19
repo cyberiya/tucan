@@ -152,7 +152,7 @@ class Gui(gtk.Window, ServiceManager):
 
 	def not_implemented(self, widget):
 		""""""
-		w = Message(cons.SEVERITY_WARNING, "Not Implemented!", "The functionality you are trying to use is not implemented yet.")
+		w = Message(self, cons.SEVERITY_WARNING, "Not Implemented!", "The functionality you are trying to use is not implemented yet.")
 	
 	def resize_pane(self, checkbox):
 		""""""

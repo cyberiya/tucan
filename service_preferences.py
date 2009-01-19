@@ -224,11 +224,12 @@ class AccountPreferences(InfoPreferences):
 
 class ServicePreferences(gtk.Dialog):
 	""""""
-	def __init__(self, service, icon, config):
+	def __init__(self, parent, service, icon, config):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon(icon)
 		self.set_title(service)
+		self.set_transient_for(parent)
 		self.set_size_request(600, 400)
 		
 		self.config = config

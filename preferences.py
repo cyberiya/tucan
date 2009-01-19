@@ -276,7 +276,7 @@ class Preferences(gtk.Dialog):
 				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
 			self.treeview.get_model().append((icon, name, enabled, configuration))
 		else:
-			Message(cons.SEVERITY_ERROR, path , _("The choosed directory isn't a service, or it's not configured."))
+			Message(self, cons.SEVERITY_ERROR, path , _("The choosed directory isn't a service, or it's not configured."))
 
 	def choose_service(self, button):
 		""""""
@@ -305,7 +305,7 @@ class Preferences(gtk.Dialog):
 			active = False
 		else:
 			tos = _("Before using this service, you must accept it's terms of service at ") + model.get_value(model.get_iter(path), 1)
-			m = Message(cons.SEVERITY_INFO, _("Terms of service"), tos, True)
+			m = Message(self, cons.SEVERITY_INFO, _("Terms of service"), tos, True)
 			active = m.accepted
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 2, active)
@@ -316,7 +316,7 @@ class Preferences(gtk.Dialog):
 		icon = model.get_value(model.get_iter(path), 0)
 		name = model.get_value(model.get_iter(path), 1)
 		config = model.get_value(model.get_iter(path), 3)
-		ServicePreferences(name, icon, config)
+		ServicePreferences(self, name, icon, config)
 
 	def init_advanced(self):
 		""""""
