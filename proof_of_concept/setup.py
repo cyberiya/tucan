@@ -4,7 +4,7 @@ import py2exe
 setup(
     name = 'Tucan Manager',
     description = 'Download Manager',
-    version = '1.0',
+    version = '0.3',
 
     windows = [
                   {
