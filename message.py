@@ -56,12 +56,13 @@ class Wait(gtk.Window):
 
 class Message(gtk.Dialog):
 	""""""
-	def __init__(self, severity, title, message, accept=False):
+	def __init__(self, parent, severity, title, message, accept=False):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_title(title)
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_resizable(False)
+		self.set_transient_for(parent)
 		self.set_size_request(350, -1)
 		
 		hbox = gtk.HBox()
