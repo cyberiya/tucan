@@ -20,8 +20,9 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import sys
 import os
+import sys
+import subprocess
 import tempfile
 
 import ImageFile
@@ -59,12 +60,12 @@ class Tesseract:
 		""""""
 		captcha = ""
 		if "win" in sys.platform:
-			if os.system(self.tesseract + " " + self.image_name + " " + self.text_name) == 0:
+			if subprocess.call([self.tesseract, self.image_name, self.text_name], creationflags=134217728) == 0:
 				f = file(self.text_name + TEXT_SUFFIX, "r")
 				captcha = f.readline().strip()
 				f.close()
 		else:
-			if os.system(self.tesseract + " " + self.image_name + " " + self.text_name) == 0:
+			if subprocess.call([self.tesseract, self.image_name, self.text_name]) == 0:
 				captcha = self.text.file.readline().strip()
 			self.text.file.close()
 			self.image.file.close()
