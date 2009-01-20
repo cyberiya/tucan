@@ -34,7 +34,7 @@ from service_preferences import ServicePreferences
 from message import Message
 from file_chooser import FileChooser
 
-LANGUAGES = [("English", "en"), ("Spanish", "es")]
+LANGUAGES = [("English", "en"), ("Spanish", "es"), ("Italian", "it")]
 #["English", "French", "German", "Japanese", "Spanish"]
 
 class Preferences(gtk.Dialog):
