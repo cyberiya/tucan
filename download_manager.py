@@ -155,6 +155,9 @@ class DownloadManager:
 							link.plugin.add_wait()
 						self.stop(download.name)
 					elif status == cons.STATUS_ERROR:
+						if "return_slot" in dir(link.plugin):
+							link.plugin.return_slot()
+						link.active = False
 						self.pending_downloads.append(download)
 						self.active_downloads.remove(download)
 					elif status == cons.STATUS_CORRECT:
