@@ -136,6 +136,7 @@ class Gui(gtk.Window, ServiceManager):
 		#trayicon
 		tray_menu = [menu_preferences, menu_about, None, menu_quit]
 		self.tray_icon = TrayIcon(self.show, self.hide, tray_menu)
+		self.connect("hide", self.tray_icon.activate)
 		self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)
 		
 	def delete_key(self, window, event):
