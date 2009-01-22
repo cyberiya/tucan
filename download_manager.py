@@ -116,6 +116,8 @@ class DownloadManager:
 						self.active_downloads.append(download)
 						self.pending_downloads.remove(download)
 						return True
+					elif download.status == cons.STATUS_ERROR:
+						print cons.STATUS_ERROR
 					else:
 						download.status = cons.STATUS_PEND
 					
