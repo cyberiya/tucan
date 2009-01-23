@@ -57,8 +57,7 @@ class DownloadPlugin(object):
 	
 	def get_status(self, file_name):
 		"""return (status, progress, actual_size, unit, speed, time)"""
-		result = None, None, None, None, None, None
-		th = None
+		result = cons.STATUS_ERROR, None, None, None, None, None
 		if file_name in self.active_downloads:
 			th = self.active_downloads[file_name]
 			if self.active_downloads[file_name].stop_flag:
