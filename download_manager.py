@@ -117,7 +117,7 @@ class DownloadManager:
 						self.pending_downloads.remove(download)
 						return True
 					elif download.status == cons.STATUS_ERROR:
-						print cons.STATUS_ERROR
+						pass
 					else:
 						download.status = cons.STATUS_PEND
 					
