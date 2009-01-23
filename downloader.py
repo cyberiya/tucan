@@ -87,14 +87,14 @@ class Downloader(threading.Thread):
 						self.status = cons.STATUS_CORRECT
 					else:
 						self.status = cons.STATUS_ERROR
-			except (TypeError, socket.timeout, urllib2.URLError), e:
-				print self.file, e
-				self.stop_flag = True
-				self.status = cons.STATUS_ERROR
 			except urllib2.HTTPError, e:
 				print "[%4d-%02d-%02d %02d:%02d:%02d]" % time.localtime(time.time())[:6], e
 				self.stop_flag = True
 				self.status = cons.STATUS_PEND
+			except (TypeError, socket.timeout, urllib2.URLError), e:
+				print self.file, e
+				self.stop_flag = True
+				self.status = cons.STATUS_ERROR
 
 	def get_speed(self):
 		"""return int speed KB/s"""

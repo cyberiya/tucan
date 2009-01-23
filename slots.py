@@ -43,7 +43,6 @@ class Slots:
 		""""""
 		print "a esperar 5 minutos"
 		self.end_wait = time.time() + WAIT_LIMIT
-		#self.return_slot()
 			
 	def return_slot(self):
 		""""""
