@@ -98,7 +98,7 @@ class DownloadManager:
 
 	def add(self, path, name, links, total_size, size_unit):
 		""""""
-		if ((name not in [tmp.name for tmp in self.active_downloads]) and (not name in [tmp.name for tmp in self.pending_downloads])):
+		if name not in [tmp.name for tmp in (self.active_downloads + self.pending_downloads)]:
 			self.pending_downloads.append(DownloadItem(path, name, links, total_size, size_unit))
 			threading.Timer(1, self.scheduler).start()
 			self.scheduler
@@ -109,7 +109,6 @@ class DownloadManager:
 		for download in self.pending_downloads:
 			if name == download.name:
 				for link in download.links:
-					print name
 					if link.plugin.add(download.path, link.url, download.name):
 						link.active = True
 						self.active_downloads.append(download)
