@@ -35,13 +35,15 @@ class FileChooser(gtk.FileChooserDialog):
 		gtk.FileChooserDialog.__init__(self, _("Select a Folder"), parent, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
 		if default_path:
 			self.set_filename(default_path)
-		
-		self.action_area.set_layout(gtk.BUTTONBOX_EDGE)
+
 		hidden_button = gtk.CheckButton(_("Show hidden files."))
 		hidden_button.set_active(self.get_show_hidden())
-		self.action_area.pack_start(hidden_button)
+		self.vbox.pack_start(hidden_button, False, False, 5)
 		hidden_button.connect("clicked", self.show_hidden)
 		
+		button = gtk.Button(None, gtk.STOCK_CANCEL)
+		button.connect("clicked", self.close)
+		self.action_area.pack_start(button)
 		button = gtk.Button(None, gtk.STOCK_OK)
 		button.connect("clicked", self.on_choose_folder, func)
 		self.action_area.pack_start(button)
@@ -63,4 +65,5 @@ class FileChooser(gtk.FileChooserDialog):
 		
 	def close(self, widget=None, response=None):
 		""""""
+		self.set_show_hidden(False)
 		self.destroy()
