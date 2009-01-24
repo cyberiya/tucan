@@ -26,7 +26,7 @@ import cookielib
 
 class PremiumCookie:
 	""""""
-	def get_cookie(self, user, password):
+	def get_cookie(self, user, password, url=None):
 		""""""
 		cookie = cookielib.CookieJar()
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))

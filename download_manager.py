@@ -114,10 +114,10 @@ class DownloadManager:
 						self.active_downloads.append(download)
 						self.pending_downloads.remove(download)
 						return True
-					elif download.status == cons.STATUS_ERROR:
-						pass
 					else:
-						download.status = cons.STATUS_PEND
+						link.active = False
+						if not download.status == cons.STATUS_ERROR:
+							download.status = cons.STATUS_PEND
 					
 	def stop(self, name):
 		""""""

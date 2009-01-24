@@ -136,7 +136,7 @@ class AccountPreferences(InfoPreferences):
 		
 		accounts = config.get_accounts(section)
 		for name in accounts.keys():
-			active, password, enabled = accounts[name]
+			password, enabled, active = accounts[name]
 			if active:
 				icon = self.active_service_icon
 			else:
@@ -214,7 +214,7 @@ class AccountPreferences(InfoPreferences):
 		iter = model.get_iter_root()
 		accounts = {}
 		while iter:
-			accounts[model.get_value(iter, 1)] = (model.get_value(iter, 2), model.get_value(iter, 4))
+			accounts[model.get_value(iter, 1)] = (model.get_value(iter, 2), model.get_value(iter, 3), model.get_value(iter, 4))
 			iter = model.iter_next(iter)
 		return accounts
 
