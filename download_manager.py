@@ -175,8 +175,9 @@ class DownloadManager:
 				for download in self.pending_downloads:
 					if len(self.active_downloads) < self.max_downloads:
 						if download.status not in [cons.STATUS_STOP]:
-							print self.start(download.name)
-							break
+							if self.start(download.name):
+								print True
+								break
 				if self.timer:
 					self.timer.cancel()
 				self.timer = threading.Timer(5, self.scheduler)
