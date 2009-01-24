@@ -24,13 +24,15 @@ from accounts import Accounts
 from service_config import SECTION_PREMIUM_DOWNLOAD
 from download_plugin import DownloadPlugin
 
+from premium_cookie import PremiumCookie
+
 import cons
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
 	def __init__(self, config):
 		""""""
-		Accounts.__init__(self, config, SECTION_PREMIUM_DOWNLOAD)
+		Accounts.__init__(self, config, SECTION_PREMIUM_DOWNLOAD, PremiumCookie())
 		DownloadPlugin.__init__(self)
 		
 	def add(self, path, link, file_name):

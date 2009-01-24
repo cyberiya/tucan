@@ -91,7 +91,7 @@ class AccountPreferences(InfoPreferences):
 		scroll.set_size_request(-1, 110)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		frame.add(scroll)
-		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool, bool, gobject.TYPE_PYOBJECT)
+		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool, bool)
 		self.treeview = gtk.TreeView(store)
 		scroll.add(self.treeview)
 		
@@ -136,14 +136,12 @@ class AccountPreferences(InfoPreferences):
 		
 		accounts = config.get_accounts(section)
 		for name in accounts.keys():
-			cookie, password, enabled = accounts[name]
-			if cookie:
+			active, password, enabled = accounts[name]
+			if active:
 				icon = self.active_service_icon
-				active = True
 			else:
 				icon = self.unactive_service_icon
-				active = False
-			store.append([icon, name, password, enabled, active, cookie])
+			store.append([icon, name, password, enabled, active])
 
 		frame = gtk.Frame()
 		frame.set_border_width(10)
@@ -168,7 +166,7 @@ class AccountPreferences(InfoPreferences):
 	def add(self, button):
 		""""""
 		model = self.treeview.get_model()
-		iter = model.append([self.unactive_service_icon, "None", "None", False, False, None])
+		iter = model.append([self.unactive_service_icon, "None", "None", False, False])
 		self.treeview.set_cursor(model.get_path(iter), self.treeview.get_column(1), True)
 
 	def remove(self, button):
@@ -186,7 +184,6 @@ class AccountPreferences(InfoPreferences):
 		if iter:
 			cookie = self.get_cookie(model.get_value(iter, 1), model.get_value(iter, 2))
 			if cookie:
-				cookie = cookie._cookies
 				icon = self.active_service_icon
 				active = True
 			else:
@@ -195,7 +192,6 @@ class AccountPreferences(InfoPreferences):
 			model.set_value(iter, 0, icon)
 			model.set_value(iter, 3, active)
 			model.set_value(iter, 4, active)
-			model.set_value(iter, 5, cookie)
 
 	def toggled(self, button, path):
 		""""""
@@ -218,7 +214,7 @@ class AccountPreferences(InfoPreferences):
 		iter = model.get_iter_root()
 		accounts = {}
 		while iter:
-			accounts[model.get_value(iter, 1)] = (model.get_value(iter, 5), model.get_value(iter, 2), model.get_value(iter, 3))
+			accounts[model.get_value(iter, 1)] = (model.get_value(iter, 2), model.get_value(iter, 4))
 			iter = model.iter_next(iter)
 		return accounts
 

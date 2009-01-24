@@ -20,24 +20,32 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import cookielib
-
 class Accounts:
 	""""""
-	def __init__(self, config, section):
+	def __init__(self, config, section, cookie):
 		""""""
 		self.config = config
-		self.section = section
 		self.active = False
-		for account in self.config.get_accounts(self.section).values():
-			if account[2]:
+		self.section = section
+		self.cookie = cookie
+		self.accounts = self.config.get_accounts(self.section)
+		for account in self.accounts.values():
+			if account[1]:
 				self.active = True
 		
 	def get_cookie(self):
 		""""""
-		for account in self.config.get_accounts(self.section).values():
-			if account[2]:
-				cookie = cookielib.CookieJar()
-				cookie._cookies = account[0]
-				return cookie
-			
+		result = None
+		for user, data in self.accounts.items():
+			if data[1]:
+				cookie = self.cookie.get_cookie(user, data[0])
+				if cookie:
+					result = cookie
+				else:
+					self.accounts[user] = (data[0], False)
+					self.config.set_accounts(self.section, self.accounts)
+					print self.accounts
+		if result:
+			return result
+		else:
+			self.active = False

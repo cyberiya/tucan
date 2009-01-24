@@ -29,7 +29,7 @@ class PremiumCookie:
 	def get_cookie(self, user, password):
 		""""""
 		cookie = cookielib.CookieJar()
-		urllib2.install_opener(urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)))
-		urllib2.urlopen(urllib2.Request("http://www.megaupload.com/premium/"), urllib.urlencode({"login": user, "password": password}))
+		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+		opener.open(urllib2.Request("http://www.megaupload.com/premium/"), urllib.urlencode({"login": user, "password": password}))
 		if len(cookie) > 0:
 			return cookie
