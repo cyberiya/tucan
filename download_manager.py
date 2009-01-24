@@ -20,11 +20,10 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import time
 import threading
 
 import cons
-
-MAX_DOWNLOADS = 3
 
 class Link:
 	""""""
@@ -173,14 +172,15 @@ class DownloadManager:
 			print "scheduling"
 			self.scheduling = True
 			if len(self.pending_downloads) > 0:
-				if len(self.active_downloads) < self.max_downloads:
-					for download in self.pending_downloads:
+				for download in self.pending_downloads:
+					if len(self.active_downloads) < self.max_downloads:
 						if download.status not in [cons.STATUS_STOP]:
 							print self.start(download.name)
-			if self.timer:
-				self.timer.cancel()
-			self.timer = threading.Timer(15, self.scheduler)
-			self.timer.start()
+							break
+				if self.timer:
+					self.timer.cancel()
+				self.timer = threading.Timer(5, self.scheduler)
+				self.timer.start()
 			self.scheduling = False
 	
 	def quit(self):
