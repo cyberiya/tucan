@@ -63,6 +63,7 @@ class AdvancedPackages(gtk.Dialog):
 		tree_path.pack_start(path_cell, True)
 		tree_path.add_attribute(path_cell, 'text', 1)
 		self.treeview.append_column(tree_path)
+		self.treeview.connect("row-activated", self.choose)
 		
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
@@ -112,7 +113,11 @@ class AdvancedPackages(gtk.Dialog):
 			self.packages.append((package[1], package[2], package[3]))
 		self.close()
 	
-	def choose_path(self, button):
+	def choose(self, treeview, path, view_column):
+		""""""
+		self.choose_path()
+		
+	def choose_path(self, button=None):
 		""""""
 		model, iter = self.treeview.get_selection().get_selected()
 		if iter:
