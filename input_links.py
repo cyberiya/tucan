@@ -213,7 +213,6 @@ class InputLinks(gtk.Dialog):
 		
 	def check_all(self, wait):
 		""""""
-
 		store = self.treeview.get_model()
 		store.clear()
 		buffer = self.textview.get_buffer()
@@ -225,49 +224,41 @@ class InputLinks(gtk.Dialog):
 		active_icon = self.treeview.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
 		unchecked_icon = self.treeview.render_icon(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_MENU)
 		unactive_icon = self.treeview.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
-
-		
-		for service, links in self.sort_links(link_list).items():
-			if links != []:
-				if service == cons.TYPE_UNSUPPORTED:
-			
-					service_iter = store.append(None, [unsupported_icon, service, service, 0, None, None, False, False])
-			
-					for link in links:
-				
-						store.append(service_iter, [unchecked_icon, link, link, 0, None, None, False, False])
-				
-				else:
-			
-					service_iter = store.append(None, [service_icon, service, service, 0, None, None, False, False])
-			
-					for link in links:
-						if self.cancel_check:
-							self.cancel_check = False
-							gobject.idle_add(wait.destroy)
-							raise Exception("Check Links cancelled")
-						check, plugin_type = self.check_links(service) 
-						file_name, size, size_unit = check(link)
-						if file_name:
-							if size > 0:
-								icon = active_icon
-								marked = True
+		try:
+			for service, links in self.sort_links(link_list).items():
+				if links != []:
+					if service == cons.TYPE_UNSUPPORTED:
+						service_iter = store.append(None, [unsupported_icon, service, service, 0, None, None, False, False])
+						for link in links:
+							store.append(service_iter, [unchecked_icon, link, link, 0, None, None, False, False])
+					else:
+						service_iter = store.append(None, [service_icon, service, service, 0, None, None, False, False])
+						for link in links:
+							if self.cancel_check:
+								self.cancel_check = False
+								raise Exception("Check Links cancelled")
+							check, plugin_type = self.check_links(service) 
+							file_name, size, size_unit = check(link)
+							if file_name:
+								if size > 0:
+									icon = active_icon
+									marked = True
+								else:
+									icon = unchecked_icon
+									marked = False
 							else:
-								icon = unchecked_icon
+								icon = unactive_icon
 								marked = False
-						else:
-							icon = unactive_icon
-							marked = False
-							file_name = link
-						print file_name, size, size_unit
-				
-						store.append(service_iter, [icon, link, file_name, size, size_unit, plugin_type, marked, marked])
-						self.treeview.expand_row(store.get_path(service_iter), True)
-				
-		buffer.set_text("")
-		gobject.idle_add(wait.destroy)
+								file_name = link
+							print file_name, size, size_unit
+							store.append(service_iter, [icon, link, file_name, size, size_unit, plugin_type, marked, marked])
+							self.treeview.expand_row(store.get_path(service_iter), True)
+		except:
+			gobject.idle_add(wait.destroy)
+		else:
+			buffer.set_text("")
+			gobject.idle_add(wait.destroy)
 
-	
 	def cancel(self, window, event):
 		"""Esc key"""
 		if event.keyval == 65307:
