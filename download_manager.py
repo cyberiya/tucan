@@ -158,6 +158,7 @@ class DownloadManager:
 						link.active = False
 						self.pending_downloads.append(download)
 						self.active_downloads.remove(download)
+						self.scheduler()
 					elif status == cons.STATUS_CORRECT:
 						if "return_slot" in dir(link.plugin):
 							link.plugin.return_slot()
