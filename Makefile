@@ -34,6 +34,7 @@ update:
 	
 install:
 	cp -R $(PWD) $(LIBDIR)
+	chmod +x $(LIBDIR)$(SRC)
 	ln -s $(LIBDIR)$(SRC) $(BINDIR)$(NAME)
 	mkdir -p $(MANDIR)
 	cp $(LIBDIR)$(MAN) $(MANDIR)
