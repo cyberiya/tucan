@@ -27,12 +27,15 @@ MAN=tucan.1.gz
 SRC=tucan.py
 NAME=tucan
 
-.PHONY : install uninstall
+.PHONY : update install uninstall
 
+update:
+	svn update
+	
 install:
 	cp -R $(PWD) $(LIBDIR)
 	ln -s $(LIBDIR)$(SRC) $(BINDIR)$(NAME)
-	cp $(MAN) $(MANDIR)
+	cp $(LIBDIR)$(MAN) $(MANDIR)
 	chmod 644 $(MANDIR)$(MAN)
 	
 uninstall:
