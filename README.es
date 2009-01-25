@@ -1,6 +1,6 @@
-=======================================
- Tucan
 ===================
+ Descripción
+=========
  
  - Tucan es una aplicación libre y de código abierto diseñada para la
    gestión automática de descargas y subidas en sitios de hosting como:
@@ -33,7 +33,7 @@
  - http://rapidshare.com/
     - Descargas:
        - Acceso Anónimo: Disponible = Sí (captcha = No)
-       - Acceso Premium: Disponible = Todavía no
+       - Acceso Premium: Disponible = Sí
  
     - Subidas: Disponible = Todavía no
  
@@ -41,7 +41,7 @@
  - http://megaupload.com/
     - Desacargas:
        - Acceso Anónimo: Disponible = Sí (captcha = Sí)
-       - Acceso Premium: Disponible = Todavía no
+       - Acceso Premium: Disponible = Sí
  
     - Subidas: Disponible = Todavía no
  
