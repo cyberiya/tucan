@@ -27,11 +27,13 @@ import cons
 
 class Link:
 	""""""
-	def __init__(self, url, plugin):
+	def __init__(self, url, plugin, type, service):
 		""""""
 		self.active = False
 		self.url = url
 		self.plugin = plugin
+		self.plugin_type = type
+		self.service = service
 
 class DownloadItem:
 	""""""
@@ -41,8 +43,8 @@ class DownloadItem:
 		self.name = name
 		self.status = cons.STATUS_PEND
 		self.links = []
-		for url, plugin in links:
-			self.links.append(Link(url, plugin))
+		for url, plugin, type, service in links:
+			self.links.append(Link(url, plugin, type, service))
 		self.progress = 0
 		self.total_size = total_size
 		self.actual_size = 0
@@ -61,8 +63,9 @@ class DownloadItem:
 
 class DownloadManager:
 	""""""
-	def __init__(self, max):
+	def __init__(self, get_plugin, max):
 		""""""
+		self.get_plugin = get_plugin
 		self.max_downloads = max
 		self.pending_downloads = []
 		self.active_downloads = []
@@ -109,6 +112,7 @@ class DownloadManager:
 		for download in self.pending_downloads:
 			if name == download.name:
 				for link in download.links:
+					link.plugin, link.type = self.get_plugin(link.service)
 					if link.plugin.add(download.path, link.url, download.name):
 						link.active = True
 						self.active_downloads.append(download)

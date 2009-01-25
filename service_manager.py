@@ -47,7 +47,7 @@ class ServiceManager:
 	""""""
 	def __init__(self, configuration):
 		""""""
-		self.download_manager = DownloadManager(configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOADS))
+		self.download_manager = DownloadManager(self.get_download_plugin, configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOADS))
 		self.services = []
 		if cons.PLUGIN_PATH not in sys.path:
 			sys.path.append(cons.PLUGIN_PATH)
