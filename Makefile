@@ -20,8 +20,6 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-OWNER=bin
-GROUP=bin
 MANDIR=/usr/local/share/man/man1/
 LIBDIR=/usr/local/lib/tucan/
 BINDIR=/usr/local/bin/
@@ -32,11 +30,12 @@ NAME=tucan
 .PHONY : install uninstall
 
 install:
-	cp $(MAN) $(MANDIR)
 	cp -R $(PWD) $(LIBDIR)
-	-ln -s $(LIBDIR)$(SRC) $(BINDIR)$(NAME)
+	ln -s $(LIBDIR)$(SRC) $(BINDIR)$(NAME)
+	cp $(MAN) $(MANDIR)
+	chmod 644 $(MANDIR)$(MAN)
 	
 uninstall:
 	rm -r $(LIBDIR)
-	rm $(MANDIR)$(MAN)
 	rm $(BINDIR)$(NAME)
+	rm $(MANDIR)$(MAN)
