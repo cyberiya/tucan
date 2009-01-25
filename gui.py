@@ -218,8 +218,8 @@ class Gui(gtk.Window, ServiceManager):
 			for download in package_downloads:
 				tmp = []
 				for service in download[2]:
-					plugin, plugin_name = self.get_download_plugin(service)
-					tmp.append((download[0][download[2].index(service)], plugin))
+					plugin, plugin_type = self.get_download_plugin(service)
+					tmp.append((download[0][download[2].index(service)], plugin, plugin_type, service))
 				self.download_manager.add(package_path, download[1], tmp, download[3], download[4])
 			
 	def start(self, button):
