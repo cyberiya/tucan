@@ -1,3 +1,15 @@
+Tucan 0.3.2 Alpha 2009-01-26.
+------------------------------
+- Slots bug solved.
+- Closing bug solved.
+- Timeout bug solved.
+- Megaupload Premium Download.
+- Rapidshare Premium Download.
+- Italian Localization.
+- Microsoft Windows support.
+- Makefile.
+- manpage.
+
 Tucan 0.3.1 Alpha 2009-01-12.
 ------------------------------
 - FileChooser dialog.
@@ -6,7 +18,6 @@ Tucan 0.3.1 Alpha 2009-01-12.
 - Internationalization support.
 - Spanish Localization.
 - English Localization.
-- Japanese Localization.
 
 Tucan 0.3 Alpha 2009-01-03.
 ------------------------------
