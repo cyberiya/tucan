@@ -19,29 +19,38 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
-
-MANDIR=/usr/local/share/man/man1/
-LIBDIR=/usr/local/lib/tucan/
-BINDIR=/usr/local/bin/
-MAN=tucan.1.gz
-SRC=tucan.py
+ 
 NAME=tucan
-
+EXEC=tucan.py
+MANPAGE=tucan.1.gz
+DOCFILES=CHANGELOG LICENSE README README.es TODO
+ 
+PREFIX=/usr/local
+BINDIR=$(PREFIX)/bin/
+LIBDIR=$(PREFIX)/lib/tucan/
+MANDIR=$(PREFIX)/share/man/man1/
+DOCDIR=$(PREFIX)/share/tucan/
+ 
 .PHONY : update install uninstall
-
+ 
 update:
 	svn update
-	
+ 
 install:
+	mkdir -p $(BINDIR)
 	mkdir -p $(LIBDIR)
 	cp -R $(PWD)/* $(LIBDIR)
-	chmod 755 $(LIBDIR)$(SRC)
-	ln -s $(LIBDIR)$(SRC) $(BINDIR)$(NAME)
+	chmod 755 $(LIBDIR)$(EXEC)
+	ln -s $(LIBDIR)$(EXEC) $(BINDIR)$(NAME)
+ 
 	mkdir -p $(MANDIR)
-	cp $(LIBDIR)$(MAN) $(MANDIR)
-	chmod 644 $(MANDIR)$(MAN)
-	
+	install -m 644 $(MANPAGE) $(MANDIR)
+ 
+	mkdir -p $(DOCDIR)
+	install -m 644 $(DOCFILES) $(DOCDIR)
+ 
 uninstall:
+	rm -r $(DOCDIR)
+	rm $(MANDIR)$(MANPAGE)
 	rm -r $(LIBDIR)
 	rm $(BINDIR)$(NAME)
-	rm $(MANDIR)$(MAN)
