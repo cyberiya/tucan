@@ -55,23 +55,6 @@
  
  
 ===================
- Tips & Tricks
-=========
- 
- - Antes de ejecutar una nueva versión, se recomienda eliminar el directorio
-   ~/.tucan/ si existe.
- - La primera vez que se ejecuta Tucan (si no existe el directorio ~/.tucan/)
-   aparece la ventana de Preferencias.
- - Antes de usar un servicio, éste debe estar activado en la pestaña
-   "Configuración de Servicio" de la ventana Preferencias.
- 
- 
- - Acceso anónimo de http://gigasize.com/:
-   - gigasize.com no permite comprobar links si ya hay un link descargándose de
-     este servicio.
- 
- 
-===================
  Dependencias
 =========
  
@@ -127,19 +110,42 @@
  
  
 ===================
- Instalación
+ Instalación y Uso
 =========
  
- # TODO
+ - Desempaquetar el tarball:
+ 
+   $ tar zxvf tucan-<version>.tar.gz
+   $ cd tucan-<version>/
+ 
+ - Instalar Tucan escribiendo (se necesitan privilegios de root):
+ 
+   # make install
+ 
+ - Desinstalar Tucan escribiendo (se necesitan privilegios de root):
+ 
+   # make uninstall
+ 
+ 
+ - Ejecutar Tucan escribiendo en un terminal:
+ 
+   $ tucan
  
  
 ===================
- Uso
+ Tips & Tricks
 =========
  
- - De momento... descomprimir y ejecutar:
- 
-   $ python tucan.py
+ - Antes de ejecutar una nueva versión, se recomienda eliminar el directorio
+   ~/.tucan/ si existe.
+ - La primera vez que se ejecuta Tucan (si no existe el directorio ~/.tucan/)
+   aparece la ventana de Preferencias.
+ - Antes de usar un servicio, éste debe estar activado en la pestaña
+   "Configuración de Servicio" de la ventana Preferencias.
+  
+ - Acceso anónimo de http://gigasize.com/:
+   - gigasize.com no permite comprobar links si ya hay un link descargándose de
+     este servicio.
  
  
 ===================

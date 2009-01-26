@@ -55,23 +55,6 @@
  
  
 ===================
- Tips & Tricks
-=========
- 
- - Before running a new version, it's recommended to remove the directory
-   ~/.tucan/ if exists.
- - The first time you run Tucan (without directory ~/.tucan/), the Preferences
-   window appears.
- - Before running a service, it must be enabled in "Service Configuration" in
-   the Preferences window.
- 
- 
- - Anonymous access to http://gigasize.com/:
-   - gigasize.com disallows checking links if an active link is already downloading
-     from this service.
- 
- 
-===================
  Dependencies
 =========
  
@@ -127,19 +110,42 @@
  
  
 ===================
- Installation
+ Installation & Usage
 =========
  
- # TODO
+ - Unpack the tarball:
+ 
+   $ tar zxvf tucan-<version>.tar.gz
+   $ cd tucan-<version>/
+ 
+ - Install Tucan typing (needs root privileges):
+ 
+   # make install
+ 
+ - Uninstall Tucan typing (needs root privileges):
+ 
+   # make uninstall
+ 
+ 
+ - Run Tucan typing in a terminal:
+ 
+   $ tucan
  
  
 ===================
- Usage
+ Tips & Tricks
 =========
  
- - At this time... unpack and type:
- 
-   $ python tucan.py
+ - Before running a new version, it's recommended to remove the directory
+   ~/.tucan/ if exists.
+ - The first time you run Tucan (without directory ~/.tucan/), the Preferences
+   window appears.
+ - Before running a service, it must be enabled in "Service Configuration" in
+   the Preferences window.
+
+ - Anonymous access to http://gigasize.com/:
+   - gigasize.com disallows checking links if an active link is already downloading
+     from this service.
  
  
 ===================
