@@ -36,4 +36,4 @@ class PremiumCookie:
 
 if __name__ == "__main__":
 	c = PremiumCookie()
-	print get_cookie("","")
+	print c.get_cookie("","")
