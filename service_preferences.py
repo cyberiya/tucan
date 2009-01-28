@@ -91,7 +91,7 @@ class AccountPreferences(InfoPreferences):
 		scroll.set_size_request(-1, 110)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		frame.add(scroll)
-		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool, bool)
+		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool, bool, str)
 		self.treeview = gtk.TreeView(store)
 		scroll.add(self.treeview)
 		
@@ -119,8 +119,9 @@ class AccountPreferences(InfoPreferences):
 		pass_cell.set_property("width", 120)
 		pass_cell.set_property("editable", True)
 		pass_cell.connect("edited", self.change, 2)
+		pass_cell.connect("editing-started", self.show_password)
 		tree_pass.pack_start(pass_cell, True)
-		tree_pass.add_attribute(pass_cell, 'text', 2)
+		tree_pass.add_attribute(pass_cell, 'text', 5)
 		self.treeview.append_column(tree_pass)
 
 		tree_enable = gtk.TreeViewColumn('Enable')
@@ -141,7 +142,7 @@ class AccountPreferences(InfoPreferences):
 				icon = self.active_service_icon
 			else:
 				icon = self.unactive_service_icon
-			store.append([icon, name, password, enabled, active])
+			store.append([icon, name, password, enabled, active, "".join(["*" for i in range(len(password))])])
 
 		frame = gtk.Frame()
 		frame.set_border_width(10)
@@ -162,11 +163,23 @@ class AccountPreferences(InfoPreferences):
 		button = gtk.Button(None, gtk.STOCK_CONNECT)
 		button.connect("clicked", self.check)
 		bbox.pack_start(button)
+
+	def show_password(self, cellrenderertext, editable, path):
+		""""""
+		model = self.treeview.get_model()
+		editable.props.text = model.get_value(model.get_iter(path), 2)
+
+	def change(self, cellrenderertext, path, new_text, column):
+		""""""
+		model = self.treeview.get_model()
+		model.set_value(model.get_iter(path), column, new_text)
+		if column == 2:
+			model.set_value(model.get_iter(path), 5, "".join(["*" for i in range(len(new_text))]))		
 		
 	def add(self, button):
 		""""""
 		model = self.treeview.get_model()
-		iter = model.append([self.unactive_service_icon, "None", "None", False, False])
+		iter = model.append([self.unactive_service_icon, "", "", False, False, ""])
 		self.treeview.set_cursor(model.get_path(iter), self.treeview.get_column(1), True)
 
 	def remove(self, button):
@@ -203,11 +216,6 @@ class AccountPreferences(InfoPreferences):
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 3, active)
 
-	def change(self, cellrenderertext, path, new_text, column):
-		""""""
-		model = self.treeview.get_model()
-		model.set_value(model.get_iter(path), column, new_text)
-		
 	def get_accounts(self):
 		""""""
 		model = self.treeview.get_model()
