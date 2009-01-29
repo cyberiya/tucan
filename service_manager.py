@@ -20,7 +20,6 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import urlparse
 import re
 import sys
 
@@ -132,7 +131,7 @@ class ServiceManager:
 		for link in links:
 			found = False
 			print link
-			if urlparse.urlparse(link).scheme == "http":
+			if "http" in link:
 				link = "http" + link.split("http").pop()
 				for service in self.services:
 					if link.find(service.name) > 0:
