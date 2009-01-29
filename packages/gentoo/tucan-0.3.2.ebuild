@@ -1,4 +1,3 @@
-# paste /usr/local/portage/www-apps/tucan/tucan-0.3.2.ebuild
 # Copyright 1999-2009 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
