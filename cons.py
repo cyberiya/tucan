@@ -83,7 +83,7 @@ PATH_LOCALES = os.path.join(PATH, "i18n")
 
 #media constants
 PATH_MEDIA = os.path.join(PATH, "media", "")
-ICON_TUCAN = PATH_MEDIA + "icon.svg"
+ICON_TUCAN = PATH_MEDIA + "tucan.svg"
 ICON_DOWNLOAD = PATH_MEDIA + "document-save.svg"
 ICON_UPLOAD = PATH_MEDIA + "system-software-update.svg"
 ICON_CLEAR = PATH_MEDIA + "edit-delete.svg"
