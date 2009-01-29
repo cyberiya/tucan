@@ -23,12 +23,15 @@
 NAME=tucan
 EXEC=tucan.py
 MANPAGE=tucan.1.gz
+ICON=tucan.svg
 DOCFILES=CHANGELOG LICENSE README README.es TODO
  
 PREFIX=/usr/local
 BINDIR=$(PREFIX)/bin/
 LIBDIR=$(PREFIX)/lib/tucan/
 MANDIR=$(PREFIX)/share/man/man1/
+MEDIADIR=media/
+ICONDIR=/usr/share/pixmaps/
 DOCDIR=$(PREFIX)/share/tucan/
  
 .PHONY : update install uninstall
@@ -48,9 +51,13 @@ install:
  
 	mkdir -p $(DOCDIR)
 	install -m 644 $(DOCFILES) $(DOCDIR)
+
+	mkdir -p $(ICONDIR)
+	install -m 644 $(MEDIADIR)$(ICON) $(ICONDIR)
  
 uninstall:
 	rm -r $(DOCDIR)
 	rm $(MANDIR)$(MANPAGE)
 	rm -r $(LIBDIR)
 	rm $(BINDIR)$(NAME)
+	rm $(ICONDIR)$(ICON)
