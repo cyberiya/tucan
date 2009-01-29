@@ -1,0 +1,37 @@
+# Contributor: Raul Pons Lopez <nev3rkill {at} gmail {dot} com>
+
+pkgname=tucan
+pkgver=0.3.2
+pkgrel=1
+pkgdesc="Download and upload manager for hosting sites."
+arch=('i686' 'x86_64')
+url="http://cusl3-tucan.forja.rediris.es/"
+license=('GPLv2')
+groups=()
+depends=('python' 'pygtk' 'pil' 'tesseract' 'librsvg')
+makedepends=()
+optdepends=()
+conflicts=()
+backup=()
+install=
+source=(http://forja.rediris.es/frs/download.php/1079/$pkgname-$pkgver.tar.gz \
+tucan.desktop)
+md5sums=('cedb921d21ffe3076a47b5e4b9b50d3c'
+         'd43ba6d1bb661a4b1b7f3b2d68941d52')
+ 
+build() {
+  cd $srcdir/$pkgname-$pkgver
+  mkdir -p $pkgdir/usr/share/tucan 
+  cp -r $srcdir/$pkgname-$pkgver/* $pkgdir/usr/share/tucan
+  
+  mkdir -p $pkgdir/usr/share/pixmaps
+  ln -s /usr/share/tucan/media/icon.svg $pkgdir/usr/share/pixmaps/tucan.svg
+
+  mkdir $pkgdir/usr/share/applications
+  mv $startdir/tucan.desktop $pkgdir/usr/share/applications/tucan.desktop
+
+  chmod 755 $pkgdir/usr/share/tucan/tucan.py
+  mkdir -p $pkgdir/usr/bin
+  ln -s /usr/share/tucan/tucan.py $pkgdir/usr/bin/tucan 
+}
+
