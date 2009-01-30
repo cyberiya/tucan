@@ -17,7 +17,7 @@ install=
 source=(http://forja.rediris.es/frs/download.php/1079/$pkgname-$pkgver.tar.gz \
 tucan.desktop)
 md5sums=('cedb921d21ffe3076a47b5e4b9b50d3c'
-         'd43ba6d1bb661a4b1b7f3b2d68941d52')
+         'a769d35c966e5a9d794b2d17ef640c3a')
  
 build() {
   cd $srcdir/$pkgname-$pkgver
