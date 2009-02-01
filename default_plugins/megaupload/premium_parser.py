@@ -20,35 +20,39 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import math
 import urllib2
 
-from accounts import Accounts
-from service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
-from download_plugin import DownloadPlugin
-
-from premium_cookie import PremiumCookie
-from premium_parser import PremiumParser
-
-class PremiumDownload(DownloadPlugin, Accounts):
-	""""""
-	def __init__(self, config):
-		""""""
-		Accounts.__init__(self, config, SECTION_PREMIUM_DOWNLOAD, PremiumCookie())
-		DownloadPlugin.__init__(self)
+from HTMLParser import HTMLParser
 		
-	def add(self, path, link, file_name):
+class PremiumParser(HTMLParser):
+	""""""
+	def __init__(self, url, cookie):
 		""""""
-		cookie = self.get_cookie()
-		if cookie:
-			parser = PremiumParser(link, cookie)
-			link = parser.get_url()
-			if link:
-				return self.start(path, link, file_name, None, cookie)
+		HTMLParser.__init__(self)
+		self.tmp_url = None
+		self.url_pos = None
+		self.data = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)).open(urllib2.Request(url)).read()
+		self.feed(self.data)
+		self.close()
 
-	def delete(self, file_name):
+	def handle_starttag(self, tag, attrs):
 		""""""
-		print self.stop(file_name)
+		if tag == "a":
+			if ('class', 'downloadhtml') in attrs:
+				if not self.url_pos:
+					self.url_pos = self.getpos()
+				else:
+					self.tmp_url = attrs[0][1]
+		
+	def get_url(self):
+		""""""
+		vars = {}
+		data = self.data.split("\n")
+		tmp = data[self.url_pos[0]].split(" ")
+		vars[tmp[1]] = chr(int(tmp[3].split("-")[1].split(")")[0]))
 
-if __name__ == "__main__":
-	p = PremiumDownload(ServiceConfig("/home/crak/.tucan/plugins/megaupload/"))
-	p.add("/home/crak/", "http://www.megaupload.com/es/?d=RDAJ2PYH", "iconos.tar.gz")
+		tmp = data[self.url_pos[0]+1].split(" ")
+		vars[tmp[1]] = tmp[3].split("\'")[1] + chr(int(math.sqrt(int(tmp[5].split("sqrt(")[1].split(")")[0]))))
+		tmp = self.tmp_url.split(" + ")
+		return tmp[0].split("\'")[0] + vars[tmp[1]] + vars[tmp[2]] + tmp[3].split("\'")[1]
