@@ -20,44 +20,44 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
  
-NAME=tucan
-EXEC=tucan.py
-MANPAGE=tucan.1.gz
-ICON=tucan.svg
-DOCFILES=CHANGELOG LICENSE README README.es TODO
+PREFIX		=	/usr/local
+BINDIR		=	$(PREFIX)/bin/
+LIBDIR		=	$(PREFIX)/lib/tucan/
+DOCDIR		=	$(PREFIX)/share/tucan/
+MANDIR		=	$(PREFIX)/share/man/man1/
+ICONDIR		=	$(PREFIX)/share/pixmaps/
  
-PREFIX=/usr/local
-BINDIR=$(PREFIX)/bin/
-LIBDIR=$(PREFIX)/lib/tucan/
-MANDIR=$(PREFIX)/share/man/man1/
-MEDIADIR=media/
-ICONDIR=/usr/share/pixmaps/
-DOCDIR=$(PREFIX)/share/tucan/
- 
-.PHONY : update install uninstall
+NAME		=	tucan
+EXECFILE	=	tucan.py
+MANPAGE		=	tucan.1.gz
+ICONFILE	=	tucan.svg
+DOCFILES	=	CHANGELOG LICENSE README README.es TODO
+PLUGINDIR	=	default_plugins/
+I18NDIR		=	i18n/
+MEDIADIR	=	media/
  
 update:
 	svn update
  
 install:
-	mkdir -p $(BINDIR)
-	mkdir -p $(LIBDIR)
-	cp -R $(PWD)/* $(LIBDIR)
-	chmod 755 $(LIBDIR)$(EXEC)
-	ln -s $(LIBDIR)$(EXEC) $(BINDIR)$(NAME)
+	mkdir -p $(BINDIR) $(LIBDIR) $(DOCDIR) $(MANDIR) $(ICONDIR)
  
-	mkdir -p $(MANDIR)
+	install -m 644 *.py $(LIBDIR)
+	chmod 755 $(LIBDIR)$(EXECFILE)
+	ln -s $(LIBDIR)$(EXECFILE) $(BINDIR)$(NAME)
+ 
+	cp -R $(PLUGINDIR) $(LIBDIR)$(PLUGINDIR)
+	cp -R $(I18NDIR) $(LIBDIR)$(I18NDIR)
+	cp -R $(MEDIADIR) $(LIBDIR)$(MEDIADIR)
+ 
+	install -m 644 $(DOCFILES) $(DOCDIR)
+ 
 	install -m 644 $(MANPAGE) $(MANDIR)
  
-	mkdir -p $(DOCDIR)
-	install -m 644 $(DOCFILES) $(DOCDIR)
-
-	mkdir -p $(ICONDIR)
-	install -m 644 $(MEDIADIR)$(ICON) $(ICONDIR)
+	install -m 644 $(MEDIADIR)$(ICONFILE) $(ICONDIR)
  
 uninstall:
-	rm -r $(DOCDIR)
-	rm $(MANDIR)$(MANPAGE)
-	rm -r $(LIBDIR)
+	rm -r $(LIBDIR) $(DOCDIR)
 	rm $(BINDIR)$(NAME)
-	rm $(ICONDIR)$(ICON)
+	rm $(MANDIR)$(MANPAGE)
+	rm $(ICONDIR)$(ICONFILE)
