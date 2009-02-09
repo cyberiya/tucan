@@ -115,17 +115,17 @@ class FeatherWindow(gtk.Window):
 		self.set_size_request(width, height)
 		window.shape_combine_mask(bitmap, 0, 0)
 
-	def show_feather(self, widget, event):
+	def show_feather(self, widget, event, plugin, time):
 		""""""
-		self.plugin.set_markup("<span foreground='#FFFFFF' weight='bold' size='medium'>AnonymousRapidshare</span>")
-		self.time.set_markup("<span foreground='#FFFFFF' weight='bold' size='small'>[21:02]</span>")
+		self.plugin.set_markup("<span foreground='#FFFFFF' weight='bold' size='medium'>" + plugin + "</span>")
+		self.time.set_markup("<span foreground='#FFFFFF' weight='bold' size='small'>" + time + "</span>")
 		feather_width, feather_height = self.size_request()
 		win_x, win_y = widget.parent.get_parent_window().get_position()
 		rect = widget.get_allocation()
 		self.move(win_x + rect.x - feather_width, win_y + rect.y - 20)
 		self.show_all()
 		
-	def hide_feather(self, widget, event):
+	def hide_feather(self, widget, event=None):
 		""""""
 		self.hide()
 
