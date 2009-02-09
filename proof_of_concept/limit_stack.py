@@ -37,25 +37,30 @@ class LimitStack(gtk.Window):
 		statusbar = gtk.Statusbar()
 		statusbar.set_has_resize_grip(False)
 		self.add(statusbar)
+		
+		self.stack = [(None, "AnonymousRapidshare", "[10:32]"), (None, "AnonymousMegaupload", "[09:19]")]
+		
 		button = gtk.Button()
 		button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
 		statusbar.pack_start(button, False)
 		
-		feather = FeatherWindow(self)
+		self.feather = FeatherWindow(self)
 		
-		self.menu = gtk.Menu()
-		for item in [1,2]:
-			tmp = gtk.MenuItem(" - ")
-			tmp.connect("enter-notify-event", feather.show_feather)
-			tmp.connect("leave-notify-event", feather.hide_feather)
-			self.menu.append(tmp)
-		self.menu.show_all()
 		button.connect("clicked", self.show_stack)
 		self.show_all()
 				
 	def show_stack(self, widget):
 		""""""
-		self.menu.popup(None, None, self.menu_position, 1, 0, widget.get_allocation())
+		menu = gtk.Menu()
+		for icon, name, time in self.stack:
+			tmp = gtk.MenuItem()
+			tmp.add(gtk.image_new_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU))
+			tmp.connect("enter-notify-event", self.feather.show_feather, name, time)
+			tmp.connect("leave-notify-event", self.feather.hide_feather)
+			tmp.connect("activate", self.feather.hide_feather)
+			menu.append(tmp)
+		menu.show_all()
+		menu.popup(None, None, self.menu_position, 1, 0, widget.get_allocation())
 		
 	def menu_position(self, menu, rect):
 		""""""
