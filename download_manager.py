@@ -77,20 +77,8 @@ class DownloadManager:
 	def get_limits(self):
 		""""""
 		result = [] 
-		for download in self.pending_downloads:
-			for link in download.links:
-				limit = False
-				if "limit" in dir(link.plugin):
-					if link.plugin.limit:
-						limit = True
-				elif len(link.plugin.accounts) > 0:
-					if not link.plugin.active:
-						limit = True
-				if limit:
-					limit = False
-					for service in self.services:
-						if service.name == link.service:
-							result.append((link.plugin_type + " " + link.service, service.icon_path))
+		for service in self.services:
+			result.append((service.name, service.icon_path))
 		return result
 		
 	def delete_link(self, name, link):
