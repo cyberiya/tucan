@@ -77,7 +77,7 @@ class Statusbar(gtk.Statusbar):
 		""""""
 		width, height = menu.size_request()
 		window_x, window_y = self.parent.get_parent_window().get_position()
-		return rect.x + window_x, rect.y + window_y - height, True
+		return rect.x + window_x - (width - rect.width), rect.y + window_y - height, True
 
 if __name__ == "__main__":
 	g = LimitStack()
