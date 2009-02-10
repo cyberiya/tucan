@@ -69,10 +69,8 @@ class Statusbar(gtk.Statusbar):
 			hbox.pack_start(gtk.Label(type))
 			vbox.pack_start(hbox)
 			limit.add(vbox)
-			#limit.connect("enter-notify-event", self.feather.show_feather, plugin, "[" + time.strftime("%H:%M") + "]")
-			#limit.connect("leave-notify-event", self.feather.hide_feather)
-			#limit.connect("activate", self.feather.hide_feather)
 			self.menu.append(limit)
+			self.menu.append(gtk.SeparatorMenuItem())
 		self.menu.show_all()
 		if len(self.menu) > 0:
 			self.menu.popup(None, None, self.menu_position, 1, 0, widget.get_allocation())
