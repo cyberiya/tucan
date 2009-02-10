@@ -61,10 +61,10 @@ class Statusbar(gtk.Statusbar):
 		for plugin, icon_path in self.get_limits():
 			limit = gtk.MenuItem()
 			if icon_path:
-				icon = gtk.image_new_from_file(icon_path)
+				icon = gtk.gdk.pixbuf_new_from_file(icon_path)
 			else:
-				icon = gtk.image_new_from_file(cons.ICON_MISSING)
-			limit.add(icon)
+				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
+			limit.add(gtk.image_new_from_pixbuf(icon.scale_simple(24, 24, gtk.gdk.INTERP_BILINEAR)))
 			limit.connect("enter-notify-event", self.feather.show_feather, plugin, "[" + str(now[3]) + ":" + str(now[4]) + "]")
 			limit.connect("leave-notify-event", self.feather.hide_feather)
 			limit.connect("activate", self.feather.hide_feather)
