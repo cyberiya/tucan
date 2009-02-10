@@ -32,7 +32,7 @@ import cons
 
 class Tree(gtk.VBox):
 	""""""
-	def __init__(self, menu, get_files):
+	def __init__(self, menu, manager):
 		""""""
 		gtk.VBox.__init__(self)
 		scroll = gtk.ScrolledWindow()
@@ -52,7 +52,7 @@ class Tree(gtk.VBox):
 		self.menu.show_all()
 		self.treeview.connect("button-press-event", self.mouse_menu)
 
-		self.get_files = get_files
+		self.get_files = manager.get_files
 
 		self.treeview.set_rules_hint(True)
 		self.treeview.set_headers_visible(False)
@@ -122,11 +122,10 @@ class Tree(gtk.VBox):
 		self.stoped_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_STOP, gtk.ICON_SIZE_MENU)
 		self.icons = {cons.STATUS_CORRECT: self.correct_icon, cons.STATUS_ERROR: self.failed_icon, cons.STATUS_WAIT: self.wait_icon, cons.STATUS_ACTIVE: self.active_icon, cons.STATUS_PEND: self.pending_icon, cons.STATUS_STOP: self.stoped_icon}
 		
-		self.status_bar = Statusbar()
+		self.status_bar = Statusbar(manager.get_limits)
 		self.pack_start(self.status_bar, False)
 		self.status_bar.push(self.status_bar.get_context_id("Downloads"), " No Downloads Active.")
 		self.updating = False
-		self.status_bar.add_limit("mierda_puta", None)
 		
 	def mouse_menu(self, widget, event):
 		"""right button"""

@@ -113,7 +113,7 @@ class Gui(gtk.Window, ServiceManager):
 		stop = gtk.STOCK_MEDIA_STOP, self.stop
 		
 		#trees
-		self.downloads = Tree([copy, None, delete], self.download_manager.get_files)
+		self.downloads = Tree([copy, None, delete], self.download_manager)
 		#self.uploads = Tree()
 		self.uploads = gtk.VBox()
 		

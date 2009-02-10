@@ -28,6 +28,7 @@ class Slots:
 	""""""
 	def __init__(self, slots):
 		""""""
+		self.limit = False
 		self.end_wait = 0
 		self.max = slots
 		self.slots = slots
@@ -36,12 +37,14 @@ class Slots:
 		""""""
 		if self.slots > 0:
 			if time.time() > self.end_wait:
+				self.limit = False
 				self.slots -= 1
 				return True
 			
 	def add_wait(self):
 		""""""
 		print "a esperar 5 minutos"
+		self.limit = True
 		self.end_wait = time.time() + WAIT_LIMIT
 			
 	def return_slot(self):
