@@ -126,6 +126,7 @@ class Tree(gtk.VBox):
 		self.pack_start(self.status_bar, False)
 		self.status_bar.push(self.status_bar.get_context_id("Downloads"), " No Downloads Active.")
 		self.updating = False
+		self.status_bar.add_limit("mierda_puta", None)
 		
 	def mouse_menu(self, widget, event):
 		"""right button"""

@@ -114,10 +114,10 @@ FEATHER = ["255 82 2 1",
 
 class FeatherWindow(gtk.Window):
 	""""""
-	def __init__(self, parent):
+	def __init__(self):
 		""""""
 		gtk.Window.__init__(self, gtk.WINDOW_POPUP)
-		self.set_transient_for(parent)
+		#self.set_transient_for(parent)
 
 		self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#000"))
 		vbox = gtk.VBox()
