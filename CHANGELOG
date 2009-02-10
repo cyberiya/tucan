@@ -1,3 +1,15 @@
+Tucan 0.3.3 Alpha 2009-02-11.
+------------------------------
+- Limit notification Menu.
+- Megaupload premium plugin updated.
+- Better link validation.
+- Account passwords hidden.
+- Microsoft Windows CRC problem solved.
+- New Makefile.
+- Gentoo ebuild.
+- Archlinux PKGBUILD.
+- tucan.desktop.
+
 Tucan 0.3.2 Alpha 2009-01-26.
 ------------------------------
 - Slots bug solved.
