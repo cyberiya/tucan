@@ -26,6 +26,8 @@ import gtk
 import gobject
 import pango
 
+from statusbar import Statusbar
+
 import cons
 
 class Tree(gtk.VBox):
@@ -120,8 +122,7 @@ class Tree(gtk.VBox):
 		self.stoped_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_STOP, gtk.ICON_SIZE_MENU)
 		self.icons = {cons.STATUS_CORRECT: self.correct_icon, cons.STATUS_ERROR: self.failed_icon, cons.STATUS_WAIT: self.wait_icon, cons.STATUS_ACTIVE: self.active_icon, cons.STATUS_PEND: self.pending_icon, cons.STATUS_STOP: self.stoped_icon}
 		
-		self.status_bar = gtk.Statusbar()
-		self.status_bar.set_has_resize_grip(False)
+		self.status_bar = Statusbar()
 		self.pack_start(self.status_bar, False)
 		self.status_bar.push(self.status_bar.get_context_id("Downloads"), " No Downloads Active.")
 		self.updating = False
