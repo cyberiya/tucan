@@ -26,8 +26,6 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-from feather_window import FeatherWindow
-
 import cons
 
 class Statusbar(gtk.Statusbar):
@@ -38,9 +36,7 @@ class Statusbar(gtk.Statusbar):
 		self.set_has_resize_grip(False)
 		
 		self.get_limits = limits
-		
-		self.feather = FeatherWindow()
-		
+				
 		self.menu = gtk.Menu()
 		
 		label = gtk.Label("Limits: ")
@@ -57,16 +53,25 @@ class Statusbar(gtk.Statusbar):
 		""""""
 		for limit in self.menu:
 			self.menu.remove(limit)
-		for plugin, icon_path in self.get_limits():
+		for service, type, icon_path in self.get_limits():
 			limit = gtk.MenuItem()
+			vbox = gtk.VBox()
+			hbox = gtk.HBox()
 			if icon_path:
 				icon = gtk.gdk.pixbuf_new_from_file(icon_path)
 			else:
 				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
-			limit.add(gtk.image_new_from_pixbuf(icon.scale_simple(24, 24, gtk.gdk.INTERP_BILINEAR)))
-			limit.connect("enter-notify-event", self.feather.show_feather, plugin, "[" + time.strftime("%H:%M") + "]")
-			limit.connect("leave-notify-event", self.feather.hide_feather)
-			limit.connect("activate", self.feather.hide_feather)
+			hbox.pack_start(gtk.image_new_from_pixbuf(icon.scale_simple(24, 24, gtk.gdk.INTERP_BILINEAR)), True, False, 5)
+			hbox.pack_start(gtk.Label(service))
+			vbox.pack_start(hbox)
+			hbox = gtk.HBox()
+			hbox.pack_start(gtk.Label("[" + time.strftime("%H:%M") + "]"))
+			hbox.pack_start(gtk.Label(type))
+			vbox.pack_start(hbox)
+			limit.add(vbox)
+			#limit.connect("enter-notify-event", self.feather.show_feather, plugin, "[" + time.strftime("%H:%M") + "]")
+			#limit.connect("leave-notify-event", self.feather.hide_feather)
+			#limit.connect("activate", self.feather.hide_feather)
 			self.menu.append(limit)
 		self.menu.show_all()
 		if len(self.menu) > 0:
