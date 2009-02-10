@@ -63,8 +63,9 @@ class DownloadItem:
 
 class DownloadManager:
 	""""""
-	def __init__(self, get_plugin, max):
+	def __init__(self, get_plugin, services, max):
 		""""""
+		self.services = services
 		self.get_plugin = get_plugin
 		self.max_downloads = max
 		self.pending_downloads = []
@@ -72,6 +73,25 @@ class DownloadManager:
 		self.complete_downloads = []
 		self.timer = None
 		self.scheduling = False
+		
+	def get_limits(self):
+		""""""
+		result = [] 
+		for download in self.pending_downloads:
+			for link in download.links:
+				limit = False
+				if "limit" in dir(link.plugin):
+					if link.plugin.limit:
+						limit = True
+				elif len(link.plugin.accounts) > 0:
+					if not link.plugin.active:
+						limit = True
+				if limit:
+					limit = False
+					for service in self.services:
+						if service.name == link.service:
+							result.append((link.plugin_type + " " + link.service, service.icon_path))
+		return result
 		
 	def delete_link(self, name, link):
 		""""""

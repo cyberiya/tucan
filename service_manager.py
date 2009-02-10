@@ -30,8 +30,9 @@ import cons
 
 class Service:
 	""""""
-	def __init__(self, name):
+	def __init__(self, name, icon):
 		""""""
+		self.icon_path = icon
 		self.name = name
 		self.anonymous_download_plugin = None
 		self.user_download_plugin = None
@@ -46,12 +47,12 @@ class ServiceManager:
 	""""""
 	def __init__(self, configuration):
 		""""""
-		self.download_manager = DownloadManager(self.get_download_plugin, configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOADS))
 		self.services = []
+		self.download_manager = DownloadManager(self.get_download_plugin, self.services, configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOADS))
 		if cons.PLUGIN_PATH not in sys.path:
 			sys.path.append(cons.PLUGIN_PATH)
 		for package, icon, service, enabled, config in configuration.get_services():
-			s = Service(service)
+			s = Service(service, icon)
 			if enabled:
 				#download plugins
 				check_module, check_name = config.check_links()

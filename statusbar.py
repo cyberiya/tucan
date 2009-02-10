@@ -28,16 +28,19 @@ import gtk
 
 from feather_window import FeatherWindow
 
+import cons
+
 class Statusbar(gtk.Statusbar):
 	""""""
-	def __init__(self):
+	def __init__(self, limits):
 		""""""
 		gtk.Statusbar.__init__(self)
 		self.set_has_resize_grip(False)
 		
+		self.get_limits = limits
+		
 		self.feather = FeatherWindow()
 		
-		self.stack = {}
 		self.menu = gtk.Menu()
 		
 		label = gtk.Label("Limits: ")
@@ -50,27 +53,25 @@ class Statusbar(gtk.Statusbar):
 		button.connect("clicked", self.show_stack)
 		self.show_all()
 		
-	def add_limit(self, plugin, icon):
-		""""""
-		now = time.localtime()
-		limit = gtk.MenuItem()
-		self.stack[plugin] = limit
-		limit.add(gtk.image_new_from_stock(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU))
-		limit.connect("enter-notify-event", self.feather.show_feather, plugin, "[" + str(now[3]) + ":" + str(now[4]) + "]")
-		limit.connect("leave-notify-event", self.feather.hide_feather)
-		limit.connect("activate", self.feather.hide_feather)
-		self.menu.append(limit)
-		
-	def remove_limit(self, plugin):
-		""""""
-		if plugin in self.stack.keys():
-			self.menu.remove(self.stack[plugin])
-			del self.stack[plugin]
-		
 	def show_stack(self, widget):
 		""""""
+		for limit in self.menu:
+			self.menu.remove(limit)
+		now = time.localtime()
+		for plugin, icon_path in self.get_limits():
+			limit = gtk.MenuItem()
+			if icon_path:
+				icon = gtk.gdk.pixbuf_new_from_file(icon_path)
+			else:
+				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
+			limit.add(gtk.image_new_from_file(icon))
+			limit.connect("enter-notify-event", self.feather.show_feather, plugin, "[" + str(now[3]) + ":" + str(now[4]) + "]")
+			limit.connect("leave-notify-event", self.feather.hide_feather)
+			limit.connect("activate", self.feather.hide_feather)
+			self.menu.append(limit)
 		self.menu.show_all()
-		self.menu.popup(None, None, self.menu_position, 1, 0, widget.get_allocation())
+		if len(self.menu) > 0:
+			self.menu.popup(None, None, self.menu_position, 1, 0, widget.get_allocation())
 		
 	def menu_position(self, menu, rect):
 		""""""
