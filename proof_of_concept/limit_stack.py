@@ -32,13 +32,16 @@ class LimitStack(gtk.Window):
 		""""""
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		self.set_position(gtk.WIN_POS_CENTER)
-		self.set_size_request(300, -1)
+		self.set_size_request(800, -1)
 		self.set_decorated(False)
 		statusbar = gtk.Statusbar()
 		statusbar.set_has_resize_grip(False)
 		self.add(statusbar)
 		
 		self.stack = [(None, "AnonymousRapidshare", "[10:32]"), (None, "AnonymousMegaupload", "[09:19]")]
+		
+		label = gtk.Label("Limits: ")
+		statusbar.pack_start(label, False)
 		
 		button = gtk.Button()
 		button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
