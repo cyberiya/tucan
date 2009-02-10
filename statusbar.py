@@ -30,23 +30,23 @@ from feather_window import FeatherWindow
 
 class Statusbar(gtk.Statusbar):
 	""""""
-	def __init__(self, widget=None):
+	def __init__(self):
 		""""""
 		gtk.Statusbar.__init__(self)
 		self.set_has_resize_grip(False)
+		
+		self.feather = FeatherWindow()
 		
 		self.stack = {}
 		self.menu = gtk.Menu()
 		
 		label = gtk.Label("Limits: ")
-		statusbar.pack_start(label, False)
+		self.pack_start(label, False)
 		
 		button = gtk.Button()
 		button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
-		statusbar.pack_start(button, False)
-		
-		self.feather = FeatherWindow(self)
-		
+		self.pack_start(button, False)
+				
 		button.connect("clicked", self.show_stack)
 		self.show_all()
 		
@@ -75,13 +75,9 @@ class Statusbar(gtk.Statusbar):
 	def menu_position(self, menu, rect):
 		""""""
 		width, height = menu.size_request()
-		window_x, window_y = self.get_position()
+		window_x, window_y = self.parent.get_parent_window().get_position()
 		return rect.x + window_x, rect.y + window_y - height, True
 
 if __name__ == "__main__":
 	g = LimitStack()
-	import gobject
-	for plugin, icon in [("AnonymousRapidshare", None), ("AnonymousMegaupload", None)]:
-		g.add_limit(plugin, icon)
-	gobject.timeout_add(5000, g.remove_limit, "AnonymousRapidshare")
 	gtk.main()
