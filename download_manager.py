@@ -78,7 +78,9 @@ class DownloadManager:
 		""""""
 		result = [] 
 		for service in self.services:
-			result.append((service.name, service.icon_path))
+			if service.anonymous_download_plugin:
+				if service.anonymous_download_plugin.limit:
+					result.append((cons.TYPE_PREMIUM + " " + service.name, service.icon_path))
 		return result
 		
 	def delete_link(self, name, link):
