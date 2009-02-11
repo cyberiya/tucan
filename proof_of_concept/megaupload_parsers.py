@@ -39,21 +39,21 @@ class CaptchaParser(HTMLParser):
 		self.close()
 
 	def handle_starttag(self, tag, attrs):
-	""""""
-	if tag == "img":
-		if attrs[0][0]  == "src":
-			if attrs[0][1].find("capgen") > 0:
-			    self.captcha = attrs[0][1]
-	elif tag == "form":
-		if attrs[0][1] == "POST":
-			self.form_action = attrs[1][1]
-	elif tag == "input":
-		if attrs[1][1] == "d":
-			self.form_d = attrs[2][1]
-		if attrs[1][1] == "imagecode":
-			self.form_imagecode= attrs[2][1]
-		if attrs[1][1] == "megavar":
-			self.form_megavar = attrs[2][1]
+		""""""
+		if tag == "img":
+			if attrs[0][0]  == "src":
+				if attrs[0][1].find("capgen") > 0:
+				    self.captcha = attrs[0][1]
+		elif tag == "form":
+			if attrs[0][1] == "POST":
+				self.form_action = attrs[1][1]
+		elif tag == "input":
+			if attrs[1][1] == "d":
+				self.form_d = attrs[2][1]
+			if attrs[1][1] == "imagecode":
+				self.form_imagecode= attrs[2][1]
+			if attrs[1][1] == "megavar":
+				self.form_megavar = attrs[2][1]
 		
 class UrlParser(HTMLParser):
 	""""""
