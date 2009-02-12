@@ -20,30 +20,25 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import threading
-import time
+"""
+import MultipartPostHandler, urllib2, cookielib
 
-class Uploader(threading.Thread):
+cookies = cookielib.CookieJar()
+opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookies), MultipartPostHandler.MultipartPostHandler)
+params = { "username" : "bob", "password" : "riviera", "file" : open("filename", "rb") }
+opener.open("http://wwww.bobsite.com/upload/", params)
+"""
+
+import urllib
+import urllib2
+
+from HTMLParser import HTMLParser
+
+class Uploader(HTMLParser):
 	""""""
-	def __init__(self, file_name, end, time=None, cookie=None):
+	def __init__(self, file_name):
 		""""""
-		threading.Thread.__init__(self)
-		self.file_name = file_name
-		self.end = end
-		self.wait = time
-		self.stop_flag = False
-		self.status = "stoped"
-		
-	def run(self):
-		""""""
-		if self.wait:
-			self.status = "waiting"
-			time.sleep(self.wait)
-		self.status = 0
-		while not self.stop_flag:
-			self.status += 1
-		self.status = "stoped"
-		self.end(self.file_name)
+		HTMLParser.__init__(self)
 
 if __name__ == "__main__":
-    u = Uploader()
+	c = Uploader("/home/crak/mierda.html")
