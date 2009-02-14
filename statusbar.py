@@ -53,7 +53,7 @@ class Statusbar(gtk.Statusbar):
 		""""""
 		for limit in self.menu:
 			self.menu.remove(limit)
-		for service, type, icon_path in self.get_limits():
+		for service, type, time, icon_path in self.get_limits():
 			limit = gtk.MenuItem()
 			vbox = gtk.VBox()
 			hbox = gtk.HBox()
@@ -65,7 +65,7 @@ class Statusbar(gtk.Statusbar):
 			hbox.pack_start(gtk.Label(service))
 			vbox.pack_start(hbox)
 			hbox = gtk.HBox()
-			hbox.pack_start(gtk.Label("[" + time.strftime("%H:%M") + "]"))
+			hbox.pack_start(gtk.Label(time))
 			hbox.pack_start(gtk.Label(type))
 			vbox.pack_start(hbox)
 			limit.add(vbox)
