@@ -30,14 +30,26 @@ import gobject
 
 import cons
 
-class InputLinks(gtk.Dialog):
+class InputFiles(gtk.Dialog):
 	""""""
-	def __init__(self, path, sort, check, create, manage, show_advanced_packages):
+	def __init__(self):
 		""""""
 		gtk.Dialog.__init__(self)
-		self.set_icon_from_file(cons.ICON_DOWNLOAD)
-		self.set_title(_("Input Links"))
+		self.set_icon_from_file(cons.ICON_UPLOAD)
+		self.set_title(("Input Links"))
 		self.set_size_request(600,500)
+
+		#action area
+		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
+		add_button = gtk.Button(None, gtk.STOCK_ADD)
+		self.action_area.pack_start(cancel_button)
+		self.action_area.pack_start(add_button)
+		cancel_button.connect("clicked", self.close)
+		#add_button.connect("clicked", self.add_links)
+		
+		self.connect("response", self.close)
+		self.show_all()
+		self.run()
 		
 
 	def close(self, widget=None, other=None):
@@ -46,4 +58,4 @@ class InputLinks(gtk.Dialog):
 	
 if __name__ == "__main__":
 	x = InputFiles()
-	gtk.main()
+	#gtk.main()
