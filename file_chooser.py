@@ -32,13 +32,15 @@ class FileChooser(gtk.FileChooserDialog):
 	""""""
 	def __init__(self, parent, func, default_path=None, files=False):
 		""""""
-		gtk.FileChooserDialog.__init__(self, ("Select a Folder"), parent)
+		gtk.FileChooserDialog.__init__(self,None, parent)
 		if default_path:
-			self.set_filename(default_path)
+			self.set_current_folder(default_path)
 		if files:
+			self.set_title(("Select Files"))
 			self.set_action(gtk.FILE_CHOOSER_ACTION_OPEN)
 			self.set_select_multiple(True)
 		else:
+			self.set_title(("Select a Folder"))
 			self.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
 			
 		hidden_button = gtk.CheckButton(("Show hidden files."))
@@ -77,4 +79,4 @@ class FileChooser(gtk.FileChooserDialog):
 if __name__ == "__main__":
 	def mierda(name):
 		print name
-	f = FileChooser(None, mierda, None)
+	f = FileChooser(None, mierda, "/home/crak/")
