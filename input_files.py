@@ -68,6 +68,7 @@ class InputFiles(gtk.Dialog):
 		
 	def on_choose(self, path):
 		""""""
+		#comprobar si es un directorio
 		print path, os.stat(path).st_size
 
 	def close(self, widget=None, other=None):
