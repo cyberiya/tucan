@@ -22,34 +22,58 @@
 
 import urllib
 import urllib2
+import cookielib
 
 from HTMLParser import HTMLParser
 
+from multipart_httphandler import MultipartHTTPHandler
+
 HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4"}
-BUFFER_SIZE = 4096
 
 class UploadParser(HTMLParser):
 	""""""
 	def __init__(self, file_name, description):
 		""""""
 		HTMLParser.__init__(self)
-		self.action = None
+		self.up_action = None
+		self.up_done_action = None
 		self.id = None
-		self.feed(urllib2.urlopen(urllib2.Request("http://www.megaupload.com/")).read())
+		
+		cookie = cookielib.CookieJar()
+		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie), MultipartHTTPHandler)
+		
+		self.feed(opener.open(urllib2.Request("http://www.megaupload.com/", {})).read())
 		self.close()
-		if self.action:
-			form = {"UPLOAD_IDENTIFIER": self.id, "sessionid": self.id , "file": file(file_name, "rb"), "message": description, "accept": 1}
-			handle = urllib2.urlopen(urllib2.Request("http://www.megaupload.com/", None, HEADER), urllib.urlencode(form))
-			print handle.info()
+		if self.up_action and self.up_done_action:
+			print self.up_action
+			print self.up_done_action
+			
+			
+			req = urllib2.Request(self.up_action, {}, HEADER)
+			handle1 = opener.open(req)
+			
+			form = {"filecount": "", 'multifile_0"; filename="': "", "UPLOAD_IDENTIFIER": self.id, "sessionid": self.id , "file": open(file_name, "rb"), "toemail": "", "fromemail": "", "message": description, "multiemail": "", "password": "", "url": "", "accept": "on"}
+			req = urllib2.Request(self.up_done_action, form, HEADER)
+			handle2 = opener.open(req)
+			
+			print "mierda", req.get_data()
+			data = " "
+			while data:
+				data = handle2.readline()
+				print data
+			"""
 			for line in handle.readlines():
 				if "downloadurl" in line:
 					print line
+			"""
 
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "form":
-			if attrs[1][1] == "uploadprogress":
-				self.action = attrs[3][1]
+			if attrs[2][1] == "multipart/form-data":
+				self.up_done_action = attrs[3][1]
+			elif attrs[1][1] == "uploadprogress":
+				self.up_action = attrs[3][1]
 		elif tag == "input":
 			if attrs[1][1] == "UPLOAD_IDENTIFIER":
 				self.id = attrs[2][1]
