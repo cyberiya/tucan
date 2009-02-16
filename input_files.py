@@ -20,8 +20,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import HTMLParser
-import threading
+import os
 
 import pygtk
 pygtk.require('2.0')
@@ -41,13 +40,23 @@ class InputFiles(gtk.Dialog):
 		self.set_title(("Input Files"))
 		self.set_size_request(600,500)
 
+		#choose path
+		hbox = gtk.HBox()
+		self.vbox.pack_start(hbox, False, False, 5)
+		path_button = gtk.Button(None, gtk.STOCK_OPEN)
+		hbox.pack_start(path_button, False, False, 10)
+		path_button.set_size_request(90,40)
+		path_button.connect("clicked", self.choose_files)
+		path_label = gtk.Label(("Choose files to upload."))
+		hbox.pack_start(path_label, False, False, 10)
+
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
 		add_button = gtk.Button(None, gtk.STOCK_ADD)
 		self.action_area.pack_start(cancel_button)
 		self.action_area.pack_start(add_button)
 		cancel_button.connect("clicked", self.close)
-		add_button.connect("clicked", self.choose_files)
+		#add_button.connect("clicked", self.choose_files)
 		
 		self.connect("response", self.close)
 		self.show_all()
@@ -59,7 +68,7 @@ class InputFiles(gtk.Dialog):
 		
 	def on_choose(self, path):
 		""""""
-		print path
+		print path, os.stat(path).st_size
 
 	def close(self, widget=None, other=None):
 		""""""
