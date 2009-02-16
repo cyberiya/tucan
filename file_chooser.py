@@ -30,13 +30,18 @@ import cons
 
 class FileChooser(gtk.FileChooserDialog):
 	""""""
-	def __init__(self, parent, func, default_path=None):
+	def __init__(self, parent, func, default_path=None, files=False):
 		""""""
-		gtk.FileChooserDialog.__init__(self, _("Select a Folder"), parent, gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+		gtk.FileChooserDialog.__init__(self, ("Select a Folder"), parent)
 		if default_path:
 			self.set_filename(default_path)
-
-		hidden_button = gtk.CheckButton(_("Show hidden files."))
+		if files:
+			self.set_action(gtk.FILE_CHOOSER_ACTION_OPEN)
+			self.set_select_multiple(True)
+		else:
+			self.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
+			
+		hidden_button = gtk.CheckButton(("Show hidden files."))
 		hidden_button.set_active(self.get_show_hidden())
 		self.vbox.pack_start(hidden_button, False, False, 5)
 		hidden_button.connect("clicked", self.show_hidden)
@@ -60,10 +65,16 @@ class FileChooser(gtk.FileChooserDialog):
 
 	def on_choose_folder(self, button, func):
 		""""""
-		func(os.path.join(self.get_filename(), ""))
+		for file_name in self.get_filenames():
+			func(os.path.join(file_name))
 		self.close()
 		
 	def close(self, widget=None, response=None):
 		""""""
 		self.set_show_hidden(False)
 		self.destroy()
+
+if __name__ == "__main__":
+	def mierda(name):
+		print name
+	f = FileChooser(None, mierda, None)

@@ -28,6 +28,8 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
+from file_chooser import FileChooser
+
 import cons
 
 class InputFiles(gtk.Dialog):
@@ -36,7 +38,7 @@ class InputFiles(gtk.Dialog):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_UPLOAD)
-		self.set_title(("Input Links"))
+		self.set_title(("Input Files"))
 		self.set_size_request(600,500)
 
 		#action area
@@ -45,12 +47,19 @@ class InputFiles(gtk.Dialog):
 		self.action_area.pack_start(cancel_button)
 		self.action_area.pack_start(add_button)
 		cancel_button.connect("clicked", self.close)
-		#add_button.connect("clicked", self.add_links)
+		add_button.connect("clicked", self.choose_files)
 		
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
 		
+	def choose_files(self, button):
+		""""""
+		FileChooser(self, self.on_choose, None, True)
+		
+	def on_choose(self, path):
+		""""""
+		print path
 
 	def close(self, widget=None, other=None):
 		""""""
