@@ -22,15 +22,19 @@
 
 import sys
 import os
+import subprocess
 
 # project constants
-TUCAN_VERSION = "0.3 alpha"
+TUCAN_VERSION = "0.3.3 alpha"
 WEBPAGE = "http://cusl3-tucan.forja.rediris.es/"
 
 REVISION = ""
-rev = os.popen("svnversion").read().strip()
-if rev:
-	REVISION = " (REV " + rev + ")"
+try:
+	rev = subprocess.Popen("svnversion", stdout=subprocess.PIPE).stdout.read().strip()
+except subprocess.CalledProcessError:
+	pass
+else:
+	REVISION = " (REV %s)" % rev
 	
 # status constants
 STATUS_PEND = "pending"
