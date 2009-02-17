@@ -31,7 +31,7 @@ WEBPAGE = "http://cusl3-tucan.forja.rediris.es/"
 REVISION = ""
 try:
 	rev = subprocess.Popen("svnversion", stdout=subprocess.PIPE).stdout.read().strip()
-except subprocess.CalledProcessError:
+except:
 	pass
 else:
 	REVISION = " (REV %s)" % rev
