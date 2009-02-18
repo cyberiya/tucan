@@ -38,6 +38,8 @@ SECTION_MAIN = "main"
 SECTION_SERVICES = "services"
 SECTION_ADVANCED = "advanced"
 
+OPTION_VERSION = "version"
+
 OPTION_LANGUAGE = "language"
 OPTION_MAX_DOWNLOADS = "max_downloads"
 OPTION_MAX_UPLOADS = "max_uploads"
@@ -48,7 +50,7 @@ OPTION_ADVANCED_PACKAGES = "advanced_packages"
 OPTION_SHOW_UPLOADS = "show_uploads"
 OPTION_SAVE_SESSION = "save_session"
 
-DEFAULTS = {SECTION_MAIN: {OPTION_LANGUAGE: "en", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_UPLOADS: "5", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH}
+DEFAULTS = {SECTION_MAIN: {OPTION_VERSION: cons.TUCAN_VERSION, OPTION_LANGUAGE: "en", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_UPLOADS: "5", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH}
 	, SECTION_SERVICES: {}
 	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "False", OPTION_SAVE_SESSION: "False", OPTION_ADVANCED_PACKAGES: "False", OPTION_SHOW_UPLOADS: "False"}}
 
@@ -82,6 +84,14 @@ class Config(SafeConfigParser):
 		""""""
 		for section, options in DEFAULTS.items():
 			if self.has_section(section):
+				if section == SECTION_MAIN:
+					if self.has_option(section, OPTION_VERSION):
+						if self.get(section, OPTION_VERSION) != cons.TUCAN_VERSION:
+							shutil.rmtree(cons.PLUGIN_PATH)
+							return False
+					else:
+						shutil.rmtree(cons.PLUGIN_PATH)
+						return False
 				for option, value in options.items():
 					if option not in [option for option, value in self.items(section)]:
 						return False
