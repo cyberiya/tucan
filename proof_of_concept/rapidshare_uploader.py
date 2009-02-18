@@ -39,13 +39,25 @@ class UploadParser(HTMLParser):
 		self.id = None
 		cookie = cookielib.CookieJar()
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-		self.feed(opener.open(urllib2.Request("http://www.rapidshare.com/")).read())
+
+		req = urllib2.Request("http://www.rapidshare.com/")
+		handle = opener.open(req)
+		print handle.info()
+		self.feed(handle.read())
 		self.close()
 		if self.action:
 			form = {"filecontent": open(file_name, "rb"), "u.x": "51", "u.y": "5"}
-			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie), MultipartHTTPHandler)
-			handle = opener.open(urllib2.Request(self.action, form, HEADER))
-			print handle.read()
+			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie), MultipartHTTPHandler())
+			
+			req = urllib2.Request(self.action, form, HEADER)
+			handle = opener.open(req)
+			print handle.info()
+			mierda = open("/home/crak/mierda.html", "w")
+			for line in  handle.readlines():
+				mierda.write(line)
+				if "Error" in line:
+					print line
+			mierda.close()
 
 	def handle_starttag(self, tag, attrs):
 		""""""
