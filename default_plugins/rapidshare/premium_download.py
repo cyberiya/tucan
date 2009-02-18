@@ -25,6 +25,7 @@ from service_config import SECTION_PREMIUM_DOWNLOAD
 from download_plugin import DownloadPlugin
 
 from premium_cookie import PremiumCookie
+from check_links import CheckLinks
 
 import cons
 
@@ -34,6 +35,10 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		""""""
 		Accounts.__init__(self, config, SECTION_PREMIUM_DOWNLOAD, PremiumCookie())
 		DownloadPlugin.__init__(self)
+
+	def check_links(self, url):
+		""""""
+		return CheckLinks().check(url)
 		
 	def add(self, path, link, file_name):
 		""""""

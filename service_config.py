@@ -29,8 +29,6 @@ from ConfigParser import SafeConfigParser
 import cons
 
 SECTION_MAIN = "main"
-SECTION_DOWNLOADS = "downloads"
-SECTION_UPLOADS = "uploads"
 
 SECTION_ANONYMOUS_DOWNLOAD = "anonymous_download"
 SECTION_USER_DOWNLOAD = "user_download"
@@ -47,9 +45,8 @@ OPTION_ENABLED = "enabled"
 OPTION_PREMIUM_COOKIE = "premium_cookie"
 OPTION_USER_COOKIE = "user_cookie"
 
-OPTION_AVAIBLE = "avaible"
-OPTION_CHECK_LINKS = "check_links"
-OPTION_CHECK_FILES = "check_files"
+OPTION_DOWNLOADS = "downloads"
+OPTION_UPLOADS = "uploads"
 
 OPTION_PATH = "path"
 OPTION_NAME = "name"
@@ -72,11 +69,8 @@ class ServiceConfig(SafeConfigParser):
 	
 	def check_config(self):
 		""""""
-		result = True
-		for section in [SECTION_MAIN, SECTION_DOWNLOADS, SECTION_UPLOADS]:
-			if not self.has_section(section):
-				result = False
-		return result
+		if self.has_section(SECTION_MAIN):
+			return True
 		
 	def enable(self, enabled):
 		""""""
@@ -103,39 +97,28 @@ class ServiceConfig(SafeConfigParser):
 			get_cookie = self.get(SECTION_MAIN, OPTION_USER_COOKIE)
 		return OPTION_USER_COOKIE, get_cookie
 
-	def check_links(self):
-		""""""
-		check = None
-		if self.getboolean(SECTION_DOWNLOADS, OPTION_AVAIBLE):
-			check = self.get(SECTION_DOWNLOADS, OPTION_CHECK_LINKS)
-		return OPTION_CHECK_LINKS, check
-			
-	def check_files(self):
-		""""""
-		check = None
-		if self.getboolean(SECTION_UPLOADS, OPTION_AVAIBLE):
-			check = self.get(SECTION_UPLOADS, OPTION_CHECK_FILES)
-		return OPTION_CHECK_FILES, check
-
-	def get_plugins(self, main_section, sections):
+	def get_plugins(self, sections):
 		""""""
 		result = []
-		if self.has_section(main_section):
-			if self.getboolean(main_section, OPTION_AVAIBLE):
-				for section, section_type in sections:
-					if ((self.has_section(section)) and (len(self.items(section)) > 0)):
-						result.append((section, self.get(section, OPTION_NAME), section_type))
+		for section, section_type in sections:
+			if ((self.has_section(section)) and (len(self.items(section)) > 0)):
+				result.append((section, self.get(section, OPTION_NAME), section_type))
 		return result
 
 	def get_download_plugins(self):
 		""""""
-		sections = [(SECTION_ANONYMOUS_DOWNLOAD, cons.TYPE_ANONYMOUS), (SECTION_USER_DOWNLOAD, cons.TYPE_USER), (SECTION_PREMIUM_DOWNLOAD, cons.TYPE_PREMIUM)]
-		return self.get_plugins(SECTION_DOWNLOADS, sections)
-					
+		result = []
+		if self.has_option(SECTION_MAIN, OPTION_DOWNLOADS):
+			if self.getboolean(SECTION_MAIN, OPTION_DOWNLOADS):
+				result = self.get_plugins([(SECTION_ANONYMOUS_DOWNLOAD, cons.TYPE_ANONYMOUS), (SECTION_USER_DOWNLOAD, cons.TYPE_USER), (SECTION_PREMIUM_DOWNLOAD, cons.TYPE_PREMIUM)])
+		return result
 	def get_upload_plugins(self):
 		""""""
-		sections = [(SECTION_ANONYMOUS_UPLOAD, cons.TYPE_ANONYMOUS), (SECTION_USER_UPLOAD, cons.TYPE_USER), (SECTION_PREMIUM_UPLOAD, cons.TYPE_PREMIUM)]
-		return self.get_plugins(SECTION_UPLOADS, sections)
+		result = []
+		if self.has_option(SECTION_MAIN, OPTION_UPLOADS):
+			if self.getboolean(SECTION_MAIN, OPTION_UPLOADS):
+				result = self.get_plugins([(SECTION_ANONYMOUS_UPLOAD, cons.TYPE_ANONYMOUS), (SECTION_USER_UPLOAD, cons.TYPE_USER), (SECTION_PREMIUM_UPLOAD, cons.TYPE_PREMIUM)])
+		return result
 
 	def get_accounts(self, section):
 		""""""
