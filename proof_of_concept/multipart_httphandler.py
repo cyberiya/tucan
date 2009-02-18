@@ -33,7 +33,8 @@ import urllib2
 CHUNK_SIZE = 4096
 CRLF = '\r\n'
 
-class MultipartHTTPHandler(urllib2.BaseHandler):
+#class MultipartHTTPHandler(urllib2.HTTPCookieProcessor):
+class MultipartHTTPHandler(urllib2.HTTPHandler):
 	"""Based on urllib2_file-0.2 Fabien SEISEN"""
 	
 	handler_order = urllib2.HTTPHandler.handler_order - 10
@@ -48,12 +49,9 @@ class MultipartHTTPHandler(urllib2.BaseHandler):
 		for key, value in v_vars:
 			buffer = []
 			buffer.append("--%s" % boundary)
-			buffer.append("")
 			buffer.append('Content-Disposition: form-data; name="%s"' % key)
 			buffer.append("")
-			buffer.append("")
 			buffer.append("%s" % value)
-			buffer.append("")
 			buffer = CRLF.join(buffer)
 			length += len(buffer)
 
@@ -71,7 +69,6 @@ class MultipartHTTPHandler(urllib2.BaseHandler):
 			buffer.append("--%s" % boundary)
 			buffer.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, name))
 			buffer.append("Content-Type: %s" % self.get_content_type(name))
-			#buffer.append("Content-Length: %s" % file_size)
 			buffer.append("")
 			buffer.append("")
 			buffer = CRLF.join(buffer)
@@ -102,7 +99,7 @@ class MultipartHTTPHandler(urllib2.BaseHandler):
 
 	def http_open(self, req):
 		""""""
-		return self.do_open(httplib.HTTP, req)
+		return self.do_open(httplib.HTTPConnection, req)
 
 	def do_open(self, http_class, req):
 		""""""
@@ -123,6 +120,8 @@ class MultipartHTTPHandler(urllib2.BaseHandler):
 				if len(v_files) > 0:
 					boundary = mimetools.choose_boundary()
 					length = self.send_data(v_vars, v_files, boundary)
+					#h.putheader('Connection', 'keep-alive')
+					#h.putheader('Keep-Alive', '300')
 					h.putheader('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
 					h.putheader('Content-length', str(length))
 		else:
@@ -145,12 +144,13 @@ class MultipartHTTPHandler(urllib2.BaseHandler):
 		if req.has_data():
 			if len(v_files) > 0:
 				l = self.send_data(v_vars, v_files, boundary, h)
-		code, msg, hdrs = h.getreply()
-		fp = h.getfile()
-		if code == 200:
-			resp = urllib.addinfourl(fp, hdrs, req.get_full_url())
-			resp.code = code
-			resp.msg = msg
-			return resp
-		else:
-			return self.parent.error('http', req, fp, code, msg, hdrs)
+		return h.get_response()
+#		code, msg, hdrs = h.getreply()
+#		fp = h.getfile()
+#		if code == 200:
+#			resp = urllib.addinfourl(fp, hdrs, req.get_full_url())
+#			resp.code = code
+#			resp.msg = msg
+#			return resp
+#		else:
+#			return self.parent.error('http', req, fp, code, msg, hdrs)

@@ -48,9 +48,9 @@ class UploadParser(HTMLParser):
 			print self.up_action
 			print self.up_done_action
 			
-			
 			req = urllib2.Request(self.up_action, {}, HEADER)
 			handle1 = opener.open(req)
+			print handle1.readline()
 			
 			form = {"filecount": "", 'multifile_0"; filename="': "", "UPLOAD_IDENTIFIER": self.id, "sessionid": self.id , "file": open(file_name, "rb"), "toemail": "", "fromemail": "", "message": description, "multiemail": "", "password": "", "url": "", "accept": "on"}
 			req = urllib2.Request(self.up_done_action, form, HEADER)
