@@ -27,6 +27,8 @@ from HTMLParser import HTMLParser
 from download_plugin import DownloadPlugin
 from slots import Slots
 
+from check_links import CheckLinks
+
 class FormParser(HTMLParser):
 	""""""
 	def __init__(self, url):
@@ -60,6 +62,10 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		Slots.__init__(self, 1)
 		DownloadPlugin.__init__(self)
+		
+	def check_links(self, url):
+		""""""
+		return CheckLinks().check(url)
 		
 	def add(self, path, link, file_name):
 		""""""

@@ -37,11 +37,9 @@ class Service:
 		self.anonymous_download_plugin = None
 		self.user_download_plugin = None
 		self.premium_download_plugin = None
-		self.check_links = None
 		self.anonymous_upload_plugins = None
 		self.user_upload_plugins = None
 		self.premium_upload_plugins = None
-		self.check_files = None
 
 class ServiceManager:
 	""""""
@@ -55,10 +53,6 @@ class ServiceManager:
 			s = Service(service, icon)
 			if enabled:
 				#download plugins
-				check_module, check_name = config.check_links()
-				if check_name:
-					module = __import__(package + "." + check_module, None, None, [''])
-					s.check_links = eval("module" + "." + check_name + "()")
 				for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
 					module = __import__(package + "." + plugin_module, None, None, [''])
 					if plugin_type == cons.TYPE_ANONYMOUS:
@@ -67,11 +61,7 @@ class ServiceManager:
 						s.user_download_plugin = eval("module" + "." + plugin_name + "()")
 					elif plugin_type == cons.TYPE_PREMIUM:
 						s.premium_download_plugin = eval("module" + "." + plugin_name + "(config)")
-				check_module, check_name = config.check_files()
 				#upload plugins
-				if check_name:
-					module = __import__(package + "." + check_module, None, None, [''])
-					s.check_files = eval("module" + "." + check_name + "()")
 				for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
 					module = __import__(package + "." + plugin_module, None, None, [''])
 					if plugin_type == cons.TYPE_ANONYMOUS:
@@ -116,9 +106,9 @@ class ServiceManager:
 		for service in self.services:
 			if service.name == service_name:
 				if ((service.premium_download_plugin) and (service.premium_download_plugin.active)):
-					return service.check_links.check, cons.TYPE_PREMIUM
+					return service.premium_download_plugin.check_links, cons.TYPE_PREMIUM
 				else:
-					return service.check_links.check, cons.TYPE_ANONYMOUS
+					return service.anonymous_download_plugin.check_links, cons.TYPE_ANONYMOUS
 
 	def get_check_files(self, service_name):
 		""""""

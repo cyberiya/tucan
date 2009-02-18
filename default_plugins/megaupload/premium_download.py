@@ -48,6 +48,16 @@ class PremiumDownload(DownloadPlugin, Accounts):
 	def delete(self, file_name):
 		""""""
 		print self.stop(file_name)
+		
+	def check_links(self, url):
+		""""""
+		cookie = self.get_cookie()
+		if cookie:
+			parser = PremiumParser(link, cookie)
+			link = parser.check_link()
+			if link:
+				return link
+
 
 if __name__ == "__main__":
 	p = PremiumDownload(ServiceConfig("/home/crak/.tucan/plugins/megaupload/"))
