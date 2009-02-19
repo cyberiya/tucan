@@ -33,11 +33,15 @@ class PremiumParser(HTMLParser):
 		self.located = False
 		self.url = None
 		self.size = None
-		for line in urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)).open(urllib2.Request(url)).readlines():
-			self.feed(line)
-			if "File size:" in line:
-				self.size = line.strip()
-		self.close()
+		self.handler = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)).open(urllib2.Request(url))
+		if "text/html" in self.handler.info()["Content-Type"]:
+			for line in self.handler.readlines():
+				self.feed(line)
+				if "File size:" in line:
+					self.size = line.strip()
+			self.close()
+		else:
+			self.url = self.handler.geturl()
 
 	def handle_starttag(self, tag, attrs):
 		""""""
@@ -60,13 +64,22 @@ class PremiumParser(HTMLParser):
 		unit = None
 		if self.url:
 			name = self.url.split("/").pop()
-		if self.size:
-			tmp = self.size.split("</font>")
-			tmp.pop()
-			tmp = tmp.pop()
-			tmp = tmp.split(">").pop().split(" ")
-			size = int(float(tmp[0]))
-			unit = tmp[1]
+			if self.size:
+				tmp = self.size.split("</font>")
+				tmp.pop()
+				tmp = tmp.pop()
+				tmp = tmp.split(">").pop().split(" ")
+				size = int(float(tmp[0]))
+				unit = tmp[1]
+			else:
+				tmp = int(self.handler.info()["Content-Length"])
+				size = tmp/1024
+				if size > 0:
+					unit = "KB"
+					size2 = size/1024
+					if size2 > 0:
+						unit = "MB"
+						size = size2						
 		return name, size, unit
 		
 if __name__ == "__main__":
