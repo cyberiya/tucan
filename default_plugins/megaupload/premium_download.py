@@ -49,16 +49,13 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		""""""
 		print self.stop(file_name)
 		
-	def check_links(self, url):
+	def check_links(self, link):
 		""""""
 		cookie = self.get_cookie()
 		if cookie:
 			parser = PremiumParser(link, cookie)
-			link = parser.check_link()
-			if link:
-				return link
-
+			return parser.check_link()
 
 if __name__ == "__main__":
 	p = PremiumDownload(ServiceConfig("/home/crak/.tucan/plugins/megaupload/"))
-	p.add("/home/crak/", "http://www.megaupload.com/es/?d=RDAJ2PYH", "iconos.tar.gz")
+	p.check_links("http://www.megaupload.com/es/?d=RDAJ2PYH")

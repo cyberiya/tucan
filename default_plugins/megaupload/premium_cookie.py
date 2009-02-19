@@ -30,7 +30,7 @@ class PremiumCookie:
 		""""""
 		cookie = cookielib.CookieJar()
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-		opener.open(urllib2.Request("http://www.megaupload.com/premium/"), urllib.urlencode({"login": user, "password": password}))
+		opener.open(urllib2.Request("http://www.megaupload.com/?c=login"), urllib.urlencode({"login": "1", "redir": "1", "username": user, "password": password}))
 		if len(cookie) > 0:
 			return cookie
 
