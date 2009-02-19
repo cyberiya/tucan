@@ -20,20 +20,26 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-from tesseract import Tesseract
-
+import urllib
 import urllib2
 
 from HTMLParser import HTMLParser
 
+from tesseract import Tesseract
+
+CAPTCHACODE = "captchacode"
+MEGAVAR = "megavar"
+
 class CaptchaParser(HTMLParser):
 	""""""
-	def __init__(self, url):
+	def __init__(self, data):
 		""""""
 		HTMLParser.__init__(self)
 		self.located = False
 		self.captcha = None
-		self.feed(urllib2.urlopen(urllib2.Request(url)).read())
+		self.captchacode = ""
+		self.megavar = ""
+		self.feed(data)
 		self.close()
 
 	def handle_starttag(self, tag, attrs):
@@ -45,12 +51,51 @@ class CaptchaParser(HTMLParser):
 			if self.located:
 				self.located = False
 				self.captcha = attrs[0][1]
+		elif tag == "input":
+			if attrs[1][1] == CAPTCHACODE:
+				self.captchacode = attrs[2][1]
+			elif attrs[1][1] == MEGAVAR:
+				self.megavar = attrs[2][1]
+
+class CaptchaForm(HTMLParser):
+	""""""
+	def __init__(self, url):
+		""""""
+		HTMLParser.__init__(self)
+		self.link = None
+		self.located = False
+		while not self.link:
+			p = CaptchaParser(urllib2.urlopen(urllib2.Request(url)).read())
+			if p.captcha:
+				print p.captcha
+				handle = urllib2.urlopen(urllib2.Request(p.captcha))
+				if handle.info()["Content-Type"] == "image/gif":
+					c = Captcha(handle.read())
+					captcha = c.get_captcha()
+					if captcha:
+						handle = urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
+						self.reset()
+						self.feed(handle.read())
+						self.close()
+						print captcha
+		print self.link
+		
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "a":
+			if ((self.located) and (attrs[0][0] == "href")):
+				self.located = False
+				self.link = attrs[0][1]
+		elif tag == "div":
+			if ((len(attrs) > 1) and (attrs[1][1] == "downloadlink")):
+				self.located = True
+				print "located"
 
 class Captcha:
 	""""""
 	def __init__(self, data):
 		""""""
-		self.tess = Tesseract(data, self.filter)
+		self.tess = Tesseract(data)
 		
 	def get_captcha(self):
 		result = self.tess.get_captcha()
@@ -62,14 +107,5 @@ class Captcha:
 		return data
 
 if __name__ == "__main__":
+	c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
 	
-	link = None
-	while not link:
-		p = CaptchaParser("http://www.megaupload.com/es/?d=RDAJ2PYH")
-		if p.captcha:
-			print p.captcha
-			c = Captcha(urllib2.urlopen(urllib2.Request(p.captcha)).read())
-			captcha = c.get_captcha()
-			if captcha:
-				link = captcha
-	print link
