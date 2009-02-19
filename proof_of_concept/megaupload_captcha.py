@@ -94,15 +94,14 @@ class CaptchaForm(HTMLParser):
 				print p.captcha
 				handle = urllib2.urlopen(urllib2.Request(p.captcha))
 				if handle.info()["Content-Type"] == "image/gif":
-					c = Captcha(handle.read())
-					captcha = c.get_captcha()
+					self.tess = Tesseract(handle.read())
+					captcha = self.get_captcha()
 					if captcha:
 						handle = urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
 						self.reset()
 						self.feed(handle.read())
 						self.close()
 						print captcha
-		print self.link
 		
 	def handle_starttag(self, tag, attrs):
 		""""""
@@ -114,12 +113,6 @@ class CaptchaForm(HTMLParser):
 			if ((len(attrs) > 1) and (attrs[1][1] == "downloadlink")):
 				self.located = True
 
-class Captcha:
-	""""""
-	def __init__(self, data):
-		""""""
-		self.tess = Tesseract(data)
-		
 	def get_captcha(self):
 		result = self.tess.get_captcha()
 		if len(result) == 4:
@@ -130,6 +123,7 @@ class Captcha:
 		return data
 
 if __name__ == "__main__":
-	#c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
-	print CheckLinks().check("http://www.megaupload.com/?d=1UY9LV7O")
+	c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
+	print c.link
+	#print CheckLinks().check("http://www.megaupload.com/?d=1UY9LV7O")
 	
