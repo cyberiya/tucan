@@ -30,6 +30,30 @@ from tesseract import Tesseract
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
+class CheckLinks(HTMLParser):
+	""""""
+	def check(self, url):
+		""""""
+		name = None
+		size = 0
+		unit = None
+		try:
+			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+				if "Filename:" in line:
+					name = line.split(">")[3].split("</")[0].strip()
+				elif "File size:" in line:
+					tmp = line.split(">")[3].split("</")[0].split(" ")
+					size = int(round(float(tmp[0])))
+					unit = tmp[1]
+			if name:
+				if ".." in name:
+					parser = CaptchaForm(url)
+					if parser.link:
+						name = parser.link.split("/").pop()
+		except urllib2.URLError, e:
+			print e
+		return name, size, unit
+
 class CaptchaParser(HTMLParser):
 	""""""
 	def __init__(self, data):
@@ -89,7 +113,6 @@ class CaptchaForm(HTMLParser):
 		elif tag == "div":
 			if ((len(attrs) > 1) and (attrs[1][1] == "downloadlink")):
 				self.located = True
-				print "located"
 
 class Captcha:
 	""""""
@@ -107,5 +130,6 @@ class Captcha:
 		return data
 
 if __name__ == "__main__":
-	c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
+	#c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
+	print CheckLinks().check("http://www.megaupload.com/?d=1UY9LV7O")
 	

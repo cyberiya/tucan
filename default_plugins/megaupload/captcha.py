@@ -20,110 +20,116 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import math
 import urllib
 import urllib2
 
 from HTMLParser import HTMLParser
 
-import Image
-import ImageOps
-
 from tesseract import Tesseract
 
-class CaptchaForm:
-	""""""
-	def __init__(self, url):
-		""""""
-		self.url = url
-		self.link = None
-		cont = 0
-		while not self.link and cont < 10:
-			self.get_link()
-			cont += 1
-		print self.link
+CAPTCHACODE = "captchacode"
+MEGAVAR = "megavar"
 
-	def get_link(self):
+class CheckLinks(HTMLParser):
+	""""""
+	def check(self, url):
 		""""""
-		c_parser = CaptchaParser(self.url)
-		if ((c_parser.form_action) and (c_parser.captcha)):
-			handle = urllib2.urlopen(urllib2.Request(c_parser.form_action + c_parser.captcha))
-			tes = Tesseract(handle.read(), self.filter_image)
-			handle.close()
-			self.captcha = tes.get_captcha()
-			if len(self.captcha) == 3:
-				form = {"d": c_parser.form_d, "imagecode": c_parser.form_imagecode, "megavar": c_parser.form_megavar, "imagestring" : self.captcha.strip()}
-				data = urllib.urlencode(form)
-				handle = urllib2.urlopen(c_parser.form_action, data)
-				u_parser = UrlParser(handle.read())
-				handle.close()
-				if  u_parser.tmp_url:
-					self.link = u_parser.get_url()
-	def filter_image(self, image):
-		""""""
-		image = image.resize((140,64), Image.BICUBIC)
-		image = ImageOps.grayscale(image)
-		return image
+		name = None
+		size = 0
+		unit = None
+		try:
+			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+				if "Filename:" in line:
+					name = line.split(">")[3].split("</")[0].strip()
+				elif "File size:" in line:
+					tmp = line.split(">")[3].split("</")[0].split(" ")
+					size = int(round(float(tmp[0])))
+					unit = tmp[1]
+			if name:
+				if ".." in name:
+					parser = CaptchaForm(url)
+					if parser.link:
+						name = parser.link.split("/").pop()
+		except urllib2.URLError, e:
+			print e
+		return name, size, unit
 
 class CaptchaParser(HTMLParser):
-	""""""
-	def __init__(self, url):
-		""""""
-		HTMLParser.__init__(self)
-		self.captcha = None
-		self.form_action = None
-		self.form_d = None
-		self.form_imagecode = None
-		self.form_megavar = None
-		self.feed(urllib2.urlopen(urllib2.Request(url)).read())
-		self.close()
-
-	def handle_starttag(self, tag, attrs):
-		""""""
-		if tag == "img":
-			if attrs[0][0]  == "src":
-				if attrs[0][1].find("capgen") > 0:
-					self.captcha = attrs[0][1]
-		elif tag == "form":
-			if attrs[0][1] == "POST":
-				self.form_action = attrs[1][1]
-		elif tag == "input":
-			if attrs[1][1] == "d":
-				self.form_d = attrs[2][1]
-			if attrs[1][1] == "imagecode":
-				self.form_imagecode= attrs[2][1]
-			if attrs[1][1] == "megavar":
-				self.form_megavar = attrs[2][1]
-		
-class UrlParser(HTMLParser):
 	""""""
 	def __init__(self, data):
 		""""""
 		HTMLParser.__init__(self)
-		self.tmp_url = None
-		self.url_pos = None
-		self.data = data
-		self.feed(self.data)
+		self.located = False
+		self.captcha = None
+		self.captchacode = ""
+		self.megavar = ""
+		self.feed(data)
 		self.close()
 
 	def handle_starttag(self, tag, attrs):
 		""""""
-		if tag == "a":
-			if ('class', 'downloadhtml') in attrs:
-				self.url_pos = self.getpos()
-			elif  ('onclick', 'loadingdownload();') in attrs:
-				self.tmp_url = attrs[0][1]
-		
-	def get_url(self):
-		""""""
-		vars = {}
-		data = self.data.split("\n")
-		
-		tmp = data[self.url_pos[0]].split(" ")
-		vars[tmp[1]] = chr(int(tmp[3].split("-")[1].split(")")[0]))
+		if tag == "td":
+			if self.get_starttag_text() == '<TD width="100" align="center" height="40">':
+				self.located = True
+		elif tag == "img":
+			if self.located:
+				self.located = False
+				self.captcha = attrs[0][1]
+		elif tag == "input":
+			if attrs[1][1] == CAPTCHACODE:
+				self.captchacode = attrs[2][1]
+			elif attrs[1][1] == MEGAVAR:
+				self.megavar = attrs[2][1]
 
-		tmp = data[self.url_pos[0]+1].split(" ")
-		vars[tmp[1]] = tmp[3].split("\'")[1] + chr(int(math.sqrt(int(tmp[5].split("sqrt(")[1].split(")")[0]))))
+class CaptchaForm(HTMLParser):
+	""""""
+	def __init__(self, url):
+		""""""
+		HTMLParser.__init__(self)
+		self.link = None
+		self.located = False
+		while not self.link:
+			p = CaptchaParser(urllib2.urlopen(urllib2.Request(url)).read())
+			if p.captcha:
+				print p.captcha
+				handle = urllib2.urlopen(urllib2.Request(p.captcha))
+				if handle.info()["Content-Type"] == "image/gif":
+					c = Captcha(handle.read())
+					captcha = c.get_captcha()
+					if captcha:
+						handle = urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
+						self.reset()
+						self.feed(handle.read())
+						self.close()
+						print captcha
+		print self.link
 		
-		tmp = self.tmp_url.split(" + ")
-		return tmp[0].split("\'")[0] + vars[tmp[1]] + vars[tmp[2]] + tmp[3].split("\'")[1]
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "a":
+			if ((self.located) and (attrs[0][0] == "href")):
+				self.located = False
+				self.link = attrs[0][1]
+		elif tag == "div":
+			if ((len(attrs) > 1) and (attrs[1][1] == "downloadlink")):
+				self.located = True
+
+class Captcha:
+	""""""
+	def __init__(self, data):
+		""""""
+		self.tess = Tesseract(data)
+		
+	def get_captcha(self):
+		result = self.tess.get_captcha()
+		if len(result) == 4:
+			return result
+		
+	def filter(self, data):
+		""""""
+		return data
+
+if __name__ == "__main__":
+	#c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
+	print CheckLinks().check("http://www.megaupload.com/?d=1UY9LV7O")
+	
