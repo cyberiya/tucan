@@ -106,6 +106,7 @@ class ServiceManager:
 		for service in self.services:
 			if service.name == service_name:
 				if ((service.premium_download_plugin) and (service.premium_download_plugin.active)):
+					print service.premium_download_plugin.check_links
 					return service.premium_download_plugin.check_links, cons.TYPE_PREMIUM
 				else:
 					return service.anonymous_download_plugin.check_links, cons.TYPE_ANONYMOUS
