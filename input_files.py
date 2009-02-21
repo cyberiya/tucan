@@ -175,8 +175,7 @@ class InputFiles(gtk.Dialog):
 				service_iter = package_model.iter_next(service_iter)
 			if active:
 				if not found:
-					package_model.append(file_iter, [self.correct_icon, services_model.get_value(services_model.get_iter(path), 1), None, None])
-					self.package_treeview.expand_row(package_model.get_path(file_iter), True)
+					self.add_service(package_model, file_iter, services_model.get_value(services_model.get_iter(path), 1))
 			else:
 				if found:
 					package_model.remove(service_iter)
@@ -195,8 +194,12 @@ class InputFiles(gtk.Dialog):
 				file_iter = package_model.append(None, [self.file_icon, os.path.basename(path), str(os.stat(path).st_size), path])	
 				for row in services_model:
 					if row[4]:
-						package_model.append(file_iter, [self.correct_icon, row[1], None, None])
-						self.package_treeview.expand_row(package_model.get_path(file_iter), True)
+						self.add_service(package_model, file_iter, row[1])
+						
+	def add_service(self, package_model, file_iter, service):
+		""""""
+		package_model.append(file_iter, [self.correct_icon, service, None, None])
+		self.package_treeview.expand_row(package_model.get_path(file_iter), True)
 
 	def close(self, widget=None, other=None):
 		""""""
