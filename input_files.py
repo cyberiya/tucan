@@ -31,6 +31,8 @@ from file_chooser import FileChooser
 
 import cons
 
+SERVICES = ["Megaupload", "Rapidshare", "Gigasize"]
+
 class InputFiles(gtk.Dialog):
 	""""""
 	def __init__(self):
@@ -39,16 +41,89 @@ class InputFiles(gtk.Dialog):
 		self.set_icon_from_file(cons.ICON_UPLOAD)
 		self.set_title(("Input Files"))
 		self.set_size_request(600,500)
+		
+		main_hbox = gtk.HBox()
+		self.vbox.pack_start(main_hbox)
+		
+		package_vbox = gtk.VBox()
+		main_hbox.pack_start(package_vbox)
 
+		#package treeview
+		frame = gtk.Frame()
+		package_vbox.pack_start(frame)
+		frame.set_border_width(10)
+		scroll = gtk.ScrolledWindow()
+		frame.add(scroll)
+		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.package_treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str))
+		scroll.add(self.package_treeview)
+		
+		self.package_treeview.set_rules_hint(True)
+		self.package_treeview.set_headers_visible(False)
+		
+		tree_icon = gtk.TreeViewColumn('Icon') 
+		icon_cell = gtk.CellRendererPixbuf()
+		tree_icon.pack_start(icon_cell, True)
+		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
+		self.package_treeview.append_column(tree_icon)
+				  
+		tree_name = gtk.TreeViewColumn('Name') 
+		name_cell = gtk.CellRendererText()
+		tree_name.pack_start(name_cell, True)
+		tree_name.add_attribute(name_cell, 'text', 1)
+		self.package_treeview.append_column(tree_name)
+		
+		tree_size = gtk.TreeViewColumn('Size') 
+		size_cell = gtk.CellRendererText()
+		tree_size.pack_start(size_cell, False)
+		tree_size.add_attribute(size_cell, 'text', 2)
+		self.package_treeview.append_column(tree_size)
+		
 		#choose path
 		hbox = gtk.HBox()
-		self.vbox.pack_start(hbox, False, False, 5)
+		package_vbox.pack_start(hbox, False, False, 5)
 		path_button = gtk.Button(None, gtk.STOCK_OPEN)
 		hbox.pack_start(path_button, False, False, 10)
 		path_button.set_size_request(90,40)
 		path_button.connect("clicked", self.choose_files)
 		path_label = gtk.Label(("Choose files to upload."))
 		hbox.pack_start(path_label, False, False, 10)
+		
+		# services treeview
+		frame = gtk.Frame()
+		main_hbox.pack_start(frame)
+		frame.set_border_width(10)
+		scroll = gtk.ScrolledWindow()
+		frame.add(scroll)
+		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		self.services_treeview = gtk.TreeView(gtk.ListStore(gtk.gdk.Pixbuf, str, bool))
+		scroll.add(self.services_treeview)
+		
+		self.services_treeview.set_rules_hint(True)
+		self.services_treeview.set_headers_visible(False)
+		
+		tree_icon = gtk.TreeViewColumn('Icon') 
+		icon_cell = gtk.CellRendererPixbuf()
+		tree_icon.pack_start(icon_cell, True)
+		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
+		self.services_treeview.append_column(tree_icon)
+				  
+		tree_name = gtk.TreeViewColumn('Name') 
+		name_cell = gtk.CellRendererText()
+		tree_name.pack_start(name_cell, True)
+		tree_name.add_attribute(name_cell, 'text', 1)
+		self.services_treeview.append_column(tree_name)
+		
+		tree_add = gtk.TreeViewColumn('Add')
+		add_cell = gtk.CellRendererToggle()
+		#add_cell.connect("toggled", self.toggled)
+		tree_add.pack_start(add_cell, True)
+		tree_add.add_attribute(add_cell, 'active', 2)
+		self.services_treeview.append_column(tree_add)
+		
+		self.file_icon = self.package_treeview.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_DND)
+		self.correct_icon = self.package_treeview.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
+		self.incorrect_icon = self.package_treeview.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
 
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
@@ -68,8 +143,10 @@ class InputFiles(gtk.Dialog):
 		
 	def on_choose(self, path):
 		""""""
-		#comprobar si es un directorio
-		print path, os.stat(path).st_size
+		model = self.package_treeview.get_model()
+		if os.path.isfile(path):
+			if path not in [col[1] for col in model]:
+				model.append(None, [self.file_icon, os.path.basename(path), str(os.stat(path).st_size), path])
 
 	def close(self, widget=None, other=None):
 		""""""
