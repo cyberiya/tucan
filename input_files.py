@@ -31,7 +31,7 @@ from file_chooser import FileChooser
 
 import cons
 
-SERVICES = ["Megaupload", "Rapidshare", "Gigasize"]
+SERVICES = [("Megaupload", 100), ("Rapidshare", 200), ("Gigasize", 100)]
 
 class InputFiles(gtk.Dialog):
 	""""""
@@ -45,13 +45,14 @@ class InputFiles(gtk.Dialog):
 		main_hbox = gtk.HBox()
 		self.vbox.pack_start(main_hbox)
 		
-		package_vbox = gtk.VBox()
-		main_hbox.pack_start(package_vbox)
+		self.file_icon = self.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_BUTTON)
+		self.correct_icon = self.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
+		self.incorrect_icon = self.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
 
 		#package treeview
 		frame = gtk.Frame()
-		package_vbox.pack_start(frame)
-		frame.set_border_width(10)
+		main_hbox.pack_start(frame, True)
+		frame.set_border_width(5)
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -79,24 +80,18 @@ class InputFiles(gtk.Dialog):
 		tree_size.add_attribute(size_cell, 'text', 2)
 		self.package_treeview.append_column(tree_size)
 		
-		#choose path
-		hbox = gtk.HBox()
-		package_vbox.pack_start(hbox, False, False, 5)
-		path_button = gtk.Button(None, gtk.STOCK_OPEN)
-		hbox.pack_start(path_button, False, False, 10)
-		path_button.set_size_request(90,40)
-		path_button.connect("clicked", self.choose_files)
-		path_label = gtk.Label(("Choose files to upload."))
-		hbox.pack_start(path_label, False, False, 10)
 		
 		# services treeview
 		frame = gtk.Frame()
-		main_hbox.pack_start(frame)
-		frame.set_border_width(10)
+		main_hbox.pack_start(frame, False, False)
+		frame.set_size_request(200, -1)
+		frame.set_border_width(5)
+		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_PREFERENCES_SERVICES))
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.services_treeview = gtk.TreeView(gtk.ListStore(gtk.gdk.Pixbuf, str, bool))
+		services = gtk.ListStore(gtk.gdk.Pixbuf, str, int, str, bool)
+		self.services_treeview = gtk.TreeView(services)
 		scroll.add(self.services_treeview)
 		
 		self.services_treeview.set_rules_hint(True)
@@ -116,15 +111,31 @@ class InputFiles(gtk.Dialog):
 		
 		tree_add = gtk.TreeViewColumn('Add')
 		add_cell = gtk.CellRendererToggle()
-		#add_cell.connect("toggled", self.toggled)
+		add_cell.connect("toggled", self.toggled)
 		tree_add.pack_start(add_cell, True)
-		tree_add.add_attribute(add_cell, 'active', 2)
+		tree_add.add_attribute(add_cell, 'active', 4)
 		self.services_treeview.append_column(tree_add)
 		
-		self.file_icon = self.package_treeview.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_DND)
-		self.correct_icon = self.package_treeview.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
-		self.incorrect_icon = self.package_treeview.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
-
+		for service, size in SERVICES:
+			services.append([self.correct_icon, service, size, cons.UNIT_MB, False])
+			
+		#choose path
+		hbox = gtk.HBox()
+		self.vbox.pack_start(hbox, False, False, 5)
+		path_button = gtk.Button(None, gtk.STOCK_OPEN)
+		path_button.set_size_request(90,40)
+		hbox.pack_start(path_button, False, False, 5)
+		path_button.connect("clicked", self.choose_files)
+		path_label = gtk.Label(("Choose files to upload."))
+		hbox.pack_start(path_label, False, False, 5)
+		aspect = gtk.AspectFrame()
+		hbox.pack_start(aspect, True, True)
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
+		clear_button = gtk.Button(None, gtk.STOCK_CLEAR)
+		clear_button.set_size_request(190,40)
+		hbox.pack_start(clear_button, False, False, 5)
+		clear_button.connect("clicked", self.clear)
+		
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
 		add_button = gtk.Button(None, gtk.STOCK_ADD)
@@ -137,16 +148,55 @@ class InputFiles(gtk.Dialog):
 		self.show_all()
 		self.run()
 		
+	def clear(self, button):
+		""""""
+		self.package_treeview.get_model().clear()
+
+	def toggled(self, button, path):
+		""""""
+		active = True
+		if button.get_active():
+			active = False
+		button.set_active(active)
+		
+		services_model = self.services_treeview.get_model()
+		package_model = self.package_treeview.get_model()
+		
+		services_model.set_value(services_model.get_iter(path), 4, active)
+		
+		file_iter = package_model.get_iter_root()
+		while file_iter:
+			service_iter = package_model.iter_children(file_iter)
+			found = False
+			while service_iter:
+				if services_model.get_value(services_model.get_iter(path), 1) == package_model.get_value(service_iter, 1):
+					found = True
+					break
+				service_iter = package_model.iter_next(service_iter)
+			if active:
+				if not found:
+					package_model.append(file_iter, [self.correct_icon, services_model.get_value(services_model.get_iter(path), 1), None, None])
+					self.package_treeview.expand_row(package_model.get_path(file_iter), True)
+			else:
+				if found:
+					package_model.remove(service_iter)
+			file_iter = package_model.iter_next(file_iter)
+				
 	def choose_files(self, button):
 		""""""
 		FileChooser(self, self.on_choose, None, True)
 		
 	def on_choose(self, path):
 		""""""
-		model = self.package_treeview.get_model()
+		package_model = self.package_treeview.get_model()
+		services_model = self.services_treeview.get_model()
 		if os.path.isfile(path):
-			if path not in [col[1] for col in model]:
-				model.append(None, [self.file_icon, os.path.basename(path), str(os.stat(path).st_size), path])
+			if path not in [row[1] for row in package_model]:
+				file_iter = package_model.append(None, [self.file_icon, os.path.basename(path), str(os.stat(path).st_size), path])	
+				for row in services_model:
+					if row[4]:
+						package_model.append(file_iter, [self.correct_icon, row[1], None, None])
+						self.package_treeview.expand_row(package_model.get_path(file_iter), True)
 
 	def close(self, widget=None, other=None):
 		""""""
