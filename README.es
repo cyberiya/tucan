@@ -51,7 +51,7 @@
        - Acceso Anónimo: Disponible = Sí (captcha = Sí)
        - Acceso Premium: Disponible = No
  
-    - Subidas: Disponible = No
+    - Subidas: Disponible = Todavía no
  
  
 ===================
