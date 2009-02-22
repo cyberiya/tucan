@@ -38,6 +38,7 @@ class AdvancedPackages(gtk.Dialog):
 		self.set_size_request(600,400)
 		
 		self.packages = []
+		self.history_path = default_path
 		
 		#treeview
 		frame = gtk.Frame()
@@ -121,7 +122,8 @@ class AdvancedPackages(gtk.Dialog):
 		""""""
 		model, iter = self.treeview.get_selection().get_selected()
 		if iter:
-			FileChooser(self, self.on_choose, model.get_value(iter, 1))
+			f = FileChooser(self, self.on_choose, self.history_path)
+			self.history_path = f.history_path
 			
 	def on_choose(self, folder_path):
 		""""""
