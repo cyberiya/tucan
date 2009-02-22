@@ -31,7 +31,7 @@ from file_chooser import FileChooser
 
 import cons
 
-SERVICES = [("Megaupload", 100, cons.UNIT_MB), ("Rapidshare", 200, cons.UNIT_MB), ("Gigasize", 100, cons.UNIT_MB)]
+SERVICES = [("Megaupload", 100, cons.UNIT_MB, ["Anonymous", "Premium"]), ("Rapidshare", 200, cons.UNIT_MB, ["Collector", "Premium"]), ("Gigasize", 100, cons.UNIT_MB, ["Anonymous"])]
 
 class InputFiles(gtk.Dialog):
 	""""""
@@ -82,17 +82,21 @@ class InputFiles(gtk.Dialog):
 		tree_size.add_attribute(size_cell, 'text', 2)
 		self.package_treeview.append_column(tree_size)
 		
+		service_vbox = gtk.VBox()
+		main_hbox.pack_start(service_vbox, False, False)
+		
 		# services treeview
 		frame = gtk.Frame()
-		main_hbox.pack_start(frame, False, False)
+		service_vbox.pack_start(frame)
 		frame.set_size_request(200, -1)
 		frame.set_border_width(5)
 		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_PREFERENCES_SERVICES))
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		services = gtk.ListStore(gtk.gdk.Pixbuf, str, int, str, bool)
+		services = gtk.ListStore(gtk.gdk.Pixbuf, str, int, str, bool, gobject.TYPE_PYOBJECT)
 		self.services_treeview = gtk.TreeView(services)
+		self.services_treeview.get_selection().connect("changed", self.select)
 		scroll.add(self.services_treeview)
 		
 		self.services_treeview.set_rules_hint(True)
@@ -117,8 +121,19 @@ class InputFiles(gtk.Dialog):
 		tree_add.add_attribute(add_cell, 'active', 4)
 		self.services_treeview.append_column(tree_add)
 		
-		for service, size, unit in upload_services:
-			services.append([self.correct_icon, service, size, unit, False])
+		#plugins
+		self.plugins_frame = gtk.Frame()
+		service_vbox.pack_start(self.plugins_frame, False, False)
+		self.plugins_frame.set_size_request(200, 100)
+		self.plugins_frame.set_border_width(5)
+		
+		for service, size, unit, plugins in upload_services:
+			vbox = gtk.VBox()
+			first = None
+			for plugin in plugins:
+				first = gtk.RadioButton(first, plugin)
+				vbox.pack_start(first, False, False, 5)
+			services.append([self.correct_icon, service, size, unit, False, vbox])
 			
 		#choose path
 		hbox = gtk.HBox()
@@ -147,12 +162,22 @@ class InputFiles(gtk.Dialog):
 		
 		self.connect("response", self.close)
 		self.show_all()
-		
+		self.set_focus(path_button)
 		self.run()
 		
 	def clear(self, button):
 		""""""
 		self.package_treeview.get_model().clear()
+		
+	def select(self, selection):
+		""""""
+		model, service_iter = selection.get_selected()
+		if iter:
+			if self.plugins_frame.get_child():
+				self.plugins_frame.remove(self.plugins_frame.get_child())
+			vbox = model.get_value(service_iter, 5)
+			self.plugins_frame.add(vbox)
+			vbox.show_all()
 		
 	def add_files(self, button):
 		""""""
