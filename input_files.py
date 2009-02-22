@@ -132,7 +132,7 @@ class InputFiles(gtk.Dialog):
 			first = None
 			for plugin in plugins:
 				first = gtk.RadioButton(first, plugin)
-				vbox.pack_start(first, False, False, 5)
+				vbox.pack_start(first, False, False, 1)
 			services.append([self.correct_icon, service, size, unit, False, vbox])
 			
 		#choose path
