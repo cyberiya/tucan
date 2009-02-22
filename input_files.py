@@ -183,14 +183,20 @@ class InputFiles(gtk.Dialog):
 		""""""
 		result = []
 		package_model = self.package_treeview.get_model()
+		services_model = self.services_treeview.get_model()
 		
 		file_iter = package_model.get_iter_root()
 		while file_iter:
 			services = []
 			service_iter = package_model.iter_children(file_iter)
 			while service_iter:
+				service_name = package_model.get_value(service_iter, 1)
 				if package_model.get_value(service_iter, 4):
-					services.append(package_model.get_value(service_iter, 1))
+					for service in services_model:
+						if service[1] == service_name:
+							for button in service[5].get_children():
+								if button.get_active():
+									services.append((service_name, button.get_label()))
 				service_iter = package_model.iter_next(service_iter)
 			if len(services) > 0:
 				tmp = package_model.get_value(file_iter, 2).split(" ")
