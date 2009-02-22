@@ -35,7 +35,7 @@ SERVICES = [("Megaupload", 100, cons.UNIT_MB), ("Rapidshare", 200, cons.UNIT_MB)
 
 class InputFiles(gtk.Dialog):
 	""""""
-	def __init__(self):
+	def __init__(self, upload_services):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_UPLOAD)
@@ -117,7 +117,7 @@ class InputFiles(gtk.Dialog):
 		tree_add.add_attribute(add_cell, 'active', 4)
 		self.services_treeview.append_column(tree_add)
 		
-		for service, size, unit in SERVICES:
+		for service, size, unit in upload_services:
 			services.append([self.correct_icon, service, size, unit, False])
 			
 		#choose path
@@ -263,4 +263,4 @@ class InputFiles(gtk.Dialog):
 		self.destroy()
 	
 if __name__ == "__main__":
-	x = InputFiles()
+	x = InputFiles(SERVICES)
