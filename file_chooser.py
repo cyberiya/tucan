@@ -33,6 +33,8 @@ class FileChooser(gtk.FileChooserDialog):
 	def __init__(self, parent, func, default_path=None, files=False):
 		""""""
 		gtk.FileChooserDialog.__init__(self,None, parent)
+		self.history_path = self.get_current_folder()
+		
 		if default_path:
 			self.set_current_folder(default_path)
 		if files:
@@ -67,6 +69,7 @@ class FileChooser(gtk.FileChooserDialog):
 
 	def on_choose_folder(self, button, func):
 		""""""
+		self.history_path = self.get_current_folder()
 		for file_name in self.get_filenames():
 			func(os.path.join(file_name))
 		self.close()
