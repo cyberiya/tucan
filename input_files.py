@@ -42,6 +42,8 @@ class InputFiles(gtk.Dialog):
 		self.set_title(("Input Files"))
 		self.set_size_request(600,500)
 		
+		self.history_path = cons.DEFAULT_PATH
+		
 		main_hbox = gtk.HBox()
 		self.vbox.pack_start(main_hbox)
 		
@@ -185,7 +187,8 @@ class InputFiles(gtk.Dialog):
 				
 	def choose_files(self, button):
 		""""""
-		FileChooser(self, self.on_choose, None, True)
+		f = FileChooser(self, self.on_choose, self.history_path, True)
+		self.history_path = f.history_path
 		
 	def on_choose(self, path):
 		""""""
