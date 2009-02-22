@@ -69,13 +69,13 @@ class FileChooser(gtk.FileChooserDialog):
 
 	def on_choose_folder(self, button, func):
 		""""""
-		self.history_path = self.get_current_folder()
 		for file_name in self.get_filenames():
 			func(os.path.join(file_name))
 		self.close()
 		
 	def close(self, widget=None, response=None):
 		""""""
+		self.history_path = self.get_current_folder()
 		self.set_show_hidden(False)
 		self.destroy()
 
