@@ -143,7 +143,7 @@ class InputFiles(gtk.Dialog):
 		self.action_area.pack_start(cancel_button)
 		self.action_area.pack_start(add_button)
 		cancel_button.connect("clicked", self.close)
-		#add_button.connect("clicked", self.choose_files)
+		add_button.connect("clicked", self.add_files)
 		
 		self.connect("response", self.close)
 		self.show_all()
@@ -153,6 +153,25 @@ class InputFiles(gtk.Dialog):
 	def clear(self, button):
 		""""""
 		self.package_treeview.get_model().clear()
+		
+	def add_files(self, button):
+		""""""
+		result = []
+		package_model = self.package_treeview.get_model()
+		
+		file_iter = package_model.get_iter_root()
+		while file_iter:
+			services = []
+			service_iter = package_model.iter_children(file_iter)
+			while service_iter:
+				if package_model.get_value(service_iter, 4):
+					services.append(package_model.get_value(service_iter, 1))
+				service_iter = package_model.iter_next(service_iter)
+			if len(services) > 0:
+				result.append((package_model.get_value(file_iter, 3), services))
+			file_iter = package_model.iter_next(file_iter)
+		self.close()
+		print result
 
 	def toggled(self, button, path):
 		""""""
