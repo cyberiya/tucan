@@ -31,7 +31,7 @@ from file_chooser import FileChooser
 
 import cons
 
-SERVICES = [("Megaupload", 100), ("Rapidshare", 200), ("Gigasize", 100)]
+SERVICES = [("Megaupload", 100, cons.UNIT_MB), ("Rapidshare", 200, cons.UNIT_MB), ("Gigasize", 100, cons.UNIT_MB)]
 
 class InputFiles(gtk.Dialog):
 	""""""
@@ -56,7 +56,7 @@ class InputFiles(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.package_treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str))
+		self.package_treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str, bool))
 		scroll.add(self.package_treeview)
 		
 		self.package_treeview.set_rules_hint(True)
@@ -79,7 +79,6 @@ class InputFiles(gtk.Dialog):
 		tree_size.pack_start(size_cell, False)
 		tree_size.add_attribute(size_cell, 'text', 2)
 		self.package_treeview.append_column(tree_size)
-		
 		
 		# services treeview
 		frame = gtk.Frame()
@@ -116,8 +115,8 @@ class InputFiles(gtk.Dialog):
 		tree_add.add_attribute(add_cell, 'active', 4)
 		self.services_treeview.append_column(tree_add)
 		
-		for service, size in SERVICES:
-			services.append([self.correct_icon, service, size, cons.UNIT_MB, False])
+		for service, size, unit in SERVICES:
+			services.append([self.correct_icon, service, size, unit, False])
 			
 		#choose path
 		hbox = gtk.HBox()
@@ -146,6 +145,7 @@ class InputFiles(gtk.Dialog):
 		
 		self.connect("response", self.close)
 		self.show_all()
+		
 		self.run()
 		
 	def clear(self, button):
@@ -175,7 +175,9 @@ class InputFiles(gtk.Dialog):
 				service_iter = package_model.iter_next(service_iter)
 			if active:
 				if not found:
-					self.add_service(package_model, file_iter, services_model.get_value(services_model.get_iter(path), 1))
+					tmp = package_model.get_value(file_iter, 2).split(" ")
+					max_size = self.join_size(services_model.get_value(services_model.get_iter(path), 2), services_model.get_value(services_model.get_iter(path), 3))
+					self.add_service(package_model, file_iter, services_model.get_value(services_model.get_iter(path), 1), self.join_size(float(tmp[0]), tmp[1]), max_size)
 			else:
 				if found:
 					package_model.remove(service_iter)
@@ -191,14 +193,45 @@ class InputFiles(gtk.Dialog):
 		services_model = self.services_treeview.get_model()
 		if os.path.isfile(path):
 			if path not in [row[1] for row in package_model]:
-				file_iter = package_model.append(None, [self.file_icon, os.path.basename(path), str(os.stat(path).st_size), path])	
+				file_size = int(os.stat(path).st_size/1024)
+				size, unit = self.split_size(file_size)
+				file_iter = package_model.append(None, [self.file_icon, os.path.basename(path), "%i %s" %(size, unit), path, None])	
 				for row in services_model:
 					if row[4]:
-						self.add_service(package_model, file_iter, row[1])
+						self.add_service(package_model, file_iter, row[1], file_size, self.join_size(row[2], row[3]))
 						
-	def add_service(self, package_model, file_iter, service):
+	def join_size(self, size, unit):
 		""""""
-		package_model.append(file_iter, [self.correct_icon, service, None, None])
+		factor = 1
+		if unit == cons.UNIT_KB:
+			factor = 1
+		elif unit == cons.UNIT_MB:
+			factor = 1024
+		elif unit == cons.UNIT_GB:
+			factor = 1024*1024
+		return float(size*factor)
+		
+	def split_size(self, size):
+		""""""
+		if size > 0:
+			tmp = size/1024
+			if tmp > 0:
+				tmp2 = tmp/1024
+				if tmp2 > 0:
+					return tmp2, cons.UNIT_GB
+				else:
+					return tmp, cons.UNIT_MB
+			else:
+				return size, cons.UNIT_KB
+		else:
+			return 1, cons.UNIT_KB	
+		
+	def add_service(self, package_model, file_iter, service, file_size, max_size):
+		""""""
+		if max_size > file_size:
+			package_model.append(file_iter, [self.correct_icon, service, None, None, True])
+		else:
+			package_model.append(file_iter, [self.incorrect_icon, service, None, None, False])
 		self.package_treeview.expand_row(package_model.get_path(file_iter), True)
 
 	def close(self, widget=None, other=None):
@@ -207,4 +240,3 @@ class InputFiles(gtk.Dialog):
 	
 if __name__ == "__main__":
 	x = InputFiles()
-	#gtk.main()
