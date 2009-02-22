@@ -168,7 +168,9 @@ class InputFiles(gtk.Dialog):
 					services.append(package_model.get_value(service_iter, 1))
 				service_iter = package_model.iter_next(service_iter)
 			if len(services) > 0:
-				result.append((package_model.get_value(file_iter, 3), services))
+				tmp = package_model.get_value(file_iter, 2).split(" ")
+				size, unit = self.split_size(self.join_size(int(tmp[0]), tmp[1]))
+				result.append((package_model.get_value(file_iter, 3), int(size), unit, services))
 			file_iter = package_model.iter_next(file_iter)
 		self.close()
 		print result
@@ -198,7 +200,7 @@ class InputFiles(gtk.Dialog):
 				if not found:
 					tmp = package_model.get_value(file_iter, 2).split(" ")
 					max_size = self.join_size(services_model.get_value(services_model.get_iter(path), 2), services_model.get_value(services_model.get_iter(path), 3))
-					self.add_service(package_model, file_iter, services_model.get_value(services_model.get_iter(path), 1), self.join_size(float(tmp[0]), tmp[1]), max_size)
+					self.add_service(package_model, file_iter, services_model.get_value(services_model.get_iter(path), 1), self.join_size(int(tmp[0]), tmp[1]), max_size)
 			else:
 				if found:
 					package_model.remove(service_iter)
@@ -231,7 +233,7 @@ class InputFiles(gtk.Dialog):
 			factor = 1024
 		elif unit == cons.UNIT_GB:
 			factor = 1024*1024
-		return float(size*factor)
+		return size*factor
 		
 	def split_size(self, size):
 		""""""
