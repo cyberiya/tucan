@@ -20,10 +20,18 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import os
 import urllib2
 import ConfigParser
 
 from HTMLParser import HTMLParser
+
+import cons
+
+BASE = "https://forja.rediris.es/svn/cusl3-tucan/trunk/default_plugins/"
+VERSION_FILE = "__init__.py"
+SECTION_VERSION = "version"
+OPTION_VALUE = "value"
 
 class ServiceList(HTMLParser):
 	""""""
@@ -55,16 +63,26 @@ class ServiceCheck(HTMLParser):
 		if tag == "file":
 			self.files.append(attrs[1][1])
 
+class ServiceUpdate:
+	""""""""
+	def __init__(self, local_services):
+		""""""
+		list = ServiceList(BASE)
+		for remote_service in list.services:
+			check = ServiceCheck(BASE + remote_service)
+			if VERSION_FILE in check.files:
+				#get remote version
+				config = ConfigParser.SafeConfigParser()
+				config.readfp(urllib2.urlopen(urllib2.Request(BASE + remote_service + VERSION_FILE)))
+				remote_version = config.getint(SECTION_VERSION, OPTION_VALUE)
+				#get local version
+				for local_service in local_services:
+					if local_service[0] == remote_service.split("/")[0]:
+						config = ConfigParser.SafeConfigParser()
+						config.readfp(file(os.path.join(cons.PLUGIN_PATH, local_service[0], VERSION_FILE), "r"))
+						local_version = config.getint(SECTION_VERSION, OPTION_VALUE)
+				print remote_service, check.files, remote_version, local_version
 
 if __name__ == "__main__":
-	BASE = "https://forja.rediris.es/svn/cusl3-tucan/trunk/default_plugins/"
-	VERSION_FILE = "__init__.py"
-	SECTION_VERSION = "version"
-	OPTION_VALUE = "value"
-	l = ServiceList(BASE)
-	for service in l.services:
-		c = ServiceCheck(BASE + service)
-		if VERSION_FILE in c.files:
-			config = ConfigParser.SafeConfigParser()
-			config.readfp(urllib2.urlopen(urllib2.Request(BASE + service + VERSION_FILE)))
-			print config.getint(SECTION_VERSION, OPTION_VALUE)
+	from config import Config
+	s = ServiceUpdate(Config().get_services())
