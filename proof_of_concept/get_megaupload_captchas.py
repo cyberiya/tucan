@@ -42,9 +42,10 @@ class CaptchaParser(HTMLParser):
 
 
 if __name__ == "__main__":
-	for i in range(10):
+	for i in range(100):
 		c = CaptchaParser("http://www.megaupload.com/?d=QCDHDK2W")
 		if c.captcha:
-			f = open("/home/crak/icon/captchas/%s.gif" % i, "w")
+			print c.captcha
+			f = open("/home/crak/icon/captchas/%s" % c.captcha.split("/").pop(), "w")
 			f.write(urllib2.urlopen(urllib2.Request(c.captcha)).read())
 			f.close()
