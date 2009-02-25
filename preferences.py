@@ -240,7 +240,7 @@ class Preferences(gtk.Dialog):
 		bbox = gtk.HButtonBox()
 		bbox.set_layout(gtk.BUTTONBOX_EDGE)
 		frame.add(bbox)
-		button = gtk.Button(None, gtk.STOCK_ADD)
+		button = gtk.Button(None, gtk.STOCK_FIND)
 		button.connect("clicked", self.choose_service)
 		bbox.pack_start(button)
 		button = gtk.Button(None, gtk.STOCK_REMOVE)
