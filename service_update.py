@@ -62,9 +62,9 @@ class ServiceCheck(HTMLParser):
 
 class ServiceUpdate:
 	""""""""
-	def __init__(self, local_services):
+	def get_updates(self, local_services):
 		""""""
-		self.new_services = {}
+		new_services = {}
 		list = ServiceList(BASE)
 		for remote_service in list.services:
 			check = ServiceCheck(BASE + remote_service)
@@ -79,17 +79,28 @@ class ServiceUpdate:
 						found = True
 						local_version = local_service[4].get_update()
 						if remote_version > local_version:
-							self.new_services[remote_service] = check.files, local_service[1]
+							new_services[local_service[2]] = local_service[0], check.files, local_service[1]
 			if not found:
-				self.new_services[remote_service] = check.files, None
-		print self.new_services
+				new_services[config.get_name()] = remote_service.split("/")[0], check.files, None
+		return new_services
 
-	def install_service(self):
+	def install_service(self, service, files):
 		""""""
-		for file_name in check.files:
-			#f = file(os.path.join(cons.PLUGIN_PATH, local_service[0], file_name), "w")
-			print urllib2.urlopen(urllib2.Request(BASE + remote_service + file_name)).read()
+		for file_name in files:
+			handle = urllib2.urlopen(urllib2.Request("%s%s/%s" % (BASE, service, file_name)))
+			#windows incompatibility
+			if "text" in handle.info()["Content-Type"]:
+				write_mode = "w"
+			else:
+				write_mode = "wb"
+			f = file(os.path.join(cons.PLUGIN_PATH, service, file_name), write_mode)
+			f.write(handle.read())
+			f.close()
 
 if __name__ == "__main__":
 	from config import Config
-	s = ServiceUpdate(Config().get_services())
+	s = ServiceUpdate()
+	updates = s.get_updates(Config().get_services())
+	print updates
+	service, files, icon = updates["megaupload.com"]
+	s.install_service(service, files)

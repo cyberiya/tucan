@@ -50,7 +50,6 @@ OPTION_DOWNLOADS = "downloads"
 OPTION_UPLOADS = "uploads"
 
 OPTION_PATH = "path"
-OPTION_NAME = "name"
 OPTION_AUTHOR = "author"
 OPTION_VERSION = "version"
 OPTION_SLOTS = "slots"
@@ -81,6 +80,11 @@ class ServiceConfig(SafeConfigParser):
 		""""""
 		self.set(SECTION_MAIN, OPTION_ENABLED, str(enabled))
 		self.save()
+		
+	def get_name(self):
+		""""""
+		if self.has_option(SECTION_MAIN, OPTION_NAME):
+			return self.get(SECTION_MAIN, OPTION_NAME)
 		
 	def get_update(self):
 		""""""
