@@ -22,16 +22,15 @@
 
 import os
 import urllib2
-import ConfigParser
 
 from HTMLParser import HTMLParser
+
+from service_config import ServiceConfig
 
 import cons
 
 BASE = "https://forja.rediris.es/svn/cusl3-tucan/trunk/default_plugins/"
-VERSION_FILE = "__init__.py"
-SECTION_VERSION = "version"
-OPTION_VALUE = "value"
+CONF_FILE = "service.conf"
 
 class ServiceList(HTMLParser):
 	""""""
@@ -41,7 +40,6 @@ class ServiceList(HTMLParser):
 		self.services = []
 		self.feed(urllib2.urlopen(urllib2.Request(url)).read())
 		self.close()
-
 
 	def handle_starttag(self, tag, attrs):
 		""""""
@@ -57,7 +55,6 @@ class ServiceCheck(HTMLParser):
 		self.feed(urllib2.urlopen(urllib2.Request(url)).read())
 		self.close()
 
-
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "file":
@@ -67,21 +64,31 @@ class ServiceUpdate:
 	""""""""
 	def __init__(self, local_services):
 		""""""
+		self.new_services = {}
 		list = ServiceList(BASE)
 		for remote_service in list.services:
 			check = ServiceCheck(BASE + remote_service)
-			if VERSION_FILE in check.files:
+			found = False
+			if CONF_FILE in check.files:
 				#get remote version
-				config = ConfigParser.SafeConfigParser()
-				config.readfp(urllib2.urlopen(urllib2.Request(BASE + remote_service + VERSION_FILE)))
-				remote_version = config.getint(SECTION_VERSION, OPTION_VALUE)
+				config = ServiceConfig(None, urllib2.urlopen(urllib2.Request(BASE + remote_service + CONF_FILE)))
+				remote_version = config.get_update()
 				#get local version
 				for local_service in local_services:
 					if local_service[0] == remote_service.split("/")[0]:
-						config = ConfigParser.SafeConfigParser()
-						config.readfp(file(os.path.join(cons.PLUGIN_PATH, local_service[0], VERSION_FILE), "r"))
-						local_version = config.getint(SECTION_VERSION, OPTION_VALUE)
-				print remote_service, check.files, remote_version, local_version
+						found = True
+						local_version = local_service[4].get_update()
+						if remote_version > local_version:
+							self.new_services[remote_service] = check.files, local_service[1]
+			if not found:
+				self.new_services[remote_service] = check.files, None
+		print self.new_services
+
+	def install_service(self):
+		""""""
+		for file_name in check.files:
+			#f = file(os.path.join(cons.PLUGIN_PATH, local_service[0], file_name), "w")
+			print urllib2.urlopen(urllib2.Request(BASE + remote_service + file_name)).read()
 
 if __name__ == "__main__":
 	from config import Config

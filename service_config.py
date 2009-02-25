@@ -38,6 +38,7 @@ SECTION_ANONYMOUS_UPLOAD = "anonymous_upload"
 SECTION_USER_UPLOAD = "user_upload"
 SECTION_PREMIUM_UPLOAD = "premium_upload"
 
+OPTION_UPDATE = "update"
 OPTION_NAME = "name"
 OPTION_ICON = "icon"
 OPTION_ENABLED = "enabled"
@@ -60,12 +61,16 @@ CONF = "service.conf"
 
 class ServiceConfig(SafeConfigParser):
 	""""""
-	def __init__(self, path):
+	def __init__(self, path, fd=None):
 		""""""
 		SafeConfigParser.__init__(self)
 		self.path = path
-		if os.path.exists(self.path + CONF):
+		
+		if fd:
+			self.readfp(fd)
+		elif os.path.exists(self.path + CONF):
 			self.read(self.path + CONF)
+			
 	
 	def check_config(self):
 		""""""
@@ -76,6 +81,13 @@ class ServiceConfig(SafeConfigParser):
 		""""""
 		self.set(SECTION_MAIN, OPTION_ENABLED, str(enabled))
 		self.save()
+		
+	def get_update(self):
+		""""""
+		if self.has_option(SECTION_MAIN, OPTION_UPDATE):
+			return self.getint(SECTION_MAIN, OPTION_UPDATE)
+		else:
+			return 0
 
 	def get_icon(self):
 		""""""
