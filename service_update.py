@@ -25,6 +25,7 @@ import urllib2
 
 from HTMLParser import HTMLParser
 
+import config
 from service_config import ServiceConfig
 
 import cons
@@ -62,6 +63,10 @@ class ServiceCheck(HTMLParser):
 
 class ServiceUpdate:
 	""""""""
+	def __init__(self):
+		""""""
+		self.config = config.Config() 
+
 	def get_updates(self, local_services):
 		""""""
 		new_services = {}
@@ -84,21 +89,25 @@ class ServiceUpdate:
 				new_services[config.get_name()] = remote_service.split("/")[0], check.files, None
 		return new_services
 
-	def install_service(self, service, files):
+	def install_service(self, service_name, service_dir, files):
 		""""""
 		for file_name in files:
-			handle = urllib2.urlopen(urllib2.Request("%s%s/%s" % (BASE, service, file_name)))
+			handle = urllib2.urlopen(urllib2.Request("%s%s/%s" % (BASE, service_dir, file_name)))
 			#windows incompatibility
 			if "text" in handle.info()["Content-Type"]:
 				write_mode = "w"
 			else:
 				write_mode = "wb"
-			f = file(os.path.join(cons.PLUGIN_PATH, service, file_name), write_mode)
+			if not os.path.isdir(os.path.join(cons.PLUGIN_PATH, service_dir)):
+				os.mkdir(os.path.join(cons.PLUGIN_PATH, service_dir))
+			print "Updating: ", os.path.join(cons.PLUGIN_PATH, service_dir, file_name)
+			f = file(os.path.join(cons.PLUGIN_PATH, service_dir, file_name), write_mode)
 			f.write(handle.read())
 			f.close()
+			if not self.config.has_option(config.SECTION_SERVICES, service_name):
+				self.config.set(config.SECTION_SERVICES, service_name, os.path.join(cons.PLUGIN_PATH, service_dir, ""))
 
 if __name__ == "__main__":
-	from config import Config
 	s = ServiceUpdate()
 	updates = s.get_updates(Config().get_services())
 	print updates
