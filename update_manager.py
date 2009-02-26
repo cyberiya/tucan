@@ -101,8 +101,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.show_all()
 		
 		self.progress.hide()
-		gobject.idle_add(self.check_updates)
-		
+		gobject.timeout_add(1000, self.check_updates)
 		self.run()
 		
 	def toggled(self, button, path):
