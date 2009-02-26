@@ -34,6 +34,8 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 	def __init__(self, local_services):
 		""""""		
 		gtk.Dialog.__init__(self)
+		ServiceUpdate.__init__(self)
+
 		self.set_icon_from_file(cons.ICON_UPDATE)
 		self.set_title(("Update Manager"))
 		self.set_size_request(400,300)
@@ -135,17 +137,31 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		
 	def install(self, button):
 		""""""
-		import time
+		model = self.treeview.get_model()
+		
 		self.status_icon.set_from_stock(gtk.STOCK_GO_DOWN, gtk.ICON_SIZE_MENU)
 		self.status_label.set_label("Installing")
 		self.progress.show()
+		
+		install_targets = []
+		update_iter = model.get_iter_root()
+		while update_iter:
+			if model.get_value(update_iter, 2):
+				install_targets.append(model.get(update_iter, 1, 3, 4))
+			update_iter = model.iter_next(update_iter)
+		
 		self.progress.grab_add()
-		for i in range(10):
+		cont = 0.0
+		for service_name, service_dir, file_list in install_targets:
+			self.progress.set_text("%i of %i" % (int(cont), len(install_targets)))
 			#unfreezes widget
 			while gtk.events_pending():
 				gtk.main_iteration_do(False)
-			self.progress.set_fraction(0.1*(i+1))
-			time.sleep(1)
+			self.install_service(service_name, service_dir, file_list)
+			cont += 1
+			self.progress.set_fraction(cont/len(install_targets))
+		self.progress.set_text("%i of %i" % (int(cont), len(install_targets)))
+		self.config.save(True)
 		gobject.timeout_add(1000, self.close)
 
 	def close(self, widget=None, other=None):
