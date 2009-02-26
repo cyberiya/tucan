@@ -63,11 +63,12 @@ class ServiceCheck(HTMLParser):
 
 class ServiceUpdate:
 	""""""""
-	def __init__(self):
+	def __init__(self, config):
 		""""""
-		self.config = config.Config() 
+		self.config = config
+		self.local_services = config.get_services()
 
-	def get_updates(self, local_services):
+	def get_updates(self):
 		""""""
 		new_services = {}
 		list = ServiceList(BASE)
@@ -79,7 +80,7 @@ class ServiceUpdate:
 				config = ServiceConfig(None, urllib2.urlopen(urllib2.Request(BASE + remote_service + CONF_FILE)))
 				remote_version = config.get_update()
 				#get local version
-				for local_service in local_services:
+				for local_service in self.local_services:
 					if local_service[0] == remote_service.split("/")[0]:
 						found = True
 						local_version = local_service[4].get_update()
@@ -106,10 +107,3 @@ class ServiceUpdate:
 			f.close()
 			if not self.config.has_option(config.SECTION_SERVICES, service_name):
 				self.config.set(config.SECTION_SERVICES, service_name, os.path.join(cons.PLUGIN_PATH, service_dir, ""))
-
-if __name__ == "__main__":
-	s = ServiceUpdate()
-	updates = s.get_updates(Config().get_services())
-	print updates
-	service, files, icon = updates["megaupload.com"]
-	s.install_service(service, files)
