@@ -146,19 +146,21 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 			if model.get_value(update_iter, 2):
 				install_targets.append(model.get(update_iter, 1, 3, 4))
 			update_iter = model.iter_next(update_iter)
-		
-		self.progress.grab_add()
-		cont = 0.0
-		for service_name, service_dir, file_list in install_targets:
+		if len(install_targets) > 0:
+			self.progress.grab_add()
+			cont = 0.0
+			for service_name, service_dir, file_list in install_targets:
+				self.progress.set_text("%i of %i" % (int(cont), len(install_targets)))
+				#unfreezes widget
+				while gtk.events_pending():
+					gtk.main_iteration_do(False)
+				self.install_service(service_name, service_dir, file_list)
+				cont += 1
+				self.progress.set_fraction(cont/len(install_targets))
 			self.progress.set_text("%i of %i" % (int(cont), len(install_targets)))
-			#unfreezes widget
-			while gtk.events_pending():
-				gtk.main_iteration_do(False)
-			self.install_service(service_name, service_dir, file_list)
-			cont += 1
-			self.progress.set_fraction(cont/len(install_targets))
-		self.progress.set_text("%i of %i" % (int(cont), len(install_targets)))
-		gobject.timeout_add(1000, self.close)
+			gobject.timeout_add(1000, self.close)
+		else:
+			self.close()
 
 	def close(self, widget=None, other=None):
 		""""""
