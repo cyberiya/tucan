@@ -33,6 +33,7 @@ import config
 from service_preferences import ServicePreferences
 from message import Message
 from file_chooser import FileChooser
+from update_manager import UpdateManager
 
 LANGUAGES = [("English", "en"), ("Spanish", "es"), ("Italian", "it")]
 #["English", "French", "German", "Japanese", "Spanish"]
@@ -92,7 +93,7 @@ class Preferences(gtk.Dialog):
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES, str(self.advanced_packages.get_active()))
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS, str(self.show_uploads.get_active()))
 		
-		self.config.save()
+		self.config.save(True)
 		self.close()
 
 	def new_page(self, tab_name, tab_image, page):
@@ -241,7 +242,7 @@ class Preferences(gtk.Dialog):
 		bbox.set_layout(gtk.BUTTONBOX_EDGE)
 		frame.add(bbox)
 		button = gtk.Button(None, gtk.STOCK_FIND)
-		button.connect("clicked", self.choose_service)
+		button.connect("clicked", self.update_manager)
 		bbox.pack_start(button)
 		button = gtk.Button(None, gtk.STOCK_REMOVE)
 		button.connect("clicked", self.delete_service)
@@ -276,18 +277,15 @@ class Preferences(gtk.Dialog):
 				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
 			self.treeview.get_model().append((icon, name, enabled, configuration))
 		else:
-			Message(self, cons.SEVERITY_ERROR, path , _("The choosed directory isn't a service, or it's not configured."))
+			Message(self, cons.SEVERITY_ERROR, path , _("Service not configured."))
 
-	def choose_service(self, button):
+	def update_manager(self, button):
 		""""""
-		FileChooser(self, self.on_choose)
-		
-	def on_choose(self, service_path):
-		""""""
-		model = self.treeview.get_model()
-		package, icon_path, name, enabled, configuration = self.config.service(service_path)
-		self.add_service(service_path, icon_path, name, enabled, configuration)
-		
+		UpdateManager(self.config)
+		self.treeview.get_model().clear()
+		for path, icon_path, name, enabled, configuration in self.config.get_services():
+			self.add_service(path, icon_path, name, enabled, configuration)
+
 	def delete_service(self, button):
 		""""""
 		model, iter = self.treeview.get_selection().get_selected()

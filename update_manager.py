@@ -31,16 +31,14 @@ import cons
 
 class UpdateManager(gtk.Dialog, ServiceUpdate):
 	""""""
-	def __init__(self, local_services):
+	def __init__(self, config):
 		""""""		
 		gtk.Dialog.__init__(self)
-		ServiceUpdate.__init__(self)
+		ServiceUpdate.__init__(self, config)
 
 		self.set_icon_from_file(cons.ICON_UPDATE)
 		self.set_title(("Update Manager"))
 		self.set_size_request(400,300)
-		
-		self.services = local_services
 		
 		# treeview
 		frame = gtk.Frame()
@@ -123,7 +121,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		
 		updated = 0
 		new = 0
-		for service, options in self.get_updates(self.services).items():
+		for service, options in self.get_updates().items():
 			if options[2]:
 				icon = gtk.gdk.pixbuf_new_from_file(options[2])
 				updated += 1
@@ -161,7 +159,6 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 			cont += 1
 			self.progress.set_fraction(cont/len(install_targets))
 		self.progress.set_text("%i of %i" % (int(cont), len(install_targets)))
-		self.config.save(True)
 		gobject.timeout_add(1000, self.close)
 
 	def close(self, widget=None, other=None):
@@ -170,4 +167,4 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 	
 if __name__ == "__main__":
 	from config import Config
-	x = UpdateManager(Config().get_services())
+	x = UpdateManager(Config())
