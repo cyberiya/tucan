@@ -23,6 +23,8 @@
 import urllib
 import urllib2
 
+import Image
+
 from HTMLParser import HTMLParser
 
 from tesseract import Tesseract
