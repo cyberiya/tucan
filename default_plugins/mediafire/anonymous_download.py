@@ -47,7 +47,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		if self.get_slot():
 			print path, link, file_name
 			cookie = cookielib.CookieJar()
-			f = FormParser(link)
+			f = FormParser(link, cookie)
 			if f.url:
 				if self.start(path, f.url, file_name, None, cookie):
 					return True
