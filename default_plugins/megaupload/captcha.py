@@ -32,6 +32,41 @@ from tesseract import Tesseract
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
+CHAR = {"0":"O",
+	"1":"I",
+	"2":"Z",
+	"3":"B",
+	"4":"A",
+	"5":"S",
+	"7":"T",
+	"8":"B",
+	"|":"I",
+	"(":"C",
+	"<":"K",
+	"$":"S"}
+
+NUM = {"o":"0",
+	"O":"0",
+	"Q":"0",
+	"i":"1",
+	"I":"1",
+	"l":"1",
+	"|":"1",
+	"z":"2",
+	"Z":"2",
+	"A":"4",
+	"s":"5",
+	"S":"5",
+	"b":"6",
+	"T":"7",
+	"B":"8",
+	"&":"8",
+	"g":"9",
+	"j":"9",
+	"q":"9",
+	";":"9",
+	"?":"9"}
+
 class CheckLinks(HTMLParser):
 	""""""
 	def check(self, url):
@@ -116,10 +151,21 @@ class CaptchaForm(HTMLParser):
 				self.located = True
 
 	def get_captcha(self):
-		result = self.tess.get_captcha()
+		result = ""
+		tmp = self.tess.get_captcha()
+		if len(tmp) == 4:
+			for character in [tmp[0], tmp[1], tmp[2]]:
+				if character in CHAR.keys():
+					result += CHAR[character]
+				else:
+					result += character
+			if tmp[3] in NUM.keys():
+				result += NUM[tmp[3]]
+			else:
+				result += tmp[3]
 		if len(result) == 4:
 			return result
-		
+
 	def filter(self, im):
 		""""""
 		x_size, y_size = im.size
