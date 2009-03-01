@@ -30,13 +30,37 @@ class FormParser:
 	""""""
 	def __init__(self, url, cookie):
 		""""""
+		self.url = None
+		server = None
+		random = ""
+		link = None
+		name = None
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 		for line in opener.open(urllib2.Request(url)).readlines():
 			if "cu(" in line:
 				tmp = eval(line.split("cu(")[1].split(");")[0])
-				handle = opener.open(urllib2.Request("http://www.mediafire.com/dynamic/download.php"), urllib.urlencode({"qk": tmp[0], "pk": tmp[1], "r": tmp[2]}))
-				print handle.read()
-
+				handle = opener.open(urllib2.Request("http://www.mediafire.com/dynamic/download.php?%s" %(urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])]))))
+				tmp = handle.readlines()
+				vars = {}
+				for var in tmp[1].split("function")[0].split(";"):
+					var = var.split("var")
+					if len(var) > 1:
+						var = var[1].strip().split("=")
+						if ((len(var) > 1) and ("'" in var[1])):
+							value = var[1].split("'")[1]
+							if var[0] == "mL":
+								server = value
+							elif var[0] == "mH":
+								link = value
+							elif var[0] == "mY":
+								name = value
+							else:
+								vars[var[0]] = value
+				sum = tmp[1].split("function")[1].split("Click here to start download..")[0]
+				for var in sum.split("+mL+'/' +")[1].split("+ 'g/'+mH+'/'+mY+'")[0].split("+"):
+					random += vars[var]
+		if server and random and link and name:
+			self.url = "http://%s/%sg/%s/%s" % (server, random, link, name)
 
 class CheckLinks:
 	""""""
@@ -58,3 +82,4 @@ class CheckLinks:
 
 if __name__ == "__main__":
 	f = FormParser("http://www.mediafire.com/?vdmjzmyquyj", cookielib.CookieJar())
+	print f.url
