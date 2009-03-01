@@ -24,33 +24,13 @@ import urllib
 import urllib2
 import cookielib
 
-from HTMLParser import HTMLParser
-
-from tesseract import Tesseract
 from download_plugin import DownloadPlugin
 from slots import Slots
 
-from check_links import CheckLinks
+from parsers import CheckLinks, FormParser
 
 import cons
 
-WAIT = 60
-
-class FormParser(HTMLParser):
-	""""""
-	def __init__(self, data):
-		""""""
-		HTMLParser.__init__(self)
-		self.form_action = None
-		self.feed(data)
-		self.close()
-
-	def handle_starttag(self, tag, attrs):
-		""""""
-		if tag == "form":
-			if ((len(attrs) == 3) and (attrs[2][1] == "formDownload")):
-				self.form_action = attrs[0][1]
-				
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def __init__(self):
@@ -67,24 +47,13 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		if self.get_slot():
 			print path, link, file_name
 			cookie = cookielib.CookieJar()
-			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-			opener.open(urllib2.Request(link))
-			form = None
-			while not form:
-				tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read(), self.filter_image)
-				captcha = tes.get_captcha()
-				if len(captcha) == 3:
-					data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
-					handle = opener.open(urllib2.Request("http://www.gigasize.com/formdownload.php"), data)
-					f = FormParser(handle.read())
-					handle.close()
-					form = f.form_action
-					print "Captcha: ", captcha, form
-			if self.start(path, "http://www.gigasize.com" + form, file_name, WAIT, cookie, urllib.urlencode({"dlb": "Download"})):
-				return True
-			else:
-				print "Limit Exceded"
-				self.add_wait()
+			f = FormParser(link)
+			if f.url:
+				if self.start(path, f.url, file_name, None, cookie):
+					return True
+				else:
+					print "Limit Exceded"
+					self.add_wait()
 
 	def delete(self, file_name):
 		""""""
