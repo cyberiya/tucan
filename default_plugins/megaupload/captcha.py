@@ -94,7 +94,7 @@ class CaptchaForm(HTMLParser):
 				print p.captcha
 				handle = urllib2.urlopen(urllib2.Request(p.captcha))
 				if handle.info()["Content-Type"] == "image/gif":
-					self.tess = Tesseract(handle.read())
+					self.tess = Tesseract(handle.read(), self.filter)
 					captcha = self.get_captcha()
 					if captcha:
 						handle = urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
@@ -118,8 +118,31 @@ class CaptchaForm(HTMLParser):
 		if len(result) == 4:
 			return result
 		
-	def filter(self, data):
+	def filter(self, im):
 		""""""
+		x_size, y_size = im.size
+		d1 =      0 + ((x_size / 4) + 8)
+		d2 =      0 + ((x_size / 4) - 1)
+		d3 =     d2 + ((x_size / 4) + 8)
+		d4 =      0 + ((x_size / 2) - 4)
+		d5 =     d4 + ((x_size / 4) + 8)
+		d6 = x_size - ((x_size / 4) + 5)
+		im1 = im.crop(( 0, 0,     d1, y_size))
+		im2 = im.crop((d2, 0,     d3, y_size))
+		im3 = im.crop((d4, 0,     d5, y_size))
+		im4 = im.crop((d6, 0, x_size, y_size))
+
+		angle = 26
+		filter = Image.BICUBIC
+		im1 = im1.rotate(+angle, filter, 1)
+		im2 = im2.rotate(-angle, filter, 1)
+		im3 = im3.rotate(+angle, filter, 1)
+		im4 = im4.rotate(-angle, filter, 1)
+		data = Image.new("L", (im1.size[0] + im2.size[0] + im3.size[0] + im4.size[0], im1.size[1]), None)
+		data.paste(im1, (0, 0))
+		data.paste(im2, (im1.size[0], 0))
+		data.paste(im3, (im1.size[0] + im2.size[0], 0))
+		data.paste(im4, (im1.size[0] + im2.size[0] + im3.size[0], 0))
 		return data
 
 if __name__ == "__main__":
