@@ -25,17 +25,15 @@ import urllib2
 import cookielib
 
 from download_plugin import DownloadPlugin
-from slots import Slots
 
 from parsers import CheckLinks, FormParser
 
 import cons
 
-class AnonymousDownload(DownloadPlugin, Slots):
+class AnonymousDownload(DownloadPlugin):
 	""""""
 	def __init__(self):
 		""""""
-		Slots.__init__(self, 1)
 		DownloadPlugin.__init__(self)
 		
 	def check_links(self, url):
@@ -44,16 +42,15 @@ class AnonymousDownload(DownloadPlugin, Slots):
 
 	def add(self, path, link, file_name):
 		""""""
-		if self.get_slot():
-			print path, link, file_name
-			cookie = cookielib.CookieJar()
-			f = FormParser(link, cookie)
-			if f.url:
-				if self.start(path, f.url, file_name, None, cookie):
-					return True
-				else:
-					print "Limit Exceded"
-					self.add_wait()
+		print path, link, file_name
+		cookie = cookielib.CookieJar()
+		f = FormParser(link, cookie)
+		if f.url:
+			if self.start(path, f.url, file_name, None, cookie):
+				return True
+			else:
+				print "Limit Exceded"
+				self.add_wait()
 
 	def delete(self, file_name):
 		""""""
