@@ -89,6 +89,7 @@ class CaptchaSolve(gtk.Dialog):
 	def __init__(self):
 		""""""
 		gtk.Dialog.__init__(self)
+		self.set_title("Megaupload Captcha")
 		self.set_size_request(300,200)
 		
 		self.image = gtk.Image()
