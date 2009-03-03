@@ -148,7 +148,7 @@ class CaptchaSolve(gtk.Dialog):
 		self.connect("response", self.close)
 		self.show_all()
 		print self.captcha
-		gobject.timeout_add(30000, self.close)
+		#gobject.timeout_add(30000, self.close)
 		#self.run()
 		
 	def store_captcha(self, widget=None):
