@@ -135,6 +135,9 @@ class CaptchaSolve(gtk.Dialog):
 				if f.link:
 					if self.add_captcha(self.captcha, solution.lower()):
 						self.new_captcha()
+				else:
+					self.entry.set_text("")
+					self.set_focus(self.entry)
 	
 	def new_captcha(self, widget=None):
 		""""""
