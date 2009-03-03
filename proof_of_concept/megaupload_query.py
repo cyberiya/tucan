@@ -94,7 +94,7 @@ class CaptchaSolve(gtk.Dialog):
 		
 		self.image = gtk.Image()
 		self.vbox.pack_start(self.image)
-		
+	
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 10)
 		self.label = gtk.Label()
