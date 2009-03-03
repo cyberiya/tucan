@@ -36,7 +36,6 @@ MEGAVAR = "megavar"
 QUERY = "http://tucanquery.appspot.com/query"
 ADD = "http://tucanquery.appspot.com/add"
 
-
 class CheckLinks(HTMLParser):
 	""""""
 	def check(self, url):

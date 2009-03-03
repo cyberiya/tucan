@@ -72,14 +72,14 @@ class CheckLinks:
 		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
 			if "You requested:" in line:
 				tmp = line.split("You requested:")[1].split("</div>")[0].strip().split(" ")
-				name = tmp[0]
-				size = int(float(tmp[1].split("(")[1]))
-				unit = tmp[2].split(")")[0]
+				unit = tmp.pop().split(")")[0]
+				size = int(float(tmp.pop().split("(")[1]))
+				name = "_".join(tmp)
 			if not name:
 				name = url
 				size = -1
 		return name, size, unit
 
 if __name__ == "__main__":
-	f = FormParser("http://www.mediafire.com/?vdmjzmyquyj", cookielib.CookieJar())
-	print f.url
+	f = CheckLinks()
+	print f.check("http://www.mediafire.com/?vdmjzmyquyj")
