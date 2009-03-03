@@ -133,9 +133,11 @@ class CaptchaSolve(gtk.Dialog):
 		
 		self.url = url
 		self.link = None
+		self.captcha = None
 		self.megavar = ""
 		self.captchacode = ""
 		self.new_captcha()
+		print self.captcha
 		
 		button = gtk.Button(None, gtk.STOCK_REFRESH)
 		self.action_area.pack_start(button)
@@ -210,4 +212,4 @@ class CaptchaSolve(gtk.Dialog):
 			return True
 
 if __name__ == "__main__":
-	c = CaptchaSolve()
+	c = CaptchaSolve("http://www.megaupload.com/?d=7H602RK1")
