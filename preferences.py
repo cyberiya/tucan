@@ -281,7 +281,7 @@ class Preferences(gtk.Dialog):
 
 	def update_manager(self, button):
 		""""""
-		UpdateManager(self.config)
+		UpdateManager(self.config, self)
 		self.treeview.get_model().clear()
 		for path, icon_path, name, enabled, configuration in self.config.get_services():
 			self.add_service(path, icon_path, name, enabled, configuration)

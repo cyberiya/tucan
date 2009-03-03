@@ -31,10 +31,11 @@ import cons
 
 class UpdateManager(gtk.Dialog, ServiceUpdate):
 	""""""
-	def __init__(self, config):
+	def __init__(self, config, parent):
 		""""""		
 		gtk.Dialog.__init__(self)
 		ServiceUpdate.__init__(self, config)
+		self.set_transient_for(parent)
 
 		self.set_icon_from_file(cons.ICON_UPDATE)
 		self.set_title(("Update Manager"))
