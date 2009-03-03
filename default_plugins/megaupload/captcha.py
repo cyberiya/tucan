@@ -137,7 +137,6 @@ class CaptchaSolve(gtk.Dialog):
 		self.megavar = ""
 		self.captchacode = ""
 		self.new_captcha()
-		print self.captcha
 		
 		button = gtk.Button(None, gtk.STOCK_REFRESH)
 		self.action_area.pack_start(button)
@@ -148,8 +147,9 @@ class CaptchaSolve(gtk.Dialog):
 
 		self.connect("response", self.close)
 		self.show_all()
+		print self.captcha
 		gobject.timeout_add(30000, self.close)
-		self.run()
+		#self.run()
 		
 	def store_captcha(self, widget=None):
 		""""""
@@ -161,7 +161,6 @@ class CaptchaSolve(gtk.Dialog):
 				print "Last char is not a number."
 			else:
 				f = CaptchaForm(self.url, solution.lower(), self.captchacode, self.megavar)
-				print f.link, solution, self.url
 				if f.link:
 					if self.add_captcha(self.captcha, solution.lower()):
 						self.link = f.link
