@@ -32,7 +32,7 @@
  
  - http://rapidshare.com/
     - Downloads:
-       - Anonymous access: Available = Yes (captcha = No)
+       - Anonymous access: Available = Yes
        - Premium access: Available = Yes
  
     - Uploads: Available = Not yet
@@ -40,7 +40,7 @@
  
  - http://megaupload.com/
     - Downloads:
-       - Anonymous access: Available = Yes (captcha = Yes)
+       - Anonymous access: Available = Yes
        - Premium access: Available = Yes
  
     - Uploads: Available = Not yet
@@ -48,7 +48,15 @@
  
  - http://gigasize.com/
     - Downloads:
-       - Anonymous access: Available = Yes (captcha = Yes)
+       - Anonymous access: Available = Yes
+       - Premium access: Available = No
+ 
+    - Uploads: Available = Not yet
+ 
+ 
+ - http://mediafire.com/
+    - Downloads:
+       - Anonymous access: Available = Yes
        - Premium access: Available = No
  
     - Uploads: Available = Not yet
@@ -142,7 +150,7 @@
    window appears.
  - Before running a service, it must be enabled in "Service Configuration" in
    the Preferences window.
-
+ 
  - Anonymous access to http://gigasize.com/:
    - gigasize.com disallows checking links if an active link is already downloading
      from this service.

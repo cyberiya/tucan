@@ -32,24 +32,32 @@
  
  - http://rapidshare.com/
     - Descargas:
-       - Acceso Anónimo: Disponible = Sí (captcha = No)
-       - Acceso Premium: Disponible = Sí
+       - Acceso anónimo: Disponible = Sí
+       - Acceso premium: Disponible = Sí
  
     - Subidas: Disponible = Todavía no
  
  
  - http://megaupload.com/
     - Desacargas:
-       - Acceso Anónimo: Disponible = Sí (captcha = Sí)
-       - Acceso Premium: Disponible = Sí
+       - Acceso anónimo: Disponible = Sí
+       - Acceso premium: Disponible = Sí
  
     - Subidas: Disponible = Todavía no
  
  
  - http://gigasize.com/
     - Descargas:
-       - Acceso Anónimo: Disponible = Sí (captcha = Sí)
-       - Acceso Premium: Disponible = No
+       - Acceso anónimo: Disponible = Sí
+       - Acceso premium: Disponible = No
+ 
+    - Subidas: Disponible = Todavía no
+ 
+ 
+ - http://mediafire.com/
+    - Descargas:
+       - Acceso anónimo: Disponible = Sí
+       - Acceso premium: Disponible = No
  
     - Subidas: Disponible = Todavía no
  
@@ -142,7 +150,7 @@
    aparece la ventana de Preferencias.
  - Antes de usar un servicio, éste debe estar activado en la pestaña
    "Configuración de Servicio" de la ventana Preferencias.
-  
+ 
  - Acceso anónimo de http://gigasize.com/:
    - gigasize.com no permite comprobar links si ya hay un link descargándose de
      este servicio.
