@@ -27,11 +27,64 @@ import gtk
 import urllib
 import urllib2
 
-URL = "http://www.megaupload.com/es/?d=RDAJ2PYH"
+from HTMLParser import HTMLParser
+
+CAPTCHACODE = "captchacode"
+MEGAVAR = "megavar"
+
+URL = "http://www.megaupload.com/?d=RDAJ2PYH"
 QUERY = "http://localhost:8080/query"
 ADD = "http://localhost:8080/add"
 
-class CaptchaParser(gtk.Dialog):
+class CaptchaParser(HTMLParser):
+	""""""
+	def __init__(self, data):
+		""""""
+		HTMLParser.__init__(self)
+		self.located = False
+		self.captcha = None
+		self.captchacode = ""
+		self.megavar = ""
+		self.feed(data)
+		self.close()
+
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "td":
+			if self.get_starttag_text() == '<TD width="100" align="center" height="40">':
+				self.located = True
+		elif tag == "img":
+			if self.located:
+				self.located = False
+				self.captcha = attrs[0][1]
+		elif tag == "input":
+			if attrs[1][1] == CAPTCHACODE:
+				self.captchacode = attrs[2][1]
+			elif attrs[1][1] == MEGAVAR:
+				self.megavar = attrs[2][1]
+
+class CaptchaForm(HTMLParser):
+	""""""
+	def __init__(self, url, captcha, captchacode, megavar):
+		""""""
+		HTMLParser.__init__(self)
+		self.link = None
+		self.located = False
+		if captcha:
+			self.feed(urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)])).read())
+			self.close()
+	
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "a":
+			if ((self.located) and (attrs[0][0] == "href")):
+				self.located = False
+				self.link = attrs[0][1]
+		elif tag == "div":
+			if ((len(attrs) > 1) and (attrs[1][1] == "downloadlink")):
+				self.located = True
+
+class CaptchaSolve(gtk.Dialog):
 	""""""
 	def __init__(self):
 		""""""
@@ -51,9 +104,10 @@ class CaptchaParser(gtk.Dialog):
 		self.entry.set_width_chars(5)
 		self.entry.set_max_length(4)
 		self.entry.set_activates_default(True)
-		self.entry.connect("activate", self.new_captcha)
+		self.entry.connect("activate", self.store_captcha)
 		
-		self.captcha = None
+		self.megavar = ""
+		self.captchacode = ""
 		self.new_captcha()
 		
 		button = gtk.Button(None, gtk.STOCK_REFRESH)
@@ -61,26 +115,48 @@ class CaptchaParser(gtk.Dialog):
 		button.connect("clicked", self.new_captcha)
 		button = gtk.Button(None, gtk.STOCK_ADD)
 		self.action_area.pack_start(button)
-		#button.connect("clicked", self.store_captcha)
+		button.connect("clicked", self.store_captcha)
 
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
+		
+	def store_captcha(self, widget=None):
+		""""""
+		solution = self.entry.get_text()
+		if len(solution) == 4:
+			try:
+				int(solution[3])
+			except:
+				print "Last char is not a number."
+			else:
+				f = CaptchaForm(URL, solution.lower(), self.captchacode, self.megavar)
+				print f.link
+				if f.link:
+					if self.add_captcha(self.captcha, solution.lower()):
+						self.new_captcha()
 	
 	def new_captcha(self, widget=None):
 		""""""
+		found = ""
 		captcha = None
-		for line in urllib2.urlopen(urllib2.Request(URL)).readlines():
-			if "gencap.php?" in line:
-				captcha = line.split('<img src="')[1].split('" border="0"')[0]
-		if captcha:
-			loader = gtk.gdk.PixbufLoader("gif")
-			loader.write(urllib2.urlopen(urllib2.Request(captcha)).read())
-			loader.close()
-			self.image.set_from_pixbuf(loader.get_pixbuf())
-			self.entry.set_text("")
-			self.set_focus(self.entry)
-			self.label.set_text("Solve Captcha: %s" % captcha.split("gencap.php?")[1].split(".gif")[0])
+		while found != None:
+			p = CaptchaParser(urllib2.urlopen(urllib2.Request(URL)).read())
+			if p.captcha:
+				self.captchacode = p.captchacode
+				self.megavar = p.megavar
+				captcha = p.captcha.split("gencap.php?")[1].split(".gif")[0]
+				loader = gtk.gdk.PixbufLoader("gif")
+				handle = urllib2.urlopen(urllib2.Request(p.captcha))
+				if handle.info()["Content-Type"] == "image/gif":
+					loader.write(handle.read())
+					loader.close()
+					self.image.set_from_pixbuf(loader.get_pixbuf())
+					self.entry.set_text("")
+					self.set_focus(self.entry)
+					found = self.query_captcha(captcha)
+		self.captcha = captcha
+		self.label.set_text("Solve Captcha: %s" % self.captcha)
 		
 	def close(self, widget=None, other=None):
 		""""""
@@ -89,15 +165,17 @@ class CaptchaParser(gtk.Dialog):
 	def query_captcha(self, captcha):
 		""""""
 		response = urllib2.urlopen(urllib2.Request(QUERY), urllib.urlencode([("key", captcha)])).read()
+		print "Captcha requested: %s %s" % (captcha, response)
 		if len(response) > 0:
-			return response.split(",")
+			return response
 
 	def add_captcha(self, captcha, solution):
 		""""""
 		data = urllib.urlencode([("key", captcha), ("value", solution)])
 		response = urllib2.urlopen(urllib2.Request(ADD), data).read()
 		if len(response) > 0:
+			print "Captcha added: %s %s" % (captcha, solution)
 			return True
 
 if __name__ == "__main__":
-	c = CaptchaParser()
+	c = CaptchaSolve()
