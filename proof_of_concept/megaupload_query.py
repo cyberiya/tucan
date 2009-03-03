@@ -33,8 +33,8 @@ CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
 URL = "http://www.megaupload.com/?d=RDAJ2PYH"
-QUERY = "http://localhost:8080/query"
-ADD = "http://localhost:8080/add"
+QUERY = "http://tucanquery.appspot.com/query"
+ADD = "http://tucanquery.appspot.com/add"
 
 class CaptchaParser(HTMLParser):
 	""""""
