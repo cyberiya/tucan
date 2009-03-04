@@ -25,6 +25,7 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
+import hashlib
 import urllib
 import urllib2
 
@@ -181,14 +182,16 @@ class CaptchaSolve(gtk.Dialog):
 				loader = gtk.gdk.PixbufLoader("gif")
 				handle = urllib2.urlopen(urllib2.Request(p.captcha))
 				if handle.info()["Content-Type"] == "image/gif":
-					loader.write(handle.read())
+					data = handle.read()
+					captcha = hashlib.md5(data).hexdigest()
+					loader.write(data)
 					loader.close()
 					self.image.set_from_pixbuf(loader.get_pixbuf())
 					self.entry.set_text("")
 					self.set_focus(self.entry)
 					found = self.query_captcha(captcha)
 		self.captcha = captcha
-		self.label.set_text("Solve Captcha: %s" % self.captcha)
+		self.label.set_text("Solve Captcha: %s" % p.captcha.split("gencap.php?")[1].split(".gif")[0])
 		
 	def close(self, widget=None, other=None):
 		""""""
