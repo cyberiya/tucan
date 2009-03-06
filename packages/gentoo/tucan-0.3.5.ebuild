@@ -6,7 +6,7 @@ RESTRICT="mirror"
  
 DESCRIPTION="download and upload manager for hosting sites"
 HOMEPAGE="http://cusl3-tucan.forja.rediris.es/"
-SRC_URI="http://forja.rediris.es/frs/download.php/1126/${P}.tar.gz"
+SRC_URI="http://forja.rediris.es/frs/download.php/1135/${P}.tar.gz"
  
 LICENSE="GPL-2"
 SLOT="0"
