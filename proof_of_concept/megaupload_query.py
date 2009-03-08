@@ -33,7 +33,7 @@ from HTMLParser import HTMLParser
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
-URL = "http://www.megaupload.com/?d=RDAJ2PYH"
+URL = "http://www.megaupload.com/?d=7H602RK1"
 QUERY = "http://tucanquery.appspot.com/query"
 ADD = "http://tucanquery.appspot.com/add"
 
@@ -163,6 +163,7 @@ class CaptchaSolve(gtk.Dialog):
 					self.set_focus(self.entry)
 					found = self.query_captcha(captcha)
 		self.captcha = captcha
+		print p.captcha
 		self.label.set_text("Solve Captcha: %s" % p.captcha.split("gencap.php?")[1].split(".gif")[0])
 		
 	def close(self, widget=None, other=None):
@@ -186,3 +187,4 @@ class CaptchaSolve(gtk.Dialog):
 
 if __name__ == "__main__":
 	c = CaptchaSolve()
+	print c.query_captcha("56b797d1ffd5438eed0d8403ed7f21de")
