@@ -63,7 +63,6 @@ class Message(gtk.Dialog):
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_resizable(False)
 		self.set_transient_for(parent)
-		self.set_size_request(350, -1)
 		
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, True, True, 10)
@@ -72,12 +71,12 @@ class Message(gtk.Dialog):
 			icon = gtk.STOCK_DIALOG_WARNING
 		elif severity == cons.SEVERITY_ERROR:
 			icon = gtk.STOCK_DIALOG_ERROR
-		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG), False, False, 10)
+		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG), True, True, 10)
 		self.set_icon(self.render_icon(icon, gtk.ICON_SIZE_MENU))
 		
 		label = gtk.Label(message)
-		hbox.pack_start(label, True, True, 10)
-		label.set_width_chars(40)
+		hbox.pack_start(label, False, False, 10)
+		label.set_width_chars(35)
 		label.set_line_wrap(True) 
 		
 		#action area
