@@ -39,7 +39,7 @@
  
  
  - http://megaupload.com/
-    - Desacargas:
+    - Descargas:
        - Acceso anónimo: Disponible = Sí
        - Acceso premium: Disponible = Sí
  
