@@ -80,7 +80,7 @@ class DownloadManager:
 		for service in self.services:
 			if service.anonymous_download_plugin:
 				if "limit" in dir(service.anonymous_download_plugin):
-					if service.anonymous_download_plugin.limit)):
+					if service.anonymous_download_plugin.limit:
 						result.append((service.name, cons.TYPE_ANONYMOUS, "[%s]" % time.strftime("%H:%M"), service.icon_path))
 		return result
 		
