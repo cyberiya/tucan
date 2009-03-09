@@ -35,6 +35,7 @@ class FormParser:
 		random = ""
 		link = None
 		name = None
+		error = False
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 		for line in opener.open(urllib2.Request(url)).readlines():
 			if "cu(" in line:
@@ -53,13 +54,17 @@ class FormParser:
 							elif var[0] == "mH":
 								link = value
 							elif var[0] == "mY":
+
 								name = value
 							else:
 								vars[var[0]] = value
 				sum = tmp[1].split("function")[1].split("Click here to start download..")[0]
 				for var in sum.split("+mL+'/' +")[1].split("+ 'g/'+mH+'/'+mY+'")[0].split("+"):
-					random += vars[var]
-		if server and random and link and name:
+					if var in vars.keys():
+						random += vars[var]
+					else:
+						error = True
+		if server and random and link and name and not error:
 			self.url = "http://%s/%sg/%s/%s" % (server, random, link, name)
 
 class CheckLinks:
