@@ -58,12 +58,15 @@ class FormParser:
 								name = value
 							else:
 								vars[var[0]] = value
-				sum = tmp[1].split("function")[1].split("Click here to start download..")[0]
-				for var in sum.split("+mL+'/' +")[1].split("+ 'g/'+mH+'/'+mY+'")[0].split("+"):
-					if var in vars.keys():
-						random += vars[var]
-					else:
-						error = True
+				try:
+					sum = tmp[1].split("function")[1].split("Click here to start download..")[0]
+					for var in sum.split("+mL+'/' +")[1].split("+ 'g/'+mH+'/'+mY+'")[0].split("+"):
+						if var in vars.keys():
+							random += vars[var]
+						else:
+							error = True
+				except:
+					print tmp
 		if server and random and link and name and not error:
 			self.url = "http://%s/%sg/%s/%s" % (server, random, link, name)
 
