@@ -34,6 +34,7 @@ class CheckLinks(HTMLParser):
 	""""""
 	def check(self, url):
 		""""""
+		error = False
 		name = None
 		size = 0
 		unit = None
@@ -45,14 +46,19 @@ class CheckLinks(HTMLParser):
 					tmp = line.split(">")[3].split("</")[0].split(" ")
 					size = int(round(float(tmp[0])))
 					unit = tmp[1]
-			if name:
+				elif "The file you are trying to access is temporarily unavailable." in line:
+					error = True
+			if name and not error:
 				if ".." in name:
 					parser = CaptchaForm(url)
 					if parser.link:
 						name = parser.link.split("/").pop()
 		except urllib2.URLError, e:
 			print e
-		return name, size, unit
+		if error:
+			return url, -1, None
+		else:
+			return name, size, unit
 
 class CaptchaParser(HTMLParser):
 	""""""
