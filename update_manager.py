@@ -169,4 +169,4 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 	
 if __name__ == "__main__":
 	from config import Config
-	x = UpdateManager(Config())
+	x = UpdateManager(Config(), None)
