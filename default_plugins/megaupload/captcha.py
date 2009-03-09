@@ -20,22 +20,15 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import pygtk
-pygtk.require('2.0')
-import gtk
-import gobject
-
-import hashlib
 import urllib
 import urllib2
 
 from HTMLParser import HTMLParser
 
+from tesseract import Tesseract
+
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
-
-QUERY = "http://tucanquery.appspot.com/query"
-ADD = "http://tucanquery.appspot.com/add"
 
 class CheckLinks(HTMLParser):
 	""""""
@@ -54,7 +47,7 @@ class CheckLinks(HTMLParser):
 					unit = tmp[1]
 			if name:
 				if ".." in name:
-					parser = CaptchaSolve(url)
+					parser = CaptchaForm(url)
 					if parser.link:
 						name = parser.link.split("/").pop()
 		except urllib2.URLError, e:
@@ -90,15 +83,26 @@ class CaptchaParser(HTMLParser):
 
 class CaptchaForm(HTMLParser):
 	""""""
-	def __init__(self, url, captcha, captchacode, megavar):
+	def __init__(self, url):
 		""""""
 		HTMLParser.__init__(self)
 		self.link = None
 		self.located = False
-		if captcha:
-			self.feed(urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)])).read())
-			self.close()
-	
+		while not self.link:
+			p = CaptchaParser(urllib2.urlopen(urllib2.Request(url)).read())
+			if p.captcha:
+				print p.captcha
+				handle = urllib2.urlopen(urllib2.Request(p.captcha))
+				if handle.info()["Content-Type"] == "image/gif":
+					self.tess = Tesseract(handle.read())
+					captcha = self.get_captcha()
+					if captcha:
+						handle = urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
+						self.reset()
+						self.feed(handle.read())
+						self.close()
+						print captcha
+		
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "a":
@@ -109,108 +113,17 @@ class CaptchaForm(HTMLParser):
 			if ((len(attrs) > 1) and (attrs[1][1] == "downloadlink")):
 				self.located = True
 
-class CaptchaSolve(gtk.Dialog):
-	""""""
-	def __init__(self, url):
+	def get_captcha(self):
+		result = self.tess.get_captcha()
+		if len(result) == 4:
+			return result
+		
+	def filter(self, data):
 		""""""
-		gtk.Dialog.__init__(self)
-		self.set_title("Megaupload Captcha")
-		self.set_size_request(300,200)
-		
-		self.image = gtk.Image()
-		self.vbox.pack_start(self.image)
-		
-		hbox = gtk.HBox()
-		self.vbox.pack_start(hbox, False, False, 10)
-		self.label = gtk.Label()
-		hbox.pack_start(self.label)
-		
-		self.entry = gtk.Entry()
-		hbox.pack_start(self.entry, False, False, 10)
-		self.entry.set_width_chars(5)
-		self.entry.set_max_length(4)
-		self.entry.set_activates_default(True)
-		self.entry.connect("activate", self.store_captcha)
-		
-		self.url = url
-		self.link = None
-		self.captcha = None
-		self.megavar = ""
-		self.captchacode = ""
-		self.new_captcha()
-		
-		button = gtk.Button(None, gtk.STOCK_REFRESH)
-		self.action_area.pack_start(button)
-		button.connect("clicked", self.new_captcha)
-		button = gtk.Button(None, gtk.STOCK_ADD)
-		self.action_area.pack_start(button)
-		button.connect("clicked", self.store_captcha)
-
-		self.connect("response", self.close)
-		self.show_all()
-		gobject.timeout_add(30000, self.close)
-		self.run()
-		
-	def store_captcha(self, widget=None):
-		""""""
-		solution = self.entry.get_text()
-		if len(solution) == 4:
-			try:
-				int(solution[3])
-			except:
-				print "Last char is not a number."
-			else:
-				f = CaptchaForm(self.url, solution.lower(), self.captchacode, self.megavar)
-				if f.link:
-					if self.add_captcha(self.captcha, solution.lower()):
-						self.link = f.link
-						self.close()
-				else:
-					self.entry.set_text("")
-					self.set_focus(self.entry)
-	
-	def new_captcha(self, widget=None):
-		""""""
-		found = ""
-		captcha = None
-		while found != None:
-			p = CaptchaParser(urllib2.urlopen(urllib2.Request(self.url)).read())
-			if p.captcha:
-				self.captchacode = p.captchacode
-				self.megavar = p.megavar
-				captcha = p.captcha.split("gencap.php?")[1].split(".gif")[0]
-				loader = gtk.gdk.PixbufLoader("gif")
-				handle = urllib2.urlopen(urllib2.Request(p.captcha))
-				if handle.info()["Content-Type"] == "image/gif":
-					data = handle.read()
-					captcha = hashlib.md5(data).hexdigest()
-					loader.write(data)
-					loader.close()
-					self.image.set_from_pixbuf(loader.get_pixbuf())
-					self.entry.set_text("")
-					self.set_focus(self.entry)
-					found = self.query_captcha(captcha)
-		self.captcha = captcha
-		self.label.set_text("Solve Captcha: %s" % p.captcha.split("gencap.php?")[1].split(".gif")[0])
-		
-	def close(self, widget=None, other=None):
-		""""""
-		self.destroy()
-
-	def query_captcha(self, captcha):
-		""""""
-		response = urllib2.urlopen(urllib2.Request(QUERY), urllib.urlencode([("key", captcha)])).read()
-		print "Captcha requested: %s %s" % (captcha, response)
-		if len(response) > 0:
-			return response
-
-	def add_captcha(self, captcha, solution):
-		""""""
-		data = urllib.urlencode([("key", captcha), ("value", solution)])
-		response = urllib2.urlopen(urllib2.Request(ADD), data).read()
-		if len(response) > 0:
-			print "Captcha added: %s %s" % (captcha, solution)
-			return True
+		return data
 
 if __name__ == "__main__":
-	c = CaptchaSolve("http://www.megaupload.com/?d=7H602RK1")
+	c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
+	print c.link
+	#print CheckLinks().check("http://www.megaupload.com/?d=1UY9LV7O")
+	
