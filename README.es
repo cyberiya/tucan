@@ -8,6 +8,8 @@
    - http://rapidshare.com/
    - http://megaupload.com/
    - http://gigasize.com/
+   - http://mediafire.com/
+   - http://4shared.com/
    - (...)
  
  
@@ -55,6 +57,14 @@
  
  
  - http://mediafire.com/
+    - Descargas:
+       - Acceso anónimo: Disponible = Sí
+       - Acceso premium: Disponible = No
+ 
+    - Subidas: Disponible = Todavía no
+ 
+ 
+ - http://4shared.com/
     - Descargas:
        - Acceso anónimo: Disponible = Sí
        - Acceso premium: Disponible = No
