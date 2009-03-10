@@ -43,30 +43,32 @@ class FormParser:
 				handle = opener.open(urllib2.Request("http://www.mediafire.com/dynamic/download.php?%s" %(urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])]))))
 				tmp = handle.readlines()
 				vars = {}
-				for var in tmp[1].split("function")[0].split(";"):
-					var = var.split("var")
-					if len(var) > 1:
-						var = var[1].strip().split("=")
-						if ((len(var) > 1) and ("'" in var[1])):
-							value = var[1].split("'")[1]
-							if var[0] == "mL":
-								server = value
-							elif var[0] == "mH":
-								link = value
-							elif var[0] == "mY":
-
-								name = value
-							else:
-								vars[var[0]] = value
 				try:
-					sum = tmp[1].split("function")[1].split("Click here to start download..")[0]
+					for var in tmp[2].split("function")[0].split(";"):
+						var = var.split("var")
+						if len(var) > 1:
+							var = var[1].strip().split("=")
+							if ((len(var) > 1) and ("'" in var[1])):
+								value = var[1].split("'")[1]
+								if var[0] == "mL":
+									server = value
+								elif var[0] == "mH":
+									link = value
+								elif var[0] == "mY":
+
+									name = value
+								else:
+									vars[var[0]] = value
+					sum = tmp[2].split("function")[1].split("Click here to start download..")[0]
 					for var in sum.split("+mL+'/' +")[1].split("+ 'g/'+mH+'/'+mY+'")[0].split("+"):
 						if var in vars.keys():
 							random += vars[var]
 						else:
+							pass
 							error = True
 				except:
-					print tmp
+					error = True
+					print vars, tmp
 		if server and random and link and name and not error:
 			self.url = "http://%s/%sg/%s/%s" % (server, random, link, name)
 
@@ -89,5 +91,5 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	f = CheckLinks()
-	print f.check("http://www.mediafire.com/?vdmjzmyquyj")
+	f = FormParser("http://www.mediafire.com/?vdmjzmyquyj", cookielib.CookieJar())
+	print f.url
