@@ -142,7 +142,7 @@ class Preferences(gtk.Dialog):
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		hbox.pack_start(aspect)
 		self.max_downloads = gtk.SpinButton(None, 1, 0)
-		self.max_downloads.set_range(1,10)
+		self.max_downloads.set_range(1,20)
 		self.max_downloads.set_increments(1,0)
 		self.max_downloads.set_numeric(True)
 		self.max_downloads.set_value(self.config.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS))
