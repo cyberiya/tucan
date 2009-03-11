@@ -154,10 +154,12 @@ class DownloadManager:
 	
 	def update(self):
 		""""""
+		plugin = None
 		for download in self.active_downloads:
 			for link in download.links:
 				if link.active:
 					plugin = link.plugin
+					break
 			if plugin:
 				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name)
 				print download.name, status, progress, actual_size, unit, speed, time
