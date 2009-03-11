@@ -61,11 +61,13 @@ class UploadParser(HTMLParser):
 
 	def handle_starttag(self, tag, attrs):
 		""""""
-		print tag, attrs
 		if tag == "form":
+			print tag, attrs
 			if attrs[3][1] == "multipart/form-data":
 				#self.action = attrs[2][1]
 				pass
+		elif tag == "input":
+			print tag, attrs
 
 if __name__ == "__main__":
 	c = UploadParser("/home/crak/2009-03-03-210652_1024x600_scrot.png", "mierda")
