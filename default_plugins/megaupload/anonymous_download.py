@@ -20,7 +20,8 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-from captcha import CaptchaForm, CheckLinks
+#from captcha import CaptchaForm, CheckLinks
+from captcha2 import CaptchaSolve, CheckLinks
 
 from download_plugin import DownloadPlugin
 from slots import Slots
@@ -39,7 +40,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	def add(self, path, link, file_name):
 		""""""
 		if self.get_slot():
-			parser = CaptchaForm(link)
+			parser = CaptchaSolve(link)
 			if parser.link:
 				return self.start(path, parser.link, file_name, WAIT)
 			else:
