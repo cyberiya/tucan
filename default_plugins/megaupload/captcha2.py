@@ -138,7 +138,6 @@ class CaptchaSolve(gtk.Dialog):
 		self.megavar = ""
 		self.captchacode = ""
 		self.new_captcha()
-		
 		button = gtk.Button(None, gtk.STOCK_REFRESH)
 		self.action_area.pack_start(button)
 		button.connect("clicked", self.new_captcha)
@@ -147,10 +146,14 @@ class CaptchaSolve(gtk.Dialog):
 		button.connect("clicked", self.store_captcha)
 
 		self.connect("response", self.close)
-		self.show_all()
-		gobject.timeout_add(30000, self.close)
-		self.run()
 		
+		if self.captcha:
+			self.show_all()
+			gobject.timeout_add(30000, self.close)
+			self.run()
+		else:
+			gobject.idle_add(self.destroy)
+
 	def store_captcha(self, widget=None):
 		""""""
 		solution = self.entry.get_text()
@@ -178,20 +181,21 @@ class CaptchaSolve(gtk.Dialog):
 			if p.captcha:
 				self.captchacode = p.captchacode
 				self.megavar = p.megavar
-				captcha = p.captcha.split("gencap.php?")[1].split(".gif")[0]
 				loader = gtk.gdk.PixbufLoader("gif")
 				handle = urllib2.urlopen(urllib2.Request(p.captcha))
 				if handle.info()["Content-Type"] == "image/gif":
 					data = handle.read()
-					captcha = hashlib.md5(data).hexdigest()
+					self.captcha = hashlib.md5(data).hexdigest()
 					loader.write(data)
 					loader.close()
 					self.image.set_from_pixbuf(loader.get_pixbuf())
 					self.entry.set_text("")
 					self.set_focus(self.entry)
 					found = self.query_captcha(captcha)
-		self.captcha = captcha
-		self.label.set_text("Solve Captcha: %s" % p.captcha.split("gencap.php?")[1].split(".gif")[0])
+			else:
+				break
+		if p.captcha:
+			self.label.set_text("Solve Captcha: %s" % p.captcha.split("gencap.php?")[1].split(".gif")[0])
 		
 	def close(self, widget=None, other=None):
 		""""""
