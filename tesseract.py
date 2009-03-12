@@ -75,3 +75,4 @@ if __name__ == "__main__":
 	f = file("tmp.png", "r")
 	t = Tesseract(f.read())
 	print t.get_captcha()
+	
