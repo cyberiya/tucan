@@ -1,8 +1,11 @@
-# Contributor: Raul Pons Lopez <nev3rkill {at} gmail {dot} com>
+# Contributor: Raul Pons Lopez <raulponslopez+aur {at} gmail {dot} com>
+
+# Note: The pakage's host puts a random number in tarball's link. New var added for this "pkgrediris".
 
 pkgname=tucan
-pkgver=0.3.2
-pkgrel=1
+pkgver=0.3.5
+pkgrel=2
+pkgrediris=1135
 pkgdesc="Download and upload manager for hosting sites."
 arch=('i686' 'x86_64')
 url="http://cusl3-tucan.forja.rediris.es/"
@@ -13,11 +16,10 @@ makedepends=()
 optdepends=()
 conflicts=()
 backup=()
-install=
-source=(http://forja.rediris.es/frs/download.php/1079/$pkgname-$pkgver.tar.gz \
-tucan.desktop)
-md5sums=('cedb921d21ffe3076a47b5e4b9b50d3c'
-         'a769d35c966e5a9d794b2d17ef640c3a')
+install=${pkgname}.install
+source=(http://forja.rediris.es/frs/download.php/$pkgrediris/$pkgname-$pkgver.tar.gz)
+md5sums=('229f88beef7ea52a29dabba08fab6d7a')
+
  
 build() {
   cd $srcdir/$pkgname-$pkgver
@@ -25,13 +27,10 @@ build() {
   cp -r $srcdir/$pkgname-$pkgver/* $pkgdir/usr/share/tucan
   
   mkdir -p $pkgdir/usr/share/pixmaps
-  ln -s /usr/share/tucan/media/icon.svg $pkgdir/usr/share/pixmaps/tucan.svg
 
   mkdir $pkgdir/usr/share/applications
-  mv $startdir/tucan.desktop $pkgdir/usr/share/applications/tucan.desktop
 
   chmod 755 $pkgdir/usr/share/tucan/tucan.py
   mkdir -p $pkgdir/usr/bin
-  ln -s /usr/share/tucan/tucan.py $pkgdir/usr/bin/tucan 
 }
 
