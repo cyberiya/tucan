@@ -178,7 +178,6 @@ class DownloadManager:
 						self.scheduler()
 					elif status == cons.STATUS_CORRECT:
 						if "return_slot" in dir(link.plugin):
-							print "correct", link.url
 							plugin.return_slot()
 						download.progress = 100
 						self.complete_downloads.append(download)
