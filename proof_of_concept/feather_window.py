@@ -153,5 +153,6 @@ class FeatherWindow(gtk.Window):
 		self.hide()
 
 if __name__ == "__main__":
-	w = FeatherWindow(None)
+	w = FeatherWindow()
+	w.show_all()
 	gtk.main()

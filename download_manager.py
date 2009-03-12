@@ -110,7 +110,7 @@ class DownloadManager:
 	def clear(self, files):
 		""""""
 		for name in files:
-			complete = [tmp.name for tmp in [self.complete_downloads, self.pending_downloads]]
+			complete = [tmp.name for tmp in self.complete_downloads + self.pending_downloads]
 			if name in complete:
 				print "Cleared ", name
 				del self.complete_downloads[complete.index(name)]
