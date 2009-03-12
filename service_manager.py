@@ -123,7 +123,14 @@ class ServiceManager:
 			found = False
 			print link
 			if "http" in link:
-				link = "http" + link.split("http").pop().split("<")[0]
+				tmp = link.split("http").pop()
+				if "<" in tmp:
+					tmp = tmp.split("<")[0]
+				elif " " in tmp:
+					tmp = tmp.split(" ")[0]
+				elif "[" in tmp:
+					tmp = tmp.split("[")[0]
+				link = "http" + tmp
 				for service in self.services:
 					if link.find(service.name) > 0:
 						found = True
