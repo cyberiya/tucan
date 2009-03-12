@@ -45,7 +45,6 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			else:
 				 self.return_slot()
 
-
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):
