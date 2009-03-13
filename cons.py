@@ -27,6 +27,7 @@ import subprocess
 # project constants
 TUCAN_VERSION = "0.3.5 alpha"
 WEBPAGE = "http://cusl3-tucan.forja.rediris.es/"
+DOC = "http://cusl3-tucan.forja.rediris.es/doc/"
 
 REVISION = ""
 try:

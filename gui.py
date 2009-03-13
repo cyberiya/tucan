@@ -164,7 +164,7 @@ class Gui(gtk.Window, ServiceManager):
 		
 	def help(self, widget):
 		""""""
-		webbrowser.open(cons.WEBPAGE)
+		webbrowser.open(cons.DOC)
 		
 	def add_links(self, button):
 		""""""
