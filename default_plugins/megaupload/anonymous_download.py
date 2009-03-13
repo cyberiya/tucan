@@ -48,6 +48,9 @@ class AnonymousDownload(DownloadPlugin, Slots):
 						f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "rb")
 						data = pickle.loads(f.read())
 						f.close()
+						f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "wb")
+						f.write("\n")
+						f.close()
 					except:
 						print "error"
 					else:	
@@ -69,18 +72,21 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	def check_links(self, url):
 		""""""
 		if "win" in sys.platform:
-			name = url
-			size = -1
-			unit = None
 			subprocess.call([os.path.join(sys.path[0], "captcha.exe"), url, "check"], creationflags=134217728)
 			try:
 				f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "rb")
 				data = pickle.loads(f.read())
 				f.close()
+				f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "wb")
+				f.write("\n")
+				f.close()
 				name = data[0] 
 				size = int(data[1])
 				unit = data[2]
 			except:
+				name = url
+				size = -1
+				unit = None
 				print "error"
 			return name, size, unit
 		else:
