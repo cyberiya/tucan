@@ -57,6 +57,10 @@ class CheckLinks(HTMLParser):
 					parser = CaptchaSolve(url)
 					if parser.link:
 						name = parser.link.split("/").pop()
+					else:
+						name = url
+						size = 0
+						unit = None
 		except urllib2.URLError, e:
 			print e
 		return name, size, unit
