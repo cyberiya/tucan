@@ -188,7 +188,6 @@ class CaptchaSolve(gtk.Dialog):
 	def new_captcha(self, widget=None):
 		""""""
 		found = ""
-		captcha = None
 		while found != None:
 			p = CaptchaParser(urllib2.urlopen(urllib2.Request(self.url)).read())
 			if p.captcha:
@@ -204,7 +203,7 @@ class CaptchaSolve(gtk.Dialog):
 					self.image.set_from_pixbuf(loader.get_pixbuf())
 					self.entry.set_text("")
 					self.set_focus(self.entry)
-					found = self.query_captcha(captcha)
+					found = self.query_captcha(self.captcha)
 			else:
 				break
 		if p.captcha:
