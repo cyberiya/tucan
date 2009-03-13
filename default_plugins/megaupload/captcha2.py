@@ -20,14 +20,16 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import os.path
+import pickle
+import hashlib
+import urllib
+import urllib2
+
 import pygtk
 pygtk.require('2.0')
 import gtk
 import gobject
-
-import hashlib
-import urllib
-import urllib2
 
 from HTMLParser import HTMLParser
 
@@ -63,7 +65,13 @@ class CheckLinks(HTMLParser):
 						unit = None
 		except urllib2.URLError, e:
 			print e
-		return name, size, unit
+			
+		if "win" in sys.platform:
+			f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "wb")
+			f.write(pickle.dumps((name, size, unit)))
+			f.close()
+		else:
+			return name, size, unit
 
 class CaptchaParser(HTMLParser):
 	""""""
@@ -203,6 +211,10 @@ class CaptchaSolve(gtk.Dialog):
 		
 	def close(self, widget=None, other=None):
 		""""""
+		if "win" in sys.platform:
+			f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "wb")
+			f.write(pickle.dumps(self.link))
+			f.close()
 		self.destroy()
 
 	def query_captcha(self, captcha):
