@@ -21,6 +21,9 @@
 ###############################################################################
 
 import sys
+import subprocess
+import os.path
+import pickle
 
 #from captcha import CaptchaForm, CheckLinks
 from captcha2 import CaptchaSolve, CheckLinks
@@ -88,6 +91,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				size = -1
 				unit = None
 				print "error"
-			return name, size, unit
+			else:
+				return name, size, unit
 		else:
 			return CheckLinks().check(url)
