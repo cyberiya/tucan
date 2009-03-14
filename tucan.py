@@ -36,7 +36,7 @@ class Tucan:
 	""""""
 	def __init__(self):
 		""""""
-		logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
+		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
 		Gui()
 
 if __name__ == "__main__":
