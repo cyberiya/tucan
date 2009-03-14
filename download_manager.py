@@ -22,6 +22,7 @@
 
 import time
 import threading
+import logging
 
 import cons
 
@@ -65,6 +66,7 @@ class DownloadManager:
 	""""""
 	def __init__(self, get_plugin, services, max):
 		""""""
+		self.logger = logging.getLogger(self.__class__.__name__)
 		self.services = services
 		self.get_plugin = get_plugin
 		self.limits = []

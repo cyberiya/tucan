@@ -21,6 +21,8 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import logging
+
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -28,7 +30,16 @@ import gobject
 
 from gui import Gui
 
+import cons
+
+class Tucan:
+	""""""
+	def __init__(self):
+		""""""
+		logging.basicConfig(level=logging.INFO, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
+		Gui()
+
 if __name__ == "__main__":
 	gobject.threads_init()
-	g = Gui()
+	Tucan()
 	gtk.main()
