@@ -78,6 +78,10 @@ else:
 DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "")
 CONFIG_PATH = os.path.join(DEFAULT_PATH, ".tucan" ,"")
 
+#log constants
+LOG_FILE = os.path.join(CONFIG_PATH, "tucan.log")
+LOGGER = "Tucan logger"
+
 #plugin constants
 PLUGIN_PATH = os.path.join(CONFIG_PATH, "plugins")
 DEFAULT_PLUGINS = os.path.join(PATH, "default_plugins", "")
