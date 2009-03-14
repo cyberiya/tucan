@@ -22,7 +22,9 @@
 
 import time
 import threading
+
 import logging
+logger = logging.getLogger(__name__)
 
 import cons
 
@@ -66,7 +68,6 @@ class DownloadManager:
 	""""""
 	def __init__(self, get_plugin, services, max):
 		""""""
-		self.logger = logging.getLogger(__name__)
 		self.services = services
 		self.get_plugin = get_plugin
 		self.limits = []
@@ -114,7 +115,7 @@ class DownloadManager:
 		for name in files:
 			complete = [tmp.name for tmp in self.complete_downloads + self.pending_downloads]
 			if name in complete:
-				self.logger.info("Cleared %s" % name)
+				logger.info("Cleared %s" % name)
 				del self.complete_downloads[complete.index(name)]
 
 	def add(self, path, name, links, total_size, size_unit):
@@ -169,7 +170,7 @@ class DownloadManager:
 					break
 			if plugin:
 				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name)
-				self.logger.info("%s %s %i %i %s %i %i" % (download.name, status, progress, actual_size, unit, speed, time))
+				logger.info("%s %s %i %i %s %i %i" % (download.name, status, progress, actual_size, unit, speed, time))
 				if status:
 					download.update(status, progress, actual_size, unit, speed, time)
 					if status in [cons.STATUS_PEND, cons.STATUS_STOP]:
@@ -193,16 +194,16 @@ class DownloadManager:
 	def scheduler(self):
 		""""""
 		if not self.scheduling:
-			self.logger.info("scheduling")
+			logger.info("scheduling")
 			self.scheduling = True
 			if len(self.pending_downloads) > 0:
 				for download in self.pending_downloads:
 					if len(self.active_downloads) < self.max_downloads:
 						if download.status not in [cons.STATUS_STOP]:
 							if self.start(download.name):
-								self.logger.debug(self.active_downloads)
-								self.logger.debug(self.pending_downloads)
-								self.logger.debug(self.complete_downloads)
+								logger.debug(self.active_downloads)
+								logger.debug(self.pending_downloads)
+								logger.debug(self.complete_downloads)
 								break
 				if self.timer:
 					self.timer.cancel()
