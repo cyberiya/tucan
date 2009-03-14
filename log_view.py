@@ -27,7 +27,7 @@ import gobject
 
 import cons
 
-SEVERITY = ["1", "2", "DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL", "#"]
+SEVERITY = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 class LogView(gtk.Dialog):
 	""""""
@@ -38,7 +38,7 @@ class LogView(gtk.Dialog):
 		self.set_size_request(700,500)
 		self.set_icon(self.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU))
 
-		self.file = open("/home/crak/user-guide-index.txt", "r")
+		self.file = open(cons.LOG_FILE, "r")
 		self.back_buffer = gtk.TextBuffer()
 		self.back_buffer.set_text(self.file.read())
 
@@ -94,26 +94,26 @@ class LogView(gtk.Dialog):
 	def reload(self, textview):
 		""""""
 		buffer = self.textview.get_buffer()
+		buffer.set_text("")
 		ini, fin = self.back_buffer.get_bounds()
 		for line in self.back_buffer.get_text(ini, fin).split("\n"):
 			for s in SEVERITY[self.combo.get_active():]:
 				if s in line:
 					buffer.insert(buffer.get_end_iter(), line + "\n")
 					break
-			print line
 	
 	def update(self):
 		""""""
 		try:
 			line = self.file.readline()
 			self.back_buffer.insert(self.back_buffer.get_end_iter(), line)
+			buffer = self.textview.get_buffer()
 			for s in SEVERITY[self.combo.get_active():]:
 				if s in line:
-					buffer = self.textview.get_buffer()
 					buffer.insert(buffer.get_end_iter(), line)
 					break
 		except:
-			pass
+			print "error"
 		else:
 			return True
 		
