@@ -31,7 +31,7 @@ SEVERITY = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 class LogView(gtk.Dialog):
 	""""""
-	def __init__(self):
+	def __init__(self, widget=None):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_title("Log View")

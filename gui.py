@@ -36,6 +36,7 @@ from about import About
 from message import Message
 from tray_icon import TrayIcon
 from preferences import Preferences
+from log_view import LogView
 
 from menu_bar import MenuBar
 from toolbar import Toolbar
@@ -89,11 +90,12 @@ class Gui(gtk.Window, ServiceManager):
 		menu_help = gtk.STOCK_HELP, self.help
 		menu_about = gtk.STOCK_ABOUT, About
 		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
+		menu_log = _("View Logs"), LogView
 		show_uploads = gtk.CheckMenuItem(_("Show Uploads")), self.resize_pane, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS)
 		
 		#menubar
 		file_menu = _("File"), [menu_load_session, menu_save_session, None, menu_quit]
-		view_menu = _("View"), [show_uploads, None, menu_preferences]
+		view_menu = _("View"), [show_uploads, menu_log, None, menu_preferences]
 		help_menu = _("Help"), [menu_help, menu_about]
 		self.vbox.pack_start(MenuBar([file_menu, view_menu, help_menu]), False)
 
