@@ -20,9 +20,13 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import time
+
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
+
 
 class LogView(gtk.Dialog):
 	""""""
@@ -53,6 +57,9 @@ class LogView(gtk.Dialog):
 		self.textview.set_wrap_mode(gtk.WRAP_CHAR)
 		self.textview.set_editable(False)
 		
+		self.file = open("/home/crak/user-guide-index.txt", "r")
+		buffer.insert_at_cursor(self.file.read())
+
 		#button = gtk.Button(None, gtk.STOCK_REFRESH)
 		#self.action_area.pack_start(button)
 		#button.connect("clicked", self.new_captcha)
@@ -62,6 +69,18 @@ class LogView(gtk.Dialog):
 
 		self.connect("response", self.close)
 		self.show_all()
+		
+		gobject.timeout_add(1000, self.update)
+		self.run()
+		
+	def update(self):
+		""""""
+		try:
+			self.textview.get_buffer().insert_at_cursor(self.file.readline())
+		except:
+			pass
+		else:
+			return True
 		
 	def changed(self, vadjust):
 		""""""
@@ -75,8 +94,8 @@ class LogView(gtk.Dialog):
 		
 	def close(self, widget=None, other=None):
 		""""""
-		gtk.main_quit()
+		self.file.close()
+		self.destroy()
 
 if __name__ == "__main__":
 	c = LogView()
-	gtk.main()
