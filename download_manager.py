@@ -170,14 +170,15 @@ class DownloadManager:
 					break
 			if plugin:
 				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name)
-				logger.debug("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 				if status:
 					download.update(status, progress, actual_size, unit, speed, time)
 					if status in [cons.STATUS_PEND, cons.STATUS_STOP]:
+						logger.debug("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						if ((status == cons.STATUS_PEND) and ("add_wait" in dir(plugin))):
 							plugin.add_wait()
 						self.stop(download.name)
 					elif status == cons.STATUS_ERROR:
+						logger.debug("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						if "return_slot" in dir(link.plugin):
 							plugin.return_slot()
 						link.active = False
@@ -185,6 +186,7 @@ class DownloadManager:
 						self.active_downloads.remove(download)
 						self.scheduler()
 					elif status == cons.STATUS_CORRECT:
+						logger.debug("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						if "return_slot" in dir(link.plugin):
 							plugin.return_slot()
 						download.progress = 100
@@ -194,9 +196,9 @@ class DownloadManager:
 	def scheduler(self):
 		""""""
 		if not self.scheduling:
-			logger.debug("scheduling")
 			self.scheduling = True
 			if len(self.pending_downloads) > 0:
+				logger.debug("scheduling")
 				for download in self.pending_downloads:
 					if len(self.active_downloads) < self.max_downloads:
 						if download.status not in [cons.STATUS_STOP]:
