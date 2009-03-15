@@ -53,7 +53,7 @@ import cons
 	
 class Gui(gtk.Window, ServiceManager):
 	""""""
-	def __init__(self):
+	def __init__(self, conf):
 		""""""		
 		#i18n
 		gettext.bindtextdomain(cons.NAME_LOCALES, cons.PATH_LOCALES)
@@ -61,8 +61,7 @@ class Gui(gtk.Window, ServiceManager):
 		__builtin__._ = gettext.gettext
 
 		#configuration
-		self.configuration = config.Config()
-		sys.path.append(cons.PLUGIN_PATH)
+		self.configuration = conf
 
 		#show preferences if not configured
 		if not self.configuration.configured:
