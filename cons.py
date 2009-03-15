@@ -23,6 +23,7 @@
 import sys
 import os
 import subprocess
+import logging
 
 # project constants
 TUCAN_VERSION = "0.3.5 alpha"

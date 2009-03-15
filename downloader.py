@@ -24,6 +24,8 @@ import socket
 import urllib2
 import threading
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 import cons
 
@@ -88,11 +90,11 @@ class Downloader(threading.Thread):
 					else:
 						self.status = cons.STATUS_ERROR
 			except urllib2.HTTPError, e:
-				print "[%4d-%02d-%02d %02d:%02d:%02d]" % time.localtime(time.time())[:6], e
+				logger.error("Download error: %s" % e)
 				self.stop_flag = True
 				self.status = cons.STATUS_PEND
 			except (TypeError, socket.timeout, urllib2.URLError), e:
-				print self.file, e
+				logger.error("Error downloading %s: %s" % (self.file, e))
 				self.stop_flag = True
 				self.status = cons.STATUS_ERROR
 

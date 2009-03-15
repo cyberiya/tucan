@@ -22,6 +22,8 @@
 
 import re
 import sys
+import logging
+logger = logging.getLogger(__name__)
 
 from config import SECTION_MAIN, OPTION_MAX_DOWNLOADS
 from download_manager import DownloadManager
@@ -54,6 +56,7 @@ class ServiceManager:
 			if enabled:
 				#download plugins
 				for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
+					logger.info("Plugin: %s.%s" % (package, plugin_module))
 					module = __import__(package + "." + plugin_module, None, None, [''])
 					if plugin_type == cons.TYPE_ANONYMOUS:
 						s.anonymous_download_plugin = eval("module" + "." + plugin_name + "()")
@@ -63,6 +66,7 @@ class ServiceManager:
 						s.premium_download_plugin = eval("module" + "." + plugin_name + "(config)")
 				#upload plugins
 				for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
+					logger.info("Plugin: %s.%s" % (package, plugin_module))
 					module = __import__(package + "." + plugin_module, None, None, [''])
 					if plugin_type == cons.TYPE_ANONYMOUS:
 						s.anonymous_upload_plugin = eval("module" + "." + plugin_name + "()")
@@ -121,7 +125,6 @@ class ServiceManager:
 		services = {cons.TYPE_UNSUPPORTED: []}
 		for link in links:
 			found = False
-			print link
 			if "http" in link:
 				tmp = link.split("http").pop()
 				if "<" in tmp:

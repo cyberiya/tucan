@@ -20,6 +20,9 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import logging
+logger = logging.getLogger(__name__)
+
 class Accounts:
 	""""""
 	def __init__(self, config, section, cookie):
@@ -44,7 +47,7 @@ class Accounts:
 				else:
 					self.accounts[user] = (data[0], False, False)
 					self.config.set_accounts(self.section, self.accounts)
-					print self.accounts
+					logger.warning("Account %s disabled." % user)
 		if result:
 			return result
 		else:

@@ -38,11 +38,15 @@ class Tucan:
 	""""""
 	def __init__(self):
 		""""""
+		#logging
+		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
+		logger = logging.getLogger(self.__class__.__name__)
+		logger.info("%s%s" % (cons.TUCAN_VERSION, cons.REVISION))
+		logger.debug("Main path: %s" % cons.PATH)
+		logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
 		#configuration
 		configuration = config.Config()
 		sys.path.append(cons.PLUGIN_PATH)
-		#logging
-		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
 		Gui(configuration)
 
 if __name__ == "__main__":

@@ -21,6 +21,8 @@
 ###############################################################################
 
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 WAIT_LIMIT = 300
 
@@ -43,7 +45,7 @@ class Slots:
 			
 	def add_wait(self):
 		""""""
-		print "a esperar 5 minutos"
+		logger.warning("Wait 5 minutes.")
 		self.limit = True
 		self.end_wait = time.time() + WAIT_LIMIT
 			
