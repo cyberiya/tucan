@@ -69,6 +69,8 @@ class LogView(gtk.Dialog):
 		for name, color in COLORS.items():
 			tag = gtk.TextTag(name)
 			tag.set_property("foreground", color)
+			tag.set_property("left_margin", 10)
+			tag.set_property("right_margin", 10)
 			table.add(tag)
 
 		#combo
@@ -88,7 +90,7 @@ class LogView(gtk.Dialog):
 		
 		for s in SEVERITY:
 			self.combo.append_text(s)
-		self.combo.set_active(2)
+		self.combo.set_active(1)
 		
 		#action area
 		button = gtk.Button(None, gtk.STOCK_CLOSE)
