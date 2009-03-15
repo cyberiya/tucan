@@ -20,6 +20,9 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import logging
+logger = logging.getLogger(__name__)
+
 from accounts import Accounts
 from service_config import SECTION_PREMIUM_DOWNLOAD
 from download_plugin import DownloadPlugin
@@ -48,4 +51,4 @@ class PremiumDownload(DownloadPlugin, Accounts):
 
 	def delete(self, file_name):
 		""""""
-		print self.stop(file_name)
+		logger.warning("Stopped %s: %s" % (file_name, self.stop(file_name)))

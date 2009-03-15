@@ -22,6 +22,9 @@
 
 import urllib
 import urllib2
+import logging
+logger = logging.getLogger(__name__)
+
 from HTMLParser import HTMLParser
 
 from download_plugin import DownloadPlugin
@@ -76,9 +79,9 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			else:
 				self.add_wait()
 				self.return_slot()
-				print "Limit Exceded"
+				logger.warning("Limit Exceded.")
 
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):
-			print self.return_slot()
+			logger.warning("Stopped %s: %s" % (file_name, self.return_slot()))

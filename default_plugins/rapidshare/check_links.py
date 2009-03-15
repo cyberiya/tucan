@@ -21,6 +21,8 @@
 ###############################################################################
 
 import urllib2
+import logging
+logger = logging.getLogger(__name__)
 
 import cons
 
@@ -42,5 +44,5 @@ class CheckLinks:
 						size = int(size/1024)
 						unit = cons.UNIT_MB
 		except urllib2.URLError, e:
-			print e
+			logger.error(e)
 		return name, size, unit

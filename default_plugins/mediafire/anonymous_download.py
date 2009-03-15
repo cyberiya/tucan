@@ -23,6 +23,8 @@
 import urllib
 import urllib2
 import cookielib
+import logging
+logger = logging.getLogger(__name__)
 
 from download_plugin import DownloadPlugin
 
@@ -42,17 +44,13 @@ class AnonymousDownload(DownloadPlugin):
 
 	def add(self, path, link, file_name):
 		""""""
-		print path, link, file_name
 		cookie = cookielib.CookieJar()
 		f = FormParser(link, cookie)
 		if f.url:
 			if self.start(path, f.url, file_name, None, cookie):
 				return True
-			else:
-				print "Limit Exceded"
-				self.add_wait()
 
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):
-			print self.return_slot()
+			logger.warning("Stopped %s" % file_name)

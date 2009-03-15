@@ -21,6 +21,8 @@
 ###############################################################################
 
 import urllib2
+import logging
+logger = logging.getLogger(__name__)
 
 from accounts import Accounts
 from service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
@@ -47,7 +49,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 
 	def delete(self, file_name):
 		""""""
-		print self.stop(file_name)
+		logger.warning("Stopped %s: %s" % (file_name, self.stop(file_name)))
 		
 	def check_links(self, link):
 		""""""
