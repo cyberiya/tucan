@@ -91,7 +91,7 @@ class Gui(gtk.Window, ServiceManager):
 		menu_help = gtk.STOCK_HELP, self.help
 		menu_about = gtk.STOCK_ABOUT, About
 		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
-		menu_log = _("View Logs"), LogView
+		menu_log = _("Show Logs"), LogView
 		show_uploads = gtk.CheckMenuItem(_("Show Uploads")), self.resize_pane, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS)
 		
 		#menubar
