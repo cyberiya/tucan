@@ -26,6 +26,8 @@ import webbrowser
 import time
 import __builtin__
 import gettext
+import logging
+logger = logging.getLogger(__name__)
 
 import pygtk
 pygtk.require('2.0')
@@ -228,9 +230,9 @@ class Gui(gtk.Window, ServiceManager):
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		if len(paths) > 0:
 			if len(paths[0]) > 1:
-				print "start file", self.download_manager.start(model.get_value(model.get_iter(paths[0]), 3))
+				logger.warning("Start file: %s" % self.download_manager.start(model.get_value(model.get_iter(paths[0]), 3)))
 			else:
-				print "start package"
+				logger.warning("Start package.")
 				for item in self.downloads.package_files(model.get_iter(paths[0])):
 					self.download_manager.start(item)
 
@@ -239,9 +241,9 @@ class Gui(gtk.Window, ServiceManager):
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		if len(paths) > 0:
 			if len(paths[0]) > 1:
-				print "stop file", self.download_manager.stop(model.get_value(model.get_iter(paths[0]), 3))
+				logger.warning("Stop file: %s" % self.download_manager.stop(model.get_value(model.get_iter(paths[0]), 3)))
 			else:
-				print "stop package"
+				logger.warning("Stop package.")
 				for item in self.downloads.package_files(model.get_iter(paths[0])):
 					self.download_manager.stop(item)
 
@@ -256,14 +258,14 @@ class Gui(gtk.Window, ServiceManager):
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		if len(paths) > 0:
 			if not len(paths[0]) > 1:
-				print "move up", self.downloads.move_up(model.get_iter(paths[0]))
+				logger.warning("Move up: %s" % self.downloads.move_up(model.get_iter(paths[0])))
 
 	def move_down(self, button):
 		"""Implementado solo para descargas"""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		if len(paths) > 0:
 			if not len(paths[0]) > 1:
-				print "move down", self.downloads.move_down(model.get_iter(paths[0]))
+				logger.warning("Move down: %s" % self.downloads.move_down(model.get_iter(paths[0])))
 
 	def delete(self, button=None):
 		"""Implementado solo para descargas"""
@@ -271,20 +273,17 @@ class Gui(gtk.Window, ServiceManager):
 		status = [cons.STATUS_STOP, cons.STATUS_PEND, cons.STATUS_ERROR]
 		if len(paths) > 0:
 			if len(paths[0]) > 2:
-				print "remove link"
 				name, link = self.downloads.delete_link(status, model.get_iter(paths[0]))
 				if link:
-					print self.download_manager.delete_link(name, link)
+					logger.warning("Remove link: %s" % self.download_manager.delete_link(name, link))
 			elif len(paths[0]) > 1:
-				print "remove file"
 				name = self.downloads.delete_file(status, model.get_iter(paths[0]))
 				if name:
-					print self.download_manager.clear([name])
+					logger.warning("Remove file: %s" % self.download_manager.clear([name]))
 			else:
-				print "remove package"
 				files = self.downloads.delete_package(status, model.get_iter(paths[0]))
 				if len(files) > 0:
-					print self.download_manager.clear(files)
+					logger.warning("Remove package: %s" % self.download_manager.clear(files))
 
 	def quit(self, dialog=None, response=None):
 		""""""

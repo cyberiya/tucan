@@ -23,6 +23,8 @@
 import os
 import pickle
 import base64
+import logging
+logger = logging.getLogger(__name__)
 
 from ConfigParser import SafeConfigParser
 
@@ -128,6 +130,7 @@ class ServiceConfig(SafeConfigParser):
 			if self.getboolean(SECTION_MAIN, OPTION_DOWNLOADS):
 				result = self.get_plugins([(SECTION_ANONYMOUS_DOWNLOAD, cons.TYPE_ANONYMOUS), (SECTION_USER_DOWNLOAD, cons.TYPE_USER), (SECTION_PREMIUM_DOWNLOAD, cons.TYPE_PREMIUM)])
 		return result
+
 	def get_upload_plugins(self):
 		""""""
 		result = []
@@ -146,7 +149,7 @@ class ServiceConfig(SafeConfigParser):
 					result = pickle.loads(base64.b64decode((f.read())))
 					f.close()
 				except EOFError, e:
-					print e
+					logger.error("Unable to load account: %s" % e)
 		return result
 
 	def set_accounts(self, section, accounts):

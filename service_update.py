@@ -22,6 +22,8 @@
 
 import os
 import urllib2
+import logging
+logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
@@ -101,7 +103,7 @@ class ServiceUpdate:
 				write_mode = "wb"
 			if not os.path.isdir(os.path.join(cons.PLUGIN_PATH, service_dir)):
 				os.mkdir(os.path.join(cons.PLUGIN_PATH, service_dir))
-			print "Updating: ", os.path.join(cons.PLUGIN_PATH, service_dir, file_name)
+			logger.warning("Updating: %s" % os.path.join(cons.PLUGIN_PATH, service_dir, file_name))
 			f = file(os.path.join(cons.PLUGIN_PATH, service_dir, file_name), write_mode)
 			f.write(handle.read())
 			f.close()

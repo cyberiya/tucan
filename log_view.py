@@ -113,7 +113,7 @@ class LogView(gtk.Dialog):
 					buffer.insert(buffer.get_end_iter(), line)
 					break
 		except:
-			print "error"
+			pass
 		else:
 			return True
 		

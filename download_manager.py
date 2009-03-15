@@ -170,7 +170,7 @@ class DownloadManager:
 					break
 			if plugin:
 				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name)
-				logger.info("%s %s %i %i %s %i %i" % (download.name, status, progress, actual_size, unit, speed, time))
+				logger.debug("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 				if status:
 					download.update(status, progress, actual_size, unit, speed, time)
 					if status in [cons.STATUS_PEND, cons.STATUS_STOP]:
@@ -194,7 +194,7 @@ class DownloadManager:
 	def scheduler(self):
 		""""""
 		if not self.scheduling:
-			logger.info("scheduling")
+			logger.debug("scheduling")
 			self.scheduling = True
 			if len(self.pending_downloads) > 0:
 				for download in self.pending_downloads:

@@ -22,6 +22,8 @@
 
 import HTMLParser
 import threading
+import logging
+logger = logging.getLogger(__name__)
 
 import pygtk
 pygtk.require('2.0')
@@ -184,7 +186,7 @@ class InputLinks(gtk.Dialog):
 				for value in column.iterchildren():
 					if value[1] != value[2]:
 						if value[6]:
-							print value[1], value[2], value[3], value[4], value[5]
+							logger.info("%s %s %s %s %s" % (value[1], value[2], value[3], value[4], value[5]))
 							tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
 		if tmp != {}:
 			self.hide()
@@ -250,7 +252,7 @@ class InputLinks(gtk.Dialog):
 								icon = unactive_icon
 								marked = False
 								file_name = link
-							print file_name, size, size_unit
+							logger.info("%s %s %s" % (file_name, size, size_unit))
 							store.append(service_iter, [icon, link, file_name, size, size_unit, plugin_type, marked, marked])
 							self.treeview.expand_row(store.get_path(service_iter), True)
 		except:
