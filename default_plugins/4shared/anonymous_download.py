@@ -44,7 +44,6 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	def add(self, path, link, file_name):
 		""""""
 		if self.get_slot():
-			logger.warning("%s" % file_name)
 			parser = Parser(link)
 			if parser.link:
 				if self.start(path, parser.link, file_name, WAIT):

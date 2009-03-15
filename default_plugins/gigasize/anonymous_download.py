@@ -83,7 +83,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 					f = FormParser(handle.read())
 					handle.close()
 					form = f.form_action
-					logger.warning("%s: %s" % (link, captcha))
+					logger.warning("Captcha: %s" % captcha)
 			if self.start(path, "http://www.gigasize.com" + form, file_name, WAIT, cookie, urllib.urlencode({"dlb": "Download"})):
 				return True
 			else:
