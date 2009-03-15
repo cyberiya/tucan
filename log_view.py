@@ -122,7 +122,7 @@ class LogView(gtk.Dialog):
 			buffer = self.textview.get_buffer()
 			for line in self.file.readlines():
 				self.back_buffer.insert(self.back_buffer.get_end_iter(), line)
-				self.insert_color(buffer, line)
+				self.insert_color(buffer, line.strip())
 		except:
 			pass
 		else:
