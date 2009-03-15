@@ -23,6 +23,8 @@
 import urllib
 import urllib2
 import cookielib
+import logging
+logger = logging.getLogger(__name__)
 
 #import cons
 
@@ -68,7 +70,7 @@ class FormParser:
 							error = True
 				except:
 					error = True
-					print vars, tmp
+					logger.error("%s %s" % (vars, tmp))
 		if server and random and link and name and not error:
 			self.url = "http://%s/%sg/%s/%s" % (server, random, link, name)
 

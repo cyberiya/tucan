@@ -26,6 +26,8 @@ import pickle
 import hashlib
 import urllib
 import urllib2
+import logging
+logger = logging.getLogger(__name__)
 
 import pygtk
 pygtk.require('2.0')
@@ -65,7 +67,7 @@ class CheckLinks(HTMLParser):
 						size = 0
 						unit = None
 		except urllib2.URLError, e:
-			print e
+			logger.error("Check failed: %s" % e)
 			
 		if "win" in sys.platform:
 			f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "wb")
@@ -174,7 +176,7 @@ class CaptchaSolve(gtk.Dialog):
 			try:
 				int(solution[3])
 			except:
-				print "Last char is not a number."
+				logger.warning("Last char is not a number.")
 			else:
 				f = CaptchaForm(self.url, solution.lower(), self.captchacode, self.megavar)
 				if f.link:
@@ -220,7 +222,7 @@ class CaptchaSolve(gtk.Dialog):
 	def query_captcha(self, captcha):
 		""""""
 		response = urllib2.urlopen(urllib2.Request(QUERY), urllib.urlencode([("key", captcha)])).read()
-		print "Captcha requested: %s %s" % (captcha, response)
+		logger.info("Captcha requested: %s %s" % (captcha, response))
 		if len(response) > 0:
 			return response
 
@@ -229,7 +231,7 @@ class CaptchaSolve(gtk.Dialog):
 		data = urllib.urlencode([("key", captcha), ("value", solution)])
 		response = urllib2.urlopen(urllib2.Request(ADD), data).read()
 		if len(response) > 0:
-			print "Captcha added: %s %s" % (captcha, solution)
+			logger.info("Captcha added: %s %s" % (captcha, solution))
 			return True
 
 if __name__ == "__main__":

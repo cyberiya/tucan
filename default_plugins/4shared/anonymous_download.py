@@ -20,6 +20,9 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import logging
+logger = logging.getLogger(__name__)
+
 from parsers import CheckLinks, Parser
 
 from download_plugin import DownloadPlugin
@@ -41,16 +44,16 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	def add(self, path, link, file_name):
 		""""""
 		if self.get_slot():
-			print path, link, file_name
+			logger.warning("%s" % file_name)
 			parser = Parser(link)
 			if parser.link:
 				if self.start(path, parser.link, file_name, WAIT):
 					return True
 				else:
-					print "Limit Exceded"
+					logger.warning("Limit Exceded.")
 					self.add_wait()
 	
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):
-			print self.return_slot()
+			logger.warning("Stopped %s: %s" % (file_name, self.return_slot()))

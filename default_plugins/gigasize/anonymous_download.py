@@ -23,6 +23,8 @@
 import urllib
 import urllib2
 import cookielib
+import logging
+logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
@@ -68,7 +70,6 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	def add(self, path, link, file_name):
 		""""""
 		if self.get_slot():
-			print path, link, file_name
 			cookie = cookielib.CookieJar()
 			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 			opener.open(urllib2.Request(link))
@@ -82,11 +83,11 @@ class AnonymousDownload(DownloadPlugin, Slots):
 					f = FormParser(handle.read())
 					handle.close()
 					form = f.form_action
-					print "Captcha: ", captcha, form
+					logger.warning("%s: %s" % (link, captcha))
 			if self.start(path, "http://www.gigasize.com" + form, file_name, WAIT, cookie, urllib.urlencode({"dlb": "Download"})):
 				return True
 			else:
-				print "Limit Exceded"
+				logger.warning("Limit Exceded.")
 				self.add_wait()
 				
 	def filter_image(self, image):
@@ -107,4 +108,4 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):
-			print self.return_slot()
+			logger.warning("Stopped %s: %s" % (file_name, self.return_slot()))

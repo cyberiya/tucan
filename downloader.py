@@ -90,11 +90,11 @@ class Downloader(threading.Thread):
 					else:
 						self.status = cons.STATUS_ERROR
 			except urllib2.HTTPError, e:
-				logger.error("Download error: %s" % e)
+				logger.error("%s" % e)
 				self.stop_flag = True
 				self.status = cons.STATUS_PEND
 			except (TypeError, socket.timeout, urllib2.URLError), e:
-				logger.error("Error downloading %s: %s" % (self.file, e))
+				logger.error("%s: %s" % (self.file, e))
 				self.stop_flag = True
 				self.status = cons.STATUS_ERROR
 

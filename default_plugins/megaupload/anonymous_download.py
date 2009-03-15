@@ -24,6 +24,8 @@ import sys
 import subprocess
 import os.path
 import pickle
+import logging
+logger = logging.getLogger(__name__)
 
 #from captcha import CaptchaForm, CheckLinks
 from captcha2 import CaptchaSolve, CheckLinks
@@ -55,7 +57,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 						f.write("\n")
 						f.close()
 					except:
-						print "error"
+						logger.error("Download %s failed." % link)
 					else:	
 						return self.start(path, data, file_name, WAIT)
 				else:
@@ -70,7 +72,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):
-			print self.return_slot()
+			logger.info("Stopped %s: %s" % (file_name, self.return_slot()))
 			
 	def check_links(self, url):
 		""""""
@@ -90,7 +92,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				name = url
 				size = -1
 				unit = None
-				print "error"
+				logger.error("Check %s failed." % url)
 			else:
 				return name, size, unit
 		else:

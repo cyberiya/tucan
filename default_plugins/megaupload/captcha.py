@@ -22,6 +22,8 @@
 
 import urllib
 import urllib2
+import logging
+logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
@@ -54,7 +56,7 @@ class CheckLinks(HTMLParser):
 					if parser.link:
 						name = parser.link.split("/").pop()
 		except urllib2.URLError, e:
-			print e
+			logger.error(e)
 		if error:
 			return url, -1, None
 		else:
@@ -97,7 +99,6 @@ class CaptchaForm(HTMLParser):
 		while not self.link:
 			p = CaptchaParser(urllib2.urlopen(urllib2.Request(url)).read())
 			if p.captcha:
-				print p.captcha
 				handle = urllib2.urlopen(urllib2.Request(p.captcha))
 				if handle.info()["Content-Type"] == "image/gif":
 					self.tess = Tesseract(handle.read())
@@ -107,7 +108,7 @@ class CaptchaForm(HTMLParser):
 						self.reset()
 						self.feed(handle.read())
 						self.close()
-						print captcha
+						logger.info("Captcha %s: %s" % (p.captcha, captcha)
 		
 	def handle_starttag(self, tag, attrs):
 		""""""
