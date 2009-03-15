@@ -28,6 +28,7 @@ import gobject
 import cons
 
 SEVERITY = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+COLORS = {"DEBUG": "white", "INFO": "green", "WARNING": "yellow", "ERROR": "red", "CRITICAL": "blue"}
 
 class LogView(gtk.Dialog):
 	""""""
@@ -42,7 +43,6 @@ class LogView(gtk.Dialog):
 		self.back_buffer = gtk.TextBuffer()
 		self.back_buffer.set_text(self.file.read())
 
-		#textview
 		frame = gtk.Frame()
 		self.vbox.pack_start(frame)
 		frame.set_border_width(10)
@@ -52,15 +52,25 @@ class LogView(gtk.Dialog):
 		#auto scroll 
 		scroll = gtk.ScrolledWindow()
 		hbox.pack_start(scroll)
+		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		scroll.get_vadjustment().connect("changed", self.changed)
 		scroll.get_vadjustment().connect("value-changed", self.value_changed)		
-		
-		scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-		self.textview = gtk.TextView(gtk.TextBuffer())
+
+		#textview
+		buffer = gtk.TextBuffer()
+		self.textview = gtk.TextView(buffer)
 		scroll.add(self.textview)
-		self.textview.set_wrap_mode(gtk.WRAP_CHAR)
+		self.textview.set_wrap_mode(gtk.WRAP_NONE)
 		self.textview.set_editable(False)
+		self.textview.set_cursor_visible(False)
+		self.textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("black"))
 		
+		table = buffer.get_tag_table()
+		for name, color in COLORS.items():
+			tag = gtk.TextTag(name)
+			tag.set_property("foreground", color)
+			table.add(tag)
+
 		#combo
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 10)
@@ -91,27 +101,28 @@ class LogView(gtk.Dialog):
 		gobject.timeout_add(1000, self.update)
 		self.run()
 	
+	def insert_color(self, buffer, line):
+		""""""
+		for s in SEVERITY[self.combo.get_active():]:
+			if s in line:
+				buffer.insert_with_tags(buffer.get_end_iter(), "%s\n" % line, buffer.get_tag_table().lookup(s))
+				break
+
 	def reload(self, textview):
 		""""""
 		buffer = self.textview.get_buffer()
 		buffer.set_text("")
 		ini, fin = self.back_buffer.get_bounds()
 		for line in self.back_buffer.get_text(ini, fin).split("\n"):
-			for s in SEVERITY[self.combo.get_active():]:
-				if s in line:
-					buffer.insert(buffer.get_end_iter(), line + "\n")
-					break
+			self.insert_color(buffer, line)
 	
 	def update(self):
 		""""""
 		try:
-			line = self.file.readline()
-			self.back_buffer.insert(self.back_buffer.get_end_iter(), line)
 			buffer = self.textview.get_buffer()
-			for s in SEVERITY[self.combo.get_active():]:
-				if s in line:
-					buffer.insert(buffer.get_end_iter(), line)
-					break
+			for line in self.file.readlines():
+				self.back_buffer.insert(self.back_buffer.get_end_iter(), line)
+				self.insert_color(buffer, line)
 		except:
 			pass
 		else:
