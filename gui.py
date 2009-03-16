@@ -78,7 +78,7 @@ class Gui(gtk.Window, ServiceManager):
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		
 		self.set_icon_from_file(cons.ICON_TUCAN)
-		self.set_title("Tucan Manager - Version: " + cons.TUCAN_VERSION + cons.REVISION)
+		self.set_title("Tucan Manager - Version: %s %s" % (cons.TUCAN_VERSION, cons.REVISION))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(900, 500)
 		self.vbox = gtk.VBox()
@@ -275,11 +275,11 @@ class Gui(gtk.Window, ServiceManager):
 			if len(paths[0]) > 2:
 				name, link = self.downloads.delete_link(status, model.get_iter(paths[0]))
 				if link:
-					logger.warning("Remove link: %s" % self.download_manager.delete_link(name, link))
+					logger.warning("Remove %s: %s" % (link, self.download_manager.delete_link(name, link)))
 			elif len(paths[0]) > 1:
 				name = self.downloads.delete_file(status, model.get_iter(paths[0]))
 				if name:
-					logger.warning("Remove file: %s" % self.download_manager.clear([name]))
+					logger.warning("Remove %s: %s" % (name, self.download_manager.clear([name])))
 			else:
 				files = self.downloads.delete_package(status, model.get_iter(paths[0]))
 				if len(files) > 0:
