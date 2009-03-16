@@ -90,7 +90,7 @@ class LogView(gtk.Dialog):
 		
 		for s in SEVERITY:
 			self.combo.append_text(s)
-		self.combo.set_active(1)
+		self.combo.set_active(2)
 		
 		#action area
 		button = gtk.Button(None, gtk.STOCK_CLOSE)

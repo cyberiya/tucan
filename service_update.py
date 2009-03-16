@@ -41,7 +41,10 @@ class ServiceList(HTMLParser):
 		""""""
 		HTMLParser.__init__(self)
 		self.services = []
-		self.feed(urllib2.urlopen(urllib2.Request(url)).read())
+		try:
+			self.feed(urllib2.urlopen(urllib2.Request(url)).read())
+		except (urllib2.URLError, urllib2.HTTPError), e:
+			logger.error(e)
 		self.close()
 
 	def handle_starttag(self, tag, attrs):
@@ -78,16 +81,20 @@ class ServiceUpdate:
 			check = ServiceCheck(BASE + remote_service)
 			found = False
 			if CONF_FILE in check.files:
-				#get remote version
-				config = ServiceConfig(None, urllib2.urlopen(urllib2.Request(BASE + remote_service + CONF_FILE)))
-				remote_version = config.get_update()
-				#get local version
-				for local_service in self.local_services:
-					if local_service[0] == remote_service.split("/")[0]:
-						found = True
-						local_version = local_service[4].get_update()
-						if remote_version > local_version:
-							new_services[local_service[2]] = local_service[0], check.files, local_service[1]
+				try:
+					#get remote version
+					config = ServiceConfig(None, urllib2.urlopen(urllib2.Request(BASE + remote_service + CONF_FILE)))
+					remote_version = config.get_update()
+				except (urllib2.URLError, urllib2.HTTPError), e:
+					logger.error(e)
+				else:
+					#get local version
+					for local_service in self.local_services:
+						if local_service[0] == remote_service.split("/")[0]:
+							found = True
+							local_version = local_service[4].get_update()
+							if remote_version > local_version:
+								new_services[local_service[2]] = local_service[0], check.files, local_service[1]
 			if not found:
 				new_services[config.get_name()] = remote_service.split("/")[0], check.files, None
 		return new_services
@@ -95,17 +102,21 @@ class ServiceUpdate:
 	def install_service(self, service_name, service_dir, files):
 		""""""
 		for file_name in files:
-			handle = urllib2.urlopen(urllib2.Request("%s%s/%s" % (BASE, service_dir, file_name)))
-			#windows incompatibility
-			if "text" in handle.info()["Content-Type"]:
-				write_mode = "w"
+			try:
+				handle = urllib2.urlopen(urllib2.Request("%s%s/%s" % (BASE, service_dir, file_name)))
+			except (urllib2.URLError, urllib2.HTTPError), e:
+				logger.error(e)
 			else:
-				write_mode = "wb"
-			if not os.path.isdir(os.path.join(cons.PLUGIN_PATH, service_dir)):
-				os.mkdir(os.path.join(cons.PLUGIN_PATH, service_dir))
-			logger.warning("Updating: %s" % os.path.join(cons.PLUGIN_PATH, service_dir, file_name))
-			f = file(os.path.join(cons.PLUGIN_PATH, service_dir, file_name), write_mode)
-			f.write(handle.read())
-			f.close()
-			if not self.config.has_option(config.SECTION_SERVICES, service_name):
-				self.config.set(config.SECTION_SERVICES, service_name, os.path.join(cons.PLUGIN_PATH, service_dir, ""))
+				#windows incompatibility
+				if "text" in handle.info()["Content-Type"]:
+					write_mode = "w"
+				else:
+					write_mode = "wb"
+				if not os.path.isdir(os.path.join(cons.PLUGIN_PATH, service_dir)):
+					os.mkdir(os.path.join(cons.PLUGIN_PATH, service_dir))
+				logger.warning("Updating: %s" % os.path.join(cons.PLUGIN_PATH, service_dir, file_name))
+				f = file(os.path.join(cons.PLUGIN_PATH, service_dir, file_name), write_mode)
+				f.write(handle.read())
+				f.close()
+				if not self.config.has_option(config.SECTION_SERVICES, service_name):
+					self.config.set(config.SECTION_SERVICES, service_name, os.path.join(cons.PLUGIN_PATH, service_dir, ""))

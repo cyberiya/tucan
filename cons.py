@@ -36,7 +36,7 @@ try:
 except:
 	pass
 else:
-	REVISION = " (REV %s)" % rev
+	REVISION = "(REV %s)" % rev
 	
 # status constants
 STATUS_PEND = "pending"

@@ -113,7 +113,7 @@ class DownloadManager:
 	def clear(self, files):
 		""""""
 		for name in files:
-			complete = [tmp.name for tmp in self.complete_downloads + self.pending_downloads]
+			complete = [tmp.name for tmp in self.complete_downloads]
 			if name in complete:
 				logger.info("Cleared %s" % name)
 				del self.complete_downloads[complete.index(name)]
@@ -173,12 +173,12 @@ class DownloadManager:
 				if status:
 					download.update(status, progress, actual_size, unit, speed, time)
 					if status in [cons.STATUS_PEND, cons.STATUS_STOP]:
-						logger.debug("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
+						logger.warning("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						if ((status == cons.STATUS_PEND) and ("add_wait" in dir(plugin))):
 							plugin.add_wait()
 						self.stop(download.name)
 					elif status == cons.STATUS_ERROR:
-						logger.debug("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
+						logger.error("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						if "return_slot" in dir(link.plugin):
 							plugin.return_slot()
 						link.active = False
@@ -186,7 +186,7 @@ class DownloadManager:
 						self.active_downloads.remove(download)
 						self.scheduler()
 					elif status == cons.STATUS_CORRECT:
-						logger.debug("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
+						logger.info("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						if "return_slot" in dir(link.plugin):
 							plugin.return_slot()
 						download.progress = 100
@@ -203,9 +203,9 @@ class DownloadManager:
 					if len(self.active_downloads) < self.max_downloads:
 						if download.status not in [cons.STATUS_STOP]:
 							if self.start(download.name):
-								logger.debug(self.active_downloads)
-								logger.debug(self.pending_downloads)
-								logger.debug(self.complete_downloads)
+								logger.debug("Active: %s" % [tmp.name for tmp in self.active_downloads])
+								logger.debug("Pending: %s" % [tmp.name for tmp in self.pending_downloads])
+								logger.debug("Complete: %s" % [tmp.name for tmp in self.complete_downloads])
 								break
 				if self.timer:
 					self.timer.cancel()
