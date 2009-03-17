@@ -87,6 +87,9 @@ LOGGER = "Tucan logger"
 PLUGIN_PATH = os.path.join(CONFIG_PATH, "plugins")
 DEFAULT_PLUGINS = os.path.join(PATH, "default_plugins", "")
 
+#session constants
+SESSION_FILE = os.path.join(CONFIG_PATH, "tucan.session")
+
 #localization constants
 NAME_LOCALES = "tucan"
 PATH_LOCALES = os.path.join(PATH, "i18n")
