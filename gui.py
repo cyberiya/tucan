@@ -142,6 +142,9 @@ class Gui(gtk.Window, ServiceManager):
 		self.connect("hide", self.tray_icon.activate)
 		self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)
 		
+		#update limits
+		gobject.timeout_add(120000, self.update_limits)
+		
 	def update_limits(self):
 		""""""
 		limits = self.download_manager.get_limits()
