@@ -21,33 +21,37 @@
 ###############################################################################
 
 import urllib2
-from HTMLParser import HTMLParser
+import logging
+logger = logging.getLogger(__name__)
 
-class Parser(HTMLParser):
+import HTMLParser
+
+class Parser(HTMLParser.HTMLParser):
 	""""""
 	def __init__(self, url):
 		""""""
-		HTMLParser.__init__(self)
-		self.link_found = False
+		HTMLParser.HTMLParser.__init__(self)
 		self.tmp_link = None
 		self.link = None
-		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
-			if "get" in line:
-				self.feed(line)
-		if self.tmp_link:
-			for line in urllib2.urlopen(urllib2.Request(self.tmp_link)).readlines():
-				if "Click here to download this file" in line:
-					self.link_found = True
-					self.feed(line)
+		try:
+			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+				if "get" in line:
+					try:
+						self.feed(line)
+					except HTMLParser.HTMLParseError, e:
+						logger.warning("%s :%s %s" % (url, line.strip(), e))
+			if self.tmp_link:
+				for line in urllib2.urlopen(urllib2.Request(self.tmp_link)).readlines():
+					if "Click here to download this file" in line:
+						self.link = line.split("<a href='")[1].split("'>")[0]
+		except urllib2.URLError, e:
+			logger.error("%s :%s" % (url, e))
 
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "a":
 			if ((len(attrs) == 3) and (attrs[1][1] == "dbtn")):
 				self.tmp_link = attrs[0][1]
-			elif self.link_found:
-				self.link_found = False
-				self.link = attrs[0][1]
 
 class CheckLinks:
 	""""""

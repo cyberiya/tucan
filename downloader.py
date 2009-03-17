@@ -73,6 +73,7 @@ class Downloader(threading.Thread):
 				else:
 					handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER), self.form)
 				socket.setdefaulttimeout(None)
+				logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
 				self.total_size = int(handle.info().getheader("Content-Length"))
 				f = open(self.path + self.file, "wb")
 				self.start_time = time.time()
