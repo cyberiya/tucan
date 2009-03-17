@@ -88,7 +88,8 @@ PLUGIN_PATH = os.path.join(CONFIG_PATH, "plugins")
 DEFAULT_PLUGINS = os.path.join(PATH, "default_plugins", "")
 
 #session constants
-SESSION_FILE = os.path.join(CONFIG_PATH, "tucan.session")
+#SESSION_FILE = os.path.join(CONFIG_PATH, "tucan.session")
+SESSION_FILE = os.path.join(CONFIG_PATH, "last.session")
 
 #localization constants
 NAME_LOCALES = "tucan"

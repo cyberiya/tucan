@@ -41,11 +41,11 @@ class Sessions(SafeConfigParser):
 	""""""		
 	def load_default_session(self):
 		""""""
-		return self.load_session(cons.CONFIG_PATH + LAST_SESSION)
+		return self.load_session(cons.SESSION_FILE)
 		
 	def save_default_session(self, packages, info):
 		""""""
-		self.save_session(cons.CONFIG_PATH + LAST_SESSION, packages, info)
+		self.save_session(cons.SESSION_FILE, packages, info)
 		
 	def load_session(self, path):
 		""""""
