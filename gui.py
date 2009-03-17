@@ -145,7 +145,7 @@ class Gui(gtk.Window, ServiceManager):
 	def update_limits(self):
 		""""""
 		limits = self.download_manager.get_limits()
-		if len limits > 0:
+		if len(limits) > 0:
 			logger.debug("Limits: %s" % limits)
 		return True
 		
