@@ -20,8 +20,12 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib
+import urllib2
 import logging
 logger = logging.getLogger(__name__)
+
+from HTMLParser import HTMLParser
 
 from accounts import Accounts
 from service_config import SECTION_PREMIUM_DOWNLOAD
@@ -31,6 +35,36 @@ from premium_cookie import PremiumCookie
 from check_links import CheckLinks
 
 import cons
+
+class FormParser(HTMLParser):
+	""""""
+	def __init__(self, url, cookie):
+		""""""
+		HTMLParser.__init__(self)
+		self.form_action = None
+		self.url = None
+		self.close()
+		try:
+			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+			handler = opener.open(urllib2.Request(url))
+			if "text/html" in handler.info()["Content-Type"]:
+				self.feed(handler.read())
+				if self.form_action:				
+					for line in opener.open(self.form_action, urllib.urlencode({"dl.start": "PREMIUM", "":"Premium user"})).readlines():
+						self.feed(line)					
+			else:
+				self.url = url
+		except Exception, e:
+			print e
+			logger.error("%s: %s" % (url, e))
+			
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "form":
+			if len(attrs) == 2:
+				self.form_action = attrs[0][1]
+			elif attrs[0][1] == "dlf":
+				self.url = attrs[1][1]
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
@@ -45,10 +79,17 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		
 	def add(self, path, link, file_name):
 		""""""
-		cookie = self.get_cookie(link)
+		cookie = self.get_cookie()
 		if cookie:
-			return self.start(path, link, file_name, None, cookie)
+			f = FormParser(link, cookie)
+			if f.url:
+				return self.start(path, f.url, file_name, None, cookie)
 
 	def delete(self, file_name):
 		""""""
 		logger.warning("Stopped %s: %s" % (file_name, self.stop(file_name)))
+
+if __name__ == "__main__":
+	c = PremiumCookie()
+	p = FormParser("", c.get_cookie("",""))
+

@@ -41,4 +41,3 @@ class PremiumCookie:
 
 if __name__ == "__main__":
 	c = PremiumCookie()
-	print c.get_cookie("mierdas", "261811", "http://rapidshare.com/files/149540090/Californication.2x01.samuelro.part1.rar")
