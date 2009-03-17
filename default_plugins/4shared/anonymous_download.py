@@ -28,7 +28,7 @@ from parsers import CheckLinks, Parser
 from download_plugin import DownloadPlugin
 from slots import Slots
 
-WAIT = 10
+WAIT = 40
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
