@@ -135,12 +135,19 @@ class Gui(gtk.Window, ServiceManager):
 			self.connect("delete_event", self.quit)
 		
 		self.show_all()
-		
+				
 		#trayicon
 		tray_menu = [menu_preferences, menu_about, None, menu_quit]
 		self.tray_icon = TrayIcon(self.show, self.hide, tray_menu)
 		self.connect("hide", self.tray_icon.activate)
 		self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)
+		
+	def update_limits(self):
+		""""""
+		limits = self.download_manager.get_limits()
+		if len limits > 0:
+			logger.debug("Limits: %s" % limits)
+		return True
 		
 	def delete_key(self, window, event):
 		"""pressed del key"""
@@ -184,14 +191,14 @@ class Gui(gtk.Window, ServiceManager):
 			clipboard.clear()
 			clipboard.set_text("\n".join(link_list))
 	
-	def load_session(self, button):
+	def load_session(self, button=None):
 		""""""
 		s = Sessions()
 		packages, info = s.load_default_session()
 		if packages != None:
 			self.manage_packages(packages, info)
 			
-	def save_session(self, button):
+	def save_session(self, button=None):
 		""""""
 		s = Sessions()
 		packages, info = self.downloads.get_packages()
@@ -288,7 +295,7 @@ class Gui(gtk.Window, ServiceManager):
 	def quit(self, dialog=None, response=None):
 		""""""
 		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
-			self.save_session(None)
+			self.save_session()
 		self.hide()
 		self.tray_icon.set_visible(False)
 		self.stop_all()

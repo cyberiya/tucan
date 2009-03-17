@@ -49,9 +49,6 @@ class Tucan:
 		self.logger.info("%s %s" % (cons.TUCAN_VERSION, cons.REVISION))
 		self.logger.debug("Main path: %s" % cons.PATH)
 		self.logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
-		
-		#log unhandled exceptions
-		sys.excepthook = self.exception_hook
 
 		Gui(configuration)
 		
@@ -64,5 +61,6 @@ class Tucan:
 
 if __name__ == "__main__":
 	gobject.threads_init()
-	Tucan()
+	t = Tucan()
+	sys.excepthook = t.exception_hook
 	gtk.main()
