@@ -44,12 +44,23 @@ class Tucan:
 		
 		#logging
 		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
-		logger = logging.getLogger(self.__class__.__name__)
-		logger.info("%s %s" % (cons.TUCAN_VERSION, cons.REVISION))
-		logger.debug("Main path: %s" % cons.PATH)
-		logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
+		self.logger = logging.getLogger(self.__class__.__name__)
+		
+		self.logger.info("%s %s" % (cons.TUCAN_VERSION, cons.REVISION))
+		self.logger.debug("Main path: %s" % cons.PATH)
+		self.logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
+		
+		#log unhandled exceptions
+		sys.excepthook = self.exception_hook
 
 		Gui(configuration)
+		
+	def exception_hook(self, type, value, trace):
+		""""""
+		try:
+			raise type, value
+		except Exception, e:
+			self.logger.exception(e)
 
 if __name__ == "__main__":
 	gobject.threads_init()
