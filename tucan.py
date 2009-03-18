@@ -45,6 +45,8 @@ class Tucan:
 		
 		#logging
 		if os.path.exists(cons.LOG_FILE):
+			if os.path.exists("%s.old" % cons.LOG_FILE):
+				os.remove("%s.old" % cons.LOG_FILE)
 			os.rename(cons.LOG_FILE, "%s.old" % cons.LOG_FILE)
 		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
 		self.logger = logging.getLogger(self.__class__.__name__)
