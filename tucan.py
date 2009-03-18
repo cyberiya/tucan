@@ -21,6 +21,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import os.path
 import sys
 import logging
 
@@ -43,6 +44,8 @@ class Tucan:
 		sys.path.append(cons.PLUGIN_PATH)
 		
 		#logging
+		if os.path.exists(cons.LOG_FILE):
+			os.rename(cons.LOG_FILE, "%s.old" % cons.LOG_FILE)
 		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
 		self.logger = logging.getLogger(self.__class__.__name__)
 		
