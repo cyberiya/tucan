@@ -45,7 +45,7 @@ class FileChooser(gtk.FileChooserDialog):
 			self.set_select_multiple(True)
 		elif save:
 			self.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
-			#self.set_title(_("Save As"))
+			self.set_title(_("Save As"))
 		else:
 			self.set_title(_("Select a Folder"))
 			self.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
