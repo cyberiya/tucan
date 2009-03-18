@@ -124,9 +124,14 @@ class Gui(gtk.Window, ServiceManager):
 		#sessions
 		self.session = Sessions()
 		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
-			packages, info = self.session.load_default_session()
-			if packages != None:
-				self.manage_packages(packages, info)
+			self.load_default_session()
+		else:
+			if os.path.exists(cons.SESSION_FILE):
+				title = "Tucan Manager - Restore previous session."
+				message = "Your last session closed unexpectedly.\nTucan will try to restore it now."
+				m = Message(None, cons.SEVERITY_WARNING, title, message, both=True)
+				if m.accepted:
+					self.load_default_session()
 		
 		#pane
 		self.pane = gtk.VPaned()
@@ -213,11 +218,17 @@ class Gui(gtk.Window, ServiceManager):
 		""""""
 		packages, info = self.downloads.get_packages()
 		self.session.save_session(path, packages, info)
+		
+	def load_default_session(self):
+		""""""
+		packages, info = self.session.load_session(cons.SESSION_FILE)
+		if packages != None:
+			self.manage_packages(packages, info)
 			
 	def save_default_session(self):
 		""""""
 		packages, info = self.downloads.get_packages()
-		self.session.save_default_session(packages, info)
+		self.session.save_session(cons.SESSION_FILE, packages, info)
 		logger.debug("Session saved: %s" % info)
 		return True
 		
