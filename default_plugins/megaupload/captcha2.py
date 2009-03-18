@@ -36,6 +36,8 @@ import gobject
 
 from HTMLParser import HTMLParser
 
+import cons
+
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
