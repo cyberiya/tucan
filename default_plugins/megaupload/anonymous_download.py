@@ -92,11 +92,11 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				name = data[0] 
 				size = int(data[1])
 				unit = data[2]
-			except:
+			except Exception, e:
 				name = url
 				size = -1
 				unit = None
-				logger.error("Check %s failed." % url)
+				logger.error("Check %s: %s" % (url, e))
 			return name, size, unit
 		else:
 			return CheckLinks().check(url)
