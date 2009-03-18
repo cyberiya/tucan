@@ -64,8 +64,6 @@ class CheckLinks(HTMLParser):
 					parser = CaptchaSolve(url)
 					if parser.link:
 						name = parser.link.split("/").pop()
-					else:
-						name = url
 
 		except urllib2.URLError, e:
 			logger.error("Check failed: %s" % e)
