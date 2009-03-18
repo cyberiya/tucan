@@ -203,6 +203,7 @@ class DownloadManager:
 					if len(self.active_downloads) < self.max_downloads:
 						if download.status not in [cons.STATUS_STOP]:
 							if self.start(download.name):
+								logger.info("Started: %s" % download.name)
 								logger.debug("Active: %s" % [tmp.name for tmp in self.active_downloads])
 								logger.debug("Pending: %s" % [tmp.name for tmp in self.pending_downloads])
 								logger.debug("Complete: %s" % [tmp.name for tmp in self.complete_downloads])
