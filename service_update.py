@@ -32,7 +32,7 @@ from service_config import ServiceConfig
 
 import cons
 
-BASE = "https://forja.rediris.es/vn/cusl3-tucan/trunk/"
+BASE = "https://forja.rediris.es/svn/cusl3-tucan/trunk/"
 PLUGINS = BASE + "default_plugins/"
 CONF_FILE = "service.conf"
 
