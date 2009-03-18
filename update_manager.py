@@ -26,6 +26,7 @@ import gtk
 import gobject
 
 from service_update import ServiceUpdate
+from message import Message
 
 import cons
 
@@ -102,7 +103,18 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.show_all()
 		
 		self.progress.hide()
-		gobject.timeout_add(1000, self.check_updates)
+
+		if self.server_version == cons.TUCAN_VERSION:
+			gobject.timeout_add(1000, self.check_updates)
+		elif self.server_version == None:
+			message = "Update Manager can't connect to server.\nTry again later."
+			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Not available", message)
+			gobject.idle_add(self.close)
+		else:
+			message = "Your version of Tucan is too old.\nNew services need version %s." % self.server_version
+			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Outdated", message)
+			gobject.idle_add(self.close)
+
 		self.run()
 		
 	def toggled(self, button, path):

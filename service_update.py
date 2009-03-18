@@ -32,7 +32,8 @@ from service_config import ServiceConfig
 
 import cons
 
-BASE = "https://forja.rediris.es/svn/cusl3-tucan/trunk/default_plugins/"
+BASE = "https://forja.rediris.es/vn/cusl3-tucan/trunk/"
+PLUGINS = BASE + "default_plugins/"
 CONF_FILE = "service.conf"
 
 class ServiceList(HTMLParser):
@@ -72,18 +73,25 @@ class ServiceUpdate:
 		""""""
 		self.config = config
 		self.local_services = config.get_services()
+		self.server_version = None
+		try:
+			for line in urllib2.urlopen(urllib2.Request(BASE + "cons.py")).readlines():
+				if  "VERSION" in line:
+					self.server_version = line.split('"')[1].split('"')[0]
+		except (urllib2.URLError, urllib2.HTTPError), e:
+			logger.error(e)
 
 	def get_updates(self):
 		""""""
 		new_services = {}
-		list = ServiceList(BASE)
+		list = ServiceList(PLUGINS)
 		for remote_service in list.services:
-			check = ServiceCheck(BASE + remote_service)
+			check = ServiceCheck(PLUGINS + remote_service)
 			found = False
 			if CONF_FILE in check.files:
 				try:
 					#get remote version
-					config = ServiceConfig(None, urllib2.urlopen(urllib2.Request(BASE + remote_service + CONF_FILE)))
+					config = ServiceConfig(None, urllib2.urlopen(urllib2.Request(PLUGINS + remote_service + CONF_FILE)))
 					remote_version = config.get_update()
 				except (urllib2.URLError, urllib2.HTTPError), e:
 					logger.error(e)
@@ -103,7 +111,7 @@ class ServiceUpdate:
 		""""""
 		for file_name in files:
 			try:
-				handle = urllib2.urlopen(urllib2.Request("%s%s/%s" % (BASE, service_dir, file_name)))
+				handle = urllib2.urlopen(urllib2.Request("%s%s/%s" % (PLUGINS, service_dir, file_name)))
 			except (urllib2.URLError, urllib2.HTTPError), e:
 				logger.error(e)
 			else:
@@ -120,3 +128,7 @@ class ServiceUpdate:
 				f.close()
 				if not self.config.has_option(config.SECTION_SERVICES, service_name):
 					self.config.set(config.SECTION_SERVICES, service_name, os.path.join(cons.PLUGIN_PATH, service_dir, ""))
+if __name__ == "__main__":
+	from config import Config
+	s = ServiceUpdate(Config())
+	
