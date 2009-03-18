@@ -49,20 +49,22 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		if self.get_slot():
 			if "win" in sys.platform:
-				if subprocess.call([os.path.join(sys.path[0], "captcha.exe"), link], creationflags=134217728) == 0:
-					try:
-						f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "rb")
-						data = pickle.loads(f.read())
-						f.close()
-						f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "wb")
-						f.write("\n")
-						f.close()
-					except:
-						logger.error("Download %s failed." % link)
-					else:	
+				data = None
+				subprocess.call([os.path.join(sys.path[0], "captcha.exe"), link], creationflags=134217728):
+				try:
+					f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "rb")
+					data = pickle.loads(f.read())
+					f.close()
+					f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "wb")
+					f.write("\n")
+					f.close()
+				except:
+					logger.error("Download %s failed." % link)
+				else:	
+					if data:
 						return self.start(path, data, file_name, WAIT)
-				else:
-					 self.return_slot()
+					else:
+						self.return_slot()
 			else:
 				parser = CaptchaSolve(link)
 				if parser.link:
