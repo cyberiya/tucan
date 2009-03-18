@@ -36,9 +36,6 @@ PLUGINDIR	=	default_plugins/
 I18NDIR		=	i18n/
 MEDIADIR	=	media/
  
-update:
-	svn update
- 
 install:
 	mkdir -p $(BINDIR) $(LIBDIR) $(DOCDIR) $(MANDIR) $(ICONDIR)
  
