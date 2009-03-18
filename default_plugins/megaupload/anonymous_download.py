@@ -58,8 +58,8 @@ class AnonymousDownload(DownloadPlugin, Slots):
 					f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "wb")
 					f.write("\n")
 					f.close()
-				except:
-					logger.error("Download %s failed." % link)
+				except Exception, e:
+					logger.exception("Download %s: %s" % (url, e))
 				else:	
 					if data:
 						return self.start(path, data, file_name, WAIT)
@@ -96,7 +96,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				name = url
 				size = -1
 				unit = None
-				logger.error("Check %s: %s" % (url, e))
+				logger.exception("Check %s: %s" % (url, e))
 			return name, size, unit
 		else:
 			return CheckLinks().check(url)
