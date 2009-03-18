@@ -47,9 +47,9 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		
 	def add(self, path, link, file_name):
 		""""""
+		logger.info(sys.platform)
 		if self.get_slot():
 			if "win" in sys.platform:
-				logger.info("ADD %s" % link)
 				data = None
 				subprocess.call([os.path.join(sys.path[0], "captcha.exe"), link], creationflags=134217728)
 				try:
