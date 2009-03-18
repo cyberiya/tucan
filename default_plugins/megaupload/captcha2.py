@@ -238,4 +238,10 @@ class CaptchaSolve(gtk.Dialog):
 		self.destroy()
 		
 if __name__ == "__main__":
-	c = CaptchaSolve("http://www.megaupload.com/?d=7H602RK1")
+	import sys
+	if len(sys.argv) > 2:
+		c = CheckLinks().check(sys.argv[1])
+	elif len(sys.argv) > 1:
+		c = CaptchaSolve(sys.argv[1])
+	else:
+		c = CaptchaSolve("http://www.megaupload.com/?d=7H602RK1")
