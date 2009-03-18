@@ -153,6 +153,7 @@ class CaptchaSolve(gtk.Dialog):
 		self.megavar = ""
 		self.captchacode = ""
 		self.new_captcha()
+
 		button = gtk.Button(None, gtk.STOCK_REFRESH)
 		self.action_area.pack_start(button)
 		button.connect("clicked", self.new_captcha)
@@ -189,28 +190,45 @@ class CaptchaSolve(gtk.Dialog):
 	
 	def new_captcha(self, widget=None):
 		""""""
-		found = ""
-		while found != None:
-			p = CaptchaParser(urllib2.urlopen(urllib2.Request(self.url)).read())
-			if p.captcha:
-				self.captchacode = p.captchacode
-				self.megavar = p.megavar
-				loader = gtk.gdk.PixbufLoader("gif")
-				handle = urllib2.urlopen(urllib2.Request(p.captcha))
-				if handle.info()["Content-Type"] == "image/gif":
-					data = handle.read()
-					self.captcha = hashlib.md5(data).hexdigest()
-					loader.write(data)
-					loader.close()
-					self.image.set_from_pixbuf(loader.get_pixbuf())
-					self.entry.set_text("")
-					self.set_focus(self.entry)
-					found = self.query_captcha(self.captcha)
-			else:
-				break
+		p = CaptchaParser(urllib2.urlopen(urllib2.Request(self.url)).read())
 		if p.captcha:
 			self.label.set_text("Solve Captcha: %s" % p.captcha.split("gencap.php?")[1].split(".gif")[0])
-		
+			self.captchacode = p.captchacode
+			self.megavar = p.megavar
+			loader = gtk.gdk.PixbufLoader("gif")
+			handle = urllib2.urlopen(urllib2.Request(p.captcha))
+			if handle.info()["Content-Type"] == "image/gif":
+				data = handle.read()
+				loader.write(data)
+				loader.close()
+				self.image.set_from_pixbuf(loader.get_pixbuf())
+				self.entry.set_text("")
+				self.set_focus(self.entry)
+				self.captcha = self.query_captcha(hashlib.md5(data).hexdigest())
+
+	def query_captcha(self, captcha):
+		""""""
+		try:
+			response = urllib2.urlopen(urllib2.Request(QUERY), urllib.urlencode([("key", captcha)])).read()
+			logger.info("Captcha requested: %s %s" % (captcha, response))
+			if len(response) > 0:
+				return response
+		except Exception, e:
+			logger.warning("Captcha database: %s" % e)
+		else:
+			return captcha
+
+	def add_captcha(self, captcha, solution):
+		""""""
+		try:
+			data = urllib.urlencode([("key", captcha), ("value", solution)])
+			response = urllib2.urlopen(urllib2.Request(ADD), data).read()
+			if len(response) > 0:
+				logger.info("Captcha added: %s %s" % (captcha, solution))
+		except Exception, e:
+			logger.warning("Captcha database: %s" % e)
+		return True
+	
 	def close(self, widget=None, other=None):
 		""""""
 		if "win" in sys.platform:
@@ -218,21 +236,6 @@ class CaptchaSolve(gtk.Dialog):
 			f.write(pickle.dumps(self.link))
 			f.close()
 		self.destroy()
-
-	def query_captcha(self, captcha):
-		""""""
-		response = urllib2.urlopen(urllib2.Request(QUERY), urllib.urlencode([("key", captcha)])).read()
-		logger.info("Captcha requested: %s %s" % (captcha, response))
-		if len(response) > 0:
-			return response
-
-	def add_captcha(self, captcha, solution):
-		""""""
-		data = urllib.urlencode([("key", captcha), ("value", solution)])
-		response = urllib2.urlopen(urllib2.Request(ADD), data).read()
-		if len(response) > 0:
-			logger.info("Captcha added: %s %s" % (captcha, solution))
-			return True
-
+		
 if __name__ == "__main__":
 	c = CaptchaSolve("http://www.megaupload.com/?d=7H602RK1")
