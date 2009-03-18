@@ -64,8 +64,7 @@ class CheckLinks(HTMLParser):
 						name = parser.link.split("/").pop()
 					else:
 						name = url
-						size = 0
-						unit = None
+
 		except urllib2.URLError, e:
 			logger.error("Check failed: %s" % e)
 			
