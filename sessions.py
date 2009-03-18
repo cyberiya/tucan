@@ -38,15 +38,7 @@ PACKAGES = [('D.S03E01.PREAiR.DVDSCR.NOTYOU.cHoPPaHoLiK.part', [(['http://www.me
 PACKAGES_INFO = [('/home/crak/', 'D.S03E01.PREAiR.DVDSCR.NOTYOU.cHoPPaHoLiK.part', None), ('/home/crak/downloads/', 'Californication.2x01.samuelro.part', 'mierda'), ('/home/crak/downloads/', 'Californication.2x02.samuelro.part', 'cojones')]
 
 class Sessions(SafeConfigParser):
-	""""""		
-	def load_default_session(self):
-		""""""
-		return self.load_session(cons.SESSION_FILE)
-		
-	def save_default_session(self, packages, info):
-		""""""
-		self.save_session(cons.SESSION_FILE, packages, info)
-		
+	""""""
 	def load_session(self, path):
 		""""""
 		result = None, None
