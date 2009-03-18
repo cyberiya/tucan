@@ -81,6 +81,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		if "win" in sys.platform:
 			try:
+				logger.warning(os.path.join(sys.path[0], "captcha.exe"))
 				logger.warning(subprocess.call([os.path.join(sys.path[0], "captcha.exe"), url, "check"], creationflags=134217728))
 				f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "rb")
 				data = pickle.loads(f.read())
