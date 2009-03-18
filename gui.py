@@ -45,6 +45,7 @@ from toolbar import Toolbar
 
 import config
 from sessions import Sessions
+from file_chooser import FileChooser
 
 from tree import Tree
 from input_links import InputLinks
@@ -78,15 +79,15 @@ class Gui(gtk.Window, ServiceManager):
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		
 		self.set_icon_from_file(cons.ICON_TUCAN)
-		self.set_title("Tucan Manager - Version: %s %s" % (cons.TUCAN_VERSION, cons.REVISION))
+		self.set_title("%s - Version: %s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION, cons.REVISION))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(900, 500)
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
 		
 		#menu items
-		menu_load_session = _("Load Session"), self.load_session
-		menu_save_session = _("Save Session"), self.save_session
+		menu_load_session = _("Load Session"), lambda x: FileChooser(self, self.load_session, cons.CONFIG_PATH, True)
+		menu_save_session = _("Save Session"), lambda x: FileChooser(self, self.save_session, cons.CONFIG_PATH, save=True)
 		menu_quit = gtk.STOCK_QUIT, self.quit
 		menu_help = gtk.STOCK_HELP, self.help
 		menu_about = gtk.STOCK_ABOUT, About
@@ -120,6 +121,13 @@ class Gui(gtk.Window, ServiceManager):
 		#self.uploads = Tree()
 		self.uploads = gtk.VBox()
 		
+		#sessions
+		self.session = Sessions()
+		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
+			packages, info = self.session.load_default_session()
+			if packages != None:
+				self.manage_packages(packages, info)
+		
 		#pane
 		self.pane = gtk.VPaned()
 		self.vbox.pack_start(self.pane)
@@ -142,8 +150,9 @@ class Gui(gtk.Window, ServiceManager):
 		self.connect("hide", self.tray_icon.activate)
 		self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)
 		
-		#update limits
+		#ugly polling
 		gobject.timeout_add(120000, self.update_limits)
+		gobject.timeout_add(300000, self.save_default_session)
 		
 	def update_limits(self):
 		""""""
@@ -193,19 +202,24 @@ class Gui(gtk.Window, ServiceManager):
 			clipboard = gtk.Clipboard()
 			clipboard.clear()
 			clipboard.set_text("\n".join(link_list))
-	
-	def load_session(self, button=None):
+
+	def load_session(self, path):
 		""""""
-		s = Sessions()
-		packages, info = s.load_default_session()
+		packages, info = self.session.load_session(path)
 		if packages != None:
 			self.manage_packages(packages, info)
-			
-	def save_session(self, button=None):
+		
+	def save_session(self, path):
 		""""""
-		s = Sessions()
 		packages, info = self.downloads.get_packages()
-		s.save_default_session(packages, info)
+		self.session.save_session(path, packages, info)
+			
+	def save_default_session(self):
+		""""""
+		packages, info = self.downloads.get_packages()
+		self.session.save_default_session(packages, info)
+		logger.debug("Session saved: %s" % info)
+		return True
 		
 	def manage_packages(self, packages, packages_info):
 		""""""
@@ -298,7 +312,12 @@ class Gui(gtk.Window, ServiceManager):
 	def quit(self, dialog=None, response=None):
 		""""""
 		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
-			self.save_session()
+			self.save_default_session()
+		else:
+			try:
+				os.remove(cons.SESSION_FILE)
+			except Exception, e:
+				logger.info(e)
 		self.hide()
 		self.tray_icon.set_visible(False)
 		self.stop_all()

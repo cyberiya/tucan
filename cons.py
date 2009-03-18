@@ -26,6 +26,7 @@ import subprocess
 import logging
 
 # project constants
+TUCAN_NAME = "Tucan Manager"
 TUCAN_VERSION = "0.3.5 alpha"
 WEBPAGE = "http://cusl3-tucan.forja.rediris.es/"
 DOC = "http://cusl3-tucan.forja.rediris.es/doc/"

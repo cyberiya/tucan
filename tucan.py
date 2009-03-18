@@ -49,18 +49,20 @@ class Tucan:
 		self.logger.info("%s %s" % (cons.TUCAN_VERSION, cons.REVISION))
 		self.logger.debug("Main path: %s" % cons.PATH)
 		self.logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
-
+		
 		Gui(configuration)
 		
 	def exception_hook(self, type, value, trace):
 		""""""
-		try:
-			raise type, value
-		except Exception, e:
-			self.logger.exception(e)
+		file_name = trace.tb_frame.f_code.co_filename
+		line_no = trace.tb_lineno
+		exception = type.__name__
+		self.logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
 
 if __name__ == "__main__":
 	gobject.threads_init()
 	t = Tucan()
-	sys.excepthook = t.exception_hook
+	if len(sys.argv) > 1:
+		if "-debug" not in sys.argv[1]:
+			sys.excepthook = t.exception_hook
 	gtk.main()

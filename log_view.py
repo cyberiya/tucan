@@ -28,7 +28,7 @@ import gobject
 import cons
 
 SEVERITY = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
-COLORS = {"DEBUG": "white", "INFO": "green", "WARNING": "yellow", "ERROR": "red", "CRITICAL": "blue"}
+COLORS = {"DEBUG": "grey", "INFO": "green", "WARNING": "yellow", "ERROR": "red", "CRITICAL": "white"}
 
 class LogView(gtk.Dialog):
 	""""""

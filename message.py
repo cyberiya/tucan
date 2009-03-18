@@ -56,13 +56,15 @@ class Wait(gtk.Window):
 
 class Message(gtk.Dialog):
 	""""""
-	def __init__(self, parent, severity, title, message, accept=False):
+	def __init__(self, parent, severity, title, message, accept=False, both=False):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_title(title)
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_resizable(False)
 		self.set_transient_for(parent)
+		
+		self.accepted = False
 		
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, True, True, 10)
@@ -71,17 +73,23 @@ class Message(gtk.Dialog):
 			icon = gtk.STOCK_DIALOG_WARNING
 		elif severity == cons.SEVERITY_ERROR:
 			icon = gtk.STOCK_DIALOG_ERROR
-		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG), True, True, 10)
+		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG), True, False, 10)
 		self.set_icon(self.render_icon(icon, gtk.ICON_SIZE_MENU))
 		
 		label = gtk.Label(message)
-		hbox.pack_start(label, False, False, 10)
+		hbox.pack_start(label, True, False, 5)
 		label.set_width_chars(35)
-		label.set_line_wrap(True) 
+		label.set_line_wrap(True)
 		
 		#action area
-		if accept:
-			self.accepted = False
+		if both:
+			close_button = gtk.Button(None, gtk.STOCK_CANCEL)
+			self.action_area.pack_start(close_button)
+			close_button.connect("clicked", self.close)
+			ok_button = gtk.Button(None, gtk.STOCK_OK)
+			self.action_area.pack_start(ok_button)
+			ok_button.connect("clicked", self.accept)
+		elif accept:
 			ok_button = gtk.Button(None, gtk.STOCK_OK)
 			self.action_area.pack_start(ok_button)
 			ok_button.connect("clicked", self.accept)
@@ -102,3 +110,5 @@ class Message(gtk.Dialog):
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
+if __name__ == "__main__":
+	m = Message(None, cons.SEVERITY_WARNING, "Tucan Manager - Restore previous session.", "Your last session closed unexpectedly.\nTucan will try to restore it now.", both=True)

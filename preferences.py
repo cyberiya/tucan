@@ -186,7 +186,7 @@ class Preferences(gtk.Dialog):
 		vbox.show_all()
 		return vbox
 		
-	def choose_path(self, button, ):
+	def choose_path(self, button):
 		""""""
 		FileChooser(self, self.downloads_folder.set_label, self.downloads_folder.get_label())
 

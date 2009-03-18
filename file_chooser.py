@@ -25,24 +25,29 @@ import os
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 
 import cons
 
 class FileChooser(gtk.FileChooserDialog):
 	""""""
-	def __init__(self, parent, func, default_path=None, files=False):
+	def __init__(self, parent, func, default_path=None, files=False, save=False):
 		""""""
-		gtk.FileChooserDialog.__init__(self,None, parent)
-		self.history_path = self.get_current_folder()
-		
+		gtk.FileChooserDialog.__init__(self, None, parent)		
+
 		if default_path:
 			self.set_current_folder(default_path)
+		self.history_path = self.get_current_folder()
+
 		if files:
-			self.set_title(("Select Files"))
+			self.set_title(_("Select Files"))
 			self.set_action(gtk.FILE_CHOOSER_ACTION_OPEN)
 			self.set_select_multiple(True)
+		elif save:
+			self.set_action(gtk.FILE_CHOOSER_ACTION_SAVE)
+			#self.set_title(_("Save As"))
 		else:
-			self.set_title(("Select a Folder"))
+			self.set_title(_("Select a Folder"))
 			self.set_action(gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER)
 			
 		hidden_button = gtk.CheckButton(("Show hidden files."))
