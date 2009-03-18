@@ -127,8 +127,8 @@ class Gui(gtk.Window, ServiceManager):
 			self.load_default_session()
 		else:
 			if os.path.exists(cons.SESSION_FILE):
-				title = "Tucan Manager - Restore previous session."
-				message = "Your last session closed unexpectedly.\nTucan will try to restore it now."
+				title = _("Tucan Manager - Restore previous session.")
+				message = _("Your last session closed unexpectedly.\nTucan will try to restore it now.")
 				m = Message(None, cons.SEVERITY_WARNING, title, message, both=True)
 				if m.accepted:
 					self.load_default_session()
@@ -156,8 +156,8 @@ class Gui(gtk.Window, ServiceManager):
 		self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)
 		
 		#ugly polling
-		gobject.timeout_add(120000, self.update_limits)
-		gobject.timeout_add(300000, self.save_default_session)
+		gobject.timeout_add(60000, self.update_limits)
+		gobject.timeout_add(120000, self.save_default_session)
 		
 	def update_limits(self):
 		""""""
