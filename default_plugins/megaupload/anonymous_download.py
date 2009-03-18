@@ -47,7 +47,6 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		
 	def add(self, path, link, file_name):
 		""""""
-		logger.info(sys.platform)
 		if self.get_slot():
 			if "win" in sys.platform:
 				data = None
@@ -80,6 +79,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			
 	def check_links(self, url):
 		""""""
+		logger.info(sys.platform)
 		if "win" in sys.platform:
 			subprocess.call([os.path.join(sys.path[0], "captcha.exe"), url, "check"], creationflags=134217728)
 			try:
