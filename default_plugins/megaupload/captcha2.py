@@ -66,7 +66,7 @@ class CheckLinks(HTMLParser):
 						name = parser.link.split("/").pop()
 
 		except urllib2.URLError, e:
-			logger.error("Check failed: %s" % e)
+			logger.exception("Check failed: %s" % e)
 			
 		if "win" in sys.platform:
 			f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "wb")
