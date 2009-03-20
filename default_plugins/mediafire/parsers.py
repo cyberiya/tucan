@@ -38,14 +38,14 @@ class FormParser:
 		link = None
 		name = None
 		error = False
-		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-		for line in opener.open(urllib2.Request(url)).readlines():
-			if "cu(" in line:
-				tmp = eval(line.split("cu(")[1].split(");")[0])
-				handle = opener.open(urllib2.Request("http://www.mediafire.com/dynamic/download.php?%s" %(urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])]))))
-				tmp = handle.readlines()
-				vars = {}
-				try:
+		try:
+			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+			for line in opener.open(urllib2.Request(url)).readlines():
+				if "cu(" in line:
+					tmp = eval(line.split("cu(")[1].split(");")[0])
+					handle = opener.open(urllib2.Request("http://www.mediafire.com/dynamic/download.php?%s" %(urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])]))))
+					tmp = handle.readlines()
+					vars = {}
 					for var in tmp[2].split("function")[0].split(";"):
 						var = var.split("var")
 						if len(var) > 1:
@@ -70,7 +70,7 @@ class FormParser:
 							error = True
 				except:
 					error = True
-					logger.error("%s %s" % (vars, tmp))
+					logger.exception("%s %s" % (vars, tmp))
 		if server and random and link and name and not error:
 			self.url = "http://%s/%sg/%s/%s" % (server, random, link, name)
 
