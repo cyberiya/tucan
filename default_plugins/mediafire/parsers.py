@@ -68,9 +68,9 @@ class FormParser:
 						else:
 							pass
 							error = True
-			except Exception, e:
-				error = True
-				logger.exception("%s: %s" % (url, e))
+		except Exception, e:
+			error = True
+			logger.exception("%s: %s" % (url, e))
 		if server and random and link and name and not error:
 			self.url = "http://%s/%sg/%s/%s" % (server, random, link, name)
 
