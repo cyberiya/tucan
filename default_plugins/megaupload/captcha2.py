@@ -38,6 +38,8 @@ from HTMLParser import HTMLParser
 
 import cons
 
+HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4"}
+
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
@@ -52,7 +54,7 @@ class CheckLinks(HTMLParser):
 		size = 0
 		unit = None
 		try:
-			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+			for line in urllib2.urlopen(urllib2.Request(url, None, HEADER)).readlines():
 				if "Filename:" in line:
 					name = line.split(">")[3].split("</")[0].strip()
 				elif "File size:" in line:
@@ -110,7 +112,7 @@ class CaptchaForm(HTMLParser):
 		self.link = None
 		self.located = False
 		if captcha:
-			self.feed(urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)])).read())
+			self.feed(urllib2.urlopen(urllib2.Request(url, urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)]), HEADER)).read())
 			self.close()
 	
 	def handle_starttag(self, tag, attrs):
@@ -189,13 +191,13 @@ class CaptchaSolve(gtk.Dialog):
 	
 	def new_captcha(self, widget=None):
 		""""""
-		p = CaptchaParser(urllib2.urlopen(urllib2.Request(self.url)).read())
+		p = CaptchaParser(urllib2.urlopen(urllib2.Request(self.url, None, HEADER)).read())
 		if p.captcha:
 			self.label.set_text("Solve Captcha: %s" % p.captcha.split("gencap.php?")[1].split(".gif")[0])
 			self.captchacode = p.captchacode
 			self.megavar = p.megavar
 			loader = gtk.gdk.PixbufLoader("gif")
-			handle = urllib2.urlopen(urllib2.Request(p.captcha))
+			handle = urllib2.urlopen(urllib2.Request(p.captcha, None, HEADER))
 			if handle.info()["Content-Type"] == "image/gif":
 				data = handle.read()
 				loader.write(data)
