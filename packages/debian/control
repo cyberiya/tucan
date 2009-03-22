@@ -1,0 +1,14 @@
+Source: tucan
+Section: net
+Priority: extra
+Maintainer: Raul Soriano <GatoLoko@gmail.com>
+Build-Depends: debhelper (>= 6)
+Standards-Version: 3.8.0
+Homepage: http://tucaneando.wordpress.com
+
+Package: tucan
+Architecture: any
+Depends: python (>= 2.5), python-gtk2, python-imaging, tesseract-ocr, tesseract-ocr-eng, librsvg2-common
+Description: an (up/down)load manager for rapidshare, megaupload and others
+ tucan is an upload and download manager for file sharing hosting like
+ rapidshare and megaupload.
