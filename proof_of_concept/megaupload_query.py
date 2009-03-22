@@ -30,6 +30,8 @@ import urllib2
 
 from HTMLParser import HTMLParser
 
+HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4"}
+
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
@@ -72,7 +74,7 @@ class CaptchaForm(HTMLParser):
 		self.link = None
 		self.located = False
 		if captcha:
-			self.feed(urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)])).read())
+			self.feed(urllib2.urlopen(urllib2.Request(url, urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)]), HEADER)).read())
 			self.close()
 	
 	def handle_starttag(self, tag, attrs):
@@ -146,13 +148,13 @@ class CaptchaSolve(gtk.Dialog):
 		found = ""
 		captcha = None
 		while found != None:
-			p = CaptchaParser(urllib2.urlopen(urllib2.Request(URL)).read())
+			p = CaptchaParser(urllib2.urlopen(urllib2.Request(URL, None, HEADER)).read())
 			if p.captcha:
 				self.captchacode = p.captchacode
 				self.megavar = p.megavar
 				captcha = p.captcha.split("gencap.php?")[1].split(".gif")[0]
 				loader = gtk.gdk.PixbufLoader("gif")
-				handle = urllib2.urlopen(urllib2.Request(p.captcha))
+				handle = urllib2.urlopen(urllib2.Request(p.captcha, None, HEADER))
 				if handle.info()["Content-Type"] == "image/gif":
 					data = handle.read()
 					captcha = hashlib.md5(data).hexdigest()
