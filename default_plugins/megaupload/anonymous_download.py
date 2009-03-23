@@ -51,7 +51,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			if "win" in sys.platform:
 				data = None
 				try:
-					subprocess.call([os.path.join(cons.PLUGIN_PATH, "megaupload", "captcha.exe"), link], creationflags=134217728)
+					subprocess.call([os.path.join(cons.PLUGIN_PATH, "megaupload", "captcha2.exe"), link], creationflags=134217728)
 					f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "rb")
 					data = pickle.loads(f.read())
 					f.close()
@@ -81,7 +81,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		if "win" in sys.platform:
 			try:
-				subprocess.call([os.path.join(cons.PLUGIN_PATH, "megaupload", "captcha.exe"), url, "check"], creationflags=134217728)
+				subprocess.call([os.path.join(cons.PLUGIN_PATH, "megaupload", "captcha2.exe"), url, "check"], creationflags=134217728)
 				f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "rb")
 				data = pickle.loads(f.read())
 				f.close()
