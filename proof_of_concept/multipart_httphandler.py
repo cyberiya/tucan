@@ -43,48 +43,58 @@ class MultipartHTTPHandler(urllib2.HTTPHandler):
 		""""""
 		return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
 
-	def send_data(self, v_vars, v_files, boundary, sock=None):
+	def send_data(self, data, boundary, sock=None):
 		"""if sock is None, juste return the estimate size"""
-		length = 0
-		for key, value in v_vars:
-			buffer = []
-			buffer.append("--%s" % boundary)
-			buffer.append('Content-Disposition: form-data; name="%s"' % key)
-			buffer.append("")
-			buffer.append("%s" % value)
-			buffer = CRLF.join(buffer)
-			length += len(buffer)
+		length = 0		
+		for key, value in data:
+			if hasattr(value, 'read'):
+				file_size = os.fstat(value.fileno())[stat.ST_SIZE]
+				length += file_size
 
-			if sock:
-				sock.send(buffer)
-			
-		for key, fd in v_files:
-			
-			file_size = os.fstat(fd.fileno())[stat.ST_SIZE]
-			length += file_size
+				name = os.path.basename(value.name)
+				
+				buffer = []
+				buffer.append("--%s" % boundary)
+				buffer.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, name))
+				buffer.append("Content-Type: %s" % self.get_content_type(name))
+				buffer.append("")
+				buffer.append("")
+				buffer = CRLF.join(buffer)
+				length += len(buffer)
+				
+				if sock:
+					sock.send(buffer)
+					size = 0
+					chunk = "None"
+					while chunk:
+						chunk = value.read(CHUNK_SIZE)
+						size += len(chunk)
+						print int((float(size)/file_size)*100)
+						sock.send(chunk)
+					value.close()
+			elif value == None:
+				buffer = []
+				buffer.append("--%s" % boundary)
+				buffer.append('Content-Disposition: form-data; name="%s"; filename=""' % key)
+				buffer.append("Content-Type: application/octet-stream")
+				buffer.append("")
+				buffer.append("")
+				buffer = CRLF.join(buffer)
+				length += len(buffer)
+			else:
+				buffer = []
+				buffer.append("--%s" % boundary)
+				buffer.append('Content-Disposition: form-data; name="%s"' % key)
+				buffer.append("")
+				buffer.append("%s" % value)
+				buffer.append("")
 
-			name = os.path.basename(fd.name)
-			
-			buffer = []
-			buffer.append("--%s" % boundary)
-			buffer.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, name))
-			buffer.append("Content-Type: %s" % self.get_content_type(name))
-			buffer.append("")
-			buffer.append("")
-			buffer = CRLF.join(buffer)
-			length += len(buffer)
-			
-			if sock:
-				sock.send(buffer)
-				size = 0
-				while True:
-					chunk = fd.read(CHUNK_SIZE)
-					size += len(chunk)
-					print int((float(size)/file_size)*100)
-					if not chunk: break
-					sock.send(chunk)
-				fd.close()
+				buffer = CRLF.join(buffer)
+				length += len(buffer)
 
+				if sock:
+					sock.send(buffer)
+		
 		buffer = []
 		buffer.append("")
 		buffer.append("--%s--" % boundary)
@@ -94,7 +104,6 @@ class MultipartHTTPHandler(urllib2.HTTPHandler):
 
 		if sock:
 			sock.send(buffer)
-
 		return length
 
 	def http_open(self, req):
@@ -104,53 +113,52 @@ class MultipartHTTPHandler(urllib2.HTTPHandler):
 	def do_open(self, http_class, req):
 		""""""
 		data = req.get_data()
-		v_files=[]
-		v_vars=[]
-		for key, value in data.items():
+		
+		files = False
+		for key, value in data:
 			if hasattr(value, 'read'):
-				v_files.append((key, value))
-			else:
-				v_vars.append((key, value))
+				files = True
+
 		host = req.get_host()
 		# parse host:port
 		h = http_class(host) 
 		if req.has_data():
 			h.putrequest('POST', req.get_selector())
 			if not 'Content-type' in req.headers:
-				if len(v_files) > 0:
+				if files:
 					boundary = mimetools.choose_boundary()
-					length = self.send_data(v_vars, v_files, boundary)
-					#h.putheader('Connection', 'keep-alive')
-					#h.putheader('Keep-Alive', '300')
+					length = self.send_data(data, boundary)
 					h.putheader('Content-Type', 'multipart/form-data; boundary=%s' % boundary)
 					h.putheader('Content-length', str(length))
 		else:
 			h.putrequest('GET', req.get_selector())
+
 		scheme, sel = urllib.splittype(req.get_selector())
 		sel_host, sel_path = urllib.splithost(sel)
 		h.putheader('Host', sel_host or host)
+		
 		for name, value in self.parent.addheaders:
 			name = name.capitalize()
 			if name not in req.headers:
 				h.putheader(name, value)
+				
 		for key, value in req.headers.items():
 			h.putheader(key, value)
-		# convert a socket error to a URLError.
-		try:
-			h.endheaders()
-		except socket.error, err:
-			raise urllib2.URLError(err)
-
+		
+		h.endheaders()
 		if req.has_data():
-			if len(v_files) > 0:
-				l = self.send_data(v_vars, v_files, boundary, h)
-		return h.get_response()
-#		code, msg, hdrs = h.getreply()
-#		fp = h.getfile()
-#		if code == 200:
-#			resp = urllib.addinfourl(fp, hdrs, req.get_full_url())
-#			resp.code = code
-#			resp.msg = msg
-#			return resp
-#		else:
-#			return self.parent.error('http', req, fp, code, msg, hdrs)
+			if files:
+				print self.send_data(data, boundary, h)
+		#addinfo
+		try:
+			r = h.getresponse()
+			r.recv = r.read
+			fp = socket._fileobject(r, close=True)
+			resp = urllib.addinfourl(fp, r.msg, req.get_full_url())
+			resp.code = r.status
+			resp.msg = r.reason
+			return resp
+			
+		except socket.error, err:
+			raise URLError(err)
+			
