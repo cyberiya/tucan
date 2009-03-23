@@ -50,6 +50,7 @@ class CheckLinks(HTMLParser):
 	""""""
 	def check(self, url):
 		""""""
+		error = False
 		name = None
 		size = 0
 		unit = None
@@ -61,7 +62,9 @@ class CheckLinks(HTMLParser):
 					tmp = line.split(">")[3].split("</")[0].split(" ")
 					size = int(round(float(tmp[0])))
 					unit = tmp[1]
-			if name:
+				elif "The file you are trying to access is temporarily unavailable." in line:
+					error = True
+			if name and not error:
 				if ".." in name:
 					parser = CaptchaSolve(url)
 					if parser.link:
@@ -69,7 +72,12 @@ class CheckLinks(HTMLParser):
 
 		except urllib2.URLError, e:
 			logger.exception("Check failed: %s" % e)
-			
+		
+		if error:
+			name = url
+			size = -1
+			unit = None
+		
 		if "win" in sys.platform:
 			f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "wb")
 			f.write(pickle.dumps((name, size, unit)))
