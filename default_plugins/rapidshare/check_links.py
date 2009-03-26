@@ -41,8 +41,10 @@ class CheckLinks:
 					size = int(tmp[2].split("<")[0].split(" ")[1])
 					unit = tmp[2].split("<")[0].split(" ")[2]
 					if unit == cons.UNIT_KB:
-						size = int(size/1024)
-						unit = cons.UNIT_MB
+						tmp = int(size/1024)
+						if tmp > 0:
+							size = tmp
+							unit = cons.UNIT_MB
 		except urllib2.URLError, e:
 			logger.error(e)
 		return name, size, unit
