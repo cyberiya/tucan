@@ -35,8 +35,8 @@ from message import Message
 from file_chooser import FileChooser
 from update_manager import UpdateManager
 
-LANGUAGES = [("English", "en"), ("Spanish", "es"), ("Italian", "it")]
-#["English", "French", "German", "Japanese", "Spanish"]
+LANGUAGES = [("English", "en"), ("Spanish", "es"), ("Italian", "it"), ("German", "de")]
+#["English", "French", "German", "Japanese", "Spanish"]  ("Polish", "pl")
 
 class Preferences(gtk.Dialog):
 	""""""
@@ -272,9 +272,9 @@ class Preferences(gtk.Dialog):
 		""""""
 		if configuration:
 			if icon_path:
-				icon = gtk.gdk.pixbuf_new_from_file(icon_path)
+				icon = gtk.gdk.pixbuf_new_from_file_at_size(icon_path, 48, 48)
 			else:
-				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
+				icon = gtk.gdk.pixbuf_new_from_file_at_size(cons.ICON_MISSING, 48, 48)
 			self.treeview.get_model().append((icon, name, enabled, configuration))
 		else:
 			Message(self, cons.SEVERITY_ERROR, path , _("Service not configured."))
