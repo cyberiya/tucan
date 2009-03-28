@@ -1,0 +1,181 @@
+# Tucan Manager.
+# Copyright (C) 2008-2009 The Tucan Project.
+# Crak, 2009.
+# Translated by exc1te.org
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 0.3\n"
+"POT-Creation-Date: 2009-01-10 04:03+CET\n"
+"PO-Revision-Date: 2009-01-10 04:32+CET\n"
+"Last-Translator: exc1te.org\n"
+"Language-Team: exc1te <dawidpachla@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: utf-8\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: ./advanced_packages.py:37
+msgid "Zaawansowane Paczki"
+msgstr ""
+
+#: ./advanced_packages.py:96
+msgid "Wybierz nową ścieżkę dla wybranych Paczek."
+msgstr ""
+
+#: ./file_chooser.py:33
+msgid "Wybierz Folder"
+msgstr ""
+
+#: ./file_chooser.py:40
+msgid "Pokaż ukryte Pliki."
+msgstr ""
+
+#: ./gui.py:84
+msgid "Wczytaj Sesję"
+msgstr ""
+
+#: ./gui.py:85
+msgid "Zapisz Sesję"
+msgstr ""
+
+#: ./gui.py:90
+msgid "Pokaż Wysyłane"
+msgstr ""
+
+#: ./gui.py:93
+msgid "Plik"
+msgstr ""
+
+#: ./gui.py:94
+msgid "Widok"
+msgstr ""
+
+#: ./gui.py:95
+msgid "Pomoc"
+msgstr ""
+
+#: ./gui.py:99
+msgid "Dodaj linki do ściągania"
+msgstr ""
+
+#: ./gui.py:100
+msgid "Dodaj linki do wysłania"
+msgstr ""
+
+#: ./gui.py:101
+msgid "Wyczyść skończone"
+msgstr ""
+
+#: ./gui.py:102
+msgid "Przenieś w górę"
+msgstr ""
+
+#: ./gui.py:103
+msgid "Przenieś w dół"
+msgstr ""
+
+#: ./gui.py:104
+msgid "Rozpocznij wybrane"
+msgstr ""
+
+#: ./gui.py:105
+msgid "Zatrzymaj wybrane"
+msgstr ""
+
+#: ./input_links.py:54
+msgid "Wprowadź linki"
+msgstr ""
+
+#: ./input_links.py:69
+msgid "Wklej linki tutaj:"
+msgstr ""
+
+#: ./input_links.py:88
+msgid "Sprawdź Linki"
+msgstr ""
+
+#: ./input_links.py:131
+msgid "Pokaż zaawansowaną konfiguracje Paczek."
+msgstr ""
+
+#: ./input_links.py:207
+msgid "Sprawdzam linki, proszę czekać."
+msgstr ""
+
+#: ./input_links.py:260
+msgid "Sprawdzanie anulowane!"
+msgstr ""
+
+#: ./preferences.py:54
+msgid "Konfiguracja Ogólna"
+msgstr ""
+
+#: ./preferences.py:55
+msgid "Konfiguracja Usług"
+msgstr ""
+
+#: ./preferences.py:56
+msgid "Konfiguracja Zaawansowana"
+msgstr ""
+
+#: ./preferences.py:120
+msgid "Wybierz język: "
+msgstr ""
+
+#: ./preferences.py:138
+msgid "Maksymalna liczba ściągnięć na raz: "
+msgstr ""
+
+#: ./preferences.py:173
+msgid "Folder dla ściągnięć: "
+msgstr ""
+
+#: ./preferences.py:260
+msgid "Uruchom Tucana ponownie aby zastosować zmiany."
+msgstr ""
+
+#: ./preferences.py:279
+msgid "Wybrany folder nie jest usługą, lub nie jest poprawnie skonfigurwany."
+msgstr ""
+
+#: ./preferences.py:307
+msgid "Przed korzystaniem z tej usługi, musisz zaakceptować jej warunki na "
+msgstr ""
+
+#: ./preferences.py:308
+msgid "Usługi korzystania"
+msgstr ""
+
+#: ./preferences.py:331
+msgid "Zamknij do tacki systemowej."
+msgstr ""
+
+#: ./preferences.py:335
+msgid "Zapisz sesję przy zamknięciu."
+msgstr ""
+
+#: ./preferences.py:339
+msgid "Domyślne zaawansowane paczki."
+msgstr ""
+
+#: ./preferences.py:343
+msgid "Pokaż wysyłane."
+msgstr ""
+
+#: ./service_preferences.py:47
+msgid "Autor"
+msgstr ""
+
+#: ./service_preferences.py:55
+msgid "Wersja"
+msgstr ""
+
+#: ./service_preferences.py:64
+msgid "Sloty"
+msgstr ""
+
+#: ./service_preferences.py:71
+msgid "Captcha"
+msgstr ""
