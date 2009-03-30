@@ -42,12 +42,16 @@ class Parser(HTMLParser.HTMLParser):
 					vars = line.split(";")
 					var1 = int(vars[1].split("=")[1])
 					var2 = vars[5].split("=")[1].split("'")[1]
-			tmpurl = self.decode(code, var1, var2)
-			if tmpurl:
-				
+			self.feed(self.decode(code, var1, var2))
 		except Exception, e:
 			logger.error("%s :%s" % (url, e))
 			print e
+
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "a":
+			if len(attrs) == 4:
+				self.link = attrs[2][1]
 			
 	def decode(self, code, num, text):
 		""""""
