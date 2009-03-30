@@ -20,9 +20,10 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib
 import urllib2
 import logging
-#logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
 import HTMLParser
 
@@ -50,7 +51,7 @@ class Parser(HTMLParser.HTMLParser):
 		""""""
 		if tag == "a":
 			if len(attrs) == 4:
-				self.link = attrs[2][1]
+				self.link = urllib.quote(attrs[2][1], "/:")
 			
 	def decode(self, code, num, text):
 		""""""

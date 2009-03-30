@@ -28,6 +28,7 @@ from parsers import CheckLinks, Parser
 from download_plugin import DownloadPlugin
 from slots import Slots
 
+
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def __init__(self):
