@@ -28,8 +28,6 @@ from parsers import CheckLinks, Parser
 from download_plugin import DownloadPlugin
 from slots import Slots
 
-WAIT = 40
-
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def __init__(self):
@@ -46,7 +44,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		if self.get_slot():
 			parser = Parser(link)
 			if parser.link:
-				if self.start(path, parser.link, file_name, WAIT):
+				if self.start(path, parser.link, file_name):
 					return True
 				else:
 					logger.warning("Limit Exceded.")

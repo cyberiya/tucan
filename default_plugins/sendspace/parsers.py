@@ -45,7 +45,6 @@ class Parser(HTMLParser.HTMLParser):
 			self.feed(self.decode(code, var1, var2))
 		except Exception, e:
 			logger.error("%s :%s" % (url, e))
-			print e
 
 	def handle_starttag(self, tag, attrs):
 		""""""
@@ -131,7 +130,7 @@ class CheckLinks:
 					size = int("".join(tmpsize))
 					unit = "".join(tmpunit)
 		except Exception, e:
-			print e
+			logger.error("%s :%s" % (url, e))
 		if not name:
 			name = url
 			size = -1
