@@ -121,7 +121,7 @@ class CheckLinks:
 					name = line.split("<b>Name:</b>")[1].split("<br><b>Size:</b>")[0].strip()
 					tmpsize = []
 					tmpunit = []
-					for char in line.split("<br><b>Size:</b>")[1].split("<br><b>Description:</b>")[0].strip():
+					for char in line.split("<br><b>Size:</b>")[1].split("<br>")[0].strip():
 						try:
 							int(char)
 						except:
@@ -138,5 +138,6 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	c = Parser("http://www.sendspace.com/file/lpd6p3")
-	#print CheckLinks().check("http://www.sendspace.com/file/x1itz8")
+	#c = Parser("http://www.sendspace.com/file/lpd6p3")
+	print CheckLinks().check("http://www.sendspace.com/file/z57jja")
+	print CheckLinks().check("http://www.sendspace.com/file/x1itz8")
