@@ -10,6 +10,7 @@
    - http://gigasize.com/
    - http://mediafire.com/
    - http://4shared.com/
+   - http://sendspace.com/
    - (...)
  
  
@@ -72,6 +73,14 @@
     - Subidas: Disponible = Todavía no
  
  
+ - http://sendspace.com/
+    - Descargas:
+       - Acceso anónimo: Disponible = Sí
+       - Acceso premium: Disponible = No
+ 
+    - Subidas: Disponible = Todavía no
+ 
+ 
 ===================
  Dependencias
 =========
@@ -82,35 +91,35 @@
  - Tesseract OCR (con el paquete del idioma inglés)
  - SVG Rendering Library
  
- --------------------------------------------------------------------------------
- | Paquete \ Distribución  |  Debian / Ubuntu  |       Gentoo       |   Arch    |
- --------------------------------------------------------------------------------
- | Python >= 2.5           | python2.5         | dev-lang/python    | python    |
- --------------------------------------------------------------------------------
- | PyGTK                   | python-gtk2       | dev-python/pygtk   | pygtk     |
- --------------------------------------------------------------------------------
- | Python Imaging Library  | python-imaging    | dev-python/imaging | pil       |
- --------------------------------------------------------------------------------
- | Tesseract OCR           | tesseract-ocr     | app-text/tesseract | tesseract |
- | (english language pack) | tesseract-ocr-eng |    (linguas_en)    |           |
- --------------------------------------------------------------------------------
- | SVG Rendering Library   | librsvg2-common   | gnome-base/librsvg | librsvg   |
- --------------------------------------------------------------------------------
+ --------------------------------------------------------------------
+ | Paquete \ Distribución  |  Debian / Ubuntu  |       Gentoo       |
+ --------------------------------------------------------------------
+ | Python >= 2.5           | python2.5         | dev-lang/python    |
+ --------------------------------------------------------------------
+ | PyGTK                   | python-gtk2       | dev-python/pygtk   |
+ --------------------------------------------------------------------
+ | Python Imaging Library  | python-imaging    | dev-python/imaging |
+ --------------------------------------------------------------------
+ | Tesseract OCR           | tesseract-ocr     | app-text/tesseract |
+ | (english language pack) | tesseract-ocr-eng |    (linguas_en)    |
+ --------------------------------------------------------------------
+ | SVG Rendering Library   | librsvg2-common   | gnome-base/librsvg |
+ --------------------------------------------------------------------
  
- ---------------------------------------
- |       Fedora       |    OpenSuSE    |
- ---------------------------------------
- | python             | python         |
- ---------------------------------------
- | pygtk2             | python-gtk     |
- ---------------------------------------
- | python-imaging     | python-imaging |
- ---------------------------------------
- | tesseract          | tesseract      |
- | tesseract-langpack |                |
- ---------------------------------------
- | librsvg2           | librsvg        |
- ---------------------------------------
+ ---------------------------------------------------
+ |   Arch    |       Fedora       |    OpenSuSE    |
+ ---------------------------------------------------
+ | python    | python             | python         |
+ ---------------------------------------------------
+ | pygtk     | pygtk2             | python-gtk     |
+ ---------------------------------------------------
+ | pil       | python-imaging     | python-imaging |
+ ---------------------------------------------------
+ | tesseract | tesseract          | tesseract      |
+ |           | tesseract-langpack |                |
+ ---------------------------------------------------
+ | librsvg   | librsvg2           | librsvg        |
+ ---------------------------------------------------
  
  
 ===================
