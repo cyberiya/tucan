@@ -65,7 +65,7 @@ msgstr "Füge Uploads hinzu"
 
 #: ./gui.py:101
 msgid "Clear Complete"
-msgstr "Räumung komplett"
+msgstr "komplettes Aufräumen"
 
 #: ./gui.py:102
 msgid "Move Up"
@@ -85,15 +85,15 @@ msgstr "Stoppe ausgewählte"
 
 #: ./input_links.py:54
 msgid "Input Links"
-msgstr "Füge Verknüpfungen ein"
+msgstr "Füge Links ein"
 
 #: ./input_links.py:69
 msgid "Paste links here:"
-msgstr "Füge Verknüpfungen hier ein:"
+msgstr "Füge Links hier ein:"
 
 #: ./input_links.py:88
 msgid "Check Links"
-msgstr "Überprüfe Verknüpfungen"
+msgstr "Überprüfe Links"
 
 #: ./input_links.py:131
 msgid "Show advanced Package configuration."
@@ -101,7 +101,7 @@ msgstr "Zeige erweiterte Paketkonfiguration."
 
 #: ./input_links.py:207
 msgid "Checking links, please wait."
-msgstr "Überprüfe Verknüpfungen, bitte warten."
+msgstr "Überprüfe Links, bitte warten."
 
 #: ./input_links.py:260
 msgid "Check Canceled!"
@@ -109,7 +109,7 @@ msgstr "Überrpüfung abgebrochen!"
 
 #: ./preferences.py:54
 msgid "General Configuration"
-msgstr "Allgemeine Konfiguration"
+msgstr "Allgemein"
 
 #: ./preferences.py:55
 msgid "Service Configuration"
@@ -117,7 +117,7 @@ msgstr "Servicekonfiguration"
 
 #: ./preferences.py:56
 msgid "Advanced Configuration"
-msgstr "Erweiterte Konfiguration"
+msgstr "Erweitert"
 
 #: ./preferences.py:120
 msgid "Choose language: "
@@ -133,7 +133,7 @@ msgstr "Ordner für Downloads: "
 
 #: ./preferences.py:260
 msgid "Restart Tucan to apply service changes."
-msgstr "Neustart von Tucan um Änderungen zu übernehmen."
+msgstr "Starte Tucan neu um die Änderungen zu übernehmen."
 
 #: ./preferences.py:279
 msgid "The choosed directory isn't a service, or it's not configured."
