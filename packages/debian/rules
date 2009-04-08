@@ -50,7 +50,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/tucan.
-	$(MAKE) DESTDIR=$(CURDIR)/debian install
+	$(MAKE) DESTDIR=$(CURDIR)/debian/tucan install
 
 
 # Build architecture-independent files here.
