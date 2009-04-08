@@ -1,0 +1,175 @@
+===================
+ Description
+=========
+ 
+ - Tucan is a free and open source application designed for automatic
+   management of downloads and uploads at hosting sites like:
+ 
+   - http://rapidshare.com/
+   - http://megaupload.com/
+   - http://gigasize.com/
+   - http://mediafire.com/
+   - http://4shared.com/
+   - (...)
+ 
+ 
+===================
+ Characteristics
+=========
+ 
+ - Written entirely in Python.
+ - Graphical User Interface written in PyGTK (GTK+ toolkit).
+ - Multiplatform (GNU/Linux, FreeBSD, Microsoft Windows...).
+ - Easy to expand with plugins.
+ - Lightweight and fast.
+ - Management of waits between downloads (anonymous access).
+ - Captcha recognition where needed (like anonymous access to
+   megaupload or gigasize).
+ - Management of interchangeable links.
+ 
+ 
+===================
+ Plugins
+=========
+ 
+ - http://rapidshare.com/
+    - Downloads:
+       - Anonymous access: Available = Yes
+       - Premium access: Available = Yes
+ 
+    - Uploads: Available = Not yet
+ 
+ 
+ - http://megaupload.com/
+    - Downloads:
+       - Anonymous access: Available = Yes
+       - Premium access: Available = Yes
+ 
+    - Uploads: Available = Not yet
+ 
+ 
+ - http://gigasize.com/
+    - Downloads:
+       - Anonymous access: Available = Yes
+       - Premium access: Available = No
+ 
+    - Uploads: Available = Not yet
+ 
+ 
+ - http://mediafire.com/
+    - Downloads:
+       - Anonymous access: Available = Yes
+       - Premium access: Available = No
+ 
+    - Uploads: Available = Not yet
+ 
+ 
+ - http://4shared.com/
+    - Downloads:
+       - Anonymous access: Available = Yes
+       - Premium access: Available = No
+ 
+    - Uploads: Available = Not yet
+ 
+ 
+===================
+ Dependencies
+=========
+ 
+ - Python >= 2.5
+ - PyGTK
+ - Python Imaging Library
+ - Tesseract OCR (with the english language pack)
+ - SVG Rendering Library
+ 
+ --------------------------------------------------------------------------------
+ | Package \ Distribution  |  Debian / Ubuntu  |       Gentoo       |   Arch    |
+ --------------------------------------------------------------------------------
+ | Python >= 2.5           | python2.5         | dev-lang/python    | python    |
+ --------------------------------------------------------------------------------
+ | PyGTK                   | python-gtk2       | dev-python/pygtk   | pygtk     |
+ --------------------------------------------------------------------------------
+ | Python Imaging Library  | python-imaging    | dev-python/imaging | pil       |
+ --------------------------------------------------------------------------------
+ | Tesseract OCR           | tesseract-ocr     | app-text/tesseract | tesseract |
+ | (english language pack) | tesseract-ocr-eng |    (linguas_en)    |           |
+ --------------------------------------------------------------------------------
+ | SVG Rendering Library   | librsvg2-common   | gnome-base/librsvg | librsvg   |
+ --------------------------------------------------------------------------------
+ 
+ ---------------------------------------
+ |       Fedora       |    OpenSuSE    |
+ ---------------------------------------
+ | python             | python         |
+ ---------------------------------------
+ | pygtk2             | python-gtk     |
+ ---------------------------------------
+ | python-imaging     | python-imaging |
+ ---------------------------------------
+ | tesseract          | tesseract      |
+ | tesseract-langpack |                |
+ ---------------------------------------
+ | librsvg2           | librsvg        |
+ ---------------------------------------
+ 
+ 
+===================
+ Download
+=========
+ 
+ - Development version (needs subversion):
+ 
+   $ svn co https://forja.rediris.es/svn/cusl3-tucan/trunk tucan
+ 
+ 
+ - Stable version:
+ 
+   https://forja.rediris.es/projects/cusl3-tucan/ -> Files
+ 
+ 
+===================
+ Installation & Usage
+=========
+ 
+ - Unpack the tarball:
+ 
+   $ tar zxvf tucan-<version>.tar.gz
+   $ cd tucan-<version>/
+ 
+ - Install Tucan typing (needs root privileges):
+ 
+   # make install
+ 
+ - Uninstall Tucan typing (needs root privileges):
+ 
+   # make uninstall
+ 
+ 
+ - Run Tucan typing in a terminal:
+ 
+   $ tucan
+ 
+ 
+===================
+ Tips & Tricks
+=========
+ 
+ - Before running a new version, it's recommended to remove the directory
+   ~/.tucan/ if exists.
+ - The first time you run Tucan (without directory ~/.tucan/), the Preferences
+   window appears.
+ - Before running a service, it must be enabled in "Service Configuration" in
+   the Preferences window.
+ 
+ - Anonymous access to http://gigasize.com/:
+   - gigasize.com disallows checking links if an active link is already downloading
+     from this service.
+ 
+ 
+===================
+ Links
+=========
+ 
+ - http://tucaneando.wordpress.com/
+ - http://cusl3-tucan.forja.rediris.es/
+ - https://forja.rediris.es/projects/cusl3-tucan/
