@@ -20,24 +20,26 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
  
-PREFIX		=	/usr/local
-BINDIR		=	$(PREFIX)/bin/
-LIBDIR		=	$(PREFIX)/lib/tucan/
-DOCDIR		=	$(PREFIX)/share/tucan/
-MANDIR		=	$(PREFIX)/share/man/man1/
-ICONDIR		=	$(PREFIX)/share/pixmaps/
+DESTDIR		=	/usr/local
+BINDIR		=	$(DESTDIR)/bin/
+LIBDIR		=	$(DESTDIR)/lib/tucan/
+DOCDIR		=	$(DESTDIR)/share/tucan/
+MANDIR		=	$(DESTDIR)/share/man/man1/
+ICONDIR		=	$(DESTDIR)/share/pixmaps/
+DESKTOPDIR	=	$(DESTDIR)/share/applications/
  
 NAME		=	tucan
 EXECFILE	=	tucan.py
 MANPAGE		=	tucan.1.gz
 ICONFILE	=	tucan.svg
+DESKTOPFILE	=	tucan.desktop
 DOCFILES	=	CHANGELOG LICENSE README README.es TODO
 PLUGINDIR	=	default_plugins/
 I18NDIR		=	i18n/
 MEDIADIR	=	media/
  
 install:
-	mkdir -p $(BINDIR) $(LIBDIR) $(DOCDIR) $(MANDIR) $(ICONDIR)
+	mkdir -p $(BINDIR) $(LIBDIR) $(DOCDIR) $(MANDIR) $(ICONDIR) $(DESKTOPDIR)
  
 	install -m 644 *.py $(LIBDIR)
 	chmod 755 $(LIBDIR)$(EXECFILE)
@@ -53,8 +55,11 @@ install:
  
 	install -m 644 $(MEDIADIR)$(ICONFILE) $(ICONDIR)
  
+	install -m 644 $(DESKTOPFILE) $(DESKTOPDIR)
+ 
 uninstall:
 	rm -r $(LIBDIR) $(DOCDIR)
 	rm $(BINDIR)$(NAME)
 	rm $(MANDIR)$(MANPAGE)
 	rm $(ICONDIR)$(ICONFILE)
+	rm $(DESKTOPDIR)$(DESKTOPFILE)
