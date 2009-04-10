@@ -1,2 +1,2 @@
 #!/bin/sh
-python /usr/lib/tucan/tucan.py
+python /usr/share/tucan/tucan.py

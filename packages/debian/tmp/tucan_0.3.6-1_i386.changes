@@ -19,25 +19,25 @@ Changes:
  .
    * Initial release (Closes: #520470)
 Checksums-Sha1: 
- 9c4051d115622be51606476b85c79a15dd9ff813 978 tucan_0.3.6-1.dsc
+ 5bfbe1a63dd523b3ff7897f0aca6875594c68668 978 tucan_0.3.6-1.dsc
  99fccf00568d59ca9d5e1e429ddf1f6587f8c777 181821 tucan_0.3.6.orig.tar.gz
- 36f2a1e8091f9b2a2416c8cdf34019e31bccbe7b 2852 tucan_0.3.6-1.diff.gz
- 7f2fe2e8bf5d4ee3e4be7124f200c2f4ac889ca5 160038 tucan_0.3.6-1_all.deb
+ d9cce44984653f198e38e044b0aa61f7721c942d 2534 tucan_0.3.6-1.diff.gz
+ a25796aca5bceaacb0dffeabe73f12ddc26c8908 160052 tucan_0.3.6-1_all.deb
 Checksums-Sha256: 
- f3aa93095277ed0955b70e039cd716369043b3eece609e8c3caf4c68d4d9406e 978 tucan_0.3.6-1.dsc
+ 2471acff31a362a53f792618d85e8ed97393a4d31b347079ac4d7b4136ca9f06 978 tucan_0.3.6-1.dsc
  e34820eaef2a7551af666b377a47bddd7ab865abcf1cc9c17465bcc56cde4c27 181821 tucan_0.3.6.orig.tar.gz
- 396c3968884adba708c04e6173843e5d52a856e1780d8c5fbc4330f5aa2d46aa 2852 tucan_0.3.6-1.diff.gz
- 78c220531dafeed6f2232395f830037b9a33b1879b4f7be0c8ddfdcd21523f47 160038 tucan_0.3.6-1_all.deb
+ e88d90fc015bbdf5cd2a6b40c45b9868a17a4d0c9c18de93f79bec0900b1f790 2534 tucan_0.3.6-1.diff.gz
+ c48bc74ed5e36f02dc10f851397bb510e333ff959faf1fac085c7c1f3a52fe51 160052 tucan_0.3.6-1_all.deb
 Files: 
- 7590e9ddcbbae94c52cbce1b9d76f5a5 978 net optional tucan_0.3.6-1.dsc
+ e3501efc8a96365a4739bd7d4e0dddd3 978 net optional tucan_0.3.6-1.dsc
  21cc03fe952da8a0ae44ba66956a0766 181821 net optional tucan_0.3.6.orig.tar.gz
- 6c69a366d4f6eef3a1c79505b3d86169 2852 net optional tucan_0.3.6-1.diff.gz
- dfcc823916fad684a26ed0b4878273c8 160038 net optional tucan_0.3.6-1_all.deb
+ 0b49907dc39cea89e27ee88e4282407a 2534 net optional tucan_0.3.6-1.diff.gz
+ 9e51ad97be5ca1d1338e6846b130846d 160052 net optional tucan_0.3.6-1_all.deb
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 
-iEYEARECAAYFAknfy+QACgkQ7EXKTG+aztbIeACgkseyrMhRse3yrmjbjjH+RfMu
-4QMAnRfKk0tbrdzqXc3a02P5UbCgBOB+
-=aS2I
+iEYEARECAAYFAknf1F4ACgkQ7EXKTG+aztbcLwCfT+VFZ8PUTthpMTxSTqOAhm1p
+STEAn1vU4YZvrwiFnTCS4FsWDrzhRRF6
+=jvsB
 -----END PGP SIGNATURE-----
