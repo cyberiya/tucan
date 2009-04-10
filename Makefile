@@ -22,44 +22,44 @@
  
 DESTDIR		=	/usr/local
 BINDIR		=	$(DESTDIR)/bin/
-LIBDIR		=	$(DESTDIR)/lib/tucan/
-DOCDIR		=	$(DESTDIR)/share/tucan/
-MANDIR		=	$(DESTDIR)/share/man/man1/
+MAINDIR		=	$(DESTDIR)/share/tucan/
 ICONDIR		=	$(DESTDIR)/share/pixmaps/
+MANDIR		=	$(DESTDIR)/share/man/man1/
 DESKTOPDIR	=	$(DESTDIR)/share/applications/
  
 NAME		=	tucan
 EXECFILE	=	tucan.py
-MANPAGE		=	tucan.1.gz
 ICONFILE	=	tucan.svg
+MANPAGE		=	tucan.1.gz
 DESKTOPFILE	=	tucan.desktop
-DOCFILES	=	CHANGELOG LICENSE README README.es TODO
 PLUGINDIR	=	default_plugins/
 I18NDIR		=	i18n/
 MEDIADIR	=	media/
  
-install:
-	mkdir -p $(BINDIR) $(LIBDIR) $(DOCDIR) $(MANDIR) $(ICONDIR) $(DESKTOPDIR)
+basic-install:
+	mkdir -p $(BINDIR) $(MAINDIR) $(ICONDIR) $(MANDIR) $(DESKTOPDIR)
  
-	install -m 644 *.py $(LIBDIR)
-	chmod 755 $(LIBDIR)$(EXECFILE)
-	ln -s $(LIBDIR)$(EXECFILE) $(BINDIR)$(NAME)
+	install -m 644 *.py $(MAINDIR)
+	chmod 755 $(MAINDIR)$(EXECFILE)
  
-	cp -R $(PLUGINDIR) $(LIBDIR)$(PLUGINDIR)
-	cp -R $(I18NDIR) $(LIBDIR)$(I18NDIR)
-	cp -R $(MEDIADIR) $(LIBDIR)$(MEDIADIR)
- 
-	install -m 644 $(DOCFILES) $(DOCDIR)
- 
-	install -m 644 $(MANPAGE) $(MANDIR)
+	cp -R $(PLUGINDIR) $(MAINDIR)$(PLUGINDIR)
+	cp -R $(I18NDIR) $(MAINDIR)$(I18NDIR)
+	cp -R $(MEDIADIR) $(MAINDIR)$(MEDIADIR)
  
 	install -m 644 $(MEDIADIR)$(ICONFILE) $(ICONDIR)
  
+	install -m 644 $(MANPAGE) $(MANDIR)
+ 
 	install -m 644 $(DESKTOPFILE) $(DESKTOPDIR)
  
+install:
+	make basic-install
+ 
+	ln -sf $(MAINDIR)$(EXECFILE) $(BINDIR)$(NAME)
+ 
 uninstall:
-	rm -r $(LIBDIR) $(DOCDIR)
-	rm $(BINDIR)$(NAME)
-	rm $(MANDIR)$(MANPAGE)
-	rm $(ICONDIR)$(ICONFILE)
-	rm $(DESKTOPDIR)$(DESKTOPFILE)
+	rm -rf $(MAINDIR)
+	rm -f $(BINDIR)$(NAME)
+	rm -f $(ICONDIR)$(ICONFILE)
+	rm -f $(MANDIR)$(MANPAGE)
+	rm -f $(DESKTOPDIR)$(DESKTOPFILE)
