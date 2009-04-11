@@ -117,7 +117,7 @@ class Config(SafeConfigParser):
 
 	def service(self, path):
 		""""""
-		result = None, None, None, None, None
+		result = path, None, None, None, None
 		config = service_config.ServiceConfig(path)
 		if config.check_config():
 			icon = config.get_icon()
