@@ -75,6 +75,8 @@ class Downloader(threading.Thread):
 				socket.setdefaulttimeout(None)
 				logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
 				self.total_size = int(handle.info().getheader("Content-Length"))
+				if not os.path.exists(self.path):
+					os.mkdir(self.path)
 				f = open(self.path + self.file, "wb")
 				self.start_time = time.time()
 				data = "None"
