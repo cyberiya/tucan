@@ -51,7 +51,7 @@ class Tucan:
 		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
 		self.logger = logging.getLogger(self.__class__.__name__)
 		
-		self.logger.info("%s %s" % (cons.TUCAN_VERSION, cons.REVISION))
+		self.logger.info(cons.TUCAN_VERSION)
 		self.logger.debug("Main path: %s" % cons.PATH)
 		self.logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
 		

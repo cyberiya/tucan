@@ -30,14 +30,6 @@ TUCAN_NAME = "Tucan Manager"
 TUCAN_VERSION = "0.3.6 alpha"
 WEBPAGE = "http://cusl3-tucan.forja.rediris.es/"
 DOC = "http://cusl3-tucan.forja.rediris.es/doc/"
-
-REVISION = ""
-try:
-	rev = subprocess.Popen("svnversion", stdout=subprocess.PIPE).stdout.read().strip()
-except:
-	pass
-else:
-	REVISION = "(REV %s)" % rev
 	
 # status constants
 STATUS_PEND = "pending"

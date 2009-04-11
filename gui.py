@@ -79,7 +79,7 @@ class Gui(gtk.Window, ServiceManager):
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 		
 		self.set_icon_from_file(cons.ICON_TUCAN)
-		self.set_title("%s - Version: %s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION, cons.REVISION))
+		self.set_title("%s - Version: %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(900, 500)
 		self.vbox = gtk.VBox()
