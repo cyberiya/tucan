@@ -160,11 +160,23 @@
  
  
 ===================
+ Update Manager
+=========
+ 
+ - Tucan trae algunos servicios que de vez en cuando necesitan ser actualizados
+   y otras veces hay nuevos servicios disponibles.
+ - Con el fin de actualizar (o instalar nuevos) servicios Tucan tiene un sistema
+   de actualizaciones, para activarlo el usuario debe ir a la ventana
+   Preferencias > Servicios > Buscar.
+ 
+ - Después de una actualización de servicios Tucan necesita ser reiniciado.
+ 
+===================
  Tips & Tricks
 =========
  
  - Antes de ejecutar una nueva versión, se recomienda eliminar el directorio
-   ~/.tucan/ si existe.
+   /home/<user>/.tucan/ ó C:\Documents and Settings\<user>\.tucan\ si existe.
  - La primera vez que se ejecuta Tucan (si no existe el directorio ~/.tucan/)
    aparece la ventana de Preferencias.
  - Antes de usar un servicio, éste debe estar activado en la pestaña

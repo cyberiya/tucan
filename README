@@ -160,19 +160,31 @@
  
  
 ===================
+ Update Manager
+=========
+ 
+ - Tucan brings some services that sometimes need to be updated and other times
+   there are new services available.
+ - In order to update (or install new) services Tucan has a system update, to
+   activate it the user must go to the Preferences window > Services > Find.
+ 
+ - After an update of services Tucan needs to be restarted.
+ 
+ 
+===================
  Tips & Tricks
 =========
  
  - Before running a new version, it's recommended to remove the directory
-   ~/.tucan/ if exists.
+   /home/<user>/.tucan/ or C:\Documents and Settings\<user>\.tucan\ if exists.
  - The first time you run Tucan (without directory ~/.tucan/), the Preferences
    window appears.
  - Before running a service, it must be enabled in "Service Configuration" in
    the Preferences window.
  
  - Anonymous access to http://gigasize.com/:
-   - gigasize.com disallows checking links if an active link is already downloading
-     from this service.
+   - gigasize.com disallows checking links if an active link is already
+     downloading from this service.
  
  
 ===================
