@@ -125,15 +125,15 @@ class ServiceManager:
 		services = {cons.TYPE_UNSUPPORTED: []}
 		for link in links:
 			found = False
-			if "http" in link:
-				tmp = link.split("http").pop()
+			if "http://" in link:
+				tmp = link.split("http://").pop()
 				if "<" in tmp:
 					tmp = tmp.split("<")[0]
 				elif " " in tmp:
 					tmp = tmp.split(" ")[0]
 				elif "[" in tmp:
 					tmp = tmp.split("[")[0]
-				link = "http" + tmp
+				link = "http://" + tmp
 				for service in self.services:
 					if link.find(service.name) > 0:
 						found = True
