@@ -163,7 +163,7 @@ class CaptchaForm(HTMLParser):
 					if filtered_text:
 						yield filtered_text
 
-	def captcha_solve(self):
+	def captcha_solve(self, maxiterations=1):
 		"""Basado en el algoritmo de plowshare"""		
 		p = ImageFile.Parser()
 		p.feed(self.data)
@@ -181,7 +181,7 @@ class CaptchaForm(HTMLParser):
 		logging.debug("Characters: %d - %s" % (len(characters_pixels), [len(x) for x in characters_pixels]))    
 		if len(characters_pixels) >= 4:
 			characters_pixels_list0 = [[union_sets(sets) for sets in x] for x in segment(characters_pixels, 4)]    
-			characters4_pixels_list = sorted(characters_pixels_list0, key=lambda pixels_list: get_error(pixels_list, image))[:5]
+			characters4_pixels_list = sorted(characters_pixels_list0, key=lambda pixels_list: get_error(pixels_list, image))[:maxiterations]
 			seen = reduce(set.union, [background_pixels] + characters_pixels)
 			max_uncertain_groups = 8
 
