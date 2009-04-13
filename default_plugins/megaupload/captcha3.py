@@ -20,7 +20,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-#Uses plowshare megaupload_captcha.py
+#Uses plowshare py
 
 import urllib
 import urllib2
@@ -32,10 +32,10 @@ import ImageFile
 
 from HTMLParser import HTMLParser
 
-import megaupload_captcha
+from megaupload_captcha import new_image_from_pixels, combinations_no_repetition, get_pair_inclussion, smooth, join_images_horizontal, filter_word, floodfill_image, get_zones, center_of_mass, union_sets, segment, get_error, get_zones, histogram
 
-#import sys
-#sys.path.append("/home/crak/tucan/trunk")
+import sys
+sys.path.append("/home/crak/tucan/trunk")
 from tesseract import Tesseract
 
 CAPTCHACODE = "captchacode"
@@ -133,7 +133,7 @@ class CaptchaForm(HTMLParser):
 
 	def rotate_character(self, pixels, index, rotation=22):
 		"""Rotate captcha character in position index."""
-		image = megaupload_captcha.new_image_from_pixels(pixels, 1)
+		image = new_image_from_pixels(pixels, 1)
 		angle = rotation * (+1 if (index % 2 == 0) else -1)
 		rotated_image = image.rotate(angle, expand=True)
 		return rotated_image.point(lambda x: 0 if x == 1 else 255)
@@ -143,10 +143,10 @@ class CaptchaForm(HTMLParser):
 		for plindex, characters4_pixels in enumerate(characters4_pixels_list):
 			logging.debug("Generating words (%d) %d/%d" % (2**len(uncertain_pixels), plindex+1, len(characters4_pixels_list)))
 			for length in range(len(uncertain_pixels)+1):
-				for groups in megaupload_captcha.combinations_no_repetition(uncertain_pixels, length):
+				for groups in combinations_no_repetition(uncertain_pixels, length):
 					characters4_pixels_test = [x.copy() for x in characters4_pixels]
 					for pixels in groups: 
-						pair = megaupload_captcha.get_pair_inclussion(characters4_pixels_test, megaupload_captcha.center_of_mass(pixels)[0], pred=lambda x: megaupload_captcha.center_of_mass(x)[0])
+						pair = get_pair_inclussion(characters4_pixels_test, center_of_mass(pixels)[0], pred=lambda x: center_of_mass(x)[0])
 						if not pair:
 							continue
 						char1, char2 = pair
@@ -154,12 +154,12 @@ class CaptchaForm(HTMLParser):
 						char2.update(pixels)
 
 					images = [self.rotate_character(pixels, cindex) for cindex, pixels in enumerate(characters4_pixels_test)]
-					clean_image = megaupload_captcha.smooth(megaupload_captcha.join_images_horizontal(images), 0)
+					clean_image = smooth(join_images_horizontal(images), 0)
 					
 					ocr = Tesseract(self.data, lambda x: clean_image)
 					text = ocr.get_captcha().strip()
 					
-					filtered_text = megaupload_captcha.filter_word(text)
+					filtered_text = filter_word(text)
 					if filtered_text:
 						yield filtered_text
 
@@ -173,27 +173,27 @@ class CaptchaForm(HTMLParser):
 		width, height = original.size
 		image = Image.new("L", (width+2, height+2), 255)
 		image.paste(original, (1, 1))
-		background_pixels = megaupload_captcha.floodfill_image(image, (0, 0), 155)[1]
+		background_pixels = floodfill_image(image, (0, 0), 155)[1]
 		logging.debug("Background pixels: %d" % len(background_pixels))
 
 		# Get characters zones    
-		characters_pixels = sorted(megaupload_captcha.get_zones(image, background_pixels, 0, 10),key=megaupload_captcha.center_of_mass)
+		characters_pixels = sorted(get_zones(image, background_pixels, 0, 10),key=center_of_mass)
 		logging.debug("Characters: %d - %s" % (len(characters_pixels), [len(x) for x in characters_pixels]))    
 		if len(characters_pixels) >= 4:
-			characters_pixels_list0 = [[megaupload_captcha.union_sets(sets) for sets in x] for x in megaupload_captcha.segment(characters_pixels, 4)]    
-			characters4_pixels_list = sorted(characters_pixels_list0, key=lambda pixels_list: megaupload_captcha.get_error(pixels_list, image))[:5]
+			characters_pixels_list0 = [[union_sets(sets) for sets in x] for x in segment(characters_pixels, 4)]    
+			characters4_pixels_list = sorted(characters_pixels_list0, key=lambda pixels_list: get_error(pixels_list, image))[:5]
 			seen = reduce(set.union, [background_pixels] + characters_pixels)
 			max_uncertain_groups = 8
 
 			# Get uncertain zones
-			uncertain_pixels = list(sorted(megaupload_captcha.get_zones(image, seen, 255, 20), key=len))[:max_uncertain_groups]
+			uncertain_pixels = list(sorted(get_zones(image, seen, 255, 20), key=len))[:max_uncertain_groups]
 			logging.debug("Uncertain groups: %d - %s" % (len(uncertain_pixels), [len(x) for x in uncertain_pixels]))
 			
 			#build candidates
 			candidates = self.build_candidates(characters4_pixels_list, uncertain_pixels)
 
 			# Return best decoded word    
-			best = list(megaupload_captcha.histogram(candidates, reverse=True))
+			best = list(histogram(candidates, reverse=True))
 			if not best:
 				logging.info("No word candidates")
 			else:
