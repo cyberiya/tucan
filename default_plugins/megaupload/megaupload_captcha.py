@@ -35,7 +35,8 @@ from operator import itemgetter
 from StringIO import StringIO
 
 # Third-party modules
-import PIL.Image as Image
+#import PIL.Image as Image
+import Image
 
 # Verbose levels
 
