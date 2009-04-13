@@ -60,12 +60,12 @@ class Tesseract:
 		""""""
 		captcha = ""
 		if "win" in sys.platform:
-			if subprocess.call([self.tesseract, self.image_name, self.text_name], creationflags=134217728) == 0:
+			if subprocess.call([self.tesseract, self.image_name, self.text_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=134217728) == 0:
 				f = file(self.text_name + TEXT_SUFFIX, "r")
 				captcha = f.readline().strip()
 				f.close()
 		else:
-			if subprocess.call([self.tesseract, self.image_name, self.text_name]) == 0:
+			if subprocess.call([self.tesseract, self.image_name, self.text_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
 				captcha = self.text.file.readline().strip()
 			self.text.file.close()
 			self.image.file.close()
