@@ -27,7 +27,9 @@ import pickle
 import logging
 logger = logging.getLogger(__name__)
 
-from captcha3 import CaptchaForm, CheckLinks
+if "win" not in sys.platform:
+	#from captcha import CaptchaForm, CheckLinks
+	from captcha2 import CaptchaSolve, CheckLinks
 
 from download_plugin import DownloadPlugin
 from slots import Slots
@@ -46,11 +48,29 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	def add(self, path, link, file_name):
 		""""""
 		if self.get_slot():
-			parser = CaptchaForm(link)
-			if parser.link:
-				return self.start(path, parser.link, file_name, WAIT)
+			if "win" in sys.platform:
+				data = None
+				try:
+					subprocess.call([os.path.join(sys.path[0], "captcha.exe"), link], creationflags=134217728)
+					f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "rb")
+					data = pickle.loads(f.read())
+					f.close()
+					f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "link.dat"), "wb")
+					f.write("\n")
+					f.close()
+				except Exception, e:
+					logger.exception("Download %s: %s" % (url, e))
+				else:	
+					if data:
+						return self.start(path, data, file_name, WAIT)
+					else:
+						self.return_slot()
 			else:
-				 self.return_slot()
+				parser = CaptchaSolve(link)
+				if parser.link:
+					return self.start(path, parser.link, file_name, WAIT)
+				else:
+					 self.return_slot()
 
 	def delete(self, file_name):
 		""""""
@@ -59,4 +79,23 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			
 	def check_links(self, url):
 		""""""
-		return CheckLinks().check(url)
+		if "win" in sys.platform:
+			try:
+				subprocess.call([os.path.join(sys.path[0], "captcha.exe"), url, "check"], creationflags=134217728)
+				f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "rb")
+				data = pickle.loads(f.read())
+				f.close()
+				f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "wb")
+				f.write("\n")
+				f.close()
+				name = data[0] 
+				size = int(data[1])
+				unit = data[2]
+			except Exception, e:
+				name = url
+				size = -1
+				unit = None
+				logger.exception("Check %s: %s" % (url, e))
+			return name, size, unit
+		else:
+			return CheckLinks().check(url)
