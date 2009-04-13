@@ -196,11 +196,8 @@ class CaptchaForm(HTMLParser):
 			best = list(megaupload_captcha.histogram(candidates, reverse=True))
 			if not best:
 				logging.info("No word candidates")
-				print original
-				return original
 			else:
 				logging.info("Best words: %s" % best[:5])    
-				print best[0][0]
 				return best[0][0]
 
 if __name__ == "__main__":
