@@ -77,6 +77,9 @@ class InputLinks(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		hbox.pack_start(scroll, True, True, 10)
 		scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+		#auto scroll
+		scroll.get_vadjustment().connect("changed", self.changed)
+		scroll.get_vadjustment().connect("value-changed", self.value_changed)		
 		buffer = gtk.TextBuffer()		
 		self.textview = gtk.TextView(buffer)
 		scroll.add(self.textview)
@@ -102,6 +105,10 @@ class InputLinks(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		#auto scroll
+		scroll.get_vadjustment().connect("changed", self.changed)
+		scroll.get_vadjustment().connect("value-changed", self.value_changed)		
+
 		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, int, str, str, bool, bool))
 		scroll.add(self.treeview)
 		
@@ -146,6 +153,16 @@ class InputLinks(gtk.Dialog):
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
+
+	def changed(self, vadjust):
+		""""""
+		if not hasattr(vadjust, "need_scroll") or vadjust.need_scroll:
+			vadjust.set_value(vadjust.upper-vadjust.page_size)
+			vadjust.need_scroll = True
+
+	def value_changed (self, vadjust):
+		""""""
+		vadjust.need_scroll = abs(vadjust.value + vadjust.page_size - vadjust.upper) < vadjust.step_increment
 		
 	def change_name(self, cellrenderertext, path, new_text):
 		""""""
