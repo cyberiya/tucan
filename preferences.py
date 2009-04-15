@@ -40,7 +40,7 @@ LANGUAGES = [("English", "en"), ("Spanish", "es"), ("Italian", "it"), ("German",
 
 class Preferences(gtk.Dialog):
 	""""""
-	def __init__(self, configuration, show_services=False):
+	def __init__(self, configuration, show_services=False, update_manager=False):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_PREFERENCES)
@@ -69,7 +69,8 @@ class Preferences(gtk.Dialog):
 		
 		if show_services:
 			self.notebook.set_current_page(1)
-		
+		if update_manager:
+			gobject.idle_add(self.update_manager, None)
 		self.run()
 		
 	def save(self, button):

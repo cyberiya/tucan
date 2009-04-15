@@ -20,10 +20,11 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import sys
 import os
-import webbrowser
+import sys
 import time
+import threading
+import webbrowser
 import __builtin__
 import gettext
 import logging
@@ -51,6 +52,8 @@ from tree import Tree
 from input_links import InputLinks
 
 from service_manager import ServiceManager
+
+from service_update import ServiceUpdate
 
 import cons
 	
@@ -155,9 +158,27 @@ class Gui(gtk.Window, ServiceManager):
 		self.connect("hide", self.tray_icon.activate)
 		self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)
 		
+		#Autocheck services
+		th = threading.Thread(group=None, target=self.check_updates, name=None)
+		th.start()
+
 		#ugly polling
 		gobject.timeout_add(60000, self.update_limits)
 		gobject.timeout_add(120000, self.save_default_session)
+		
+	def check_updates(self):
+		""""""
+		s = ServiceUpdate(self.configuration)
+		if len(s.get_updates()) > 0:
+			gobject.idle_add(self.update_manager)
+			
+	def update_manager(self):
+		""""""
+		if not self.preferences_shown:
+			self.preferences_shown = True
+			Preferences(self.configuration, True, True)
+			self.preferences_shown =  False
+		return False
 		
 	def update_limits(self):
 		""""""
