@@ -131,4 +131,4 @@ class ServiceUpdate:
 if __name__ == "__main__":
 	from config import Config
 	s = ServiceUpdate(Config())
-	
+	print len(s.get_updates())
