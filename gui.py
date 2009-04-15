@@ -347,6 +347,7 @@ class Gui(gtk.Window, ServiceManager):
 			if m.accepted:
 				self.close()
 			else:
+				#This way GTK won't destroy the window.
 				return True
 		else:
 			self.close()
