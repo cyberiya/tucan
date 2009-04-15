@@ -131,13 +131,13 @@ class LogView(gtk.Dialog):
 			return True
 		
 	def changed(self, vadjust):
-		""""""
+		"""autoscroll"""
 		if not hasattr(vadjust, "need_scroll") or vadjust.need_scroll:
 			vadjust.set_value(vadjust.upper-vadjust.page_size)
 			vadjust.need_scroll = True
 
 	def value_changed (self, vadjust):
-		""""""
+		"""autoscroll"""
 		vadjust.need_scroll = abs(vadjust.value + vadjust.page_size - vadjust.upper) < vadjust.step_increment
 		
 	def close(self, widget=None, other=None):
