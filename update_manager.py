@@ -114,7 +114,6 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 			message = "Your version of Tucan is too old.\nNew services need version %s." % self.server_version
 			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Outdated", message)
 			gobject.idle_add(self.close)
-
 		self.run()
 		
 	def toggled(self, button, path):
@@ -173,7 +172,10 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 				cont += 1
 				self.progress.set_fraction(cont/len(install_targets))
 			self.progress.set_text("%i of %i" % (int(cont), len(install_targets)))
-			gobject.timeout_add(1000, self.close)
+			self.hide()
+			message = "Save your configuration and restart Tucan \nto apply service changes."
+			Message(self, cons.SEVERITY_WARNING, "Tucan Manager - Restart Needed.", message)
+			self.close()
 		else:
 			self.close()
 
