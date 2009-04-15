@@ -234,23 +234,21 @@ class Gui(gtk.Window, ServiceManager):
 		packages, info = self.session.load_session(path)
 		if packages != None:
 			self.manage_packages(packages, info)
+			logger.debug("Session saved: %s" % info)
 		
 	def save_session(self, path):
 		""""""
 		packages, info = self.downloads.get_packages()
-		self.session.save_session(path, packages, info)
+		if len(packages) > 0:
+			self.session.save_session(path, packages, info)
 		
 	def load_default_session(self):
 		""""""
-		packages, info = self.session.load_session(cons.SESSION_FILE)
-		if packages != None:
-			self.manage_packages(packages, info)
+		self.load_session(cons.SESSION_FILE)
 			
 	def save_default_session(self):
 		""""""
-		packages, info = self.downloads.get_packages()
-		self.session.save_session(cons.SESSION_FILE, packages, info)
-		logger.debug("Session saved: %s" % info)
+		self.save_session(cons.SESSION_FILE)
 		return True
 		
 	def manage_packages(self, packages, packages_info):
@@ -342,6 +340,18 @@ class Gui(gtk.Window, ServiceManager):
 					logger.warning("Remove package: %s" % self.download_manager.clear(files))
 
 	def quit(self, dialog=None, response=None):
+		""""""
+		if len(self.download_manager.active_downloads) > 0:
+			message = "Tucan still has active downloads\n Quit?."
+			m = Message(self, cons.SEVERITY_WARNING, "Tucan Manager - Active Downloads.", message, True, True)
+			if m.accepted:
+				self.close()
+			else:
+				return True
+		else:
+			self.close()
+
+	def close(self):
 		""""""
 		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
 			self.save_default_session()
