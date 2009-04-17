@@ -20,11 +20,12 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
 import HTMLParser
+
+from url_open import URLOpen
 
 class Parser(HTMLParser.HTMLParser):
 	""""""
@@ -34,18 +35,19 @@ class Parser(HTMLParser.HTMLParser):
 		self.tmp_link = None
 		self.link = None
 		try:
-			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+			opener = URLOpen()
+			for line in opener.open(url).readlines():
 				if "get" in line:
 					try:
 						self.feed(line)
 					except HTMLParser.HTMLParseError, e:
 						logger.warning("%s :%s %s" % (url, line.strip(), e))
 			if self.tmp_link:
-				for line in urllib2.urlopen(urllib2.Request(self.tmp_link)).readlines():
+				for line in opener.open(self.tmp_link).readlines():
 					if "Click here to download this file" in line:
 						self.link = line.split("<a href='")[1].split("'>")[0]
-		except urllib2.URLError, e:
-			logger.error("%s :%s" % (url, e))
+		except Exception, e:
+			logger.exception("%s :%s" % (url, e))
 
 	def handle_starttag(self, tag, attrs):
 		""""""
@@ -61,7 +63,7 @@ class CheckLinks:
 		size = 0
 		unit = None
 		size_found = False
-		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+		for line in URLOpen().open(url).readlines():
 			if "fileNameText" in line:
 				name = line.strip().split(">")[1].split("<")[0]
 			elif "Size" in line:
