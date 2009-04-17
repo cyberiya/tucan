@@ -21,9 +21,10 @@
 ###############################################################################
 
 import urllib
-import urllib2
 import logging
 logger = logging.getLogger(__name__)
+
+from url_open import URLOpen
 
 import HTMLParser
 
@@ -36,7 +37,7 @@ class Parser(HTMLParser.HTMLParser):
 		HTMLParser.HTMLParser.__init__(self)
 		self.link = None
 		try:
-			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+			for line in URLOpen().open(url).readlines():
 				if "base64ToText" in line:
 					code = line.split("base64ToText('")[1].split("')));")[0]
 				elif "enc(text)" in line:
@@ -116,7 +117,7 @@ class CheckLinks:
 		unit = None
 		size_found = False
 		try:
-			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+			for line in URLOpen().open(url).readlines():
 				if "<b>Name:</b>" in line:
 					name = line.split("<b>Name:</b>")[1].split("<br><b>Size:</b>")[0].strip()
 					tmpsize = []
