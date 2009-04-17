@@ -23,6 +23,8 @@
 import urllib2
 from HTMLParser import HTMLParser
 
+from url_open import URLOpen
+
 import cons
 
 class CheckLinks(HTMLParser):
@@ -51,7 +53,7 @@ class CheckLinks(HTMLParser):
 		name = None
 		size = 0
 		unit = None			
-		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+		for line in URLOpen().open(url).readlines():
 			if not self.active:
 				self.feed(line)
 			else:

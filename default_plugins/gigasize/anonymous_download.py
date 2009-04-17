@@ -21,7 +21,6 @@
 ###############################################################################
 
 import urllib
-import urllib2
 import cookielib
 import logging
 logger = logging.getLogger(__name__)
@@ -34,6 +33,8 @@ import ImageOps
 from tesseract import Tesseract
 from download_plugin import DownloadPlugin
 from slots import Slots
+
+from url_open import URLOpen
 
 from check_links import CheckLinks
 
@@ -71,15 +72,15 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		if self.get_slot():
 			cookie = cookielib.CookieJar()
-			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-			opener.open(urllib2.Request(link))
+			opener = URLOpen(cookie)
+			opener.open(link)
 			form = None
 			while not form:
-				tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read(), self.filter_image)
+				tes = Tesseract(URLOpen().open("http://www.gigasize.com/randomImage.php").read(), self.filter_image)
 				captcha = tes.get_captcha()
 				if len(captcha) == 3:
 					data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
-					handle = opener.open(urllib2.Request("http://www.gigasize.com/formdownload.php"), data)
+					handle = opener.open("http://www.gigasize.com/formdownload.php", data)
 					f = FormParser(handle.read())
 					handle.close()
 					form = f.form_action
