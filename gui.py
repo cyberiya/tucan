@@ -342,7 +342,7 @@ class Gui(gtk.Window, ServiceManager):
 	def quit(self, dialog=None, response=None):
 		""""""
 		if len(self.download_manager.active_downloads) > 0:
-			message = "Tucan still has active downloads.\n Are you sure you want to quit?."
+			message = "Tucan still has active downloads.\n Are you sure you want to quit?"
 			m = Message(self, cons.SEVERITY_WARNING, "Tucan Manager - Active Downloads.", message, True, True)
 			if m.accepted:
 				self.close()
