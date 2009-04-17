@@ -20,13 +20,16 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import __builtin__
+
 import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
-import cons
+import socket
+socket.setdefaulttimeout(30)
 
-PROXY = None
+import cons
 
 def set_proxy(url, port=0):
 	""""""
@@ -36,6 +39,7 @@ def set_proxy(url, port=0):
 	else:
 		PROXY = None
 		logger.info("Proxy Disabled.")
+	__builtin__.PROXY = PROXY
 
 class URLOpen:
 	""""""
@@ -48,17 +52,12 @@ class URLOpen:
 		
 	def open(self, url, form=None):
 		""""""
-		try:
-			if form:
-				handler = self.opener.open(urllib2.Request(url, None, cons.USER_AGENT), form)
-			else:
-				handler = self.opener.open(urllib2.Request(url, None, cons.USER_AGENT))
-		except Exception, e:
-			logger.exception("%s: %s" % (url, e))
+		if form:
+			return self.opener.open(urllib2.Request(url, None, cons.USER_AGENT), form)
 		else:
-			return handler
+			return self.opener.open(urllib2.Request(url, None, cons.USER_AGENT))
 
 if __name__ == "__main__":
 	PROXY = {"http": "proxy.alu.uma.es:3128"}
 	o = URLOpen()
-	print o.open("http://www.google.es", None).read()
+	print o.open("http://www.google.com").read()

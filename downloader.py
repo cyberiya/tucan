@@ -21,16 +21,15 @@
 ###############################################################################
 
 import os
-import socket
 import urllib2
 import threading
 import time
 import logging
 logger = logging.getLogger(__name__)
 
-import cons
+from url_open import URLOpen
 
-HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4"}
+import cons
 
 BUFFER_SIZE = 4096
 
@@ -54,8 +53,8 @@ class Downloader(threading.Thread):
 		self.tmp_time = 0
 		self.tmp_size = 0
 		self.opener = None
-		if cookie:
-			self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+		#build opener
+		self.opener = URLOpen(cookie)
 		
 	def run(self):
 		""""""
@@ -68,12 +67,7 @@ class Downloader(threading.Thread):
 		if not self.stop_flag:
 			try:
 				self.status = cons.STATUS_ACTIVE
-				socket.setdefaulttimeout(30)
-				if self.opener:
-					handle = self.opener.open(urllib2.Request(self.url, None, HEADER), self.form)
-				else:
-					handle = urllib2.urlopen(urllib2.Request(self.url, None, HEADER), self.form)
-				socket.setdefaulttimeout(None)
+				handle = self.opener.open(self.url, self.form)
 				logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
 				self.total_size = int(handle.info().getheader("Content-Length"))
 				if not os.path.exists(self.path):
@@ -93,12 +87,12 @@ class Downloader(threading.Thread):
 						self.status = cons.STATUS_CORRECT
 					else:
 						self.status = cons.STATUS_ERROR
-			except urllib2.HTTPError, e:
-				logger.error("%s" % e)
+			except TypeError, e:
+				logger.exception("%s: %s" % (self.file, e))
 				self.stop_flag = True
 				self.status = cons.STATUS_PEND
-			except (TypeError, socket.timeout, urllib2.URLError), e:
-				logger.error("%s: %s" % (self.file, e))
+			except Exception, e:
+				logger.exception("%s: %s" % (self.file, e))
 				self.stop_flag = True
 				self.status = cons.STATUS_ERROR
 
