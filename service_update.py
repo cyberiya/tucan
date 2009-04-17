@@ -27,13 +27,13 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
-import config
 from service_config import ServiceConfig
+import config
 
 import cons
 
-BASE = "https://forja.rediris.es/svn/cusl3-tucan/trunk/"
-PLUGINS = BASE + "default_plugins/"
+BASE = "https://forja.rediris.es/svn/cusl3-tucan/trunk"
+PLUGINS = "%s/default_plugins/" % BASE
 CONF_FILE = "service.conf"
 
 class ServiceList(HTMLParser):
@@ -70,41 +70,42 @@ class ServiceCheck(HTMLParser):
 class ServiceUpdate:
 	""""""""
 	def __init__(self, config):
-		""""""
+		"""urllib2 does not support proxy and https"""
 		self.config = config
 		self.local_services = config.get_services()
 		self.server_version = None
 		try:
-			for line in urllib2.urlopen(urllib2.Request(BASE + "cons.py")).readlines():
+			for line in urllib2.urlopen(urllib2.Request("%s/cons.py" % BASE)).readlines():
 				if  "VERSION" in line:
 					self.server_version = line.split('"')[1].split('"')[0]
-		except (urllib2.URLError, urllib2.HTTPError), e:
-			logger.error(e)
+		except Exception, e:
+			logger.exception(e)
 
 	def get_updates(self):
 		""""""
 		new_services = {}
-		list = ServiceList(PLUGINS)
-		for remote_service in list.services:
-			check = ServiceCheck(PLUGINS + remote_service)
-			found = False
-			if CONF_FILE in check.files:
-				try:
-					#get remote version
-					config = ServiceConfig(None, urllib2.urlopen(urllib2.Request(PLUGINS + remote_service + CONF_FILE)))
-					remote_version = config.get_update()
-				except (urllib2.URLError, urllib2.HTTPError), e:
-					logger.error(e)
-				else:
-					#get local version
-					for local_service in self.local_services:
-						if local_service[0] == remote_service.split("/")[0]:
-							found = True
-							local_version = local_service[4].get_update()
-							if remote_version > local_version:
-								new_services[local_service[2]] = local_service[0], check.files, local_service[1]
-			if not found:
-				new_services[config.get_name()] = remote_service.split("/")[0], check.files, None
+		if self.server_version == cons.TUCAN_VERSION:
+			list = ServiceList(PLUGINS)
+			for remote_service in list.services:
+				check = ServiceCheck(PLUGINS + remote_service)
+				found = False
+				if CONF_FILE in check.files:
+					try:
+						#get remote version
+						config = ServiceConfig(None, urllib2.urlopen(urllib2.Request("%s%s%s" % (PLUGINS, remote_service, CONF_FILE))))
+						remote_version = config.get_update()
+					except Exception, e:
+						logger.exception(e)
+					else:
+						#get local version
+						for local_service in self.local_services:
+							if local_service[0] == remote_service.split("/")[0]:
+								found = True
+								local_version = local_service[4].get_update()
+								if remote_version > local_version:
+									new_services[local_service[2]] = local_service[0], check.files, local_service[1]
+				if not found:
+					new_services[config.get_name()] = remote_service.split("/")[0], check.files, None
 		return new_services
 
 	def install_service(self, service_name, service_dir, files):
