@@ -64,7 +64,6 @@ class Statusbar(gtk.Statusbar):
 	def update_limits(self):
 		""""""
 		self.limits = self.get_limits()
-		print self.limits
 		if len(self.limits) > self.max_limits:
 			if not self.blinking:
 				gobject.timeout_add(800, self.blink)
