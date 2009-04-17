@@ -63,26 +63,31 @@ class CheckLinks:
 		size = 0
 		unit = None
 		size_found = False
-		for line in URLOpen().open(url).readlines():
-			if "fileNameText" in line:
-				name = line.strip().split(">")[1].split("<")[0]
-			elif "Size" in line:
-				size_found = True
-			elif size_found:
-				size_found = False
-				tmp = line.strip().split(">")[1].split("<")[0]
-				unit = tmp.split(" ")[1]
-				if "," in tmp:
-					size = int("".join(tmp.split(" ")[0].split(",")))
-				else:
-					size = int(tmp.split(" ")[0])
-				if size > 1024:
-					if unit == "KB":
-						size = size/1024
-						unit = "MB"
-		if not name:
+		try:
+			for line in URLOpen().open(url).readlines():
+				if "fileNameText" in line:
+					name = line.strip().split(">")[1].split("<")[0]
+				elif "Size" in line:
+					size_found = True
+				elif size_found:
+					size_found = False
+					tmp = line.strip().split(">")[1].split("<")[0]
+					unit = tmp.split(" ")[1]
+					if "," in tmp:
+						size = int("".join(tmp.split(" ")[0].split(",")))
+					else:
+						size = int(tmp.split(" ")[0])
+					if size > 1024:
+						if unit == "KB":
+							size = size/1024
+							unit = "MB"
+			if not name:
+				name = url
+				size = -1
+		except Exception, e:
 			name = url
 			size = -1
+			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
 
 if __name__ == "__main__":
