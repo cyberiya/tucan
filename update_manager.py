@@ -111,7 +111,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Not available", message)
 			gobject.idle_add(self.close)
 		else:
-			message = "Your version of Tucan is too old.\nNew services need version %s." % self.server_version
+			message = "Version %s released!\nPlease update and enjoy new services." % self.server_version
 			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Outdated", message)
 			gobject.idle_add(self.close)
 		self.run()
