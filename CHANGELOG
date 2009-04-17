@@ -1,3 +1,14 @@
+Tucan 0.3.7 Alpha 2009-04-18.
+------------------------------
+- Proxy support.
+- Solved Megaupload Captcha.
+- Solved many bugs.
+- New anonymous Sendspace plugin.
+- Makefile updated.
+- Debian package.
+- Ubuntu package.
+- German Localization.
+
 Tucan 0.3.6 Alpha 2009-03-19.
 ------------------------------
 - New logging system.
