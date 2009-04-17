@@ -27,7 +27,7 @@ import pickle
 import logging
 logger = logging.getLogger(__name__)
 
-from captcha3 import CaptchaForm, CheckLinks
+from captcha import CaptchaForm, CheckLinks
 
 from download_plugin import DownloadPlugin
 from slots import Slots

@@ -20,19 +20,30 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+#Uses plowshare py
+
 import urllib
 import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
+import Image
+import ImageFile
+
 from HTMLParser import HTMLParser
 
+from megaupload_captcha import new_image_from_pixels, combinations_no_repetition, get_pair_inclussion, smooth, join_images_horizontal, filter_word, floodfill_image, get_zones, center_of_mass, union_sets, segment, get_error, get_zones, histogram
+
+import sys
+sys.path.append("/home/crak/tucan/trunk")
 from tesseract import Tesseract
 
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
-class CheckLinks(HTMLParser):
+HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4"}
+
+class CheckLinks:
 	""""""
 	def check(self, url):
 		""""""
@@ -41,7 +52,7 @@ class CheckLinks(HTMLParser):
 		size = 0
 		unit = None
 		try:
-			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+			for line in urllib2.urlopen(urllib2.Request(url, None, HEADER)).readlines():
 				if "Filename:" in line:
 					name = line.split(">")[3].split("</")[0].strip()
 				elif "File size:" in line:
@@ -97,19 +108,19 @@ class CaptchaForm(HTMLParser):
 		self.link = None
 		self.located = False
 		while not self.link:
-			p = CaptchaParser(urllib2.urlopen(urllib2.Request(url)).read())
+			p = CaptchaParser(urllib2.urlopen(urllib2.Request(url, None, HEADER)).read())
 			if p.captcha:
-				handle = urllib2.urlopen(urllib2.Request(p.captcha))
+				handle = urllib2.urlopen(urllib2.Request(p.captcha, None,HEADER))
 				if handle.info()["Content-Type"] == "image/gif":
-					self.tess = Tesseract(handle.read())
-					captcha = self.get_captcha()
+					self.data = handle.read()
+					captcha = self.captcha_solve()
 					if captcha:
-						handle = urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
+						handle = urllib2.urlopen(urllib2.Request(url, None, HEADER), urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
 						self.reset()
 						self.feed(handle.read())
 						self.close()
-						logger.info("Captcha %s: %s" % (p.captcha, captcha)
-		
+						logger.info("Captcha %s: %s" % (p.captcha, captcha))
+
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "a":
@@ -120,14 +131,74 @@ class CaptchaForm(HTMLParser):
 			if ((len(attrs) > 1) and (attrs[1][1] == "downloadlink")):
 				self.located = True
 
-	def get_captcha(self):
-		result = self.tess.get_captcha()
-		if len(result) == 4:
-			return result
+	def rotate_character(self, pixels, index, rotation=22):
+		"""Rotate captcha character in position index."""
+		image = new_image_from_pixels(pixels, 1)
+		angle = rotation * (+1 if (index % 2 == 0) else -1)
+		rotated_image = image.rotate(angle, expand=True)
+		return rotated_image.point(lambda x: 0 if x == 1 else 255)
+			
+	def build_candidates(self, characters4_pixels_list, uncertain_pixels):
+		"""Build word candidates from characters and uncertains groups."""       
+		for plindex, characters4_pixels in enumerate(characters4_pixels_list):
+			logging.debug("Generating words (%d) %d/%d" % (2**len(uncertain_pixels), plindex+1, len(characters4_pixels_list)))
+			for length in range(len(uncertain_pixels)+1):
+				for groups in combinations_no_repetition(uncertain_pixels, length):
+					characters4_pixels_test = [x.copy() for x in characters4_pixels]
+					for pixels in groups: 
+						pair = get_pair_inclussion(characters4_pixels_test, center_of_mass(pixels)[0], pred=lambda x: center_of_mass(x)[0])
+						if not pair:
+							continue
+						char1, char2 = pair
+						char1.update(pixels)
+						char2.update(pixels)
+
+					images = [self.rotate_character(pixels, cindex) for cindex, pixels in enumerate(characters4_pixels_test)]
+					clean_image = smooth(join_images_horizontal(images), 0)
+					
+					ocr = Tesseract(self.data, lambda x: clean_image)
+					text = ocr.get_captcha().strip()
+					
+					filtered_text = filter_word(text)
+					if filtered_text:
+						yield filtered_text
+
+	def captcha_solve(self, maxiterations=1):
+		"""Basado en el algoritmo de plowshare"""		
+		p = ImageFile.Parser()
+		p.feed(self.data)
+		original = p.close()
 		
-	def filter(self, data):
-		""""""
-		return data
+		# Get background zone
+		width, height = original.size
+		image = Image.new("L", (width+2, height+2), 255)
+		image.paste(original, (1, 1))
+		background_pixels = floodfill_image(image, (0, 0), 155)[1]
+		logging.debug("Background pixels: %d" % len(background_pixels))
+
+		# Get characters zones    
+		characters_pixels = sorted(get_zones(image, background_pixels, 0, 10),key=center_of_mass)
+		logging.debug("Characters: %d - %s" % (len(characters_pixels), [len(x) for x in characters_pixels]))    
+		if len(characters_pixels) >= 4:
+			characters_pixels_list0 = [[union_sets(sets) for sets in x] for x in segment(characters_pixels, 4)]    
+			characters4_pixels_list = sorted(characters_pixels_list0, key=lambda pixels_list: get_error(pixels_list, image))[:maxiterations]
+			seen = reduce(set.union, [background_pixels] + characters_pixels)
+			max_uncertain_groups = 8
+
+			# Get uncertain zones
+			uncertain_pixels = list(sorted(get_zones(image, seen, 255, 20), key=len))[:max_uncertain_groups]
+			logging.debug("Uncertain groups: %d - %s" % (len(uncertain_pixels), [len(x) for x in uncertain_pixels]))
+			
+			#build candidates
+			candidates = self.build_candidates(characters4_pixels_list, uncertain_pixels)
+
+			# Return best decoded word    
+			best = list(histogram(candidates, reverse=True))
+			if not best:
+				logging.info("No word candidates")
+			else:
+				logging.info("Best words: %s" % best[:5])    
+				return best[0][0]
 
 if __name__ == "__main__":
 	c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
