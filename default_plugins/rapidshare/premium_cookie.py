@@ -21,8 +21,9 @@
 ###############################################################################
 
 import urllib
-import urllib2
 import cookielib
+
+from url_open import URLOpen
 
 class PremiumCookie:
 	""""""
@@ -30,12 +31,12 @@ class PremiumCookie:
 		""""""
 		result = None
 		cookie = cookielib.CookieJar()
-		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-		opener.open(urllib2.Request("https://ssl.rapidshare.com/cgi-bin/premiumzone.cgi"), urllib.urlencode({"uselandingpage": "1", "login": user, "password": password}))
+		opener = URLOpen(cookie)
+		opener.open("https://ssl.rapidshare.com/cgi-bin/premiumzone.cgi", urllib.urlencode({"uselandingpage": "1", "login": user, "password": password}))
 		if len(cookie) > 0:
 			result = cookie
 		if url:
-			if "text/html" in opener.open(urllib2.Request(url)).info().getheader("Content-Type"):
+			if "text/html" in opener.open(url).info().getheader("Content-Type"):
 				result = None
 		return result
 
