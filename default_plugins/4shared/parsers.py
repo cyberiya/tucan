@@ -41,7 +41,7 @@ class Parser(HTMLParser.HTMLParser):
 					try:
 						self.feed(line)
 					except HTMLParser.HTMLParseError, e:
-						logger.warning("%s :%s %s" % (url, line.strip(), e))
+						logger.info("%s :%s %s" % (url, line.strip(), e))
 			if self.tmp_link:
 				for line in opener.open(self.tmp_link).readlines():
 					if "Click here to download this file" in line:
