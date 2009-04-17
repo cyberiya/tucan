@@ -52,7 +52,6 @@ class Downloader(threading.Thread):
 		self.speed = 0
 		self.tmp_time = 0
 		self.tmp_size = 0
-		self.opener = None
 		#build opener
 		self.opener = URLOpen(cookie)
 		

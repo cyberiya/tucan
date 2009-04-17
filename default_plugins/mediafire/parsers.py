@@ -21,12 +21,11 @@
 ###############################################################################
 
 import urllib
-import urllib2
 import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
-#import cons
+from url_open import URLOpen
 
 class FormParser:
 	""""""
@@ -39,11 +38,11 @@ class FormParser:
 		name = None
 		error = False
 		try:
-			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-			for line in opener.open(urllib2.Request(url)).readlines():
+			opener = URLOpen(cookie)
+			for line in opener.open(url).readlines():
 				if "cu(" in line:
 					tmp = eval(line.split("cu(")[1].split(");")[0])
-					handle = opener.open(urllib2.Request("http://www.mediafire.com/dynamic/download.php?%s" %(urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])]))))
+					handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % (urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])])))
 					tmp = handle.readlines()
 					vars = {}
 					for var in tmp[2].split("function")[0].split(";"):
@@ -81,7 +80,7 @@ class CheckLinks:
 		name = None
 		size = 0
 		unit = None			
-		for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+		for line in URLOpen().open(url).readlines():
 			if "You requested:" in line:
 				tmp = line.split("You requested:")[1].split("</div>")[0].strip().split(" ")
 				unit = tmp.pop().split(")")[0]
