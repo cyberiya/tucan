@@ -54,7 +54,8 @@ class Statusbar(gtk.Statusbar):
 		
 		self.blinking = False
 		self.white = True
-		self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#fff"))
+		#self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#fff"))
+		self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#f99"))
 				
 		self.button.connect("clicked", self.show_stack)
 		self.show_all()
