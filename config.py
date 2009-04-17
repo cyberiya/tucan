@@ -47,12 +47,15 @@ OPTION_DOWNLOADS_FOLDER = "downloads_folder"
 
 OPTION_TRAY_CLOSE = "tray_close"
 OPTION_ADVANCED_PACKAGES = "advanced_packages"
-OPTION_SHOW_UPLOADS = "show_uploads"
 OPTION_SAVE_SESSION = "save_session"
+OPTION_SHOW_UPLOADS = "show_uploads"
+OPTION_ENABLE_PROXY = "enable_proxy"
+OPTION_PROXY_URL = "proxy_url"
+OPTION_PROXY_PORT = "proxy_port"
 
 DEFAULTS = {SECTION_MAIN: {OPTION_VERSION: cons.TUCAN_VERSION, OPTION_LANGUAGE: "en", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_UPLOADS: "5", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH}
 	, SECTION_SERVICES: {}
-	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "False", OPTION_SAVE_SESSION: "False", OPTION_ADVANCED_PACKAGES: "False", OPTION_SHOW_UPLOADS: "False"}}
+	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "False", OPTION_SAVE_SESSION: "False", OPTION_ADVANCED_PACKAGES: "False", OPTION_SHOW_UPLOADS: "False", OPTION_ENABLE_PROXY: "False", OPTION_PROXY_URL: "", OPTION_PROXY_PORT: "0"}}
 
 class Config(SafeConfigParser):
 	""""""
@@ -126,6 +129,14 @@ class Config(SafeConfigParser):
 			result = os.path.split(os.path.split(path)[0])[1], icon, name, enabled, config
 		return result
 		
+	def get_proxy(self):
+		""""""
+		result = None, None
+		if self.has_section(SECTION_ADVANCED):
+			if self.getboolean(SECTION_ADVANCED, OPTION_ENABLE_PROXY):
+				result = self.get(SECTION_ADVANCED, OPTION_PROXY_URL), self.getint(SECTION_ADVANCED, OPTION_PROXY_PORT)
+		return result
+
 	def save(self, comment=False):
 		""""""
 		f = open(cons.CONFIG_PATH + CONF, "w")
