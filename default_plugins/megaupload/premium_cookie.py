@@ -21,16 +21,17 @@
 ###############################################################################
 
 import urllib
-import urllib2
 import cookielib
+
+from url_open import URLOpen
 
 class PremiumCookie:
 	""""""
 	def get_cookie(self, user, password, url=None):
 		""""""
 		cookie = cookielib.CookieJar()
-		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-		opener.open(urllib2.Request("http://www.megaupload.com/?c=login"), urllib.urlencode({"login": "1", "redir": "1", "username": user, "password": password}))
+		opener = URLOpen(cookie)
+		opener.open("http://www.megaupload.com/?c=login", urllib.urlencode({"login": "1", "redir": "1", "username": user, "password": password}))
 		if len(cookie) > 0:
 			return cookie
 
