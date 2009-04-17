@@ -21,6 +21,8 @@
 ###############################################################################
 
 import time
+import logging
+logger = logging.getLogger(__name__)
 
 import pygtk
 pygtk.require('2.0')
@@ -47,29 +49,54 @@ class Statusbar(gtk.Statusbar):
 		self.button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
 		self.pack_start(self.button, False)
 		
+		self.limits = []
+		self.max_limits = 0
+		
+		self.blinking = False
 		self.white = True
 		self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#fff"))
 				
 		self.button.connect("clicked", self.show_stack)
 		self.show_all()
 		
-		gobject.timeout_add(500, self.blink)
+		gobject.timeout_add(60000, self.update_limits)
+		
+	def update_limits(self):
+		""""""
+		self.limits = self.get_limits()
+		print self.limits
+		if len(self.limits) > self.max_limits:
+			if not self.blinking:
+				gobject.timeout_add(800, self.blink)
+				self.blinking = True
+			logger.debug("Limits: %s" % self.limits)
+		self.max_limits = len(self.limits)
+		return True
 		
 	def blink(self):
 		""""""
 		if self.white:
-			self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#faa"))
-			self.white = False
+			if self.blinking:
+				self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#f99"))
+				self.white = False
+				return True
+			else:
+				return False
 		else:
 			self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#fff"))
 			self.white = True
-		return True
+			if self.blinking:
+				return True
+			else:
+				return False
 		
 	def show_stack(self, widget):
 		""""""
+		self.blinking = False
+		self.limits = self.get_limits()
 		for limit in self.menu:
 			self.menu.remove(limit)
-		for service, type, time, icon_path in self.get_limits():
+		for service, type, time, icon_path in self.limits:
 			limit = gtk.MenuItem()
 			vbox = gtk.VBox()
 			hbox = gtk.HBox()

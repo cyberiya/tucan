@@ -163,7 +163,6 @@ class Gui(gtk.Window, ServiceManager):
 		th.start()
 
 		#ugly polling
-		gobject.timeout_add(60000, self.update_limits)
 		gobject.timeout_add(120000, self.save_default_session)
 		
 	def check_updates(self):
@@ -179,13 +178,6 @@ class Gui(gtk.Window, ServiceManager):
 			Preferences(self.configuration, True, True)
 			self.preferences_shown =  False
 		return False
-		
-	def update_limits(self):
-		""""""
-		limits = self.download_manager.get_limits()
-		if len(limits) > 0:
-			logger.debug("Limits: %s" % limits)
-		return True
 		
 	def delete_key(self, window, event):
 		"""pressed del key"""

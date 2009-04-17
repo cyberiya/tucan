@@ -21,11 +21,12 @@
 ###############################################################################
 
 import urllib
-import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
+
+from url_open import URLOpen
 
 from download_plugin import DownloadPlugin
 from slots import Slots
@@ -40,20 +41,20 @@ class FormParser(HTMLParser):
 		self.form_action = None
 		self.url = None
 		self.wait = None
-		self.feed(urllib2.urlopen(urllib2.Request(url)).read())
+		self.feed(URLOpen().open(url).read())
 		self.close()
 		form = {"dl.start": "Free", "":"Free user"}
 		self.data = urllib.urlencode(form)
 		if self.form_action:
 			try:
-				for line in urllib2.urlopen(self.form_action, self.data).readlines():
+				for line in URLOpen().open(self.form_action, self.data).readlines():
 					if not self.url:
 						self.feed(line)
 					else:
 						if "var c=" in line:
 							self.wait = int(line.split("var c=")[1].split(";")[0])
-			except urllib2.URLError, e:
-				logger.error("%s: %s" % (url, e))
+			except Exception, e:
+				logger.exception("%s: %s" % (url, e))
 
 	def handle_starttag(self, tag, attrs):
 		""""""

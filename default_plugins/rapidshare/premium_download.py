@@ -21,7 +21,6 @@
 ###############################################################################
 
 import urllib
-import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
@@ -30,6 +29,8 @@ from HTMLParser import HTMLParser
 from accounts import Accounts
 from service_config import SECTION_PREMIUM_DOWNLOAD
 from download_plugin import DownloadPlugin
+
+from url_open import URLOpen
 
 from premium_cookie import PremiumCookie
 from check_links import CheckLinks
@@ -45,8 +46,8 @@ class FormParser(HTMLParser):
 		self.url = None
 		self.close()
 		try:
-			opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-			handler = opener.open(urllib2.Request(url))
+			opener = URLOpen(cookie)
+			handler = opener.open(url)
 			if "text/html" in handler.info()["Content-Type"]:
 				self.feed(handler.read())
 				if self.form_action:				
@@ -92,4 +93,3 @@ class PremiumDownload(DownloadPlugin, Accounts):
 if __name__ == "__main__":
 	c = PremiumCookie()
 	p = FormParser("", c.get_cookie("",""))
-

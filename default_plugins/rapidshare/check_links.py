@@ -20,9 +20,10 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import urllib2
 import logging
 logger = logging.getLogger(__name__)
+
+from url_open import URLOpen
 
 import cons
 
@@ -34,7 +35,7 @@ class CheckLinks:
 		size = 0
 		unit = None
 		try:
-			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
+			for line in URLOpen().open(url).readlines():
 				if "downloadlink" in line:
 					tmp = line.split(">")
 					name = tmp[1].split("<")[0].strip().split("/").pop()
@@ -45,6 +46,6 @@ class CheckLinks:
 						if tmp > 0:
 							size = tmp
 							unit = cons.UNIT_MB
-		except urllib2.URLError, e:
-			logger.error(e)
+		except Exception, e:
+			logger.exception(e)
 		return name, size, unit
