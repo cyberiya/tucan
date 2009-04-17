@@ -23,7 +23,6 @@
 #Uses plowshare py
 
 import urllib
-import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
@@ -31,11 +30,10 @@ import Image
 import ImageFile
 
 from HTMLParser import HTMLParser
+from url_open import URLOpen
 
 from megaupload_captcha import new_image_from_pixels, combinations_no_repetition, get_pair_inclussion, smooth, join_images_horizontal, filter_word, floodfill_image, get_zones, center_of_mass, union_sets, segment, get_error, get_zones, histogram
 
-import sys
-sys.path.append("/home/crak/tucan/trunk")
 from tesseract import Tesseract
 
 CAPTCHACODE = "captchacode"
@@ -52,7 +50,7 @@ class CheckLinks:
 		size = 0
 		unit = None
 		try:
-			for line in urllib2.urlopen(urllib2.Request(url, None, HEADER)).readlines():
+			for line in URLOpen().open(url).readlines():
 				if "Filename:" in line:
 					name = line.split(">")[3].split("</")[0].strip()
 				elif "File size:" in line:
@@ -66,8 +64,8 @@ class CheckLinks:
 					parser = CaptchaForm(url)
 					if parser.link:
 						name = parser.link.split("/").pop()
-		except urllib2.URLError, e:
-			logger.error(e)
+		except Exception, e:
+			logger.exception(e)
 		if error:
 			return url, -1, None
 		else:
@@ -108,14 +106,14 @@ class CaptchaForm(HTMLParser):
 		self.link = None
 		self.located = False
 		while not self.link:
-			p = CaptchaParser(urllib2.urlopen(urllib2.Request(url, None, HEADER)).read())
+			p = CaptchaParser(URLOpen().open(url).read())
 			if p.captcha:
-				handle = urllib2.urlopen(urllib2.Request(p.captcha, None,HEADER))
+				handle = URLOpen().open(p.captcha)
 				if handle.info()["Content-Type"] == "image/gif":
 					self.data = handle.read()
 					captcha = self.captcha_solve()
 					if captcha:
-						handle = urllib2.urlopen(urllib2.Request(url, None, HEADER), urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
+						handle = URLOpen().open(url, urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
 						self.reset()
 						self.feed(handle.read())
 						self.close()
