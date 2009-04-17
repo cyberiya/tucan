@@ -44,7 +44,7 @@ class Slots:
 			
 	def add_wait(self):
 		""""""
-		logger.warning("Wait 5 minutes.")
+		logger.warning("Wait %i seconds." % self.time_limit)
 		self.limit = True
 		self.end_wait = time.time() + self.time_limit
 			
