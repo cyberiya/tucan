@@ -38,7 +38,7 @@ def set_proxy(url, port=0):
 		logger.info("Using proxy: %s:%i" % (url, port))
 	else:
 		PROXY = None
-		socket.setdefaulttimeout(90)
+		socket.setdefaulttimeout(120)
 		logger.info("Proxy Disabled.")
 	__builtin__.PROXY = PROXY
 

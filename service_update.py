@@ -84,28 +84,27 @@ class ServiceUpdate:
 	def get_updates(self):
 		""""""
 		new_services = {}
-		if self.server_version == cons.TUCAN_VERSION:
-			list = ServiceList(PLUGINS)
-			for remote_service in list.services:
-				check = ServiceCheck(PLUGINS + remote_service)
-				found = False
-				if CONF_FILE in check.files:
-					try:
-						#get remote version
-						config = ServiceConfig(None, urllib2.urlopen(urllib2.Request("%s%s%s" % (PLUGINS, remote_service, CONF_FILE))))
-						remote_version = config.get_update()
-					except Exception, e:
-						logger.exception(e)
-					else:
-						#get local version
-						for local_service in self.local_services:
-							if local_service[0] == remote_service.split("/")[0]:
-								found = True
-								local_version = local_service[4].get_update()
-								if remote_version > local_version:
-									new_services[local_service[2]] = local_service[0], check.files, local_service[1]
-				if not found:
-					new_services[config.get_name()] = remote_service.split("/")[0], check.files, None
+		list = ServiceList(PLUGINS)
+		for remote_service in list.services:
+			check = ServiceCheck(PLUGINS + remote_service)
+			found = False
+			if CONF_FILE in check.files:
+				try:
+					#get remote version
+					config = ServiceConfig(None, urllib2.urlopen(urllib2.Request("%s%s%s" % (PLUGINS, remote_service, CONF_FILE))))
+					remote_version = config.get_update()
+				except Exception, e:
+					logger.exception(e)
+				else:
+					#get local version
+					for local_service in self.local_services:
+						if local_service[0] == remote_service.split("/")[0]:
+							found = True
+							local_version = local_service[4].get_update()
+							if remote_version > local_version:
+								new_services[local_service[2]] = local_service[0], check.files, local_service[1]
+			if not found:
+				new_services[config.get_name()] = remote_service.split("/")[0], check.files, None
 		return new_services
 
 	def install_service(self, service_name, service_dir, files):
