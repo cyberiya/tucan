@@ -32,6 +32,7 @@ import gobject
 
 from gui import Gui
 
+import url_open
 import config
 import cons
 
@@ -55,6 +56,10 @@ class Tucan:
 		self.logger.debug("Main path: %s" % cons.PATH)
 		self.logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
 		
+		#proxy settings
+		proxy_url, proxy_port = configuration.get_proxy()
+		url_open.set_proxy(proxy_url, proxy_port)
+				
 		Gui(configuration)
 		
 	def exception_hook(self, type, value, trace):

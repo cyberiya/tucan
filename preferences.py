@@ -29,6 +29,7 @@ import gobject
 
 import cons
 import config
+import url_open
 
 from service_preferences import ServicePreferences
 from message import Message
@@ -93,6 +94,16 @@ class Preferences(gtk.Dialog):
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION, str(self.save_session.get_active()))
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES, str(self.advanced_packages.get_active()))
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS, str(self.show_uploads.get_active()))
+		self.config.set(config.SECTION_ADVANCED, config.OPTION_ENABLE_PROXY, str(self.enable_proxy.get_active()))
+		self.config.set(config.SECTION_ADVANCED, config.OPTION_PROXY_URL, self.proxy_url.get_text())
+		self.config.set(config.SECTION_ADVANCED, config.OPTION_PROXY_PORT, str(self.proxy_port.get_value_as_int()))
+		
+		#change proxy settings
+		if self.enable_proxy.get_active():
+			proxy_url, proxy_port = self.config.get_proxy()
+			url_open.set_proxy(proxy_url, proxy_port)
+		else:
+			url_open.set_proxy(None)
 		
 		self.config.save(True)
 		self.close()
@@ -342,9 +353,35 @@ class Preferences(gtk.Dialog):
 		self.show_uploads = gtk.CheckButton(_("Show uploads."))
 		vbox.pack_start(self.show_uploads, False, False, 5)
 		self.show_uploads.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS))
-			
+
+		self.enable_proxy = gtk.CheckButton(_("Enable proxy:"))
+		vbox.pack_start(self.enable_proxy, False, False, 5)
+		self.enable_proxy.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_ENABLE_PROXY))
+		self.enable_proxy.connect("toggled", self.change_state)
+		
+		self.proxy_box = gtk.HBox()
+		vbox.pack_start(self.proxy_box, False, False, 5)
+		self.proxy_box.pack_start(gtk.Label("HTTP Proxy:"), False, False, 5)
+		self.proxy_url = gtk.Entry()
+		self.proxy_box.pack_start(self.proxy_url, True, True, 5)
+		self.proxy_url.set_text(self.config.get(config.SECTION_ADVANCED, config.OPTION_PROXY_URL))
+		
+		self.proxy_box.pack_start(gtk.Label("Port:"), False, False, 5)
+		self.proxy_port = gtk.SpinButton(None, 1, 0)
+		self.proxy_box.pack_start(self.proxy_port, False, False, 5)
+		self.proxy_port.set_range(0,65535)
+		self.proxy_port.set_increments(1,0)
+		self.proxy_port.set_numeric(True)
+		self.proxy_port.set_value(self.config.getint(config.SECTION_ADVANCED, config.OPTION_PROXY_PORT))
+
+		self.change_state()
+
 		return frame
 		
+	def change_state(self, button=None):
+		""""""
+		self.proxy_box.set_sensitive(self.enable_proxy.get_active())
+
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
