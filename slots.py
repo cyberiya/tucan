@@ -24,12 +24,11 @@ import time
 import logging
 logger = logging.getLogger(__name__)
 
-WAIT_LIMIT = 300
-
 class Slots:
 	""""""
-	def __init__(self, slots):
+	def __init__(self, slots, wait=300):
 		""""""
+		self.time_limit = wait
 		self.limit = False
 		self.end_wait = 0
 		self.max = slots
@@ -47,7 +46,7 @@ class Slots:
 		""""""
 		logger.warning("Wait 5 minutes.")
 		self.limit = True
-		self.end_wait = time.time() + WAIT_LIMIT
+		self.end_wait = time.time() + self.time_limit
 			
 	def return_slot(self):
 		""""""
