@@ -25,6 +25,7 @@ import time
 import pygtk
 pygtk.require('2.0')
 import gtk
+import gobject
 
 import cons
 
@@ -42,12 +43,27 @@ class Statusbar(gtk.Statusbar):
 		label = gtk.Label("Limits: ")
 		self.pack_start(label, False)
 		
-		button = gtk.Button()
-		button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
-		self.pack_start(button, False)
+		self.button = gtk.Button()
+		self.button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
+		self.pack_start(self.button, False)
+		
+		self.white = True
+		self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#fff"))
 				
-		button.connect("clicked", self.show_stack)
+		self.button.connect("clicked", self.show_stack)
 		self.show_all()
+		
+		gobject.timeout_add(500, self.blink)
+		
+	def blink(self):
+		""""""
+		if self.white:
+			self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#faa"))
+			self.white = False
+		else:
+			self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#fff"))
+			self.white = True
+		return True
 		
 	def show_stack(self, widget):
 		""""""
