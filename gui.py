@@ -226,15 +226,13 @@ class Gui(gtk.Window, ServiceManager):
 		packages, info = self.session.load_session(path)
 		if packages != None:
 			self.manage_packages(packages, info)
-			logger.debug("Session saved: %s" % info)
+			logger.debug("Session loaded: %s" % info)
 		
 	def save_session(self, path):
 		""""""
 		packages, info = self.downloads.get_packages()
-		if packages != None:
-			if len(packages) > 0:
-				self.session.save_session(path, packages, info)
-				logger.debug("Session saved: %s" % info)
+		self.session.save_session(path, packages, info)
+		logger.debug("Session saved: %s" % info)
 		
 	def load_default_session(self):
 		""""""
