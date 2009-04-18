@@ -36,8 +36,8 @@ from message import Message
 from file_chooser import FileChooser
 from update_manager import UpdateManager
 
-LANGUAGES = [("English", "en"), ("Spanish", "es"), ("Italian", "it"), ("German", "de")]
-#["English", "French", "German", "Japanese", "Spanish"]  ("Polish", "pl")
+LANGUAGES = [("English", "en"), ("Spanish", "es"), ("Italian", "it"), ("German", "de"), ("Polish", "pl"), ("Slovak", "sk"), ("Portuguese", "pt")]
+#["English", "French", "German", "Japanese", "Spanish"]  
 
 class Preferences(gtk.Dialog):
 	""""""
