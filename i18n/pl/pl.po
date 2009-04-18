@@ -1,181 +1,180 @@
 # Tucan Manager.
 # Copyright (C) 2008-2009 The Tucan Project.
-# Crak, 2009.
-# Translated by exc1te.org
+# Translated by exc1te.org 2009.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: 0.3\n"
 "POT-Creation-Date: 2009-01-10 04:03+CET\n"
 "PO-Revision-Date: 2009-01-10 04:32+CET\n"
-"Last-Translator: exc1te.org\n"
+"Last-Translator: ErNi_\n"
 "Language-Team: exc1te <dawidpachla@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: utf-8\n"
+"Content-Transfer-Encoding: ISO-8859-2\n"
 "Generated-By: pygettext.py 1.5\n"
 
 
 #: ./advanced_packages.py:37
-msgid "Zaawansowane Paczki"
-msgstr ""
+msgid "Advanced Packages"
+msgstr "Zaawansowane Paczki"
 
 #: ./advanced_packages.py:96
-msgid "Wybierz nową ścieżkę dla wybranych Paczek."
-msgstr ""
+msgid "Choose new path for selected Package."
+msgstr "Wybierz nową ścieżkę dla wybranych Paczek."
 
 #: ./file_chooser.py:33
-msgid "Wybierz Folder"
-msgstr ""
+msgid "Select a Folder"
+msgstr "Wybierz Folder"
 
 #: ./file_chooser.py:40
-msgid "Pokaż ukryte Pliki."
-msgstr ""
+msgid "Show hidden files."
+msgstr "Pokaż ukryte Pliki."
 
 #: ./gui.py:84
-msgid "Wczytaj Sesję"
-msgstr ""
+msgid "Load Session"
+msgstr "Wczytaj Sesję"
 
 #: ./gui.py:85
-msgid "Zapisz Sesję"
-msgstr ""
+msgid "Save Session"
+msgstr "Zapisz Sesję"
 
 #: ./gui.py:90
-msgid "Pokaż Wysyłane"
-msgstr ""
+msgid "Show Uploads"
+msgstr "Pokaż Wysyłane"
 
 #: ./gui.py:93
-msgid "Plik"
-msgstr ""
+msgid "File"
+msgstr "Plik"
 
 #: ./gui.py:94
-msgid "Widok"
-msgstr ""
+msgid "View"
+msgstr "Widok"
 
 #: ./gui.py:95
-msgid "Pomoc"
-msgstr ""
+msgid "Help"
+msgstr "Pomoc"
 
 #: ./gui.py:99
-msgid "Dodaj linki do ściągania"
-msgstr ""
+msgid "Add Downloads"
+msgstr "Dodaj linki do ściągania"
 
 #: ./gui.py:100
-msgid "Dodaj linki do wysłania"
-msgstr ""
+msgid "Add Uploads"
+msgstr "Dodaj linki do wysłania"
 
 #: ./gui.py:101
-msgid "Wyczyść skończone"
-msgstr ""
+msgid "Clear Complete"
+msgstr "Wyczyść skończone"
 
 #: ./gui.py:102
-msgid "Przenieś w górę"
-msgstr ""
+msgid "Move Up"
+msgstr "Przenieś w górę"
 
 #: ./gui.py:103
-msgid "Przenieś w dół"
-msgstr ""
+msgid "Move Down"
+msgstr "Przenieś w dół"
 
 #: ./gui.py:104
-msgid "Rozpocznij wybrane"
-msgstr ""
+msgid "Start Selected"
+msgstr "Rozpocznij wybrane"
 
 #: ./gui.py:105
-msgid "Zatrzymaj wybrane"
-msgstr ""
+msgid "Stop Selected"
+msgstr "Zatrzymaj wybrane"
 
 #: ./input_links.py:54
-msgid "Wprowadź linki"
-msgstr ""
+msgid "Input Links"
+msgstr "Wprowadź linki"
 
 #: ./input_links.py:69
-msgid "Wklej linki tutaj:"
-msgstr ""
+msgid "Paste links here:"
+msgstr "Wklej linki tutaj:"
 
 #: ./input_links.py:88
-msgid "Sprawdź Linki"
-msgstr ""
+msgid "Check Links"
+msgstr "Sprawdź Linki"
 
 #: ./input_links.py:131
-msgid "Pokaż zaawansowaną konfiguracje Paczek."
-msgstr ""
+msgid "Show advanced Package configuration."
+msgstr "Pokaż zaawansowaną konfiguracje Paczek."
 
 #: ./input_links.py:207
-msgid "Sprawdzam linki, proszę czekać."
-msgstr ""
+msgid "Checking links, please wait."
+msgstr "Sprawdzam linki, proszę czekać."
 
 #: ./input_links.py:260
-msgid "Sprawdzanie anulowane!"
-msgstr ""
+msgid "Check Canceled!"
+msgstr "Sprawdzanie anulowane!"
 
 #: ./preferences.py:54
-msgid "Konfiguracja Ogólna"
-msgstr ""
+msgid "General Configuration"
+msgstr "Konfiguracja Ogólna"
 
 #: ./preferences.py:55
-msgid "Konfiguracja Usług"
-msgstr ""
+msgid "Service Configuration"
+msgstr "Konfiguracja Usług"
 
 #: ./preferences.py:56
-msgid "Konfiguracja Zaawansowana"
-msgstr ""
+msgid "Advanced Configuration"
+msgstr "Konfiguracja Zaawansowana"
 
 #: ./preferences.py:120
-msgid "Wybierz język: "
-msgstr ""
+msgid "Choose language: "
+msgstr "Wybierz język: "
 
 #: ./preferences.py:138
-msgid "Maksymalna liczba ściągnięć na raz: "
-msgstr ""
+msgid "Max simultaneous downloads: "
+msgstr "Maksymalna liczba ściągnięć na raz: "
 
 #: ./preferences.py:173
-msgid "Folder dla ściągnięć: "
-msgstr ""
+msgid "Downloads Folder: "
+msgstr "Folder dla ściągnięć: "
 
 #: ./preferences.py:260
-msgid "Uruchom Tucana ponownie aby zastosować zmiany."
-msgstr ""
+msgid "Restart Tucan to apply service changes."
+msgstr "Uruchom Tucana ponownie aby zastosować zmiany."
 
 #: ./preferences.py:279
-msgid "Wybrany folder nie jest usługą, lub nie jest poprawnie skonfigurwany."
-msgstr ""
+msgid "The choosed directory isn't a service, or it's not configured."
+msgstr "Wybrany folder nie jest usługą, lub nie jest poprawnie skonfigurwany."
 
 #: ./preferences.py:307
-msgid "Przed korzystaniem z tej usługi, musisz zaakceptować jej warunki na "
-msgstr ""
+msgid "Before using this service, you must accept it's terms of service at "
+msgstr "Przed korzystaniem z tej usługi, musisz zaakceptować jej warunki na "
 
 #: ./preferences.py:308
-msgid "Usługi korzystania"
-msgstr ""
+msgid "Terms of service"
+msgstr "Usługi korzystania"
 
 #: ./preferences.py:331
-msgid "Zamknij do tacki systemowej."
-msgstr ""
+msgid "Close to tray."
+msgstr "Zamknij do tacki systemowej."
 
 #: ./preferences.py:335
-msgid "Zapisz sesję przy zamknięciu."
-msgstr ""
+msgid "Save session on close."
+msgstr "Zapisz sesję przy zamknięciu."
 
 #: ./preferences.py:339
-msgid "Domyślne zaawansowane paczki."
-msgstr ""
+msgid "Default advanced packages."
+msgstr "Domyślne zaawansowane paczki."
 
 #: ./preferences.py:343
-msgid "Pokaż wysyłane."
-msgstr ""
+msgid "Show uploads."
+msgstr "Pokaż wysyłane."
 
 #: ./service_preferences.py:47
-msgid "Autor"
-msgstr ""
+msgid "Author"
+msgstr "Autor"
 
 #: ./service_preferences.py:55
-msgid "Wersja"
-msgstr ""
+msgid "Version"
+msgstr "Wersja"
 
 #: ./service_preferences.py:64
-msgid "Sloty"
-msgstr ""
+msgid "Slots"
+msgstr "Sloty"
 
 #: ./service_preferences.py:71
 msgid "Captcha"
-msgstr ""
+msgstr "Captcha"
