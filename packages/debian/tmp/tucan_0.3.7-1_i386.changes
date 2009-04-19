@@ -1,0 +1,42 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.8
+Date: Sun, 19 Apr 2009 19:39:32 +0200
+Source: tucan
+Binary: tucan
+Architecture: source all
+Version: 0.3.7-1
+Distribution: unstable
+Urgency: low
+Maintainer: Fran Lupion (Crak) <crakotaku@yahoo.es>
+Changed-By: Fran Lupion (Crak) <crakotaku@yahoo.es>
+Description: 
+ tucan      - Tucan is a download and upload manager for sites like rapidshare 
+Changes: 
+ tucan (0.3.7-1) unstable; urgency=low
+ .
+   * New upstream release
+Checksums-Sha1: 
+ c784582041eed292c7424c66a57c53cef14a9da4 978 tucan_0.3.7-1.dsc
+ ec70756f6c2501a42a95f59f99da40eda551d951 199208 tucan_0.3.7.orig.tar.gz
+ cb147716941bf909962ffe8530ca79fff8490fee 3210 tucan_0.3.7-1.diff.gz
+ ab5affe66bed40bcb4243d1c9fd893e64268b37a 173624 tucan_0.3.7-1_all.deb
+Checksums-Sha256: 
+ 2a6030925f73a180e56fe44ad9947e6149cad2989a3cfd866526f15a4c5d4aec 978 tucan_0.3.7-1.dsc
+ 56eb1038f1ddef4a82f72f74cf472edbd26679d0f8d27c40e7e6703fe575b683 199208 tucan_0.3.7.orig.tar.gz
+ b657667cffc98c7fb04a4369a05e01293fe290bbd2923b6350b38847454dc3c5 3210 tucan_0.3.7-1.diff.gz
+ 17baed780e4305d9141a8e9218bf6b0710fdcfce4cdebbd35553f1ae86af8d7a 173624 tucan_0.3.7-1_all.deb
+Files: 
+ 77727104612b02771450743e02103c03 978 net optional tucan_0.3.7-1.dsc
+ df779bbf13ff6e7563f84870bd6a7696 199208 net optional tucan_0.3.7.orig.tar.gz
+ b85623b17736fe68f4058d5f597622d4 3210 net optional tucan_0.3.7-1.diff.gz
+ 5e7f749c35c58b533a59c2934038ca77 173624 net optional tucan_0.3.7-1_all.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAknrYlUACgkQ7EXKTG+aztbswwCggntvc4dbJgUPdu+k7tKo2+d6
+jEgAnAh8SuHncWep1MPp1XNRFLKYqKdV
+=TQAJ
+-----END PGP SIGNATURE-----
