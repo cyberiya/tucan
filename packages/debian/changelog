@@ -1,3 +1,9 @@
+tucan (0.3.7-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Fran Lupion (Crak) <crakotaku@yahoo.es>  Sun, 19 Apr 2009 19:39:32 +0200
+
 tucan (0.3.6-1) unstable; urgency=low
 
   * Initial release (Closes: #520470)
