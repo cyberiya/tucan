@@ -18,25 +18,25 @@ Changes:
  .
    * New upstream release
 Checksums-Sha1: 
- c784582041eed292c7424c66a57c53cef14a9da4 978 tucan_0.3.7-1.dsc
+ b87373f92886a86b3ab42bf422508de99e68b3a1 978 tucan_0.3.7-1.dsc
  ec70756f6c2501a42a95f59f99da40eda551d951 199208 tucan_0.3.7.orig.tar.gz
- cb147716941bf909962ffe8530ca79fff8490fee 3210 tucan_0.3.7-1.diff.gz
- ab5affe66bed40bcb4243d1c9fd893e64268b37a 173624 tucan_0.3.7-1_all.deb
+ 1c5d171eba94b3b34cf57f0609897fc83ec27f48 1975 tucan_0.3.7-1.diff.gz
+ 7f4544c3b7153c092851560c3645c0bee36c4d87 173626 tucan_0.3.7-1_all.deb
 Checksums-Sha256: 
- 2a6030925f73a180e56fe44ad9947e6149cad2989a3cfd866526f15a4c5d4aec 978 tucan_0.3.7-1.dsc
+ 3e65f8104be63ee38debdb7c760f88d6802f4897ea94de46586a401c3fd36d5a 978 tucan_0.3.7-1.dsc
  56eb1038f1ddef4a82f72f74cf472edbd26679d0f8d27c40e7e6703fe575b683 199208 tucan_0.3.7.orig.tar.gz
- b657667cffc98c7fb04a4369a05e01293fe290bbd2923b6350b38847454dc3c5 3210 tucan_0.3.7-1.diff.gz
- 17baed780e4305d9141a8e9218bf6b0710fdcfce4cdebbd35553f1ae86af8d7a 173624 tucan_0.3.7-1_all.deb
+ c8c5bca78fa5821b5e8d64f6286e1981f7ae3e2d2a9df57e4e1fbfa1d165f731 1975 tucan_0.3.7-1.diff.gz
+ e8ef85d22cb6fd8a74ece19338be90aa67cce641d3de6c972bdcaf2fbf7d3e8e 173626 tucan_0.3.7-1_all.deb
 Files: 
- 77727104612b02771450743e02103c03 978 net optional tucan_0.3.7-1.dsc
+ c69a22afcccf15a433ae16c9b4f02809 978 net optional tucan_0.3.7-1.dsc
  df779bbf13ff6e7563f84870bd6a7696 199208 net optional tucan_0.3.7.orig.tar.gz
- b85623b17736fe68f4058d5f597622d4 3210 net optional tucan_0.3.7-1.diff.gz
- 5e7f749c35c58b533a59c2934038ca77 173624 net optional tucan_0.3.7-1_all.deb
+ 8646e7ccfb3a24ecf9c55ba7adc4ac6d 1975 net optional tucan_0.3.7-1.diff.gz
+ 5394fd97ab8d857e262a25377df1282c 173626 net optional tucan_0.3.7-1_all.deb
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 
-iEYEARECAAYFAknrYlUACgkQ7EXKTG+aztbswwCggntvc4dbJgUPdu+k7tKo2+d6
-jEgAnAh8SuHncWep1MPp1XNRFLKYqKdV
-=TQAJ
+iEYEARECAAYFAknrY/gACgkQ7EXKTG+azta80gCfffS4Qeqa6BZ9tpOyhAN0kelk
+SYgAnjpeWlFHIL+lZm7ez/gQzkN07miI
+=00gG
 -----END PGP SIGNATURE-----
