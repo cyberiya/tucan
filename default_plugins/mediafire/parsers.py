@@ -79,18 +79,26 @@ class CheckLinks:
 		""""""
 		name = None
 		size = 0
-		unit = None			
-		for line in URLOpen().open(url).readlines():
-			if "You requested:" in line:
-				tmp = line.split("You requested:")[1].split("</div>")[0].strip().split(" ")
-				unit = tmp.pop().split(")")[0]
-				size = int(float(tmp.pop().split("(")[1]))
-				name = "_".join(tmp)
-			if not name:
-				name = url
-				size = -1
+		unit = None
+		try:
+			if "/file/" in url:
+				tmp = url.split("file/")
+				url = "%s?%s" % (tmp[0], tmp[1].split("/")[0])
+			for line in URLOpen().open(url).readlines():
+				if "You requested:" in line:
+					tmp = line.split("You requested:")[1].split("</div>")[0].strip().split(" ")
+					unit = tmp.pop().split(")")[0]
+					size = int(float(tmp.pop().split("(")[1]))
+					name = "_".join(tmp)
+				if not name:
+					name = url
+					size = -1
+		except Exception, e:
+			name = url
+			size = -1
+			logger.exception("%s: %s" % (url, e))
 		return name, size, unit
 
 if __name__ == "__main__":
-	f = FormParser("http://www.mediafire.com/?vdmjzmyquyj", cookielib.CookieJar())
-	print f.url
+	#f = FormParser("http://www.mediafire.com/?vdmjzmyquyj", cookielib.CookieJar())
+	print CheckLinks().check("http://www.mediafire.com/file/jdzq4mn44ay/tHe.uNvTd.XvId.part7.rar")
