@@ -12,31 +12,31 @@ Urgency: low
 Maintainer: Fran Lupion (Crak) <crakotaku@yahoo.es>
 Changed-By: Fran Lupion (Crak) <crakotaku@yahoo.es>
 Description: 
- tucan      - Tucan is a download and upload manager for sites like rapidshare 
+ tucan      - Download and upload manager for 1-Click Hosters
 Changes: 
  tucan (0.3.7-1) unstable; urgency=low
  .
    * New upstream release
 Checksums-Sha1: 
- b87373f92886a86b3ab42bf422508de99e68b3a1 978 tucan_0.3.7-1.dsc
+ d0b7a78013bf0bdbca902bd8f938af01b3f3b07b 978 tucan_0.3.7-1.dsc
  ec70756f6c2501a42a95f59f99da40eda551d951 199208 tucan_0.3.7.orig.tar.gz
- 1c5d171eba94b3b34cf57f0609897fc83ec27f48 1975 tucan_0.3.7-1.diff.gz
- 7f4544c3b7153c092851560c3645c0bee36c4d87 173626 tucan_0.3.7-1_all.deb
+ 49704cdaa41ea8283705f90ef94bd15fd7c9ad16 2050 tucan_0.3.7-1.diff.gz
+ 64210db00864d17836fbf03e2c4c7b179beb24b1 173562 tucan_0.3.7-1_all.deb
 Checksums-Sha256: 
- 3e65f8104be63ee38debdb7c760f88d6802f4897ea94de46586a401c3fd36d5a 978 tucan_0.3.7-1.dsc
+ 6e7988e95ec53600a931859b64a0aaa7c2b164bc414cf5f08d56d795989fa6ab 978 tucan_0.3.7-1.dsc
  56eb1038f1ddef4a82f72f74cf472edbd26679d0f8d27c40e7e6703fe575b683 199208 tucan_0.3.7.orig.tar.gz
- c8c5bca78fa5821b5e8d64f6286e1981f7ae3e2d2a9df57e4e1fbfa1d165f731 1975 tucan_0.3.7-1.diff.gz
- e8ef85d22cb6fd8a74ece19338be90aa67cce641d3de6c972bdcaf2fbf7d3e8e 173626 tucan_0.3.7-1_all.deb
+ 3e2d13ec3d253dc45dd63082f10a8cbe452866adf701cf2524b4ab4d1a9f2004 2050 tucan_0.3.7-1.diff.gz
+ e8c02c74bd0dca061a4da2a9b197975a42500230032276aae640bf4b49aebef8 173562 tucan_0.3.7-1_all.deb
 Files: 
- c69a22afcccf15a433ae16c9b4f02809 978 net optional tucan_0.3.7-1.dsc
+ f347d688267612f8c8335fe2a83b6166 978 net optional tucan_0.3.7-1.dsc
  df779bbf13ff6e7563f84870bd6a7696 199208 net optional tucan_0.3.7.orig.tar.gz
- 8646e7ccfb3a24ecf9c55ba7adc4ac6d 1975 net optional tucan_0.3.7-1.diff.gz
- 5394fd97ab8d857e262a25377df1282c 173626 net optional tucan_0.3.7-1_all.deb
+ 4e48a96057101096a94848a3b117a809 2050 net optional tucan_0.3.7-1.diff.gz
+ 5c6c998b15172a5600592088dd75157d 173562 net optional tucan_0.3.7-1_all.deb
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 
-iEYEARECAAYFAknrY/gACgkQ7EXKTG+azta80gCfffS4Qeqa6BZ9tpOyhAN0kelk
-SYgAnjpeWlFHIL+lZm7ez/gQzkN07miI
-=00gG
+iEYEARECAAYFAknrzXAACgkQ7EXKTG+aztbrmgCfWo4Iw9OTpIznxWx3FTlCB6Z0
+HKUAnjn4HV3thHL7htYtVMCXEmSW5J2w
+=laH3
 -----END PGP SIGNATURE-----
