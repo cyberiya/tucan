@@ -24,9 +24,6 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-import sys
-sys.path.append("/home/crak/tucan/trunk")
-
 from url_open import URLOpen
 
 class Parser:
