@@ -39,6 +39,9 @@ class FormParser:
 		error = False
 		try:
 			opener = URLOpen(cookie)
+			if "/file/" in url:
+				tmp = url.split("file/")
+				url = "%s?%s" % (tmp[0], tmp[1].split("/")[0])
 			for line in opener.open(url).readlines():
 				if "cu(" in line:
 					tmp = eval(line.split("cu(")[1].split(");")[0])
