@@ -159,8 +159,9 @@ class Gui(gtk.Window, ServiceManager):
 		self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)
 		
 		#Autocheck services
-		th = threading.Thread(group=None, target=self.check_updates, name=None)
-		th.start()
+		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_AUTO_UPDATE):
+			th = threading.Thread(group=None, target=self.check_updates, name=None)
+			th.start()
 
 		#ugly polling
 		gobject.timeout_add(120000, self.save_default_session)
