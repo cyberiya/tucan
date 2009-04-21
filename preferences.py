@@ -91,8 +91,9 @@ class Preferences(gtk.Dialog):
 			iter = model.iter_next(iter)
 
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE, str(self.tray_close.get_active()))
-		self.config.set(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION, str(self.save_session.get_active()))
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES, str(self.advanced_packages.get_active()))
+		self.config.set(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION, str(self.save_session.get_active()))
+		self.config.set(config.SECTION_ADVANCED, config.OPTION_AUTO_UPDATE, str(self.auto_update.get_active()))
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS, str(self.show_uploads.get_active()))
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_ENABLE_PROXY, str(self.enable_proxy.get_active()))
 		self.config.set(config.SECTION_ADVANCED, config.OPTION_PROXY_URL, self.proxy_url.get_text())
@@ -349,6 +350,10 @@ class Preferences(gtk.Dialog):
 		self.advanced_packages = gtk.CheckButton(_("Default advanced packages."))
 		vbox.pack_start(self.advanced_packages, False, False, 5)
 		self.advanced_packages.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES))
+
+		self.auto_update = gtk.CheckButton(_("Automatic check for updates."))
+		vbox.pack_start(self.auto_update, False, False, 5)
+		self.auto_update.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_AUTO_UPDATE))
 
 		self.show_uploads = gtk.CheckButton(_("Show uploads."))
 		vbox.pack_start(self.show_uploads, False, False, 5)
