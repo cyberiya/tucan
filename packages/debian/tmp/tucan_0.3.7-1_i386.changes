@@ -13,30 +13,32 @@ Maintainer: Fran Lupion (Crak) <crakotaku@yahoo.es>
 Changed-By: Fran Lupion (Crak) <crakotaku@yahoo.es>
 Description: 
  tucan      - Download and upload manager for 1-Click Hosters
+Closes: 520470
 Changes: 
  tucan (0.3.7-1) unstable; urgency=low
  .
    * New upstream release
+   * Uploaded to debian (Closes: #520470)
 Checksums-Sha1: 
- d0b7a78013bf0bdbca902bd8f938af01b3f3b07b 978 tucan_0.3.7-1.dsc
+ 514ffd60aaab6f45be4228f3cbeca98c7f2a4485 978 tucan_0.3.7-1.dsc
  ec70756f6c2501a42a95f59f99da40eda551d951 199208 tucan_0.3.7.orig.tar.gz
- 49704cdaa41ea8283705f90ef94bd15fd7c9ad16 2050 tucan_0.3.7-1.diff.gz
- 64210db00864d17836fbf03e2c4c7b179beb24b1 173562 tucan_0.3.7-1_all.deb
+ 83ffb7766e6197b74f2cc73319ad4a4d07889296 2046 tucan_0.3.7-1.diff.gz
+ 6c7b20a0840aaa92564156576c52c4c5cc8ad239 173622 tucan_0.3.7-1_all.deb
 Checksums-Sha256: 
- 6e7988e95ec53600a931859b64a0aaa7c2b164bc414cf5f08d56d795989fa6ab 978 tucan_0.3.7-1.dsc
+ 8a5f91a03c785bf029cec98938c135ca3f2460d28db3311b7aa201e4fb40a1db 978 tucan_0.3.7-1.dsc
  56eb1038f1ddef4a82f72f74cf472edbd26679d0f8d27c40e7e6703fe575b683 199208 tucan_0.3.7.orig.tar.gz
- 3e2d13ec3d253dc45dd63082f10a8cbe452866adf701cf2524b4ab4d1a9f2004 2050 tucan_0.3.7-1.diff.gz
- e8c02c74bd0dca061a4da2a9b197975a42500230032276aae640bf4b49aebef8 173562 tucan_0.3.7-1_all.deb
+ 1bcec0cd91884dfb4a96d42b247f486bd5d30c0cae85b688499ecb631444362e 2046 tucan_0.3.7-1.diff.gz
+ d1a14adb1b95e4f30e8486c70433738a3b24feccfa998b229cfdfa88e50947e1 173622 tucan_0.3.7-1_all.deb
 Files: 
- f347d688267612f8c8335fe2a83b6166 978 net optional tucan_0.3.7-1.dsc
+ 202e22f1bb8e896724f88607c0f48b46 978 net optional tucan_0.3.7-1.dsc
  df779bbf13ff6e7563f84870bd6a7696 199208 net optional tucan_0.3.7.orig.tar.gz
- 4e48a96057101096a94848a3b117a809 2050 net optional tucan_0.3.7-1.diff.gz
- 5c6c998b15172a5600592088dd75157d 173562 net optional tucan_0.3.7-1_all.deb
+ 8b85e17697fe5e9f7b0eb5a5c87e363d 2046 net optional tucan_0.3.7-1.diff.gz
+ b66a7ffbed61425adeacbcae719b7814 173622 net optional tucan_0.3.7-1_all.deb
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 
-iEYEARECAAYFAknrzXAACgkQ7EXKTG+aztbrmgCfWo4Iw9OTpIznxWx3FTlCB6Z0
-HKUAnjn4HV3thHL7htYtVMCXEmSW5J2w
-=laH3
+iEYEARECAAYFAknvyWkACgkQ7EXKTG+aztYetQCcDsP+A01eF6/v+fppsTEQ39rk
+SVcAn2Z9MVcjX8AOSnoJBw+Xqj7unCN3
+=E8Te
 -----END PGP SIGNATURE-----
