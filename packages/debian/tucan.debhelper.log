@@ -2,6 +2,7 @@ dh_prep
 dh_installchangelogs
 dh_installdocs
 dh_installmenu
+dh_installman
 dh_compress
 dh_fixperms
 dh_installdeb
