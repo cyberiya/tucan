@@ -40,7 +40,6 @@ install: build
 	dh_testdir
 	dh_testroot
 	dh_prep  
-	dh_installdirs
 
 	$(MAKE) DESTDIR=$(CURDIR)/debian/tucan/usr basic-install
 	install debian/scripts/tucan debian/tucan/usr/bin/tucan
@@ -52,10 +51,7 @@ binary-indep: install
 	dh_testroot
 	dh_installchangelogs CHANGELOG
 	dh_installdocs
-	dh_install
 	dh_installmenu
-	dh_installman
-	dh_link
 	dh_compress
 	dh_fixperms
 	dh_installdeb
