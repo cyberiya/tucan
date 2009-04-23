@@ -20,25 +20,25 @@ Changes:
    * New upstream release
    * Uploaded to debian (Closes: #520470)
 Checksums-Sha1: 
- d37d07f6aac18261332386d1b80a808eade45497 978 tucan_0.3.7-1.dsc
+ 88fa3c23815685a900f5ecb6bae63ebdb8e79118 978 tucan_0.3.7-1.dsc
  ec70756f6c2501a42a95f59f99da40eda551d951 199208 tucan_0.3.7.orig.tar.gz
- 0f57688fb534696cc1d914d9a81ff3c1fbf1957d 2050 tucan_0.3.7-1.diff.gz
- b311763f21e210bfeefe6a43731a84d1dc0b64a9 173614 tucan_0.3.7-1_all.deb
+ 89f20d517bec81587a6c078ab81c4264fa65e4fd 2028 tucan_0.3.7-1.diff.gz
+ 1f99556961af336880b0447f857644fef0565375 173608 tucan_0.3.7-1_all.deb
 Checksums-Sha256: 
- 06bb46b3effb9b02d412f5292b17ced615072a8e27552e51fb44558929e510e1 978 tucan_0.3.7-1.dsc
+ e3f4780e387f1506f126150617de26fcf99f386b7a6d3101cae0bd08b5d41468 978 tucan_0.3.7-1.dsc
  56eb1038f1ddef4a82f72f74cf472edbd26679d0f8d27c40e7e6703fe575b683 199208 tucan_0.3.7.orig.tar.gz
- 7af825d83f0c0a7a68f22dff6c24c3df5a7f5544a90dee0386eb74420a013f67 2050 tucan_0.3.7-1.diff.gz
- aa185f5feec8e777d505549f253eb2815e802fa4b27b479359d62315d4df16fc 173614 tucan_0.3.7-1_all.deb
+ a8ea25f52350ee246833aa0f7946f71ccf936c392fe843f4d6ef748627faae02 2028 tucan_0.3.7-1.diff.gz
+ ed4fb6b75304c00bff0e72e53718a47ab6cbd71fe56465a1a90632b3d229897e 173608 tucan_0.3.7-1_all.deb
 Files: 
- 5360840f3d6c83db52c46b9843f75ae3 978 net optional tucan_0.3.7-1.dsc
+ 8aec0b5b628383b66a47cb826464529b 978 net optional tucan_0.3.7-1.dsc
  df779bbf13ff6e7563f84870bd6a7696 199208 net optional tucan_0.3.7.orig.tar.gz
- 6f8fec5c6d9e3367e5a5ec59c3ed892b 2050 net optional tucan_0.3.7-1.diff.gz
- 155c60f0c4bfd883ec76a93cda3b9866 173614 net optional tucan_0.3.7-1_all.deb
+ c8d316e282631a1200c525b194bb1a7b 2028 net optional tucan_0.3.7-1.diff.gz
+ bf795e52c8964af52259ede131e54127 173608 net optional tucan_0.3.7-1_all.deb
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 
-iEYEARECAAYFAknvzA8ACgkQ7EXKTG+aztZcvQCggY4h2eWxEBvE8HZ06IOFw3zq
-QnUAn1QVBllXMM89iec6XAYPe6EVCWrr
-=cIr/
+iEYEARECAAYFAknvzdcACgkQ7EXKTG+aztZL4wCfVMI+A4JkIShCMWZu8UtBKibY
+xK8An3pjTT63LLFuOvSdJPuIb3TweUsB
+=maFS
 -----END PGP SIGNATURE-----

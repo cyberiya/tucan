@@ -8,7 +8,7 @@ It was downloaded from:
 
 Upstream Author:
 
-    The Tucan Project <Crakotaku@yahoo.es>
+    Fran Lupion (Crak) <crakotaku@yahoo.es>
 
 Copyright:
 
@@ -16,9 +16,9 @@ Copyright:
 
 License:
 
-   This package is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License version 2 as
-   published by the Free Software Foundation.
+    This package is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License version 2 as
+    published by the Free Software Foundation.
 
     This package is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +34,7 @@ Public License version 2 can be found in `/usr/share/common-licenses/GPL-2'.
 
 The Debian packaging is:
 
-    Copyright (C) 2009 Crak <crakotaku@yahoo.es>
+    Copyright (C) 2009 Fran Lupion (Crak) <crakotaku@yahoo.es>
 
 and is licensed under the GPL version 2, 
 see `/usr/share/common-licenses/GPL-2'.
