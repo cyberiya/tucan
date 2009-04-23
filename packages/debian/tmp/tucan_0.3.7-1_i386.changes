@@ -20,25 +20,25 @@ Changes:
    * New upstream release
    * Uploaded to debian (Closes: #520470)
 Checksums-Sha1: 
- 88fa3c23815685a900f5ecb6bae63ebdb8e79118 978 tucan_0.3.7-1.dsc
+ a032136ce574a09fb896e60ec0589d99b21df4a5 978 tucan_0.3.7-1.dsc
  ec70756f6c2501a42a95f59f99da40eda551d951 199208 tucan_0.3.7.orig.tar.gz
- 89f20d517bec81587a6c078ab81c4264fa65e4fd 2028 tucan_0.3.7-1.diff.gz
- 1f99556961af336880b0447f857644fef0565375 173608 tucan_0.3.7-1_all.deb
+ 31413b8b9898b3b2a184b7b6e88ef416312d5d1b 2059 tucan_0.3.7-1.diff.gz
+ d34d529f2df85b9364ef88539847b02866702ed0 173596 tucan_0.3.7-1_all.deb
 Checksums-Sha256: 
- e3f4780e387f1506f126150617de26fcf99f386b7a6d3101cae0bd08b5d41468 978 tucan_0.3.7-1.dsc
+ 67d1e7912bfcdfe3bcda5dc3e003164487b323ef21e68a5ddf845701c9243a4a 978 tucan_0.3.7-1.dsc
  56eb1038f1ddef4a82f72f74cf472edbd26679d0f8d27c40e7e6703fe575b683 199208 tucan_0.3.7.orig.tar.gz
- a8ea25f52350ee246833aa0f7946f71ccf936c392fe843f4d6ef748627faae02 2028 tucan_0.3.7-1.diff.gz
- ed4fb6b75304c00bff0e72e53718a47ab6cbd71fe56465a1a90632b3d229897e 173608 tucan_0.3.7-1_all.deb
+ 7cd459a9342b102f1a5f5f384fa2b82c61bc441af9f4b9715ec029897d71ec7b 2059 tucan_0.3.7-1.diff.gz
+ 092b0e30a43ebb21f5a6a77ec89589d9fef184f1ce6a08d33002c497edda6378 173596 tucan_0.3.7-1_all.deb
 Files: 
- 8aec0b5b628383b66a47cb826464529b 978 net optional tucan_0.3.7-1.dsc
+ ed8276a94ce51342901d0bd82124822e 978 net optional tucan_0.3.7-1.dsc
  df779bbf13ff6e7563f84870bd6a7696 199208 net optional tucan_0.3.7.orig.tar.gz
- c8d316e282631a1200c525b194bb1a7b 2028 net optional tucan_0.3.7-1.diff.gz
- bf795e52c8964af52259ede131e54127 173608 net optional tucan_0.3.7-1_all.deb
+ a7c7484036cdf50f4e9b392189218066 2059 net optional tucan_0.3.7-1.diff.gz
+ 7ddaad3fd6c5f337c15eb2f9c2a1b21d 173596 net optional tucan_0.3.7-1_all.deb
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 
-iEYEARECAAYFAknvzdcACgkQ7EXKTG+aztZL4wCfVMI+A4JkIShCMWZu8UtBKibY
-xK8An3pjTT63LLFuOvSdJPuIb3TweUsB
-=maFS
+iEYEARECAAYFAknwT48ACgkQ7EXKTG+aztb0RACggL2P63JysuRkq52FDB/C6qgJ
+sAQAnRHViUeVClEfL2L1NBV6LUT6PiW+
+=8r9A
 -----END PGP SIGNATURE-----
