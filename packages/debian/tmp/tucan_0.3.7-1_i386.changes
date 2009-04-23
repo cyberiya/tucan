@@ -20,25 +20,25 @@ Changes:
    * New upstream release
    * Uploaded to debian (Closes: #520470)
 Checksums-Sha1: 
- 514ffd60aaab6f45be4228f3cbeca98c7f2a4485 978 tucan_0.3.7-1.dsc
+ d37d07f6aac18261332386d1b80a808eade45497 978 tucan_0.3.7-1.dsc
  ec70756f6c2501a42a95f59f99da40eda551d951 199208 tucan_0.3.7.orig.tar.gz
- 83ffb7766e6197b74f2cc73319ad4a4d07889296 2046 tucan_0.3.7-1.diff.gz
- 6c7b20a0840aaa92564156576c52c4c5cc8ad239 173622 tucan_0.3.7-1_all.deb
+ 0f57688fb534696cc1d914d9a81ff3c1fbf1957d 2050 tucan_0.3.7-1.diff.gz
+ b311763f21e210bfeefe6a43731a84d1dc0b64a9 173614 tucan_0.3.7-1_all.deb
 Checksums-Sha256: 
- 8a5f91a03c785bf029cec98938c135ca3f2460d28db3311b7aa201e4fb40a1db 978 tucan_0.3.7-1.dsc
+ 06bb46b3effb9b02d412f5292b17ced615072a8e27552e51fb44558929e510e1 978 tucan_0.3.7-1.dsc
  56eb1038f1ddef4a82f72f74cf472edbd26679d0f8d27c40e7e6703fe575b683 199208 tucan_0.3.7.orig.tar.gz
- 1bcec0cd91884dfb4a96d42b247f486bd5d30c0cae85b688499ecb631444362e 2046 tucan_0.3.7-1.diff.gz
- d1a14adb1b95e4f30e8486c70433738a3b24feccfa998b229cfdfa88e50947e1 173622 tucan_0.3.7-1_all.deb
+ 7af825d83f0c0a7a68f22dff6c24c3df5a7f5544a90dee0386eb74420a013f67 2050 tucan_0.3.7-1.diff.gz
+ aa185f5feec8e777d505549f253eb2815e802fa4b27b479359d62315d4df16fc 173614 tucan_0.3.7-1_all.deb
 Files: 
- 202e22f1bb8e896724f88607c0f48b46 978 net optional tucan_0.3.7-1.dsc
+ 5360840f3d6c83db52c46b9843f75ae3 978 net optional tucan_0.3.7-1.dsc
  df779bbf13ff6e7563f84870bd6a7696 199208 net optional tucan_0.3.7.orig.tar.gz
- 8b85e17697fe5e9f7b0eb5a5c87e363d 2046 net optional tucan_0.3.7-1.diff.gz
- b66a7ffbed61425adeacbcae719b7814 173622 net optional tucan_0.3.7-1_all.deb
+ 6f8fec5c6d9e3367e5a5ec59c3ed892b 2050 net optional tucan_0.3.7-1.diff.gz
+ 155c60f0c4bfd883ec76a93cda3b9866 173614 net optional tucan_0.3.7-1_all.deb
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 
-iEYEARECAAYFAknvyWkACgkQ7EXKTG+aztYetQCcDsP+A01eF6/v+fppsTEQ39rk
-SVcAn2Z9MVcjX8AOSnoJBw+Xqj7unCN3
-=E8Te
+iEYEARECAAYFAknvzA8ACgkQ7EXKTG+aztZcvQCggY4h2eWxEBvE8HZ06IOFw3zq
+QnUAn1QVBllXMM89iec6XAYPe6EVCWrr
+=cIr/
 -----END PGP SIGNATURE-----
