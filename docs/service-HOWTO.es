@@ -2,8 +2,8 @@ TUCAN SERVICE HOWTO
 -------------------
 
 Indice:
- 1 - IntroducciÛn
- 2 - Breve Resumen
+ 1 - Introducci√≥n
+ 2 - Breve resumen
  3 - Secciones
  3.1 - Directorio de servicio (obligatorio)
  3.2 - Archivo __init__.py (obligatorio)
@@ -16,52 +16,53 @@ Indice:
  3.9 - Archivo premium_cookie.py (opcional)
 
 
-1 - IntroducciÛn
+1 - Introducci√≥n
 ----------------
 En este documento se van a explicar las lineas generales para implementar un
-nuevo servicio para Tucan (archivos mÌnimos, ubicaciÛn de esos archivos, 
-formato, par·metros de entrada/salida... etc).
+nuevo servicio para Tucan (archivos m√≠nimos, ubicaci√≥n de esos archivos,
+formato, par√≥metros de entrada/salida... etc).
 
 
-2 - Breve Resumen
+2 - Breve resumen
 -----------------
 servicio/             : obligatorio: Directorio que contiene todos los
                                      archivos del servicio, no puede contener
-                                     ning˙n punto "." en el nombre.
+                                     ning√∫n punto "." en el nombre.
 
 __init__.py           : obligatorio: Necesario para que python reconozca el
-                                     directorio como mÛdulo.
+                                     directorio como m√≥dulo.
 
-service.conf          : obligatorio: DescripciÛn e informaciÛn del servicio
+service.conf          : obligatorio: Descripci√≥n e informaci√≥n del servicio
                                      para que el sistema de plugins sepa que
-                                     soporta el plugin de este servicio.
+                                     soporta este servicio.
 
-<imagen o icono>      : opcional: Imagen o icono de tamaÒo 48x48 pixels
+<imagen o icono>      : opcional: Imagen o icono de tama√±o 48x48 pixels
                                   representativo del servicio.
 
-check_links.py        : opcional: SÛlo necesario si el servicio tiene soporte
+check_links.py        : opcional: S√≥lo necesario si el servicio tiene soporte
                                   para descargas. Puede ser un archivo o puede
                                   ser un metodo de un plugin de descarga.
 
-anonymous_download.py : opcional: SÛlo necesario si el servicio tiene soporte
-                                  para descargas anÛnimas.
+anonymous_download.py : opcional: S√≥lo necesario si el servicio tiene soporte
+                                  para descargas an√≥nimas.
 
-premium.accounts      : opcional: SÛlo necesario si el servicio tiene soporte
+premium.accounts      : opcional: S√≥lo necesario si el servicio tiene soporte
                                   para cuentas premium (se genera desde el GUI).
 
-premium_download.py   : opcional: SÛlo necesario si el servicio tiene soporte
+premium_download.py   : opcional: S√≥lo necesario si el servicio tiene soporte
                                   para descargas premium.
 
-premium_cookie.py     : opcional: SÛlo necesario si el servicio tiene soporte
+premium_cookie.py     : opcional: S√≥lo necesario si el servicio tiene soporte
                                   para descargas premium.
+
 
 3 - Secciones
 -------------
 
 3.1 - Directorio de Servicio (obligatorio)
 ------------------------------------------
-El directorio contendr· todos los archivos de los diferentes plugins del
-servicio, no debe contener ning˙n punto "." en el nombre. Ejemplos:
+El directorio contendr√° todos los archivos de los diferentes plugins del
+servicio, no debe contener ning√∫n punto "." en el nombre. Ejemplos:
 
    http://rapidshare.com  ->  rapidshare/
    http://megaupload.com  ->  megaupload/
@@ -71,13 +72,13 @@ servicio, no debe contener ning˙n punto "." en el nombre. Ejemplos:
 
 3.2 - Archivo __init__.py (obligatorio)
 ---------------------------------------
-Este archivo es necesario para que python reconozca el directorio como mÛdulo.
+Este archivo es necesario para que python reconozca el directorio como m√≥dulo.
 Es un archivo vacio.
 
 
 3.3 - Archivo service.conf (obligatorio)
 ----------------------------------------
-Este archivo describe y da informaciÛn de los distintos plugins al sistema de 
+Este archivo describe y da informaci√≥n de los distintos plugins al sistema de
 plugins de Tucan para que conozca las funcionalidades del servicio.
 
 Consta de varias secciones:
@@ -89,13 +90,13 @@ Consta de varias secciones:
    premium_cookie = PremiumCookie
    downloads = True
    uploads = False
-   update = 0
+   update = 200904180200
 
    [anonymous_download]
    name = AnonymousDownload
    author = Crak
    captcha = True
-   version = 0.1
+   version = 0.3
    slots = 1
 
    [premium_download]
@@ -105,115 +106,117 @@ Consta de varias secciones:
    accounts = premium.accounts
 
 
-SecciÛn [main]:
-"enabled"        : OpciÛn para notificar que el servicio esta activado o
-                   desactivado. Valores: True, False. Por defecto estar·
-                   desactivado (False).
-"name"           : OpciÛn para notificar el nombre del servicio.
+Secci√≥n [main]:
+"enabled"        : Opci√≥n para notificar que el servicio esta activado o
+                   desactivado. Valores: True, False. Por defecto estar√°
+                   desactivado (el usuario debe activar el servicio en la
+                   ventana preferencias antes de poder usarlo).
+"name"           : Opci√≥n para notificar el nombre del servicio.
                    Ejemplos: rapidshare.com, megaupload.com, gigasize.com
-"icon"           : OpciÛn para notificar el nombre del icono o imagen
+"icon"           : Opci√≥n para notificar el nombre del icono o imagen
                    representativa del servicio que se va a usar en el GUI.
                    Opcional: si no se va a usar se debe poner None.
-"downloads"      : OpciÛn para notificar que el servicio puede realizar
+"downloads"      : Opci√≥n para notificar que el servicio puede realizar
                    descargas. Valores: True, False.
-"premium_cookie" : OpciÛn para notificar el nombre de la clase que se va a
+"premium_cookie" : Opci√≥n para notificar el nombre de la clase que se va a
                    usar para gestionar la cookie necesaria en las cuentas
                    premium.
-"uploads"        : OpciÛn para notificar que el servicio puede realizar
+"uploads"        : Opci√≥n para notificar que el servicio puede realizar
                    subidas. Valores: True, False.
-"update"	 : Opcion para la actualizacion automatica del servicio, ser· un 
-		   numero a incrementar cuando se quiera actualizar el servicio.
-		   Valores: int.
+"update"         : Opcion para la actualizaci√≥n autom√°tica del servicio, ser√° un
+                   n√∫mero a incrementar cuando se quiera actualizar el servicio.
+                   Valores: int (preferiblemente en formato YYYYMMDDHHMM).
 
 
-SecciÛn [anonymous_download]:
-"name"    : OpciÛn para notificar el nombre de la clase que se va a usar para
+Secci√≥n [anonymous_download]:
+"name"    : Opci√≥n para notificar el nombre de la clase que se va a usar para
             realizar este tipo de acceso.
             Valor por defecto: AnonymousDownload.
-"author"  : OpciÛn para notificar el nombre (o nick o email) del creador.
-"captcha" : OpciÛn para notificar si el servicio tiene captcha en las
-            descargas anÛnimas.
-            Valores: True, False.
-"version" : VersiÛn del plugin.
-"slots"   : N˙mero m·ximo de descargas anÛnimas simultaneas permitidas por
-            este servicio.
+"author"  : Opci√≥n para notificar el nombre (o nick o email) del creador.
+"captcha" : Opci√≥n para notificar si el servicio tiene captcha en las
+            descargas an√≥nimas. Valores: True, False.
+"version" : Versi√≥n del plugin.
+"slots"   : N√∫mero m√°ximo de descargas simultaneas permitidas por este servicio.
+            Valores: int (√≥ "Unlimited" para los servicios que no implementan
+                          la clase slots).
 
 
-SecciÛn [premium_download]:
-"name"     : OpciÛn para notificar el nombre de la clase que se va a usar para
+Secci√≥n [premium_download]:
+"name"     : Opci√≥n para notificar el nombre de la clase que se va a usar para
              realizar este tipo de acceso.
              Valor por defecto: PremiumDownload.
-"author"   : OpciÛn para notificar el nombre (o nick o email) del creador.
-"version"  : VersiÛn del plugin.
+"author"   : Opci√≥n para notificar el nombre (o nick o email) del creador.
+"version"  : Versi√≥n del plugin.
 "accounts" : Nombre del archivo donde se van a almacenar los datos de las
              cuentas premium de este servicio.
 
 
 3.4 - Archivo imagen o icono (opcional)
 ---------------------------------------
-Imagen o icono de tamaÒo 48x48 pixels representativo del servicio que se va a
+Imagen o icono de tama√±o 48x48 pixels representativo del servicio que se va a
 usar en el GUI.
-Si no se va a usar se debe notificar en el archivo service.conf, secciÛn [main]
-opciÛn "icon = None".
+Si no se va a usar se debe notificar en el archivo service.conf, secci√≥n [main]
+opci√≥n "icon = None".
 
 
 3.5 - Archivo check_links.py (opcional)
 ---------------------------------------
-Este archivo sÛlo es necesario si el servicio tiene soporte para descargas.
-Puede ser un archivo si lo usan varios plugins (descargas anÛnimas, 
-descargas premium) o puede ser un metodo de los distintos plugins de descarga.
+Este archivo s√≥lo es necesario si el servicio tiene soporte para descargas.
+Puede ser un archivo si lo usan varios plugins (descargas an√≥nimas, descargas
+premium) o puede ser un metodo de los distintos plugins de descarga.
 
-par·metros de entrada: url.
-par·metros de salida: nombre del archivo a descargar, tamaÒo y unidades.
+par√°metros de entrada: url.
+par√°metros de salida: nombre del archivo a descargar, tama√±o y unidades.
 
-    comprobaciones/tareas mÌnimas:
+    comprobaciones/tareas m√≠nimas:
         url activa
-        determinar nombre del archivo y tamaÒo total.
+        determinar nombre del archivo y tama√±o total.
 
 
 3.6 - Archivo anonymous_download.py (opcional)
 ----------------------------------------------
-Este archivo sÛlo es necesario si el servicio tiene soporte para descargas
-anÛnimas. Plugin tÌpico.
+Este archivo s√≥lo es necesario si el servicio tiene soporte para descargas
+an√≥nimas. Plugin t√≠pico.
 
-clases: AnonymousDownload (declarada en el archivo service.conf, secciÛn
+clases: AnonymousDownload (declarada en el archivo service.conf, secci√≥n
                           [anonymous_download])
-mÈtodos:
-  __init__: inicializaciÛn de slots.py y download_plugin.py
-  add: par·metros de entrada: ruta, link y nombre del archivo
-  delete: par·metros de entrada: nombre del archivo.
-  check_links: par·metros de entrada: url. par·metros de salida: nombre del 
-  archivo a descargar, tamaÒo y unidades.
+m√©todos:
+  __init__: inicializaci√≥n de slots.py y download_plugin.py
+  add: par√°metros de entrada: ruta, link y nombre del archivo
+  delete: par√°metros de entrada: nombre del archivo.
+  check_links: par√°metros de entrada: url. par√°metros de salida: nombre del
+  archivo a descargar, tama√±o y unidades.
 
 
 3.7 - Archivo premium.accounts (opcional)
 -----------------------------------------
-Este archivo sÛlo es necesario si el servicio tiene soporte para cuentas premium.
+Este archivo s√≥lo es necesario si el servicio tiene soporte para cuentas
+premium.
 Se genera desde el GUI (preferencias) y esta cifrado.
 
 
 3.8 - Archivo premium_downloads.py (opcional)
 ---------------------------------------------
-Este archivo sÛlo es necesario si el servicio tiene soporte para descargas
-Premium. Plugin tÌpico.
+Este archivo s√≥lo es necesario si el servicio tiene soporte para descargas
+Premium. Plugin t√≠pico.
 
-clases: PremiumDownload (declarada en el archivo service.conf, secciÛn
+clases: PremiumDownload (declarada en el archivo service.conf, secci√≥n
                           [premium_download])
-mÈtodos:
-  __init__: inicializaciÛn de accounts.py
-  add: par·metros de entrada: ruta, link y nombre del archivo
-  delete: par·metros de entrada: nombre del archivo
-  check_links: par·metros de entrada: url. par·metros de salida: nombre del 
-  archivo a descargar, tamaÒo y unidades.
+m√©todos:
+  __init__: inicializaci√≥n de accounts.py
+  add: par√°metros de entrada: ruta, link y nombre del archivo
+  delete: par√°metros de entrada: nombre del archivo
+  check_links: par√°metros de entrada: url. par√°metros de salida: nombre del
+  archivo a descargar, tama√±o y unidades.
 
 
 3.9 - Archivo premium_cookie.py (opcional)
 ------------------------------------------
-Este archivo sÛlo es necesario si el servicio tiene soporte para cuentas
+Este archivo s√≥lo es necesario si el servicio tiene soporte para cuentas
 Premium.
 
-clases: PremiumCookie (declarada en el archivo service.conf, secciÛn
-                          [main])
-mÈtodos:
-  get_cookie: par·metros de entrada: user, password url. 
-  par·metros de salida: cookie (cookielib.CookieJar).
+clases: PremiumCookie (declarada en el archivo service.conf, secci√≥n
+                        [main])
+m√©todos:
+  get_cookie: par√°metros de entrada: user, password url.
+  par√°metros de salida: cookie (cookielib.CookieJar).
