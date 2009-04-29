@@ -19,14 +19,14 @@
 ## along with this program; if not, write to the Free Software
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
- 
+
 DESTDIR		=	/usr/local
 BINDIR		=	$(DESTDIR)/bin/
 MAINDIR		=	$(DESTDIR)/share/tucan/
 ICONDIR		=	$(DESTDIR)/share/pixmaps/
 MANDIR		=	$(DESTDIR)/share/man/man1/
 DESKTOPDIR	=	$(DESTDIR)/share/applications/
- 
+
 NAME		=	tucan
 EXECFILE	=	tucan.py
 ICONFILE	=	tucan.svg
@@ -35,28 +35,28 @@ DESKTOPFILE	=	tucan.desktop
 PLUGINDIR	=	default_plugins/
 I18NDIR		=	i18n/
 MEDIADIR	=	media/
- 
+
 basic-install:
 	mkdir -p $(BINDIR) $(MAINDIR) $(ICONDIR) $(MANDIR) $(DESKTOPDIR)
- 
-	install -m 644 *.py $(MAINDIR)
+
+	install -p -m 644 *.py $(MAINDIR)
 	chmod 755 $(MAINDIR)$(EXECFILE)
- 
-	cp -R $(PLUGINDIR) $(MAINDIR)$(PLUGINDIR)
-	cp -R $(I18NDIR) $(MAINDIR)$(I18NDIR)
-	cp -R $(MEDIADIR) $(MAINDIR)$(MEDIADIR)
- 
-	install -m 644 $(MEDIADIR)$(ICONFILE) $(ICONDIR)
- 
-	install -m 644 $(MANPAGE) $(MANDIR)
- 
-	install -m 644 $(DESKTOPFILE) $(DESKTOPDIR)
- 
+
+	cp -pR $(PLUGINDIR) $(MAINDIR)
+	cp -pR $(I18NDIR) $(MAINDIR)
+	cp -pR $(MEDIADIR) $(MAINDIR)
+
+	install -p -m 644 $(MEDIADIR)$(ICONFILE) $(ICONDIR)
+
+	install -p -m 644 $(MANPAGE) $(MANDIR)
+
+	install -p -m 644 $(DESKTOPFILE) $(DESKTOPDIR)
+
 install:
 	make basic-install
- 
+
 	ln -sf $(MAINDIR)$(EXECFILE) $(BINDIR)$(NAME)
- 
+
 uninstall:
 	rm -rf $(MAINDIR)
 	rm -f $(BINDIR)$(NAME)
