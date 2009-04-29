@@ -1,98 +1,71 @@
 ===================
- DescripciÛn
+ Descripci√≥n
 =========
- 
- - Tucan es una aplicaciÛn libre y de cÛdigo abierto diseÒada para la
-   gestiÛn autom·tica de descargas y subidas en sitios de hosting como:
- 
+
+ - Tucan es una aplicaci√≥n libre y de c√≥digo abierto dise√±ada para la
+   gesti√≥n autom√°tica de descargas y subidas en sitios de hosting como:
+
    - http://rapidshare.com/
    - http://megaupload.com/
    - http://gigasize.com/
    - http://mediafire.com/
    - http://4shared.com/
    - http://sendspace.com/
+   - http://zshare.net/
    - (...)
- 
- 
+
+
 ===================
- CaracterÌsticas
+ Caracter√≠sticas
 =========
- 
+
  - Escrito enteramente en python.
- - Interfaz gr·fica de usuario escrita en PyGTK (GTK+ toolkit).
+ - Interfaz gr√°fica de usuario escrita en PyGTK (GTK+ toolkit).
  - Multiplataforma (GNU/Linux, FreeBSD, Microsoft Windows ...).
- - F·cil de ampliar con plugins.
- - Ligero y r·pido.
- - GestiÛn de esperas entre descargas (accesos anÛnimos).
- - Reconocimiento de captchas donde se necesite (como los accesos anÛnimos de
+ - F√°cil de ampliar con plugins.
+ - Ligero y r√°pido.
+ - Gesti√≥n de esperas entre descargas (accesos an√≥nimos).
+ - Reconocimiento de captchas donde se necesite (como los accesos an√≥nimos de
    megaupload o gigasize).
- - GestiÛn de links intercambiables.
- 
- 
+ - Gesti√≥n de links intercambiables.
+ - Soporte para proxys.
+
+
 ===================
  Plugins
 =========
- 
- - http://rapidshare.com/
-    - Descargas:
-       - Acceso anÛnimo: Disponible = SÌ
-       - Acceso premium: Disponible = SÌ
- 
-    - Subidas: Disponible = TodavÌa no
- 
- 
- - http://megaupload.com/
-    - Descargas:
-       - Acceso anÛnimo: Disponible = SÌ
-       - Acceso premium: Disponible = SÌ
- 
-    - Subidas: Disponible = TodavÌa no
- 
- 
- - http://gigasize.com/
-    - Descargas:
-       - Acceso anÛnimo: Disponible = SÌ
-       - Acceso premium: Disponible = No
- 
-    - Subidas: Disponible = TodavÌa no
- 
- 
- - http://mediafire.com/
-    - Descargas:
-       - Acceso anÛnimo: Disponible = SÌ
-       - Acceso premium: Disponible = No
- 
-    - Subidas: Disponible = TodavÌa no
- 
- 
- - http://4shared.com/
-    - Descargas:
-       - Acceso anÛnimo: Disponible = SÌ
-       - Acceso premium: Disponible = No
- 
-    - Subidas: Disponible = TodavÌa no
- 
- 
- - http://sendspace.com/
-    - Descargas:
-       - Acceso anÛnimo: Disponible = SÌ
-       - Acceso premium: Disponible = No
- 
-    - Subidas: Disponible = TodavÌa no
- 
- 
+
+ ----------------------------------------------------------------------------
+ |   Hosting site    |        Downloads       |           Uploads           |
+ ----------------------------------------------------------------------------
+ | rapidshare.com    | anonymous and premium  |                             |
+ ----------------------------------------------------------------------------
+ | megaupload.com    | anonymous and premium  |                             |
+ ----------------------------------------------------------------------------
+ | gigasize.com      | anonymous              |                             |
+ ----------------------------------------------------------------------------
+ | mediafire.com     | anonymous              |                             |
+ ----------------------------------------------------------------------------
+ | 4shared.com       | anonymous              |                             |
+ ----------------------------------------------------------------------------
+ | sendspace.com     | anonymous              |                             |
+ ----------------------------------------------------------------------------
+ | zshare.net        | anonymous              |                             |
+ ----------------------------------------------------------------------------
+
+
 ===================
  Dependencias
 =========
- 
+
  - Python >= 2.5
  - PyGTK
  - Python Imaging Library
- - Tesseract OCR (con el paquete del idioma inglÈs)
+ - Tesseract OCR (con el paquete del idioma ingl√©s)
  - SVG Rendering Library
- 
+
  --------------------------------------------------------------------
- | Paquete \ DistribuciÛn  |  Debian / Ubuntu  |       Gentoo       |
+ | Paquete \ Distribuci√≥n  |  Debian / Ubuntu  |       Gentoo       |
  --------------------------------------------------------------------
  | Python >= 2.5           | python2.5         | dev-lang/python    |
  --------------------------------------------------------------------
@@ -105,7 +78,7 @@
  --------------------------------------------------------------------
  | SVG Rendering Library   | librsvg2-common   | gnome-base/librsvg |
  --------------------------------------------------------------------
- 
+
  ---------------------------------------------------
  |   Arch    |       Fedora       |    OpenSuSE    |
  ---------------------------------------------------
@@ -120,77 +93,87 @@
  ---------------------------------------------------
  | librsvg   | librsvg2           | librsvg        |
  ---------------------------------------------------
- 
- 
+
+
 ===================
  Descargas
 =========
- 
- - VersiÛn de desarrollo (se necesita subversion):
- 
-   $ svn co https://forja.rediris.es/svn/cusl3-tucan/trunk tucan
- 
- 
- - VersiÛn estable:
- 
+
+ - Versi√≥n estable:
+
    https://forja.rediris.es/projects/cusl3-tucan/ -> Ficheros
- 
- 
+
+
+ - Versi√≥n de desarrollo (se necesita subversion):
+
+   $ svn co https://forja.rediris.es/svn/cusl3-tucan/trunk tucan
+
+
 ===================
- InstalaciÛn y Uso
+ Instalaci√≥n y Uso
 =========
- 
+
  - Desempaquetar el tarball:
- 
+
    $ tar zxvf tucan-<version>.tar.gz
    $ cd tucan-<version>/
- 
+
  - Instalar Tucan escribiendo (se necesitan privilegios de root):
- 
+
    # make install
- 
- - Desinstalar Tucan escribiendo (se necesitan privilegios de root):
- 
-   # make uninstall
- 
- 
+
  - Ejecutar Tucan escribiendo en un terminal:
- 
+
    $ tucan
- 
- 
+
+   ----------
+
+ - Desinstalar Tucan escribiendo (se necesitan privilegios de root):
+
+   # make uninstall
+
+
 ===================
  Update Manager
 =========
- 
+
  - Tucan trae algunos servicios que de vez en cuando necesitan ser actualizados
    y otras veces hay nuevos servicios disponibles.
  - Con el fin de actualizar (o instalar nuevos) servicios Tucan tiene un sistema
-   de actualizaciones, para activarlo el usuario debe ir a la ventana
-   Preferencias > Servicios > Buscar.
- 
- - DespuÈs de una actualizaciÛn de servicios Tucan necesita ser reiniciado.
- 
+   de actualizaciones:
+
+   - Uso Autom√°tico:
+     - Para activarlo/desactivarlo, el usuario debe ir a la ventana Preferencias >
+       Avanzada > "Comprobaci√≥n autom√°tica de actualizaciones." (activado por
+       defecto).
+
+   - Uso Manual:
+     - Para activarlo el usuario debe ir a la ventana Preferencias > Servicios >
+       Buscar.
+
+ - Despu√©s de una actualizaci√≥n de servicios Tucan necesita ser reiniciado.
+
+
 ===================
  Tips & Tricks
 =========
- 
- - Antes de ejecutar una nueva versiÛn, se recomienda eliminar el directorio
-   /home/<user>/.tucan/ Û C:\Documents and Settings\<user>\.tucan\ si existe.
+
+ - Antes de ejecutar una nueva versi√≥n, se recomienda eliminar el directorio
+   /home/<user>/.tucan/ √≥ C:\Documents and Settings\<user>\.tucan\ si existe.
  - La primera vez que se ejecuta Tucan (si no existe el directorio ~/.tucan/)
    aparece la ventana de Preferencias.
- - Antes de usar un servicio, Èste debe estar activado en la pestaÒa
-   "ConfiguraciÛn de Servicio" de la ventana Preferencias.
- 
- - Acceso anÛnimo de http://gigasize.com/:
-   - gigasize.com no permite comprobar links si ya hay un link descarg·ndose de
+ - Antes de usar un servicio, √©ste debe estar activado en la pesta√±a
+   "Configuraci√≥n de Servicio" de la ventana Preferencias.
+
+ - Acceso an√≥nimo de http://gigasize.com/:
+   - gigasize.com no permite comprobar links si ya hay un link descarg√°ndose de
      este servicio.
- 
- 
+
+
 ===================
  Links
 =========
- 
+
  - http://tucaneando.wordpress.com/
  - http://cusl3-tucan.forja.rediris.es/
  - https://forja.rediris.es/projects/cusl3-tucan/
