@@ -24,9 +24,6 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-#import sys
-#sys.path.append("/home/crak/tucan/trunk")
-
 from HTMLParser import HTMLParser
 
 import Image
@@ -35,8 +32,6 @@ import ImageOps
 
 from tesseract import Tesseract
 from url_open import URLOpen, set_proxy
-
-#set_proxy(None)
 
 BASE_URL = "http://www.filefactory.com%s"
 
@@ -96,17 +91,23 @@ class CheckLinks:
 	""""""
 	def check(self, url):
 		""""""
-		name = url.split("/").pop()
+		name = None
 		size = 0
 		unit = None
-		name_found = False
 		try:
 			for line in URLOpen().open(url).readlines():
-				if "file uploaded" in line:
+				if '<span href="" class="last">' in line:
+					name = line.split('<span href="" class="last">')[1].split('</span>')[0]
+					if ".." in name:
+						tmp = url.split("/").pop().split("_")
+						name = ".".join(tmp)
+				elif "file uploaded" in line:
 					tmp = line.split("file uploaded")[0].split("<span>")[1].split(" ")
-					size = int(round(float(tmp[0])))
+					size = int(float(tmp[0]))
+					if size == 0:
+						size = 1
 					unit = tmp[1]
-			if not size:
+			if not name:
 				name = url
 				size = -1
 		except Exception, e:
@@ -116,5 +117,5 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	c = Parser("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
-	#print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	#c = Parser("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
