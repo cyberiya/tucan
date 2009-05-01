@@ -24,7 +24,8 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-from HTMLParser import HTMLParser
+import sys
+sys.path.append("/home/crak/tucan/trunk")
 
 import Image
 import ImageFile #bug in PIL, using local file instead
@@ -33,49 +34,45 @@ import ImageOps
 from tesseract import Tesseract
 from url_open import URLOpen, set_proxy
 
+set_proxy(None)
+
 BASE_URL = "http://www.filefactory.com%s"
 
-class Parser(HTMLParser):
+class Parser:
 	def __init__(self, url):
 		""""""
-		HTMLParser.__init__(self)
-		self.first_link = None
 		self.link = None
-		self.captcha_url = None
-		self.captcha_id = None
+		first_link = None
+		captcha_url = None
+		captcha_id = None
 		try:
 			opener = URLOpen()
-			self.feed(opener.open(url).read())
-			if self.first_link:
+			for line in opener.open(url).readlines():
+				if '<a class="download" href="' in line:
+					first_link = BASE_URL % line.split('<a class="download" href="')[1].split('">')[0]
+			if first_link:
 				while not self.link:
-					self.feed(opener.open(self.first_link).read())
-					if self.captcha_url:
-						logger.info("Captcha url: %s" % self.captcha_url)
+					for line in opener.open(first_link).readlines():
+						if '<input id="captchaID" name="captchaID" type="hidden" value="' in line:
+							captcha_id = line.split('<input id="captchaID" name="captchaID" type="hidden" value="')[1].split('"/>')[0]
+						elif '<a class="captchaReload ajax" target="captchaReload" href="' in line:
+							captcha_url = BASE_URL % line.split('<a class="captchaReload ajax" target="captchaReload" href="')[1].split('">')[0]
+					if captcha_url:
+						logger.info("Captcha url: %s" % captcha_url)
 						for i in range(25):
-							self.image_string = URLOpen().open(self.captcha_url).read()
+							self.image_string = URLOpen().open(captcha_url).read()
 							tes = Tesseract(self.image_string, self.filter_image)
 							captcha = tes.get_captcha()
 							if len(captcha) == 4:
 								logger.warning("Captcha: %s" % captcha)
-								data = urllib.urlencode([("captchaID", self.captcha_id),("captchaText", captcha)])
-								self.feed(URLOpen().open(self.first_link, data).read())
+								data = urllib.urlencode([("captchaID", captcha_id),("captchaText", captcha)])
+								for line in opener.open(first_link, data).readlines():
+									if '" class="download">CLICK HERE to download for free with Filefactory Basic</a></p>' in line:
+										self.link = line.split('<p><a href="')[1].split('" class="download">CLICK HERE to download for free with Filefactory Basic</a></p>')[0]
 								if self.link:
 									break
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
-			
-	def handle_starttag(self, tag, attrs):
-		""""""
-		if tag == "a":
-			if attrs[0][1] == "download":
-				self.first_link = BASE_URL % attrs[1][1]
-			elif attrs[0][1] == "captchaReload ajax":
-				self.captcha_url = BASE_URL % attrs[2][1]
-			elif len(attrs) == 2 and attrs[1][1] == "download":
-				self.link = attrs[0][1]
-		elif tag == "input":
-			if attrs[0][1] == "captchaID":
-				self.captcha_id = attrs[3][1]
 				
 	def filter_image(self, image):
 		""""""
@@ -117,5 +114,5 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	#c = Parser("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
-	print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	c = Parser("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	#print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
