@@ -26,13 +26,14 @@ logger = logging.getLogger(__name__)
 from parsers import CheckLinks, Parser
 
 from download_plugin import DownloadPlugin
+from slots import Slots
 
-WAIT = 50
 
-class AnonymousDownload(DownloadPlugin):
+class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def __init__(self):
 		""""""
+		Slots.__init__(self, 1, 30)
 		DownloadPlugin.__init__(self)
 		
 	def check_links(self, url):
@@ -41,12 +42,16 @@ class AnonymousDownload(DownloadPlugin):
 
 	def add(self, path, link, file_name):
 		""""""
-		parser = Parser(link)
-		if parser.link:
-			if self.start(path, parser.link, file_name, WAIT):
-				return True
+		if self.get_slot():
+			parser = Parser(link)
+			if parser.link:
+				if self.start(path, parser.link, file_name):
+					return True
+				else:
+					logger.warning("Limit Exceded.")
+					self.add_wait()
 	
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):
-			logger.warning("Stopped %s" % file_name)
+			logger.warning("Stopped %s: %s" % (file_name, self.return_slot()))
