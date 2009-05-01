@@ -104,7 +104,7 @@ class CheckLinks:
 			for line in URLOpen().open(url).readlines():
 				if "file uploaded" in line:
 					tmp = line.split("file uploaded")[0].split("<span>")[1].split(" ")
-					size = int(float(tmp[0]))
+					size = int(round(float(tmp[0])))
 					unit = tmp[1]
 			if not size:
 				name = url
