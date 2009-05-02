@@ -24,18 +24,15 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-import sys
-sys.path.append("/home/crak/tucan/trunk")
-
 import Image
 import ImageFile #bug in PIL, using local file instead
 import ImageOps
 
 from tesseract import Tesseract
-from url_open import URLOpen, set_proxy
+from url_open import URLOpen
 
-set_proxy(None)
 
+CORRECTION = {"0":"O", "1":"I", "2":"Z", "3":"B", "4":"A", "5":"S", "6":"G", "7":"T", "8":"B", "|":"I", "(":"C", "<":"K", "$":"S"}
 BASE_URL = "http://www.filefactory.com%s"
 
 class Parser:
@@ -62,8 +59,13 @@ class Parser:
 						for i in range(25):
 							self.image_string = URLOpen().open(captcha_url).read()
 							tes = Tesseract(self.image_string, self.filter_image)
-							captcha = tes.get_captcha()
+							captcha = tes.get_captcha().strip()
 							if len(captcha) == 4:
+								tmp = [i for i in captcha]
+								for i in tmp:
+									if i in CORRECTION.keys():
+										tmp[tmp.index(i)] = CORRECTION[i]
+								captcha = "".join(tmp)
 								logger.warning("Captcha: %s" % captcha)
 								data = urllib.urlencode([("captchaID", captcha_id),("captchaText", captcha)])
 								for line in opener.open(first_link, data).readlines():
