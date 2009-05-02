@@ -40,7 +40,6 @@ class Parser:
 					tmp = eval("[%s]" % tmp)
 					self.link = "".join(tmp)
 		except Exception, e:
-			print e
 			logger.exception("%s :%s" % (url, e))
 
 class CheckLinks:
@@ -75,7 +74,6 @@ class CheckLinks:
 		except Exception, e:
 			name = url
 			size = -1
-			print e
 			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
 
