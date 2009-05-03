@@ -20,45 +20,47 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import urllib2
+import urllib
+import logging
+logger = logging.getLogger(__name__)
 
-from HTMLParser import HTMLParser
-		
-class PremiumParser(HTMLParser):
+from url_open import URLOpen
+
+import cons
+
+class CheckLinks:
 	""""""
-	def __init__(self, url, cookie):
+	def check(self, url):
 		""""""
-		HTMLParser.__init__(self)
-		self.located = False
-		self.url = None
-		self.size = None
-		self.handler = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie)).open(urllib2.Request(url))
-		if "text/html" in self.handler.info()["Content-Type"]:
-			for line in self.handler.readlines():
-				self.feed(line)
-				if "File size:" in line:
-					self.size = line.strip()
-			self.close()
-		else:
-			self.url = self.handler.geturl()
+		name = None
+		size = 0
+		unit = None
+		try:
+			id = [id for id in url.split("d=")][1].strip()
+			if "&" in id:
+				id = id.split("&")[0]
+			tmp = URLOpen().open("http://www.megaupload.com/mgr_linkcheck.php", urllib.urlencode([("id0", id)])).read().split("&", 5)
+			if len(tmp) > 4:
+				name = tmp[5].split("n=")[1]
+				size, unit = self.get_size(int(tmp[3].split("s=")[1]))
+			else:
+				name = url
+				size = -1
+		except Exception, e:
+			logger.exception(e)
+		return name, size, unit
 
-	def handle_starttag(self, tag, attrs):
+	def get_size(self, num):
 		""""""
-		if tag == "div":
-			if ((len(attrs) > 1) and (attrs[1][1] == "downloadlink")):
-				self.located = True
-		elif tag == "a":
-			if self.located:
-				self.located = False
-				self.url = attrs[0][1]
-		
-	def get_url(self):
-		""""""
-		return self.url
-		
-		
+		result = 0, cons.UNIT_KB
+		tmp = int(num/1024)
+		if  tmp > 0:
+			result = tmp, cons.UNIT_KB
+			tmp = int(tmp/1024)
+			if tmp > 0:
+				result = tmp, cons.UNIT_MB
+		return result
+
 if __name__ == "__main__":
-	from premium_cookie import PremiumCookie
-	c = PremiumCookie()
-	p = PremiumParser("http://www.megaupload.com/?d=RDAJ2PYH", c.get_cookie("",""))
-	print p.get_url()
+	print CheckLinks().check("http://www.megaupload.com/?d=1UY9LV7O")
+	

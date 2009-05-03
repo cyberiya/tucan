@@ -36,45 +36,9 @@ from megaupload_captcha import new_image_from_pixels, combinations_no_repetition
 
 from tesseract import Tesseract
 
-import cons
-
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
-HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4"}
-
-class CheckLinks:
-	""""""
-	def check(self, url):
-		""""""
-		name = None
-		size = 0
-		unit = None
-		try:
-			id = [id for id in url.split("d=")][1].strip()
-			if "&" in id:
-				id = id.split("&")[0]
-			tmp = URLOpen().open("http://www.megaupload.com/mgr_linkcheck.php", urllib.urlencode([("id0", id)])).read().split("&", 5)
-			if len(tmp) > 4:
-				name = tmp[5].split("n=")[1]
-				size, unit = self.get_size(int(tmp[3].split("s=")[1]))
-			else:
-				name = url
-				size = -1
-		except Exception, e:
-			logger.exception(e)
-		return name, size, unit
-
-	def get_size(self, num):
-		""""""
-		result = 0, cons.UNIT_KB
-		tmp = int(num/1024)
-		if  tmp > 0:
-			result = tmp, cons.UNIT_KB
-			tmp = int(tmp/1024)
-			if tmp > 0:
-				result = tmp, cons.UNIT_MB
-		return result
 
 class CaptchaParser(HTMLParser):
 	""""""
@@ -206,5 +170,4 @@ class CaptchaForm(HTMLParser):
 if __name__ == "__main__":
 	c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
 	print c.link
-	#print CheckLinks().check("http://www.megaupload.com/?d=1UY9LV7O")
 	
