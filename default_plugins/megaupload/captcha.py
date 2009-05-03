@@ -118,7 +118,6 @@ class CaptchaForm(HTMLParser):
 					self.data = handle.read()
 					captcha = self.captcha_solve()
 					if captcha:
-						print urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)])
 						handle = URLOpen().open(url, urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
 						self.reset()
 						self.feed(handle.read())
