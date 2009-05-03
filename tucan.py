@@ -61,7 +61,7 @@ class Tucan:
 		proxy_url, proxy_port = configuration.get_proxy()
 		url_open.set_proxy(proxy_url, proxy_port)
 		
-		#changes sys.exit for custom one
+		#global custom exit
 		__builtin__.tucan_exit = self.exit
 		
 		Gui(configuration)
