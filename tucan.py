@@ -21,6 +21,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import __builtin__
 import os.path
 import sys
 import logging
@@ -59,7 +60,10 @@ class Tucan:
 		#proxy settings
 		proxy_url, proxy_port = configuration.get_proxy()
 		url_open.set_proxy(proxy_url, proxy_port)
-				
+		
+		#changes sys.exit for custom one
+		__builtin__.tucan_exit = self.exit
+		
 		Gui(configuration)
 		
 	def exception_hook(self, type, value, trace):
@@ -68,6 +72,11 @@ class Tucan:
 		line_no = trace.tb_lineno
 		exception = type.__name__
 		self.logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
+		
+	def exit(self, arg=0):
+		""""""
+		self.logger.debug("Exit.")
+		exit(arg)
 
 if __name__ == "__main__":
 	gobject.threads_init()

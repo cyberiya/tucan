@@ -358,6 +358,7 @@ class Gui(gtk.Window, ServiceManager):
 		self.tray_icon.set_visible(False)
 		self.stop_all()
 		gtk.main_quit()
+		tucan_exit(0)
 	
 if __name__ == "__main__":
 	g = Gui()
