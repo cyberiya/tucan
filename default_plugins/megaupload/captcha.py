@@ -36,6 +36,8 @@ from megaupload_captcha import new_image_from_pixels, combinations_no_repetition
 
 from tesseract import Tesseract
 
+import cons
+
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
@@ -45,31 +47,34 @@ class CheckLinks:
 	""""""
 	def check(self, url):
 		""""""
-		error = False
 		name = None
 		size = 0
 		unit = None
 		try:
-			for line in URLOpen().open(url).readlines():
-				if "Filename:" in line:
-					name = line.split(">")[3].split("</")[0].strip()
-				elif "File size:" in line:
-					tmp = line.split(">")[3].split("</")[0].split(" ")
-					size = int(round(float(tmp[0])))
-					unit = tmp[1]
-				elif "The file you are trying to access is temporarily unavailable." in line:
-					error = True
-			if name and not error:
-				if ".." in name:
-					parser = CaptchaForm(url)
-					if parser.link:
-						name = parser.link.split("/").pop()
+			id = [id for id in url.split("d=")][1]
+			if "&" in id:
+				id = id.split("&")[0]
+			tmp = URLOpen().open("http://www.megaupload.com/mgr_linkcheck.php", urllib.urlencode([("id0", id)])).read().split("&")
+			if len(tmp) == 6:
+				name = tmp[5].split("n=")[1]
+				size, unit = self.get_size(int(tmp[3].split("s=")[1]))
+			else:
+				name = url
+				size = -1
 		except Exception, e:
 			logger.exception(e)
-		if error:
-			return url, -1, None
-		else:
-			return name, size, unit
+		return name, size, unit
+
+	def get_size(self, num):
+		""""""
+		result = 0, cons.UNIT_KB
+		tmp = int(num/1024)
+		if  tmp > 0:
+			result = tmp, cons.UNIT_KB
+			tmp = int(tmp/1024)
+			if tmp > 0:
+				result = tmp, cons.UNIT_MB
+		return result
 
 class CaptchaParser(HTMLParser):
 	""""""
@@ -113,6 +118,7 @@ class CaptchaForm(HTMLParser):
 					self.data = handle.read()
 					captcha = self.captcha_solve()
 					if captcha:
+						print urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)])
 						handle = URLOpen().open(url, urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
 						self.reset()
 						self.feed(handle.read())
