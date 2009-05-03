@@ -41,7 +41,7 @@ LANGUAGES = [("English", "en"), ("Spanish", "es"), ("Italian", "it"), ("German",
 
 class Preferences(gtk.Dialog):
 	""""""
-	def __init__(self, configuration, show_services=False, update_manager=False):
+	def __init__(self, configuration, show_services=False, updates=None):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_PREFERENCES)
@@ -70,8 +70,8 @@ class Preferences(gtk.Dialog):
 		
 		if show_services:
 			self.notebook.set_current_page(1)
-		if update_manager:
-			gobject.idle_add(self.update_manager, None)
+		if updates:
+			gobject.idle_add(self.update_manager, None, updates)
 		self.run()
 		
 	def save(self, button):
@@ -292,9 +292,9 @@ class Preferences(gtk.Dialog):
 		else:
 			Message(self, cons.SEVERITY_ERROR, path , _("Service not configured."))
 
-	def update_manager(self, button):
+	def update_manager(self, button, updates):
 		""""""
-		UpdateManager(self.config, self)
+		UpdateManager(self.config, self, updates)
 		self.treeview.get_model().clear()
 		for path, icon_path, name, enabled, configuration in self.config.get_services():
 			self.add_service(path, icon_path, name, enabled, configuration)

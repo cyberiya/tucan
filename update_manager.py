@@ -32,7 +32,7 @@ import cons
 
 class UpdateManager(gtk.Dialog, ServiceUpdate):
 	""""""
-	def __init__(self, config, parent):
+	def __init__(self, config, parent, updates=None):
 		""""""		
 		gtk.Dialog.__init__(self)
 		ServiceUpdate.__init__(self, config)
@@ -105,7 +105,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.progress.hide()
 
 		if self.server_version == cons.TUCAN_VERSION:
-			gobject.timeout_add(1000, self.check_updates)
+			gobject.timeout_add(1000, self.check_updates, updates)
 		elif self.server_version == None:
 			message = "Update Manager can't connect to server.\nTry again later."
 			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Not available", message)
@@ -125,14 +125,16 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 2, active)
 		
-	def check_updates(self):
+	def check_updates(self, updates=None):
 		""""""
 		model = self.treeview.get_model()
 		default_icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_UPDATE)
 		
 		updated = 0
 		new = 0
-		for service, options in self.get_updates().items():
+		if not updates:
+			updates = self.get_updates()
+		for service, options in updates.items():
 			if options[2]:
 				icon = gtk.gdk.pixbuf_new_from_file(options[2])
 				updated += 1

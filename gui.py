@@ -169,14 +169,15 @@ class Gui(gtk.Window, ServiceManager):
 	def check_updates(self):
 		""""""
 		s = ServiceUpdate(self.configuration)
-		if len(s.get_updates()) > 0:
-			gobject.idle_add(self.update_manager)
+		updates = s.get_updates()
+		if len(updates) > 0:
+			gobject.idle_add(self.update_manager, updates)
 			
-	def update_manager(self):
+	def update_manager(self, updates):
 		""""""
 		if not self.preferences_shown:
 			self.preferences_shown = True
-			Preferences(self.configuration, True, True)
+			Preferences(self.configuration, True, updates)
 			self.preferences_shown =  False
 		return False
 		
