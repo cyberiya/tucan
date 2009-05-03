@@ -13,8 +13,8 @@ TUCAN FAQ
 7 - ¿ Es necesario comprobar los enlaces antes de añadirlos ?
 8 - Tucan arranca pero no me comprueba los enlaces ¿ qué sucede ?
 9 - ¿ Por qué al parar un enlace y reiniciarlo este no continua por donde se
-     quedo ?
-10 - Pulso el botón "Borrar Completos" y no hace nada ¿ por qué ?
+     quedó ?
+10 - Pulso el botón "Borrar Completos" y no hace nada ¿ qué sucede ?
 11 - Pulso el botón "Mover Arriba"/"Mover Abajo" y no se mueve el enlace ¿ qué
      sucede ? 
 12 - ¿ Tucan soporta archivos .dlc ?
@@ -45,7 +45,8 @@ TUCAN FAQ
 4.2 - ¿ Cómo se instala en Windows ?
 ------------------------------------
  - Para Windows existe un instalador que incluye todas las dependencias.
-   Tucan se debe instalar en el directorio raiz (ejemplo C:\).
+   Tucan se debe instalar en una ruta sin espacios en blanco (ejemplos:
+   C:\Tucan\ ó D:\Tucan\ ó E:\Tucan\ ó ...).
 
 
 4.3 - ¿ Cómo se instala en MacOSX ?
@@ -67,7 +68,7 @@ TUCAN FAQ
 
  - Para poder usar Tucan se debe activar al menos un servicio.
 
-   Al activar un servicio aparece un diálogo avisando al usuario de que debe
+   Al activar un servicio aparece un diálogo avisando al usuario que debe
    aceptar los términos de uso de ese servicio, desde ese momento es el
    usuario el que asume la responsabilidad del uso que se hace de ese servicio.
    Para leer los términos de uso se debe ir a la página web de ese servicio:
@@ -88,15 +89,16 @@ TUCAN FAQ
 8 - Tucan arranca pero no me comprueba los enlaces ¿ qué sucede ?
 -----------------------------------------------------------------
  - Esta situación puede ser debida a varias causas:
-   1) Los servicios a los que pertenecen esos enlaces no estan soportados por
-      Tucan. Para saber que servicios estan soportados leer el punto 5 de este
+   1) Los servicios a los que pertenecen esos enlaces no están soportados por
+      Tucan. Para saber que servicios están soportados leer el punto 5 de este
       documento.
-   2) Los servicios a los que pertenecen esos enlaces no estan activados en las
+   2) Los servicios a los que pertenecen esos enlaces no están activados en las
       preferencias de Tucan. Solución: leer el punto 6 de este documento.
    3) No se han instalado todas las dependencias de Tucan. Solución: leer el
       archivo README (sección: Dependencias).
-   4) Si se está usando Tucan en Windows es posible que no está instalado en el
-      directorio raiz. Solución: leer el punto 4.2 de este documento.
+   4) Si se está usando Tucan en Windows es posible que no esté instalado en
+      una ruta sin espacios en blanco. Solución: leer el punto 4.2 de este
+      documento.
 
 
 9 - ¿ Por qué al parar un enlace y reiniciarlo este no continua por donde se
@@ -106,8 +108,8 @@ TUCAN FAQ
    cualquier motivo se vuelven a comenzar desde cero.
 
 
-10 - Pulso el botón "Borrar Completos" y no hace nada ¿ por qué ?
------------------------------------------------------------------
+10 - Pulso el botón "Borrar Completos" y no hace nada ¿ qué sucede ?
+--------------------------------------------------------------------
  - Actualmente Tucan sólo permite limpiar paquetes descargados por completo,
    asi que si el paquete tiene algunos enlaces no descargados es normal que
    no suceda nada.
@@ -141,5 +143,5 @@ TUCAN FAQ
 ----------------------------------------------
  - Leer el archivo README (sección: Links).
 
-   También esta el canal #tucan del IRC-Hispano (irc.irc-hispano.org) para
+   También está el canal #tucan del IRC-Hispano (irc.irc-hispano.org) para
    cualquier duda los usuarios pueden pasar a preguntar.
