@@ -54,7 +54,7 @@ class CheckLinks:
 			id = [id for id in url.split("d=")][1].strip()
 			if "&" in id:
 				id = id.split("&")[0]
-			tmp = URLOpen().open("http://www.megaupload.com/mgr_linkcheck.php", urllib.urlencode([("id0", id)])).read().split("&")
+			tmp = URLOpen().open("http://www.megaupload.com/mgr_linkcheck.php", urllib.urlencode([("id0", id)])).read().split("&", 5)
 			if len(tmp) > 4:
 				name = tmp[5].split("n=")[1]
 				size, unit = self.get_size(int(tmp[3].split("s=")[1]))
