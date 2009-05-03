@@ -30,6 +30,7 @@ from download_plugin import DownloadPlugin
 
 from premium_cookie import PremiumCookie
 from premium_parser import PremiumParser
+from check_links import CheckLinks
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
@@ -51,12 +52,9 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		""""""
 		logger.warning("Stopped %s: %s" % (file_name, self.stop(file_name)))
 		
-	def check_links(self, link):
+	def check_links(self, url):
 		""""""
-		cookie = self.get_cookie()
-		if cookie:
-			parser = PremiumParser(link, cookie)
-			return parser.check_link()
+		return CheckLinks().check(url)
 
 if __name__ == "__main__":
 	p = PremiumDownload(ServiceConfig("/home/crak/.tucan/plugins/megaupload/"))
