@@ -292,7 +292,7 @@ class Preferences(gtk.Dialog):
 		else:
 			Message(self, cons.SEVERITY_ERROR, path , _("Service not configured."))
 
-	def update_manager(self, button, updates):
+	def update_manager(self, button, updates=None):
 		""""""
 		UpdateManager(self.config, self, updates)
 		self.treeview.get_model().clear()
