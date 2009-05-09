@@ -1,4 +1,7 @@
-oprintopyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
+###############################################################################
+## Tucan Project
+##
+## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
 ## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
 ## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
 ##
@@ -18,62 +21,26 @@ oprintopyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
 ###############################################################################
 
 import urllib
-import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
-import sys
-sys.path.append("/home/crak/tucan/trunk")
+from url_open import URLOpen
 
-from url_open import URLOpen, set_proxy
-
-#set_proxy("proxy.alu.uma.es", 3128)
-set_proxy(None)
-
-class FormParser:
+class Parser:
 	""""""
-	def __init__(self, url, cookie):
+	def __init__(self, url):
 		""""""
-		self.url = None
-		server = None
-		random = ""
-		link = None
-		name = None
-		error = False
+		self.link = None
 		try:
-			opener = URLOpen(cookie)
-			if "/file/" in url:
-				tmp = url.split("file/")
-				url = "%s?%s" % (tmp[0], tmp[1].split("/")[0])
-			for line in opener.open(url).readlines():
-				if "cu(" in line:
-					tmp = eval(line.split("cu(")[1].split(");")[0])
-					handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % (urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])])))
-					tmp = handle.readlines()
-					vars = {}
-					
-					server = tmp[11].split("'")[1]
-					link = tmp[12].split("'")[1]
-					name = tmp[13].split("'")[1]
-					
-					for var in tmp[14].split(";"):
-						var = var.split("var")
-						if len(var) > 1:
-							var = var[1].strip().split("=")
-							if ((len(var) > 1) and ("'" in var[1])):
-								vars[var[0]] = var[1].split("'")[1]
-					for var in tmp[27].split(" ")[14].split("+"):
-						if len(var) > 0:
-							if var in vars.keys():
-								random += vars[var]
-							else:
-								error = True
+			opener = URLOpen()
+			form = urllib.urlencode([("referer2", ""), ("download", 1), ("imageField.x", 81), ("imageField.y", 28)])
+			for line in opener.open(url, form).readlines():
+				if "var link_enc=new Array(" in line:
+					tmp = line.strip().split("var link_enc=new Array(")[1].split(");link = '';for(i=0;i<link_enc.length;i++){link+=link_enc[i];}")[0]
+					tmp = eval("[%s]" % tmp)
+					self.link = "".join(tmp)
 		except Exception, e:
-			print e
-			error = True
-			logger.exception("%s: %s" % (url, e))
-		if server and random and link and name and not error:
-			self.url = "http://%s/%sg/%s/%s" % (server, random, link, name)
+			logger.exception("%s :%s" % (url, e))
 
 class CheckLinks:
 	""""""
@@ -82,27 +49,34 @@ class CheckLinks:
 		name = None
 		size = 0
 		unit = None
+		name_found = False
 		try:
-			if "/file/" in url:
-				tmp = url.split("file/")
-				url = "%s?%s" % (tmp[0], tmp[1].split("/")[0])
 			for line in URLOpen().open(url).readlines():
-				if "You requested:" in line:
-					tmp = line.split("You requested:")[1].split("</div>")[0].strip().split(" ")
-					unit = tmp.pop().split(")")[0]
-					size = int(float(tmp.pop().split("(")[1]))
-					name = "_".join(tmp)
-				if not name:
-					name = url
-					size = -1
+				if "File Name:" in line:
+					name_found = True
+				elif name_found:
+					name_found = False
+					name = line.strip().split('<font color="#666666">')[1].split('</font></td>')[0]
+				elif "File Size:" in line:
+					tmp = line.strip().split('<font color="#666666">')[1].split('</font></td>')[0]
+					if "KB" in tmp:
+						size = int(float(tmp.split("KB")[0]))
+						unit = "KB"
+					elif "MB" in tmp:
+						size = int(float(tmp.split("MB")[0]))
+						unit = "MB"
+					elif "GB" in tmp:
+						size = int(float(tmp.split("GB")[0]))
+						unit = "GB"
+			if not name:
+				name = url
+				size = -1
 		except Exception, e:
 			name = url
 			size = -1
-			logger.exception("%s: %s" % (url, e))
+			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
 
 if __name__ == "__main__":
-	f = FormParser("http://www.mediafire.com/download.php?0zhaznzw3oz", cookielib.CookieJar())
-	print f.url
-	#print CheckLinks().check("http://www.mediafire.com/file/jdzq4mn44ay/tHe.uNvTd.XvId.part7.rar")
-
+	#c = Parser("http://www.zshare.net/download/58856573188bda3b/")
+	print CheckLinks().check("http://www.zshare.net/download/58856573188bda3b/")
