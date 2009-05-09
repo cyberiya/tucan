@@ -32,6 +32,12 @@ class Parser:
 		""""""
 		self.link = None
 		try:
+			if "/video/" in url:
+				url = url.replace("/video/", "/download/")
+			elif "/audio/" in url:
+				url = url.replace("/audio/", "/download/")
+			elif "/image/" in url:
+				url = url.replace("/image/", "/download/")
 			opener = URLOpen()
 			form = urllib.urlencode([("referer2", ""), ("download", 1), ("imageField.x", 81), ("imageField.y", 28)])
 			for line in opener.open(url, form).readlines():
@@ -57,7 +63,7 @@ class CheckLinks:
 				elif name_found:
 					name_found = False
 					name = line.strip().split('<font color="#666666">')[1].split('</font></td>')[0]
-				elif "File Size:" in line:
+				elif "Size:" in line:
 					tmp = line.strip().split('<font color="#666666">')[1].split('</font></td>')[0]
 					if "KB" in tmp:
 						size = int(float(tmp.split("KB")[0]))
