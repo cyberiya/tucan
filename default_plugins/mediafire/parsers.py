@@ -25,13 +25,7 @@ import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
-import sys
-sys.path.append("/home/crak/tucan/trunk")
-
-from url_open import URLOpen, set_proxy
-
-#set_proxy("proxy.alu.uma.es", 3128)
-set_proxy(None)
+from url_open import URLOpen
 
 class FormParser:
 	""""""
