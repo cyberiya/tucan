@@ -1,7 +1,4 @@
-###############################################################################
-## Tucan Project
-##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
+oprintopyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
 ## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
 ## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
 ##
@@ -25,7 +22,13 @@ import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
-from url_open import URLOpen
+import sys
+sys.path.append("/home/crak/tucan/trunk")
+
+from url_open import URLOpen, set_proxy
+
+#set_proxy("proxy.alu.uma.es", 3128)
+set_proxy(None)
 
 class FormParser:
 	""""""
@@ -48,29 +51,25 @@ class FormParser:
 					handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % (urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])])))
 					tmp = handle.readlines()
 					vars = {}
-					for var in tmp[2].split("function")[0].split(";"):
+					
+					server = tmp[11].split("'")[1]
+					link = tmp[12].split("'")[1]
+					name = tmp[13].split("'")[1]
+					
+					for var in tmp[14].split(";"):
 						var = var.split("var")
 						if len(var) > 1:
 							var = var[1].strip().split("=")
 							if ((len(var) > 1) and ("'" in var[1])):
-								value = var[1].split("'")[1]
-								if var[0] == "mL":
-									server = value
-								elif var[0] == "mH":
-									link = value
-								elif var[0] == "mY":
-
-									name = value
-								else:
-									vars[var[0]] = value
-					sum = tmp[2].split("function")[1].split("Click here to start download..")[0]
-					for var in sum.split("+mL+'/' +")[1].split("+ 'g/'+mH+'/'+mY+'")[0].split("+"):
-						if var in vars.keys():
-							random += vars[var]
-						else:
-							pass
-							error = True
+								vars[var[0]] = var[1].split("'")[1]
+					for var in tmp[27].split(" ")[14].split("+"):
+						if len(var) > 0:
+							if var in vars.keys():
+								random += vars[var]
+							else:
+								error = True
 		except Exception, e:
+			print e
 			error = True
 			logger.exception("%s: %s" % (url, e))
 		if server and random and link and name and not error:
@@ -103,5 +102,7 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	#f = FormParser("http://www.mediafire.com/?vdmjzmyquyj", cookielib.CookieJar())
-	print CheckLinks().check("http://www.mediafire.com/file/jdzq4mn44ay/tHe.uNvTd.XvId.part7.rar")
+	f = FormParser("http://www.mediafire.com/download.php?0zhaznzw3oz", cookielib.CookieJar())
+	print f.url
+	#print CheckLinks().check("http://www.mediafire.com/file/jdzq4mn44ay/tHe.uNvTd.XvId.part7.rar")
+
