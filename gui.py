@@ -225,10 +225,20 @@ class Gui(gtk.Window, ServiceManager):
 
 	def load_session(self, path):
 		""""""
-		packages, info = self.session.load_session(path)
-		if packages != None:
-			self.manage_packages(packages, info)
-			logger.debug("Session loaded: %s" % info)
+		try:
+			packages, info = self.session.load_session(path)
+			if packages != None:
+				self.manage_packages(packages, info)
+				logger.debug("Session loaded: %s" % info)
+		except Exception, e:
+			logger.exception("Session not loaded: %s" % e)
+			gobject.idle_add(self.session_error)
+			
+	def session_error(self):
+		""""""
+		title = _("Tucan Manager - Session Error.")
+		message = _("There was a problem loading the last session. Links are unrecoverable.")
+		Message(self, cons.SEVERITY_ERROR, title, message)
 		
 	def save_session(self, path):
 		""""""
