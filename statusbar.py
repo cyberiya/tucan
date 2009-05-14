@@ -20,6 +20,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import time
 import logging
 logger = logging.getLogger(__name__)
 
@@ -91,10 +92,12 @@ class Statusbar(gtk.Statusbar):
 	def show_stack(self, widget):
 		""""""
 		self.blinking = False
-		self.limits = self.get_limits()
 		for limit in self.menu:
 			self.menu.remove(limit)
-		for service, type, time, icon_path in self.limits:
+		self.limits = self.get_limits()
+		if len(self.limits) == 0:
+			self.limits = [("None", "", "[%s]" % time.strftime("%H:%M"), None)]
+		for service, type, hour, icon_path in self.limits:
 			limit = gtk.MenuItem()
 			vbox = gtk.VBox()
 			hbox = gtk.HBox()
@@ -102,19 +105,18 @@ class Statusbar(gtk.Statusbar):
 				icon = gtk.gdk.pixbuf_new_from_file(icon_path)
 			else:
 				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
-			hbox.pack_start(gtk.image_new_from_pixbuf(icon.scale_simple(24, 24, gtk.gdk.INTERP_BILINEAR)), True, False, 5)
-			hbox.pack_start(gtk.Label(service))
-			vbox.pack_start(hbox)
+			hbox.pack_start(gtk.image_new_from_pixbuf(icon.scale_simple(24, 24, gtk.gdk.INTERP_BILINEAR)))
+			hbox.pack_start(gtk.Label(service), True, True, 5)
+			vbox.pack_start(hbox, True, False, 1)
 			hbox = gtk.HBox()
-			hbox.pack_start(gtk.Label(time))
-			hbox.pack_start(gtk.Label(type))
+			hbox.pack_start(gtk.Label(hour), True, True)
+			hbox.pack_start(gtk.Label(type), True, True, 5)
 			vbox.pack_start(hbox)
 			limit.add(vbox)
 			self.menu.append(limit)
 			self.menu.append(gtk.SeparatorMenuItem())
 		self.menu.show_all()
-		if len(self.menu) > 0:
-			self.menu.popup(None, None, self.menu_position, 1, 0, widget.get_allocation())
+		self.menu.popup(None, None, self.menu_position, 1, 0, widget.get_allocation())
 		
 	def menu_position(self, menu, rect):
 		""""""
