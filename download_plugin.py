@@ -55,7 +55,7 @@ class DownloadPlugin(object):
 			while th.isAlive():
 				th.stop_flag = True
 	
-	def get_status(self, file_name):
+	def get_status(self, file_name, speed=0):
 		"""return (status, progress, actual_size, unit, speed, time)"""
 		result = cons.STATUS_ERROR, 0, 0, None, 0, 0
 		th = None
@@ -67,6 +67,7 @@ class DownloadPlugin(object):
 			actual_size, unit = self.get_size(th.actual_size)
 			if th.status == cons.STATUS_ACTIVE:
 				progress = int((float(th.actual_size)/float(th.total_size))*100)
+				th.max_speed = speed
 				speed = th.speed
 				if speed > 0:
 					time = int(float((th.total_size - th.actual_size)/1024)/float(speed))
