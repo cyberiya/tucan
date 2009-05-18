@@ -162,9 +162,8 @@ class DownloadManager:
 	
 	def update(self):
 		""""""
-		
-		MAX_SPEED = 200
-		
+		#MAX_SPEED = 200
+		#print len(self.active_downloads)
 		plugin = None
 		for download in self.active_downloads:
 			for link in download.links:
@@ -172,7 +171,7 @@ class DownloadManager:
 					plugin = link.plugin
 					break
 			if plugin:
-				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name, 50)
+				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name)#, MAX_SPEED/len(self.active_downloads))
 				print download.name, status, progress, actual_size, unit, speed, time
 				if status:
 					download.update(status, progress, actual_size, unit, speed, time)
