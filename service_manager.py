@@ -80,17 +80,19 @@ class ServiceManager:
 		""""""
 		import url_open
 		import time
+
 		url_open.set_proxy(None)
-		link = "http://www.mediafire.com/download.php?z0gjmnwk1d0"
-		service = "mediafire.com"
-		name, size, unit = self.get_check_links(service)[0](link)
-		if name:
-			plugin, plugin_type = self.get_download_plugin(service)
-			print plugin_type
-			print plugin.add("/home/crak/downloads/", link, name)
-		while len(plugin.active_downloads) > 0:
-			print plugin.get_status(name)
-			time.sleep(2)
+		links = [("mediafire.com", "http://www.mediafire.com/download.php?z0gjmnwk1d0"), ("mediafire.com", "http://www.mediafire.com/download.php?d4j2nyyr4qy"), ("rapidshare.com", "http://rapidshare.com/files/28374629/30_-_Buscate_la_Vida_-_Novia_2000_by_shagazz.part2.rar") ]
+		for service, link in links:
+			name, size, unit = self.get_check_links(service)[0](link)
+			print name, size, unit
+			if name:
+				plugin, plugin_type = self.get_download_plugin(service)
+				self.download_manager.add("/home/crak/downloads/", name, [(link, plugin, plugin_type, service)], size, unit)
+		while len(self.download_manager.active_downloads + self.download_manager.pending_downloads) > 0:
+			print "\n"
+			self.download_manager.update()
+			time.sleep(1)
 
 	def get_download_plugin(self, service_name):
 		""""""

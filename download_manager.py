@@ -123,7 +123,6 @@ class DownloadManager:
 		if name not in [tmp.name for tmp in (self.active_downloads + self.pending_downloads)]:
 			self.pending_downloads.append(DownloadItem(path, name, links, total_size, size_unit))
 			threading.Timer(1, self.scheduler).start()
-			self.scheduler
 			return True
 	
 	def start(self, name):
@@ -163,6 +162,9 @@ class DownloadManager:
 	
 	def update(self):
 		""""""
+		
+		MAX_SPEED = 200
+		
 		plugin = None
 		for download in self.active_downloads:
 			for link in download.links:
@@ -170,7 +172,8 @@ class DownloadManager:
 					plugin = link.plugin
 					break
 			if plugin:
-				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name)
+				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name, 50)
+				print download.name, status, progress, actual_size, unit, speed, time
 				if status:
 					download.update(status, progress, actual_size, unit, speed, time)
 					if status in [cons.STATUS_PEND, cons.STATUS_STOP]:

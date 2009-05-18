@@ -40,7 +40,7 @@ class Downloader(threading.Thread):
 		""""""
 		threading.Thread.__init__(self)
 		
-		self.max_speed = 200
+		self.max_speed = 0
 		
 		self.form = form
 		self.status = cons.STATUS_PEND
