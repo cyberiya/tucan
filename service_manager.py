@@ -78,10 +78,12 @@ class ServiceManager:
 
 	def prueba(self):
 		""""""
+		import url_open
 		import time
-		link = "http://www.gigasize.com/get.php?d=726jhznl0pc"
-		service = "gigasize.com"
-		name, size, unit = self.get_check_links(service)(link)
+		url_open.set_proxy(None)
+		link = "http://www.mediafire.com/download.php?z0gjmnwk1d0"
+		service = "mediafire.com"
+		name, size, unit = self.get_check_links(service)[0](link)
 		if name:
 			plugin, plugin_type = self.get_download_plugin(service)
 			print plugin_type

@@ -31,13 +31,17 @@ from url_open import URLOpen
 
 import cons
 
-BUFFER_SIZE = 4096
+BASE_SIZE = 4
+BUFFER_SIZE = BASE_SIZE * 1024
 
 class Downloader(threading.Thread):
 	""""""
 	def __init__(self, path, url, file_name, wait, cookie, form):
 		""""""
 		threading.Thread.__init__(self)
+		
+		self.max_speed = 200
+		
 		self.form = form
 		self.status = cons.STATUS_PEND
 		self.path = path
@@ -75,9 +79,21 @@ class Downloader(threading.Thread):
 				self.start_time = time.time()
 				data = "None"
 				while ((len(data) > 0) and not self.stop_flag):
-					data = handle.read(BUFFER_SIZE)
-					f.write(data)
-					self.actual_size += len(data)
+					tmp_size = 0
+					if self.max_speed > 0:
+						max_size = self.max_speed/BASE_SIZE
+					else:
+						max_size = 0
+					start_seconds = time.time()
+					while (time.time() - start_seconds) < 1:
+						if max_size == 0 or tmp_size < max_size:
+							data = handle.read(BUFFER_SIZE)
+							f.write(data)
+							self.actual_size += len(data)
+							tmp_size += 1
+						else:
+							time.sleep(0.1)
+					self.speed = BASE_SIZE * tmp_size
 				self.time_remaining = time.time() - self.start_time
 				f.close()
 				if not self.stop_flag:

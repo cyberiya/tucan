@@ -67,7 +67,7 @@ class DownloadPlugin(object):
 			actual_size, unit = self.get_size(th.actual_size)
 			if th.status == cons.STATUS_ACTIVE:
 				progress = int((float(th.actual_size)/float(th.total_size))*100)
-				speed = th.get_speed()
+				speed = th.speed
 				if speed > 0:
 					time = int(float((th.total_size - th.actual_size)/1024)/float(speed))
 				else:
@@ -78,10 +78,6 @@ class DownloadPlugin(object):
 				time = int(th.time_remaining)
 			result = th.status, progress, actual_size, unit, speed, time
 		return result
-
-	def check_link(self, url):
-		"""Metodo virtual que debe ser implementado por cada plugin final."""
-		pass
 	
 	def get_size(self, num):
 		""""""
