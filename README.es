@@ -177,6 +177,8 @@
  Links
 =========
 
- - http://tucaneando.wordpress.com/
- - http://cusl3-tucan.forja.rediris.es/
+ - http://tucaneando.com/
+ - http://doc.tucaneando.com/
+ - http://blog.tucaneando.com/
+ - http://forums.tucaneando.com/
  - https://forja.rediris.es/projects/cusl3-tucan/
