@@ -39,18 +39,18 @@ MEDIADIR	=	media/
 basic-install:
 	mkdir -p $(BINDIR) $(MAINDIR) $(ICONDIR) $(MANDIR) $(DESKTOPDIR)
 
-	install -p -m 644 *.py $(MAINDIR)
-	chmod 755 $(MAINDIR)$(EXECFILE)
+	install -p -m 0644 *.py $(MAINDIR)
+	chmod 0755 $(MAINDIR)$(EXECFILE)
 
 	cp -pR $(PLUGINDIR) $(MAINDIR)
 	cp -pR $(I18NDIR) $(MAINDIR)
 	cp -pR $(MEDIADIR) $(MAINDIR)
 
-	install -p -m 644 $(MEDIADIR)$(ICONFILE) $(ICONDIR)
+	install -p -m 0644 $(MEDIADIR)$(ICONFILE) $(ICONDIR)
 
-	install -p -m 644 $(MANPAGE) $(MANDIR)
+	install -p -m 0644 $(MANPAGE) $(MANDIR)
 
-	install -p -m 644 $(DESKTOPFILE) $(DESKTOPDIR)
+	install -p -m 0644 $(DESKTOPFILE) $(DESKTOPDIR)
 
 install:
 	make basic-install
