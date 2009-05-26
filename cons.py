@@ -28,8 +28,8 @@ import logging
 # project constants
 TUCAN_NAME = "Tucan Manager"
 TUCAN_VERSION = "0.3.7 alpha"
-WEBPAGE = "http://cusl3-tucan.forja.rediris.es/"
-DOC = "http://cusl3-tucan.forja.rediris.es/doc/"
+WEBPAGE = "http://www.tucaneando.com"
+DOC = "http://doc.tucaneando.com"
 
 # user agent
 USER_AGENT = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4"}
