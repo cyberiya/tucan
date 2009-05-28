@@ -30,7 +30,7 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-from message import Wait
+from message import Wait, Message
 from advanced_packages import AdvancedPackages
 
 import cons
@@ -220,8 +220,12 @@ class InputLinks(gtk.Dialog):
 			else:
 				self.packages(packages, [])
 				self.close()
-		else:
-			self.close()
+		else:		
+			title = _("Input Links - Nothing to add.")
+			message = _("There aren't links to add.\nPlease check the links before adding.")
+			m = Message(self, cons.SEVERITY_INFO, title, message, both=True)
+			if not m.accepted:
+				self.close()
 	
 	def check(self, button):
 		""""""
