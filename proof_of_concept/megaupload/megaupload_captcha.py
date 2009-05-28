@@ -21,38 +21,17 @@
 ###############################################################################
 
 import urllib
-import urllib2
+import logging
+logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
+from url_open import URLOpen
 
 from tesseract import Tesseract
 
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
-class CheckLinks(HTMLParser):
-	""""""
-	def check(self, url):
-		""""""
-		name = None
-		size = 0
-		unit = None
-		try:
-			for line in urllib2.urlopen(urllib2.Request(url)).readlines():
-				if "Filename:" in line:
-					name = line.split(">")[3].split("</")[0].strip()
-				elif "File size:" in line:
-					tmp = line.split(">")[3].split("</")[0].split(" ")
-					size = int(round(float(tmp[0])))
-					unit = tmp[1]
-			if name:
-				if ".." in name:
-					parser = CaptchaForm(url)
-					if parser.link:
-						name = parser.link.split("/").pop()
-		except urllib2.URLError, e:
-			print e
-		return name, size, unit
 
 class CaptchaParser(HTMLParser):
 	""""""
@@ -89,20 +68,19 @@ class CaptchaForm(HTMLParser):
 		self.link = None
 		self.located = False
 		while not self.link:
-			p = CaptchaParser(urllib2.urlopen(urllib2.Request(url)).read())
+			p = CaptchaParser(URLOpen().open(url).read())
 			if p.captcha:
-				print p.captcha
-				handle = urllib2.urlopen(urllib2.Request(p.captcha))
+				handle = URLOpen().open(p.captcha)
 				if handle.info()["Content-Type"] == "image/gif":
 					self.tess = Tesseract(handle.read())
 					captcha = self.get_captcha()
 					if captcha:
-						handle = urllib2.urlopen(urllib2.Request(url), urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
+						handle = URLOpen().open(url, urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
 						self.reset()
 						self.feed(handle.read())
 						self.close()
-						print captcha
-		
+						logger.info("Captcha %s: %s" % (p.captcha, captcha))
+
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "a":
@@ -112,18 +90,13 @@ class CaptchaForm(HTMLParser):
 		elif tag == "div":
 			if ((len(attrs) > 1) and (attrs[1][1] == "downloadlink")):
 				self.located = True
-
+				
 	def get_captcha(self):
 		result = self.tess.get_captcha()
 		if len(result) == 4:
 			return result
-		
-	def filter(self, data):
-		""""""
-		return data
 
 if __name__ == "__main__":
 	c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
 	print c.link
-	#print CheckLinks().check("http://www.megaupload.com/?d=1UY9LV7O")
 	
