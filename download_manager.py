@@ -68,12 +68,11 @@ class DownloadItem:
 
 class DownloadManager:
 	""""""
-	def __init__(self, get_plugin, services, max):
+	def __init__(self, get_plugin, services):
 		""""""
 		self.services = services
 		self.get_plugin = get_plugin
 		self.limits = []
-		self.max_downloads = max
 		self.pending_downloads = []
 		self.active_downloads = []
 		self.complete_downloads = []
@@ -164,19 +163,19 @@ class DownloadManager:
 	
 	def update(self):
 		""""""
-		MAX_SPEED = 0
 		new_speed = 0
 		permanent = True
 		speeds = [download.speed for download in self.active_downloads if download.status == cons.STATUS_ACTIVE]
 		current_active = len(speeds)
+		print max_downloads, max_download_speed
 		print current_active, speeds
-		remain_speed = MAX_SPEED
+		remain_speed = max_download_speed
 		for speed in speeds:
 			remain_speed -= speed
 		print remain_speed
 		if current_active > 0:
 			if remain_speed < 0:
-				new_speed = MAX_SPEED/current_active
+				new_speed = max_download_speed/current_active
 				permanent = False
 		for download in self.active_downloads:
 			plugin = None
@@ -233,7 +232,7 @@ class DownloadManager:
 			if len(self.pending_downloads) > 0:
 				logger.debug("scheduling")
 				for download in self.pending_downloads:
-					if len(self.active_downloads) < self.max_downloads:
+					if len(self.active_downloads) < max_downloads:
 						if download.status not in [cons.STATUS_STOP]:
 							if self.start(download.name):
 								logger.info("Started: %s" % download.name)
