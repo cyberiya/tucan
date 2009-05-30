@@ -53,15 +53,17 @@ class DownloadItem:
 		self.actual_size = 0
 		self.size_unit = size_unit
 		self.speed = 0
+		self.prev_speed = 0
 		self.time = 0
 		
-	def update(self, status=cons.STATUS_STOP, progress=0, actual_size=0, size_unit=None, speed=0, time=0):
+	def update(self, status=cons.STATUS_STOP, progress=0, actual_size=0, size_unit=None, speed=0, prev_speed=0, time=0):
 		""""""
 		self.status = status
 		self.progress = progress
 		self.actual_size = actual_size
 		self.size_unit = size_unit
 		self.speed = speed
+		self.prev_speed = prev_speed
 		self.time = time
 
 class DownloadManager:
@@ -162,27 +164,49 @@ class DownloadManager:
 	
 	def update(self):
 		""""""
-		#MAX_SPEED = 200
-		#print len(self.active_downloads)
-		plugin = None
+		MAX_SPEED = 100
+		new_speed = 0
+		permanent = True
+		speeds = [download.speed for download in self.active_downloads if download.status == cons.STATUS_ACTIVE]
+		current_active = len(speeds)
+		#print current_active, speeds
+		remain_speed = MAX_SPEED
+		for speed in speeds:
+			remain_speed -= speed
+		#print remain_speed
+		if current_active > 0:
+			if remain_speed < 0:
+				new_speed = MAX_SPEED/current_active
+				permanent = False
 		for download in self.active_downloads:
+			plugin = None
 			for link in download.links:
 				if link.active:
 					plugin = link.plugin
 					break
 			if plugin:
-				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name)#, MAX_SPEED/len(self.active_downloads))
-				print download.name, status, progress, actual_size, unit, speed, time
+				if permanent:
+					if download.speed == 0:
+						if remain_speed <= 0:
+							new_speed = 20
+						else:
+							new_speed = remain_speed
+					elif download.prev_speed >= download.speed:
+						new_speed = download.prev_speed
+						if remain_speed - 2 > 0:
+							new_speed += 2
+							remain_speed -= 2
+						else:
+							new_speed += remain_speed
+							remain_speed = 0
+					else:
+						new_speed = download.speed
+				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name, new_speed)
+				#print download.name, status, progress, actual_size, unit, speed, new_speed, time
 				if status:
-					download.update(status, progress, actual_size, unit, speed, time)
+					download.update(status, progress, actual_size, unit, speed, new_speed, time)
 					if status in [cons.STATUS_PEND, cons.STATUS_STOP]:
-						logger.warning("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
-						if ((status == cons.STATUS_PEND) and ("add_wait" in dir(plugin))):
-							plugin.add_wait()
-						self.stop(download.name)
-					elif status == cons.STATUS_ERROR:
-						logger.error("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
-						if "return_slot" in dir(link.plugin):
+						logger.warnif "return_slot" in dir(link.plugin):
 							plugin.return_slot()
 						link.active = False
 						self.pending_downloads.append(download)
@@ -225,3 +249,4 @@ class DownloadManager:
 		for download in self.active_downloads:
 			for link in download.links:
 				link.plugin.stop_all()
+
