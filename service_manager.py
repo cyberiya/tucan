@@ -20,12 +20,13 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import __builtin__
 import re
 import sys
 import logging
 logger = logging.getLogger(__name__)
 
-from config import SECTION_MAIN, OPTION_MAX_DOWNLOADS
+from config import SECTION_MAIN, OPTION_MAX_DOWNLOADS, OPTION_MAX_DOWNLOAD_SPEED
 from download_manager import DownloadManager
 
 import cons
@@ -48,7 +49,9 @@ class ServiceManager:
 	def __init__(self, configuration):
 		""""""
 		self.services = []
-		self.download_manager = DownloadManager(self.get_download_plugin, self.services, configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOADS))
+		__builtin__.max_downloads = configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOADS)
+		__builtin__.max_download_speed = configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOAD_SPEED)
+		self.download_manager = DownloadManager(self.get_download_plugin, self.services)
 		if cons.PLUGIN_PATH not in sys.path:
 			sys.path.append(cons.PLUGIN_PATH)
 		for package, icon, service, enabled, config in configuration.get_services():
@@ -82,7 +85,7 @@ class ServiceManager:
 		import time
 
 		url_open.set_proxy(None)
-		links = [("mediafire.com", "http://www.mediafire.com/download.php?z0gjmnwk1d0"), ("mediafire.com", "http://www.mediafire.com/download.php?d4j2nyyr4qy"), ("rapidshare.com", "http://rapidshare.com/files/28374629/30_-_Buscate_la_Vida_-_Novia_2000_by_shagazz.part2.rar") ]
+		links = [("mediafire.com", "http://www.mediafire.com/download.php?z0gjmnwk1d0"), ("mediafire.com", "http://www.mediafire.com/download.php?d4j2nyyr4qy")]
 		for service, link in links:
 			name, size, unit = self.get_check_links(service)[0](link)
 			print name, size, unit
