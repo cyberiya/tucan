@@ -20,6 +20,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import __builtin__
 import gettext
 
 import pygtk
@@ -77,8 +78,13 @@ class Preferences(gtk.Dialog):
 	def save(self, button):
 		""""""
 		self.config.set(config.SECTION_MAIN, config.OPTION_LANGUAGE, [lang[1] for lang in LANGUAGES][self.language.get_active()])
+		
+		#live changes
 		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS, str(self.max_downloads.get_value_as_int()))
+		__builtin__.max_downloads = self.max_downloads.get_value_as_int()
 		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOAD_SPEED, str(self.max_download_speed.get_value_as_int()))
+		__builtin__.max_download_speed = self.max_download_speed.get_value_as_int()
+		
 		#self.config.set(config.SECTION_MAIN, config.OPTION_MAX_UPLOADS, str(self.max_uploads.get_value_as_int()))
 		self.config.set(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER, self.downloads_folder.get_label())
 		
