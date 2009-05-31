@@ -65,8 +65,8 @@ class CheckLinks:
 		size_found = False
 		try:
 			for line in URLOpen().open(url).readlines():
-				if "fileNameText" in line:
-					name = line.strip().split(">")[1].split("<")[0]
+				if '<h2 id="fileNameText">' in line:
+					name = line.split('<h2 id="fileNameText">')[1].split("</h2>")[0]
 				elif "Size" in line:
 					size_found = True
 				elif size_found:
