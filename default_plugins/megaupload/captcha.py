@@ -67,6 +67,10 @@ class CaptchaForm(HTMLParser):
 		HTMLParser.__init__(self)
 		self.link = None
 		self.located = False
+		tmp = url.split("/")
+		if len(tmp) > 4:
+			del tmp[3]
+			url = "/".join(tmp)
 		while not self.link:
 			p = CaptchaParser(URLOpen().open(url).read())
 			if p.captcha:
