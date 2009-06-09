@@ -51,7 +51,9 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			if parser.link:
 				return self.start(path, parser.link, file_name, WAIT)
 			else:
-				 self.return_slot()
+				self.add_wait()
+				self.return_slot()
+				logger.warning("Limit Exceded.")
 
 	def delete(self, file_name):
 		""""""
