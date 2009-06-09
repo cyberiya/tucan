@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 class Slots:
 	""""""
-	def __init__(self, slots, wait=300):
+	def __init__(self, slots=1, wait=300):
 		""""""
 		self.time_limit = wait
 		self.limit = False
