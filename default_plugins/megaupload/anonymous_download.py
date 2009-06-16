@@ -49,7 +49,6 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		if self.get_slot():
 			parser = CaptchaForm(link)
 			if parser.link:
-				print parser.link
 				return self.start(path, parser.link, file_name, WAIT)
 			else:
 				self.add_wait()
