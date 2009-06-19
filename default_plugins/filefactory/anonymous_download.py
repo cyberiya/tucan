@@ -33,7 +33,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def __init__(self):
 		""""""
-		Slots.__init__(self, 2, 300)
+		Slots.__init__(self, 2, 10)
 		DownloadPlugin.__init__(self)
 		
 	def check_links(self, url):
