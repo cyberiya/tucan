@@ -24,68 +24,59 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-import Image
-import ImageFile #bug in PIL, using local file instead
-import ImageOps
+from HTMLParser import HTMLParser
 
-from tesseract import Tesseract
-from url_open import URLOpen
+#import sys
+#sys.path.append("/home/crak/tucan/trunk")
 
+from url_open import URLOpen, set_proxy
 
-CORRECTION = {"0":"O", "1":"I", "2":"Z", "3":"B", "4":"A", "5":"S", "6":"G", "7":"T", "8":"B", "|":"I", "(":"C", "<":"K", "$":"S"}
-BASE_URL = "http://www.filefactory.com%s"
+#set_proxy(None)
 
-class Parser:
+BASE_URL = "http://www.filefactory.com"
+
+class Parser(HTMLParser):
 	def __init__(self, url):
 		""""""
+		HTMLParser.__init__(self)
+		self.form_found = False
+		self.link_found = False
+		self.time_found = False
+		self.form_action = None
 		self.link = None
-		first_link = None
-		captcha_url = None
-		captcha_id = None
+		self.wait = None
 		try:
-			opener = URLOpen()
-			for line in opener.open(url).readlines():
-				if '<a class="download" href="' in line:
-					first_link = BASE_URL % line.split('<a class="download" href="')[1].split('">')[0]
-			if first_link:
-				while not self.link:
-					for line in opener.open(first_link).readlines():
-						if '<input id="captchaID" name="captchaID" type="hidden" value="' in line:
-							captcha_id = line.split('<input id="captchaID" name="captchaID" type="hidden" value="')[1].split('"/>')[0]
-						elif '<a class="captchaReload ajax" target="captchaReload" href="' in line:
-							captcha_url = BASE_URL % line.split('<a class="captchaReload ajax" target="captchaReload" href="')[1].split('">')[0]
-					if captcha_url:
-						logger.info("Captcha url: %s" % captcha_url)
-						for i in range(25):
-							self.image_string = URLOpen().open(captcha_url).read()
-							tes = Tesseract(self.image_string, self.filter_image)
-							captcha = tes.get_captcha().strip()
-							if len(captcha) == 4:
-								tmp = [i for i in captcha]
-								for i in tmp:
-									if i in CORRECTION.keys():
-										tmp[tmp.index(i)] = CORRECTION[i]
-								captcha = "".join(tmp)
-								logger.warning("Captcha: %s" % captcha)
-								data = urllib.urlencode([("captchaID", captcha_id),("captchaText", captcha)])
-								for line in opener.open(first_link, data).readlines():
-									if '" class="download">CLICK HERE to download for free with Filefactory Basic</a></p>' in line:
-										self.link = line.split('<p><a href="')[1].split('" class="download">CLICK HERE to download for free with Filefactory Basic</a></p>')[0]
-								if self.link:
-									break
+			self.feed(URLOpen().open(url).read())
+
+			if self.form_action:
+				self.feed(URLOpen().open(self.form_action, urllib.urlencode({"freeBtn": "Free Download"})).read())
+			self.close()
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 				
-	def filter_image(self, image):
+	def handle_starttag(self, tag, attrs):
 		""""""
-		p = ImageFile.Parser()
-		p.feed(self.image_string)
-		image = p.close()
-		
-		image = ImageOps.grayscale(image)
-		
-		return image
-	
+		if tag == "form":
+			if self.form_found:
+				self.form_action = "%s%s" % (BASE_URL, attrs[0][1])
+				self.form_found = False
+		elif tag == "div":
+			if len(attrs) > 0:
+				if attrs[0][1] == "freeBtnContainer":
+					self.form_found = True
+				elif attrs[0][1] == "downloadLink":
+					self.link_found = True
+				elif attrs[0][1] == "linkContainer":
+					self.time_found = True
+		elif tag == "a":
+			if self.link_found:
+				self.link = attrs[0][1]
+				self.link_found = False
+		elif tag == "input":
+			if self.time_found:
+				self.wait = int(attrs[2][1])
+				self.time_found = False
+
 class CheckLinks:
 	""""""
 	def check(self, url):
