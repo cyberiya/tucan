@@ -33,7 +33,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def __init__(self):
 		""""""
-		Slots.__init__(self, 1, 300)
+		Slots.__init__(self, 2, 300)
 		DownloadPlugin.__init__(self)
 		
 	def check_links(self, url):
@@ -45,7 +45,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		if self.get_slot():
 			parser = Parser(link)
 			if parser.link:
-				if self.start(path, parser.link, file_name):
+				if self.start(path, parser.link, file_name, parser.wait):
 					return True
 				else:
 					logger.warning("Limit Exceded.")
