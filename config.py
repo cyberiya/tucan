@@ -118,7 +118,7 @@ class Config(SafeConfigParser):
 		result = []
 		for service, path in self.items(SECTION_SERVICES):
 			result.append(self.service(path))
-		return result
+		return sorted(result)
 
 	def service(self, path):
 		""""""
