@@ -111,7 +111,7 @@ class Config(SafeConfigParser):
 				self.add_section(section)
 			for option, value in options.items():
 				self.set(section, option, value)
-		self.save(True)
+		self.save()
 
 	def get_services(self):
 		""""""
@@ -139,7 +139,7 @@ class Config(SafeConfigParser):
 				result = self.get(SECTION_ADVANCED, OPTION_PROXY_URL), self.getint(SECTION_ADVANCED, OPTION_PROXY_PORT)
 		return result
 
-	def save(self, comment=False):
+	def save(self, comment=True):
 		""""""
 		f = open(cons.CONFIG_PATH + CONF, "w")
 		if comment:
