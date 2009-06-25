@@ -41,8 +41,12 @@ class Tucan:
 	""""""
 	def __init__(self):
 		""""""
+		#exception hook
+		self.old_exception_hook = sys.excepthook
+		sys.excepthook = self.exception_hook
+		
 		#configuration
-		configuration = config.Config()
+		self.configuration = config.Config()
 		sys.path.append(cons.PLUGIN_PATH)
 		
 		#logging
@@ -58,13 +62,12 @@ class Tucan:
 		self.logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
 		
 		#proxy settings
-		proxy_url, proxy_port = configuration.get_proxy()
+		proxy_url, proxy_port = self.configuration.get_proxy()
 		url_open.set_proxy(proxy_url, proxy_port)
 		
 		#global custom exit
 		__builtin__.tucan_exit = self.exit
 		
-		Gui(configuration)
 		
 	def exception_hook(self, type, value, trace):
 		""""""
@@ -72,16 +75,15 @@ class Tucan:
 		line_no = trace.tb_lineno
 		exception = type.__name__
 		self.logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
+		self.old_exception_hook(type, value, trace)
 		
 	def exit(self, arg=0):
 		""""""
-		self.logger.debug("Exit.")
+		self.logger.debug("Exit: %s" % arg)
 		exit(arg)
 
 if __name__ == "__main__":
 	gobject.threads_init()
 	t = Tucan()
-	if len(sys.argv) > 1:
-		if "-debug" not in sys.argv[1]:
-			sys.excepthook = t.exception_hook
+	Gui(t.configuration)
 	gtk.main()
