@@ -140,6 +140,8 @@ class ServiceManager:
 					tmp = tmp.split(" ")[0]
 				elif "[" in tmp:
 					tmp = tmp.split("[")[0]
+				elif "'" in tmp:
+					tmp = tmp.split("'")[0]
 				link = "http://" + tmp
 				for service in self.services:
 					if link.find(service.name) > 0:
