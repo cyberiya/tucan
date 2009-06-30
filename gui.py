@@ -263,7 +263,7 @@ class Gui(gtk.Window, ServiceManager):
 			packages_info = [(default_path, name, None) for name, package_files in packages]
 		#create directories and password files
 		for info in packages_info:
-			package_path = os.path.join(info[0], info[1].replace(" ", "_"), "")
+			package_path = unicode(os.path.join(info[0], info[1].replace(" ", "_"), ""))
 			if not os.path.exists(package_path):
 				os.mkdir(package_path)
 			if info[2]:
