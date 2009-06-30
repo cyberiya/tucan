@@ -75,7 +75,8 @@ class Tucan:
 		line_no = trace.tb_lineno
 		exception = type.__name__
 		self.logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
-		self.old_exception_hook(type, value, trace)
+		print self.old_exception_hook(type, value, trace)
+		self.exit(-1)
 		
 	def exit(self, arg=0):
 		""""""

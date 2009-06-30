@@ -66,13 +66,11 @@ class ServiceConfig(SafeConfigParser):
 		""""""
 		SafeConfigParser.__init__(self)
 		self.path = path
-		
 		if fd:
 			self.readfp(fd)
-		elif os.path.exists(self.path + CONF):
-			self.read(self.path + CONF)
-			
-	
+		elif os.path.exists(unicode(os.path.join(self.path, CONF))):
+			self.read(unicode(os.path.join(self.path, CONF)))
+
 	def check_config(self):
 		""""""
 		if self.has_section(SECTION_MAIN):
