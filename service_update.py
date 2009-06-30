@@ -103,8 +103,8 @@ class ServiceUpdate:
 							local_version = local_service[4].get_update()
 							if remote_version > local_version:
 								new_services[local_service[2]] = local_service[0], check.files, local_service[1]
-			if not found:
-				new_services[config.get_name()] = remote_service.split("/")[0], check.files, None
+					if not found:
+						new_services[config.get_name()] = remote_service.split("/")[0], check.files, None
 		return new_services
 
 	def install_service(self, service_name, service_dir, files):

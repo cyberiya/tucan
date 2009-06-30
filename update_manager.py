@@ -141,7 +141,8 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 			else:
 				icon = default_icon
 				new += 1
-			model.append([icon, service, False, options[0], options[1]])
+			if model:
+				model.append([icon, service, False, options[0], options[1]])
 		
 		self.status_icon.set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_BUTTON)
 		self.status_label.set_label("%i New and %i Updated." % (new, updated))

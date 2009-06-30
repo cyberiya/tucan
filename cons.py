@@ -22,6 +22,7 @@
 
 import sys
 import os
+import locale
 import subprocess
 import logging
 
@@ -68,11 +69,12 @@ TYPE_UNSUPPORTED = "unsupported"
 #path constants
 if "win" in sys.platform:
 	PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
+	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "").decode(locale.getdefaultlocale()[1])
 	if PATH not in sys.path:
 		sys.path.insert(0, PATH)
 else:
 	PATH = os.path.join(sys.path[0], "")
-DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "")
+	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "")
 CONFIG_PATH = os.path.join(DEFAULT_PATH, ".tucan" ,"")
 
 #log constants
