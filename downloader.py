@@ -73,9 +73,9 @@ class Downloader(threading.Thread):
 				handle = self.opener.open(self.url, self.form)
 				logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
 				self.total_size = int(handle.info().getheader("Content-Length"))
-				if not os.path.exists(self.path):
+				if not os.path.exists(unicode(self.path)):
 					os.mkdir(self.path)
-				f = open(self.path + self.file, "wb")
+				f = open(unicode(os.path.join(self.path, self.file)), "wb")
 				self.start_time = time.time()
 				data = "None"
 				while ((len(data) > 0) and not self.stop_flag):
