@@ -36,12 +36,13 @@ BUFFER_SIZE = BASE_SIZE * 1024
 
 class Downloader(threading.Thread):
 	""""""
-	def __init__(self, path, url, file_name, wait, cookie, form):
+	def __init__(self, path, url, file_name, wait, cookie, form, post_wait):
 		""""""
 		threading.Thread.__init__(self)
 		
 		self.max_speed = 0
 		
+		self.post_wait = post_wait
 		self.form = form
 		self.status = cons.STATUS_PEND
 		self.path = path
@@ -67,6 +68,8 @@ class Downloader(threading.Thread):
 				time.sleep(1)
 				self.wait -= 1
 				self.time_remaining = self.wait
+			if self.post_wait:
+				self.form = self.post_wait()
 		if not self.stop_flag:
 			try:
 				self.status = cons.STATUS_ACTIVE
