@@ -43,8 +43,12 @@ class Parser(HTMLParser.HTMLParser):
 					except HTMLParser.HTMLParseError, e:
 						logger.info("%s :%s %s" % (url, line.strip(), e))
 			if self.tmp_link:
+				next_line = 0
 				for line in opener.open(self.tmp_link).readlines():
-					if "Click here to download this file" in line:
+					if "id='divDLStart'" in line:
+						next_line = 1
+					elif next_line:
+						next_line = 0
 						self.link = line.split("<a href='")[1].split("'>")[0]
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
@@ -63,24 +67,27 @@ class CheckLinks:
 		size = 0
 		unit = None
 		size_found = False
+		next_line = 0
 		try:
 			for line in URLOpen().open(url).readlines():
-				if '<h2 id="fileNameText">' in line:
-					name = line.split('<h2 id="fileNameText">')[1].split("</h2>")[0]
-				elif "Size" in line:
+				if '<span id="fileNameTextSpan">' in line:
+					name = line.split('<span id="fileNameTextSpan">')[1].split('</span>')[0]
+				elif '<td style="padding:3px 0">File</td>' in line:
 					size_found = True
-				elif size_found:
-					size_found = False
-					tmp = line.strip().split(">")[1].split("<")[0]
-					unit = tmp.split(" ")[1]
-					if "," in tmp:
-						size = int("".join(tmp.split(" ")[0].split(",")))
-					else:
-						size = int(tmp.split(" ")[0])
-					if size > 1024:
-						if unit == "KB":
-							size = size/1024
-							unit = "MB"
+				if size_found:
+					next_line += 1
+					if next_line == 5:
+						size_found = False
+						tmp = line.split(">")[1].split("<")[0].split()
+						unit = tmp[1]
+						if "," in tmp[0]:
+							size = int(tmp[0].replace(",", ""))
+						else:
+							size = int(tmp[0])
+						if size > 1024:
+							if unit == "KB":
+								size = size / 1024
+								unit = "MB"
 			if not name:
 				name = url
 				size = -1
