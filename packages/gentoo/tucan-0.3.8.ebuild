@@ -5,10 +5,10 @@
 inherit eutils
 
 DESCRIPTION="Software designed for automatic management of downloads and uploads at hosting sites like rapidshare or megaupload"
-HOMEPAGE="http://cusl3-tucan.forja.rediris.es"
-SRC_URI="http://forja.rediris.es/frs/download.php/1290/${P}.tar.gz"
+HOMEPAGE="http://tucaneando.com/"
+SRC_URI="http://forja.rediris.es/frs/download.php/1400/${P}.tar.gz"
 
-LICENSE="GPL-2"
+LICENSE="GPLv3"
 SLOT="0"
 KEYWORDS="~x86 ~amd64"
 
@@ -29,6 +29,4 @@ src_install() {
 	emake DESTDIR="${D}"/usr install || die "emake install failed"
 	dodoc CHANGELOG README || die
 	newicon media/tucan.svg "${PN}.svg"
-	make_desktop_entry tucan Tucan
 }
-
