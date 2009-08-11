@@ -1,0 +1,47 @@
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+Format: 1.8
+Date: Wed, 15 Jul 2009 22:54:52 +0200
+Source: tucan
+Binary: tucan
+Architecture: source all
+Version: 0.3.8-1
+Distribution: unstable
+Urgency: low
+Maintainer: crak@tucaneando.com
+Changed-By: Fran Lupion (Crak) <crak@tucaneando.com>
+Description: 
+ tucan      - Download and upload manager for 1-Click Hosters
+Closes: 531392
+Changes: 
+ tucan (0.3.8-1) unstable; urgency=low
+ .
+   * New upstream release
+   * debian-policy updated to 3.8.2
+   * License upgraded to GPLv3
+   * New upstream/mainteiner mail
+   * Solved data loss (Closes: #531392)
+Checksums-Sha1: 
+ 7215cbcf01ed006e11b6fb10460828b05619d868 968 tucan_0.3.8-1.dsc
+ aa7ea520838359229d57fc50ef03b132c4e5a995 184714 tucan_0.3.8.orig.tar.gz
+ 302be4c1c95be2237b0429e28c850b7f53c7cfab 2173 tucan_0.3.8-1.diff.gz
+ 33bfbc2ce95f72f5a33b7a879c1a0fae14ccf21a 165046 tucan_0.3.8-1_all.deb
+Checksums-Sha256: 
+ 2fc38c208f842113bc2799dfb7559df32d437407a3a62f79a1e377055f844e6b 968 tucan_0.3.8-1.dsc
+ dd9acb147bdb229a5acd52213b1ddc57fea02cc0eec065b51c9278f15a181b30 184714 tucan_0.3.8.orig.tar.gz
+ b5bdd2ff120a2b96ba264d497d96a48b932dc05227914442d63d9d379f614c2a 2173 tucan_0.3.8-1.diff.gz
+ be9ac631857534755da6834c59a0a32a516fad84b43dedfe3ba034c0e105794b 165046 tucan_0.3.8-1_all.deb
+Files: 
+ 008f8129915d256974ff11d5f8270fef 968 net optional tucan_0.3.8-1.dsc
+ 3e27a9b17f67d8523950522366b18b77 184714 net optional tucan_0.3.8.orig.tar.gz
+ bfd6ea36493b4d9a9de013f787cbfb28 2173 net optional tucan_0.3.8-1.diff.gz
+ 734b9d485c777f69548b42e908e5be7b 165046 net optional tucan_0.3.8-1_all.deb
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.9 (GNU/Linux)
+
+iEYEARECAAYFAkpnBBEACgkQ7EXKTG+aztajqQCfUGdf3EqdmbVEmVVTnCec0ShM
+E8oAnjQ2GsStpIq7zCmIZY7lFMEnY35c
+=7ahf
+-----END PGP SIGNATURE-----

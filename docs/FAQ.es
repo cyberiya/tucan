@@ -29,7 +29,7 @@ TUCAN FAQ
 
 2 - ¿ Qué licencia tiene ?
 --------------------------
- - GPLv2 < http://www.gnu.org/licenses/old-licenses/gpl-2.0.html >
+ - GPLv3 < http://www.gnu.org/licenses/gpl-3.0.html >
 
 
 3 - ¿ Dónde se puede descargar ?

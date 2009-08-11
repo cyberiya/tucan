@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -48,11 +46,11 @@ class FormParser:
 					handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % (urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])])))
 					tmp = handle.readlines()
 					vars = {}
-					
+
 					server = tmp[11].split("'")[1]
 					link = tmp[12].split("'")[1]
 					name = tmp[13].split("'")[1]
-					
+
 					for var in tmp[14].split(";"):
 						var = var.split("var")
 						if len(var) > 1:
@@ -102,4 +100,3 @@ if __name__ == "__main__":
 	f = FormParser("http://www.mediafire.com/download.php?0zhaznzw3oz", cookielib.CookieJar())
 	print f.url
 	#print CheckLinks().check("http://www.mediafire.com/file/jdzq4mn44ay/tHe.uNvTd.XvId.part7.rar")
-

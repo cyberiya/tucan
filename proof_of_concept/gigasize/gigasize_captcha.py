@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -51,7 +49,7 @@ if __name__ == "__main__":
 
 	tes = Tesseract(urllib2.urlopen(urllib2.Request("http://www.gigasize.com/randomImage.php")).read(), True)
 	captcha = tes.get_captcha(3)
-	
+
 	data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
 	handle = urllib2.urlopen(urllib2.Request("http://www.gigasize.com/formdownload.php"), data)
 	f = FormParser(handle.read())

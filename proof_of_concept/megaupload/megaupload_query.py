@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -76,7 +74,7 @@ class CaptchaForm(HTMLParser):
 		if captcha:
 			self.feed(urllib2.urlopen(urllib2.Request(url, urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)]), HEADER)).read())
 			self.close()
-	
+
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "a":
@@ -94,26 +92,26 @@ class CaptchaSolve(gtk.Dialog):
 		gtk.Dialog.__init__(self)
 		self.set_title("Megaupload Captcha")
 		self.set_size_request(300,200)
-		
+
 		self.image = gtk.Image()
 		self.vbox.pack_start(self.image)
-	
+
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 10)
 		self.label = gtk.Label()
 		hbox.pack_start(self.label)
-		
+
 		self.entry = gtk.Entry()
 		hbox.pack_start(self.entry, False, False, 10)
 		self.entry.set_width_chars(5)
 		self.entry.set_max_length(4)
 		self.entry.set_activates_default(True)
 		self.entry.connect("activate", self.store_captcha)
-		
+
 		self.megavar = ""
 		self.captchacode = ""
 		self.new_captcha()
-		
+
 		button = gtk.Button(None, gtk.STOCK_REFRESH)
 		self.action_area.pack_start(button)
 		button.connect("clicked", self.new_captcha)
@@ -124,7 +122,7 @@ class CaptchaSolve(gtk.Dialog):
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
-		
+
 	def store_captcha(self, widget=None):
 		""""""
 		solution = self.entry.get_text()
@@ -142,7 +140,7 @@ class CaptchaSolve(gtk.Dialog):
 				else:
 					self.entry.set_text("")
 					self.set_focus(self.entry)
-	
+
 	def new_captcha(self, widget=None):
 		""""""
 		found = ""
@@ -167,7 +165,7 @@ class CaptchaSolve(gtk.Dialog):
 		self.captcha = captcha
 		print p.captcha
 		self.label.set_text("Solve Captcha: %s" % p.captcha.split("gencap.php?")[1].split(".gif")[0])
-		
+
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()

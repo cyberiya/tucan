@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -50,18 +48,19 @@ class DownloadItem:
 			self.links.append(Link(url, plugin, type, service))
 		self.progress = 0
 		self.total_size = total_size
+		self.total_size_unit = size_unit
 		self.actual_size = 0
-		self.size_unit = size_unit
+		self.actual_size_unit = cons.UNIT_KB
 		self.speed = 0
 		self.prev_speed = 0
 		self.time = 0
-		
-	def update(self, status=cons.STATUS_STOP, progress=0, actual_size=0, size_unit=None, speed=0, prev_speed=0, time=0):
+
+	def update(self, status=cons.STATUS_STOP, progress=0, actual_size=0, size_unit=cons.UNIT_KB, speed=0, prev_speed=0, time=0):
 		""""""
 		self.status = status
 		self.progress = progress
 		self.actual_size = actual_size
-		self.size_unit = size_unit
+		self.actual_size_unit = size_unit
 		self.speed = speed
 		self.prev_speed = prev_speed
 		self.time = time
@@ -78,7 +77,7 @@ class DownloadManager:
 		self.complete_downloads = []
 		self.timer = None
 		self.scheduling = False
-		
+
 	def get_limits(self):
 		""""""
 		for service in self.services:
@@ -92,7 +91,7 @@ class DownloadManager:
 							if service.name == limit[0]:
 								self.limits.remove(limit)
 		return self.limits
-		
+
 	def delete_link(self, name, link):
 		""""""
 		for download in self.pending_downloads:
@@ -101,7 +100,7 @@ class DownloadManager:
 					if link == url.url:
 						del download.links[download.links.index(url)]
 						return True
-		
+
 	def get_files(self):
 		""""""
 		result = []
@@ -110,7 +109,7 @@ class DownloadManager:
 				result.append(download)
 		self.update()
 		return result
-		
+
 	def clear(self, files):
 		""""""
 		for name in files:
@@ -125,7 +124,7 @@ class DownloadManager:
 			self.pending_downloads.append(DownloadItem(path, name, links, total_size, size_unit))
 			threading.Timer(1, self.scheduler).start()
 			return True
-	
+
 	def start(self, name):
 		""""""
 		for download in self.pending_downloads:
@@ -142,7 +141,7 @@ class DownloadManager:
 						link.active = False
 						if not download.status == cons.STATUS_ERROR:
 							download.status = cons.STATUS_PEND
-					
+
 	def stop(self, name):
 		""""""
 		for download in self.pending_downloads:
@@ -160,19 +159,19 @@ class DownloadManager:
 							self.active_downloads.remove(download)
 							download.update()
 							return True
-	
+
 	def update(self):
 		""""""
 		new_speed = 0
 		permanent = True
 		speeds = [download.speed for download in self.active_downloads if download.status == cons.STATUS_ACTIVE]
 		current_active = len(speeds)
-		print max_downloads, max_download_speed
-		print current_active, speeds
+		#print max_downloads, max_download_speed
+		#print current_active, speeds
 		remain_speed = max_download_speed
 		for speed in speeds:
 			remain_speed -= speed
-		print remain_speed
+		#print remain_speed
 		if current_active > 0:
 			if remain_speed < 0:
 				new_speed = max_download_speed/current_active
@@ -201,15 +200,15 @@ class DownloadManager:
 					else:
 						new_speed = download.speed
 				status, progress, actual_size, unit, speed, time = plugin.get_status(download.name, new_speed)
-				print download.name, status, progress, actual_size, unit, speed, new_speed, time
+				#print download.name, status, progress, actual_size, unit, speed, new_speed, time
 				if status:
 					download.update(status, progress, actual_size, unit, speed, new_speed, time)
-					if status in [cons.STATUS_PEND, cons.STATUS_STOP]:
-						logger.warning("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
-						if ((status == cons.STATUS_PEND) and ("add_wait" in dir(plugin))):
-							plugin.add_wait()
-						self.stop(download.name)
-					elif status == cons.STATUS_ERROR:
+					#if status in [cons.STATUS_PEND, cons.STATUS_STOP]:
+					#	logger.warning("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
+					#	if ((status == cons.STATUS_PEND) and ("add_wait" in dir(plugin))):
+					#		plugin.add_wait()
+					#	self.stop(download.name)
+					if status == cons.STATUS_ERROR:
 						logger.error("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						if "return_slot" in dir(link.plugin):
 							plugin.return_slot()
@@ -245,7 +244,7 @@ class DownloadManager:
 				self.timer = threading.Timer(5, self.scheduler)
 				self.timer.start()
 			self.scheduling = False
-	
+
 	def quit(self):
 		""""""
 		if self.timer:

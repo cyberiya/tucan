@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -40,7 +38,7 @@ class Tree(gtk.VBox):
 		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str, int, bool, str, str, str, str, str))
 		scroll.add(self.treeview)
 		self.pack_start(scroll)
-		
+
 		self.menu = gtk.Menu()
 		for item in menu:
 			if item == None:
@@ -56,14 +54,14 @@ class Tree(gtk.VBox):
 
 		self.treeview.set_rules_hint(True)
 		self.treeview.set_headers_visible(False)
-		
+
 		#tree columns
 		tree_icon = gtk.TreeViewColumn('Icon') 
 		icon_cell = gtk.CellRendererPixbuf()
 		tree_icon.pack_start(icon_cell, False)
 		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
 		self.treeview.append_column(tree_icon)
-				  
+
 		tree_name = gtk.TreeViewColumn('Name')
 		name_cell = gtk.CellRendererText()
 		name_cell.set_property("width-chars", 60)
@@ -71,7 +69,7 @@ class Tree(gtk.VBox):
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 3)
 		self.treeview.append_column(tree_name)
-		
+
 		tree_progress = gtk.TreeViewColumn('Progress')
 		tree_progress.set_min_width(150)
 		progress_cell = gtk.CellRendererProgress()
@@ -79,7 +77,7 @@ class Tree(gtk.VBox):
 		tree_progress.add_attribute(progress_cell, 'value', 4)
 		tree_progress.add_attribute(progress_cell, 'visible', 5)
 		self.treeview.append_column(tree_progress)
-		
+
 		tree_current_size = gtk.TreeViewColumn('Current Size')
 		current_size_cell = gtk.CellRendererText()
 		tree_current_size.pack_start(current_size_cell, False)
@@ -91,25 +89,25 @@ class Tree(gtk.VBox):
 		tree_total_size.pack_start(total_size_cell, False)
 		tree_total_size.add_attribute(total_size_cell, 'text', 7)
 		self.treeview.append_column(tree_total_size)
-		
+
 		tree_speed = gtk.TreeViewColumn('Speed')
 		speed_cell = gtk.CellRendererText()
 		tree_speed.pack_start(speed_cell, False)
 		tree_speed.add_attribute(speed_cell, 'text', 8)
 		self.treeview.append_column(tree_speed)
-		
+
 		tree_time = gtk.TreeViewColumn('Time Left')
 		time_cell = gtk.CellRendererText()
 		tree_time.pack_start(time_cell, False)
 		tree_time.add_attribute(time_cell, 'text', 9)
 		self.treeview.append_column(tree_time)
-		
+
 		tree_plugins = gtk.TreeViewColumn('Plugin')
 		plugins_cell = gtk.CellRendererText()
 		tree_plugins.pack_start(plugins_cell, False)
 		tree_plugins.add_attribute(plugins_cell, 'text', 10)
 		self.treeview.append_column(tree_plugins)
-		
+
 		#icons
 		self.package_icon = self.treeview.render_icon(gtk.STOCK_OPEN, gtk.ICON_SIZE_MENU)
 		self.active_service_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_MENU)
@@ -121,12 +119,12 @@ class Tree(gtk.VBox):
 		self.pending_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_PAUSE, gtk.ICON_SIZE_MENU)
 		self.stoped_icon = self.treeview.render_icon(gtk.STOCK_MEDIA_STOP, gtk.ICON_SIZE_MENU)
 		self.icons = {cons.STATUS_CORRECT: self.correct_icon, cons.STATUS_ERROR: self.failed_icon, cons.STATUS_WAIT: self.wait_icon, cons.STATUS_ACTIVE: self.active_icon, cons.STATUS_PEND: self.pending_icon, cons.STATUS_STOP: self.stoped_icon}
-		
+
 		self.status_bar = Statusbar(manager.get_limits)
 		self.pack_start(self.status_bar, False)
 		self.status_bar.push(self.status_bar.get_context_id("Downloads"), " No Downloads Active.")
 		self.updating = False
-		
+
 	def mouse_menu(self, widget, event):
 		"""right button"""
 		if event.button == 3:
@@ -138,23 +136,22 @@ class Tree(gtk.VBox):
 		"""
 		TreeStore(icon, status, password, name, progress, progress_visible, current_size, total_size, speed, time, services)
 		"""
-		package_size = 0
-		package_unit = cons.UNIT_KB
+		tmp_size = []
 		model = self.treeview.get_model()
 		package_iter = model.append(None, [self.package_icon, cons.STATUS_PEND, password, package_name, 0, True, None, None, None, None, package_path])
 		for item in package:
-			package_size += item[3]
-			package_unit = item[4]
+			tmp_size.append((item[3], item[4]))
 			item_iter = model.append(package_iter, [self.pending_icon, cons.STATUS_PEND, None, item[1], 0, True, None, str(item[3])+item[4], None, None, str(item[2])])
 			self.treeview.expand_to_path(model.get_path(item_iter))
 			for link in item[0]:
 				link_iter = model.append(item_iter, [self.unactive_service_icon, cons.STATUS_PEND, None, link, 0, False, None, None, None, None, item[5][item[0].index(link)]])
+		package_size, package_unit = self.normalize(tmp_size)
 		model.set_value(package_iter, 7, str(package_size)+package_unit)
 		if not self.updating:
 			self.updating = True
 			gobject.timeout_add(1000, self.update)
 		return package_iter
-		
+
 	def update(self):
 		"""(icon, status, None, name, progress, progress_visible, current_size, total_size, speed, time, services)"""
 		files = self.get_files()
@@ -169,9 +166,9 @@ class Tree(gtk.VBox):
 				file_iter = model.iter_children(package_iter)
 				#package_status = model.set_value(package_iter, 0)
 				package_progress = 0
-				package_actual_size = 0
-				package_unit = cons.UNIT_KB
 				package_speed = 0
+				tmp_actual_size = []
+				tmp_total_size = []
 				while file_iter:
 					total_downloads += 1
 					name = model.get_value(file_iter, 3)
@@ -186,10 +183,9 @@ class Tree(gtk.VBox):
 							model.set_value(file_iter, 4, file.progress)
 							package_progress += file.progress
 							if file.actual_size > 0:
-								model.set_value(file_iter, 6, str(file.actual_size)+file.size_unit)
-								package_actual_size += file.actual_size
-								package_unit = file.size_unit
-							#model.set_value(file_iter, 7, str(file.total_size)+file.size_unit)
+								model.set_value(file_iter, 6, str(file.actual_size)+file.actual_size_unit)
+								tmp_actual_size.append((file.actual_size, file.actual_size_unit))
+							tmp_total_size.append((file.total_size, file.total_size_unit))
 							if file.speed > 1:
 								model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
 								package_speed += file.speed
@@ -198,6 +194,8 @@ class Tree(gtk.VBox):
 							if file.status == cons.STATUS_CORRECT:
 								if not file.time > 0:
 									file.time = 1
+								file.actual_size = file.total_size
+								file.actual_size_unit = file.total_size_unit
 							model.set_value(file_iter, 9, self.calculate_time(file.time))
 							link_iter = model.iter_children(file_iter)
 							while link_iter:
@@ -211,20 +209,49 @@ class Tree(gtk.VBox):
 										model.set_value(link_iter, 0, service_icon)
 										model.set_value(link_iter, 1, link_status)
 								link_iter = model.iter_next(link_iter)
-					
-					model.set_value(package_iter, 4, int(package_progress/model.iter_n_children(package_iter)))
-					if package_actual_size > 0:
-						model.set_value(package_iter, 6, str(package_actual_size)+package_unit)
-					if package_speed > 0:
-						model.set_value(package_iter, 8, str(package_speed)+cons.UNIT_SPEED)
-					else:
-						model.set_value(package_iter, 8, None)
 					file_iter = model.iter_next(file_iter)
+				package_actual_size, package_actual_unit = self.normalize(tmp_actual_size)
+				package_total_size, package_total_unit = self.normalize(tmp_total_size)
+				if package_actual_size > 0:
+					if int(package_progress/model.iter_n_children(package_iter)) == 100:
+						model.set_value(package_iter, 4, 100)
+					else:
+						model.set_value(package_iter, 4, int((float(self.get_size(package_actual_size, package_actual_unit))/float(self.get_size(package_total_size, package_total_unit)))*100))
+					model.set_value(package_iter, 6, str(package_actual_size)+package_actual_unit)
+				if package_speed > 0:
+					model.set_value(package_iter, 8, str(package_speed)+cons.UNIT_SPEED)
+				else:
+					model.set_value(package_iter, 8, None)
 				total_speed += package_speed
 				package_iter = model.iter_next(package_iter)
 			self.status_bar.pop(self.status_bar.get_context_id("Downloads"))
 			self.status_bar.push(self.status_bar.get_context_id("Downloads"), " Downstream %dKB/s \tTotal %d \t Complete %d \t Active %d" %	(total_speed, total_downloads, complete_downloads, active_downloads))
 		return True
+
+	def normalize(self, sizes):
+		""""""
+		total = 0
+		total_unit = cons.UNIT_KB
+		for size, unit in sizes:
+			total += self.get_size(size, unit)
+		tmp = int(total/1024)
+		if  tmp > 0:
+			total = tmp
+			total_unit = cons.UNIT_MB
+			tmp = int(tmp/1024)
+		#	if tmp > 0:
+		#		total = tmp
+		#		total_unit = cons.UNIT_GB
+		return total, total_unit
+
+	def get_size(self, size, unit):
+		""""""
+		if unit == cons.UNIT_KB:
+			return size
+		elif unit == cons.UNIT_MB:
+			return size*1024
+		#elif unit == cons.UNIT_GB:
+		#	return size*1024*1024
 
 	def get_packages(self):
 		""""""
@@ -294,7 +321,7 @@ class Tree(gtk.VBox):
 				files.append(model.get_value(file_iter, 3))
 			file_iter = model.iter_next(file_iter)
 		return files
-		
+
 	def clear(self):
 		""""""
 		files = []
@@ -305,7 +332,7 @@ class Tree(gtk.VBox):
 			package_iter = model.iter_next(package_iter)
 			files += self.delete_package([cons.STATUS_CORRECT], tmp_iter)
 		return files
-		
+
 	def delete_package(self, status, package_iter):
 		""""""
 		tmp = []
@@ -317,9 +344,10 @@ class Tree(gtk.VBox):
 			file_iter = model.iter_next(file_iter)
 		if len(tmp) == model.iter_n_children(package_iter):
 			model.remove(package_iter)
+		else:
 			tmp = []
 		return tmp
-	
+
 	def delete_file(self, status, iter):
 		""""""
 		model = self.treeview.get_model()
@@ -328,7 +356,7 @@ class Tree(gtk.VBox):
 				result = model.get_value(iter, 3)
 				model.remove(iter)
 				return result
-			
+
 	def delete_link(self, status, iter):
 		""""""
 		result = None, None
@@ -339,7 +367,7 @@ class Tree(gtk.VBox):
 				result = model.get_value(file_iter, 3), model.get_value(iter, 3)
 				model.remove(iter)
 		return result
-		
+
 	def move_up(self, iter):
 		""""""
 		model = self.treeview.get_model()

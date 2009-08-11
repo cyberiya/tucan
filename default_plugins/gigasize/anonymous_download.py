@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -44,11 +42,10 @@ WAIT = 60
 
 class FormParser(HTMLParser):
 	""""""
-	def __init__(self, data):
+	def __init__(self):
 		""""""
 		HTMLParser.__init__(self)
 		self.form_action = None
-		self.feed(data)
 		self.close()
 
 	def handle_starttag(self, tag, attrs):
@@ -56,14 +53,14 @@ class FormParser(HTMLParser):
 		if tag == "form":
 			if ((len(attrs) == 3) and (attrs[2][1] == "formDownload")):
 				self.form_action = attrs[0][1]
-				
+
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def __init__(self):
 		""""""
 		Slots.__init__(self, 1)
 		DownloadPlugin.__init__(self)
-		
+
 	def check_links(self, url):
 		""""""
 		return CheckLinks().check(url)
@@ -72,25 +69,34 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		if self.get_slot():
 			cookie = cookielib.CookieJar()
-			opener = URLOpen(cookie)
-			opener.open(link)
-			form = None
-			while not form:
+			self.opener = URLOpen(cookie)
+			self.opener.open(link)
+			self.form = None
+			retry = True
+			while not self.form and retry:
 				tes = Tesseract(URLOpen().open("http://www.gigasize.com/randomImage.php").read(), self.filter_image)
 				captcha = tes.get_captcha()
 				if len(captcha) == 3:
-					data = urllib.urlencode({"txtNumber": captcha, "btnLogin.x": "124", "btnLogin.y": "12", "btnLogin": "Download"})
-					handle = opener.open("http://www.gigasize.com/formdownload.php", data)
-					f = FormParser(handle.read())
-					handle.close()
-					form = f.form_action
 					logger.warning("Captcha: %s" % captcha)
-			if self.start(path, "http://www.gigasize.com" + form, file_name, WAIT, cookie, urllib.urlencode({"dlb": "Download"})):
-				return True
-			else:
-				logger.warning("Limit Exceded.")
-				self.add_wait()
-				
+					data = urllib.urlencode([("txtNumber", captcha), ("btnLogin.x", "124"), ("btnLogin.y", "12"), ("btnLogin", "Download")])
+					f = FormParser()
+					for line in self.opener.open("http://www.gigasize.com/formdownload.php", data).readlines():
+						if '<font color="#FF0000">YOU HAVE REACHED YOUR HOURLY LIMIT</font><br/>' in line:
+							retry = False
+							logger.warning("Limit Exceded.")
+							self.add_wait()
+							self.return_slot()
+						f.feed(line)
+					self.form = f.form_action
+					f.close()
+			if self.form:
+				if self.start(path, link, file_name, WAIT, cookie, self.post_wait):
+					return True
+
+	def post_wait(self, link):
+		"""Must return handler"""
+		return self.opener.open("http://www.gigasize.com%s" % self.form, urllib.urlencode({"dlb": "Download"}))
+
 	def filter_image(self, image):
 		""""""
 		image = image.resize((120,40), Image.BICUBIC)
@@ -98,7 +104,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		image = image.point(self.filter_pixel)
 		image = ImageOps.grayscale(image)
 		return image
-		
+
 	def filter_pixel(self, pixel):
 		""""""
 		if pixel > 60:

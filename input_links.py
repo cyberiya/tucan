@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -41,12 +39,13 @@ class ClipParser(HTMLParser.HTMLParser):
 		""""""
 		HTMLParser.HTMLParser.__init__(self)
 		self.url = []
-	
+
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "a":
-			if attrs[0][0] == "href":
-				self.url.append(attrs[0][1])
+			for ref, link in attrs:
+				if ref == "href":
+					self.url.append(link)
 
 class InputLinks(gtk.Dialog):
 	""""""
@@ -55,10 +54,11 @@ class InputLinks(gtk.Dialog):
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_DOWNLOAD)
 		self.set_title(_("Input Links"))
+		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(600,500)
-		
+
 		self.cancel_check = False
-		
+
 		self.clipboard = gtk.clipboard_get()
 		self.clipboard.request_targets(self.get_clipboard)
 
@@ -67,7 +67,7 @@ class InputLinks(gtk.Dialog):
 		self.check_links = check
 		self.create_packages = create
 		self.packages = manage
-		
+
 		#textview
 		frame = gtk.Frame(_("Paste links here:"))
 		self.vbox.pack_start(frame)
@@ -84,7 +84,7 @@ class InputLinks(gtk.Dialog):
 		self.textview = gtk.TextView(buffer)
 		scroll.add(self.textview)
 		self.textview.set_wrap_mode(gtk.WRAP_CHAR)
-		
+
 		#check button
 		button_box = gtk.HButtonBox()
 		hbox.pack_start(button_box, False, False, 10)
@@ -97,7 +97,7 @@ class InputLinks(gtk.Dialog):
 		check_button.add(vbox)
 		button_box.pack_start(check_button)
 		check_button.connect("clicked", self.check)
-		
+
 		#treeview
 		frame = gtk.Frame()
 		self.vbox.pack_start(frame)
@@ -111,16 +111,16 @@ class InputLinks(gtk.Dialog):
 
 		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, int, str, str, bool, bool))
 		scroll.add(self.treeview)
-		
+
 		self.treeview.set_rules_hint(True)
 		self.treeview.set_headers_visible(False)
-		
+
 		tree_icon = gtk.TreeViewColumn('Icon') 
 		icon_cell = gtk.CellRendererPixbuf()
 		tree_icon.pack_start(icon_cell, True)
 		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
 		self.treeview.append_column(tree_icon)
-				  
+
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
 		name_cell.set_property("editable", True)
@@ -128,7 +128,7 @@ class InputLinks(gtk.Dialog):
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 2)
 		self.treeview.append_column(tree_name)
-		
+
 		tree_add = gtk.TreeViewColumn('Add')
 		add_cell = gtk.CellRendererToggle()
 		add_cell.connect("toggled", self.toggled)
@@ -136,12 +136,12 @@ class InputLinks(gtk.Dialog):
 		tree_add.add_attribute(add_cell, 'active', 6)
 		tree_add.add_attribute(add_cell, 'visible', 7)
 		self.treeview.append_column(tree_add)
-		
+
 		#advanced checkbutton
 		self.advanced_button = gtk.CheckButton(_("Show advanced Package configuration."))
 		self.advanced_button.set_active(show_advanced_packages)
 		self.vbox.pack_start(self.advanced_button, False)
-		
+
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
 		add_button = gtk.Button(None, gtk.STOCK_ADD)
@@ -149,7 +149,7 @@ class InputLinks(gtk.Dialog):
 		self.action_area.pack_start(add_button)
 		cancel_button.connect("clicked", self.close)
 		add_button.connect("clicked", self.add_links)
-		
+
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
@@ -163,7 +163,7 @@ class InputLinks(gtk.Dialog):
 	def value_changed (self, vadjust):
 		"""autoscroll"""
 		vadjust.need_scroll = abs(vadjust.value + vadjust.page_size - vadjust.upper) < vadjust.step_increment
-		
+
 	def change_name(self, cellrenderertext, path, new_text):
 		""""""
 		model = self.treeview.get_model()
@@ -192,7 +192,7 @@ class InputLinks(gtk.Dialog):
 			active = False
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 6, active)
-		
+
 	def add_links(self, button):
 		""""""
 		tmp = {}
@@ -226,14 +226,14 @@ class InputLinks(gtk.Dialog):
 			m = Message(self, cons.SEVERITY_INFO, title, message, both=True)
 			if not m.accepted:
 				self.close()
-	
+
 	def check(self, button):
 		""""""
 		w = Wait(_("Checking links, please wait."), self)
 		w.connect("key-press-event", self.cancel)
 		th = threading.Thread(group=None, target=self.check_all, name=None, args=(w,))
 		th.start()
-		
+
 	def check_all(self, wait):
 		""""""
 		store = self.treeview.get_model()
@@ -241,7 +241,7 @@ class InputLinks(gtk.Dialog):
 		buffer = self.textview.get_buffer()
 		start, end = buffer.get_bounds()
 		link_list = [link.strip() for link in buffer.get_text(start, end).split("\n")]
-		
+
 		service_icon = self.treeview.render_icon(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
 		unsupported_icon = self.treeview.render_icon(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_MENU)
 		active_icon = self.treeview.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
@@ -287,11 +287,11 @@ class InputLinks(gtk.Dialog):
 		if event.keyval == 65307:
 			window.progress.set_text(_("Check Canceled!"))
 			self.cancel_check = True
-	
+
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
-	
+
 if __name__ == "__main__":
 	x = InputLinks(None, None, None)
 	gtk.main()

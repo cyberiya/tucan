@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -53,7 +51,7 @@ class Parser(HTMLParser.HTMLParser):
 		if tag == "a":
 			if len(attrs) == 4:
 				self.link = urllib.quote(attrs[2][1], "/:")
-			
+
 	def decode(self, code, num, text):
 		""""""
 		#base64ToText
@@ -107,7 +105,7 @@ class Parser(HTMLParser.HTMLParser):
 				result += chr(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63))
 				i += 3
 		return result
-		
+
 class CheckLinks:
 	""""""
 	def check(self, url):

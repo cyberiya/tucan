@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -33,7 +31,7 @@ import cons
 class UpdateManager(gtk.Dialog, ServiceUpdate):
 	""""""
 	def __init__(self, config, parent, updates=None):
-		""""""		
+		""""""
 		gtk.Dialog.__init__(self)
 		ServiceUpdate.__init__(self, config)
 		self.set_transient_for(parent)
@@ -41,7 +39,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.set_icon_from_file(cons.ICON_UPDATE)
 		self.set_title(("Update Manager"))
 		self.set_size_request(400,300)
-		
+
 		# treeview
 		frame = gtk.Frame()
 		self.vbox.pack_start(frame)
@@ -55,42 +53,42 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.treeview = gtk.TreeView(gtk.ListStore(gtk.gdk.Pixbuf, str, bool, str, gobject.TYPE_PYOBJECT))
 		scroll.add(self.treeview)
-		
+
 		self.treeview.set_rules_hint(True)
 		self.treeview.set_headers_visible(False)
-		
+
 		tree_icon = gtk.TreeViewColumn('Icon') 
 		icon_cell = gtk.CellRendererPixbuf()
 		tree_icon.pack_start(icon_cell, True)
 		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
 		tree_icon.set_property('min-width', 100)
 		self.treeview.append_column(tree_icon)
-	
+
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 1)
 		tree_name.set_property('min-width', 200)
 		self.treeview.append_column(tree_name)
-		
+
 		tree_add = gtk.TreeViewColumn('Add')
 		add_cell = gtk.CellRendererToggle()
 		add_cell.connect("toggled", self.toggled)
 		tree_add.pack_start(add_cell, True)
 		tree_add.add_attribute(add_cell, 'active', 2)
 		self.treeview.append_column(tree_add)
-		
+
 		#status
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 5)
-		
+
 		self.status_icon = gtk.image_new_from_stock(gtk.STOCK_REFRESH, gtk.ICON_SIZE_MENU)
 		hbox.pack_start(self.status_icon, False, False, 10)
 		self.status_label = gtk.Label("Checking for updates.")
 		hbox.pack_start(self.status_label, False, False, 5)
 		self.progress = gtk.ProgressBar()
 		hbox.pack_start(self.progress, True, True, 20)
-		
+
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
 		add_button = gtk.Button(None, gtk.STOCK_ADD)
@@ -98,24 +96,24 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.action_area.pack_start(add_button)
 		cancel_button.connect("clicked", self.close)
 		add_button.connect("clicked", self.install)
-		
+
 		self.connect("response", self.close)
 		self.show_all()
-		
+
 		self.progress.hide()
 
-		if self.server_version == cons.TUCAN_VERSION:
+		if self.server_version.split(" ")[0] <= cons.TUCAN_VERSION.split(" ")[0]:
 			gobject.timeout_add(1000, self.check_updates, updates)
 		elif self.server_version == None:
 			message = "Update Manager can't connect to server.\nTry again later."
-			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Not available", message)
+			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Not available!", message)
 			gobject.idle_add(self.close)
 		else:
 			message = "Version %s released!\nPlease update and enjoy new services." % self.server_version
-			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Outdated", message)
+			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Outdated!", message)
 			gobject.idle_add(self.close)
 		self.run()
-		
+
 	def toggled(self, button, path):
 		""""""
 		model = self.treeview.get_model()
@@ -124,39 +122,39 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 			active = False
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 2, active)
-		
+
 	def check_updates(self, updates=None):
 		""""""
 		model = self.treeview.get_model()
-		default_icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_UPDATE)
-		
+		default_icon = gtk.gdk.pixbuf_new_from_file_at_size(cons.ICON_UPDATE, 32, 32)
+
 		updated = 0
 		new = 0
 		if not updates:
 			updates = self.get_updates()
 		for service, options in updates.items():
 			if options[2]:
-				icon = gtk.gdk.pixbuf_new_from_file(options[2])
+				icon = gtk.gdk.pixbuf_new_from_file_at_size(options[2], 32, 32)
 				updated += 1
 			else:
 				icon = default_icon
 				new += 1
 			if model:
 				model.append([icon, service, False, options[0], options[1]])
-		
+
 		self.status_icon.set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_BUTTON)
 		self.status_label.set_label("%i New and %i Updated." % (new, updated))
 		if updated == 0 and new == 0:
 			gobject.timeout_add(5000, self.close)
-		
+
 	def install(self, button):
 		""""""
 		model = self.treeview.get_model()
-		
+
 		self.status_icon.set_from_stock(gtk.STOCK_GO_DOWN, gtk.ICON_SIZE_MENU)
 		self.status_label.set_label("Installing")
 		self.progress.show()
-		
+
 		install_targets = []
 		update_iter = model.get_iter_root()
 		while update_iter:
@@ -185,7 +183,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
-	
+
 if __name__ == "__main__":
 	from config import Config
 	x = UpdateManager(Config(), None)

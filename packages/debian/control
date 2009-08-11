@@ -1,10 +1,10 @@
 Source: tucan
 Section: net
 Priority: optional
-Maintainer: Fran Lupion (Crak) <crakotaku@yahoo.es>
+Maintainer: Fran Lupion (Crak) <crak@tucaneando.com>
 Build-Depends: debhelper (>= 7)
-Standards-Version: 3.8.1
-Homepage: http://cusl3-tucan.forja.rediris.es/
+Standards-Version: 3.8.2
+Homepage: http://www.tucaneando.com
 
 Package: tucan
 Architecture: all
@@ -16,6 +16,11 @@ Description: Download and upload manager for 1-Click Hosters
   - http://gigasize.com/
   - http://mediafire.com/
   - http://4shared.com/
+  - http://sendspace.com/
+  - http://zshare.net/
+  - http://filefactory.com/
+  - http://easy-share.com/
+  - http://badongo.com/
   - (...)
  Main Features:
   - Graphical User Interface in GTK+.

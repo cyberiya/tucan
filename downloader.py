@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -36,15 +34,14 @@ BUFFER_SIZE = BASE_SIZE * 1024
 
 class Downloader(threading.Thread):
 	""""""
-	def __init__(self, path, url, file_name, wait, cookie, form, post_wait):
+	def __init__(self, path, url, file_name, wait, cookie, post_wait):
 		""""""
 		threading.Thread.__init__(self)
-		
+
 		self.max_speed = 0
-		
+
 		self.post_wait = post_wait
-		self.form = form
-		self.status = cons.STATUS_PEND
+		self.status = cons.STATUS_WAIT
 		self.path = path
 		self.url = url
 		self.file = file_name
@@ -59,56 +56,60 @@ class Downloader(threading.Thread):
 		self.tmp_size = 0
 		#build opener
 		self.opener = URLOpen(cookie)
-		
+
 	def run(self):
 		""""""
 		if self.wait:
-			self.status = cons.STATUS_WAIT
 			while ((self.wait > 0) and not self.stop_flag):
 				time.sleep(1)
 				self.wait -= 1
 				self.time_remaining = self.wait
-			if self.post_wait:
-				self.form = self.post_wait()
 		if not self.stop_flag:
 			try:
-				self.status = cons.STATUS_ACTIVE
-				handle = self.opener.open(self.url, self.form)
-				logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
-				self.total_size = int(handle.info().getheader("Content-Length"))
-				if not os.path.exists(unicode(self.path)):
-					os.mkdir(self.path)
-				f = open(unicode(os.path.join(self.path, self.file)), "wb")
-				self.start_time = time.time()
-				data = "None"
-				while ((len(data) > 0) and not self.stop_flag):
-					tmp_size = 0
-					if self.max_speed > 0:
-						max_size = self.max_speed/BASE_SIZE
-					else:
-						max_size = 0
-					start_seconds = time.time()
-					while (time.time() - start_seconds) < 1:
-						if max_size == 0 or tmp_size < max_size:
-							data = handle.read(BUFFER_SIZE)
-							f.write(data)
-							self.actual_size += len(data)
-							tmp_size += 1
+				if self.post_wait:
+					handle = self.post_wait(self.url)
+				else:
+					handle = self.opener.open(self.url)
+				if handle:
+					self.status = cons.STATUS_ACTIVE
+					logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
+					self.total_size = int(handle.info().getheader("Content-Length"))
+					if not os.path.exists(unicode(self.path)):
+						os.mkdir(self.path)
+					f = open(unicode(os.path.join(self.path, self.file)), "wb")
+					self.start_time = time.time()
+					data = "None"
+					while ((len(data) > 0) and not self.stop_flag):
+						tmp_size = 0
+						if self.max_speed > 0:
+							max_size = self.max_speed/BASE_SIZE
 						else:
-							time.sleep(0.1)
-					self.speed = BASE_SIZE * tmp_size
-				self.time_remaining = time.time() - self.start_time
-				f.close()
-				if not self.stop_flag:
+							max_size = 0
+						start_seconds = time.time()
+						while (time.time() - start_seconds) < 1:
+							if max_size == 0 or tmp_size < max_size:
+								data = handle.read(BUFFER_SIZE)
+								f.write(data)
+								self.actual_size += len(data)
+								tmp_size += 1
+							else:
+								time.sleep(0.1)
+						self.speed = BASE_SIZE * tmp_size
+					self.time_remaining = time.time() - self.start_time
+					f.close()
+					if not self.stop_flag:
+						self.stop_flag = True
+						if self.actual_size == self.total_size:
+							self.status = cons.STATUS_CORRECT
+						else:
+							self.status = cons.STATUS_ERROR
+				else:
 					self.stop_flag = True
-					if self.actual_size == self.total_size:
-						self.status = cons.STATUS_CORRECT
-					else:
-						self.status = cons.STATUS_ERROR
-			except TypeError, e:
-				logger.exception("%s: %s" % (self.file, e))
-				self.stop_flag = True
-				self.status = cons.STATUS_PEND
+					self.status = cons.STATUS_PEND
+			#except TypeError, e:
+			#	logger.exception("%s: %s" % (self.file, e))
+			#	self.stop_flag = True
+			#	self.status = cons.STATUS_PEND
 			except Exception, e:
 				logger.exception("%s: %s" % (self.file, e))
 				self.stop_flag = True

@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -36,6 +34,7 @@ class LogView(gtk.Dialog):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_title("Log View")
+		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(700,500)
 		self.set_icon(self.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU))
 
@@ -48,7 +47,7 @@ class LogView(gtk.Dialog):
 		frame.set_border_width(10)
 		hbox = gtk.HBox()
 		frame.add(hbox)
-		
+
 		#auto scroll 
 		scroll = gtk.ScrolledWindow()
 		hbox.pack_start(scroll)
@@ -64,7 +63,7 @@ class LogView(gtk.Dialog):
 		self.textview.set_editable(False)
 		self.textview.set_cursor_visible(False)
 		self.textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("black"))
-		
+
 		table = buffer.get_tag_table()
 		for name, color in COLORS.items():
 			tag = gtk.TextTag(name)
@@ -83,15 +82,15 @@ class LogView(gtk.Dialog):
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		hbox.pack_start(aspect)
-		
+
 		self.combo = gtk.combo_box_new_text()
 		buttonbox.pack_start(self.combo)
 		self.combo.connect("changed", self.reload)
-		
+
 		for s in SEVERITY:
 			self.combo.append_text(s)
 		self.combo.set_active(2)
-		
+
 		#action area
 		button = gtk.Button(None, gtk.STOCK_CLOSE)
 		self.action_area.pack_start(button)
@@ -99,10 +98,10 @@ class LogView(gtk.Dialog):
 
 		self.connect("response", self.close)
 		self.show_all()
-		
+
 		gobject.timeout_add(1000, self.update)
 		self.run()
-	
+
 	def insert_color(self, buffer, line):
 		""""""
 		for s in SEVERITY[self.combo.get_active():]:
@@ -117,7 +116,7 @@ class LogView(gtk.Dialog):
 		ini, fin = self.back_buffer.get_bounds()
 		for line in self.back_buffer.get_text(ini, fin).split("\n"):
 			self.insert_color(buffer, line)
-	
+
 	def update(self):
 		""""""
 		try:
@@ -129,7 +128,7 @@ class LogView(gtk.Dialog):
 			pass
 		else:
 			return True
-		
+
 	def changed(self, vadjust):
 		"""autoscroll"""
 		if not hasattr(vadjust, "need_scroll") or vadjust.need_scroll:
@@ -139,7 +138,7 @@ class LogView(gtk.Dialog):
 	def value_changed (self, vadjust):
 		"""autoscroll"""
 		vadjust.need_scroll = abs(vadjust.value + vadjust.page_size - vadjust.upper) < vadjust.step_increment
-		
+
 	def close(self, widget=None, other=None):
 		""""""
 		self.file.close()

@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -36,7 +34,7 @@ CRLF = '\r\n'
 #class MultipartHTTPHandler(urllib2.HTTPCookieProcessor):
 class MultipartHTTPHandler(urllib2.HTTPHandler):
 	"""Based on urllib2_file-0.2 Fabien SEISEN"""
-	
+
 	handler_order = urllib2.HTTPHandler.handler_order - 10
 
 	def get_content_type(self, filename):
@@ -45,14 +43,14 @@ class MultipartHTTPHandler(urllib2.HTTPHandler):
 
 	def send_data(self, data, boundary, sock=None):
 		"""if sock is None, juste return the estimate size"""
-		length = 0		
+		length = 0
 		for key, value in data:
 			if hasattr(value, 'read'):
 				file_size = os.fstat(value.fileno())[stat.ST_SIZE]
 				length += file_size
 
 				name = os.path.basename(value.name)
-				
+
 				buffer = []
 				buffer.append("--%s" % boundary)
 				buffer.append('Content-Disposition: form-data; name="%s"; filename="%s"' % (key, name))
@@ -61,7 +59,7 @@ class MultipartHTTPHandler(urllib2.HTTPHandler):
 				buffer.append("")
 				buffer = CRLF.join(buffer)
 				length += len(buffer)
-				
+
 				if sock:
 					sock.send(buffer)
 					size = 0
@@ -94,7 +92,7 @@ class MultipartHTTPHandler(urllib2.HTTPHandler):
 
 				if sock:
 					sock.send(buffer)
-		
+
 		buffer = []
 		buffer.append("")
 		buffer.append("--%s--" % boundary)
@@ -136,15 +134,15 @@ class MultipartHTTPHandler(urllib2.HTTPHandler):
 		scheme, sel = urllib.splittype(req.get_selector())
 		sel_host, sel_path = urllib.splithost(sel)
 		h.putheader('Host', sel_host or host)
-		
+
 		for name, value in self.parent.addheaders:
 			name = name.capitalize()
 			if name not in req.headers:
 				h.putheader(name, value)
-				
+
 		for key, value in req.headers.items():
 			h.putheader(key, value)
-		
+
 		h.endheaders()
 		if req.has_data():
 			if files:
@@ -158,7 +156,6 @@ class MultipartHTTPHandler(urllib2.HTTPHandler):
 			resp.code = r.status
 			resp.msg = r.reason
 			return resp
-			
+
 		except socket.error, err:
 			raise URLError(err)
-			

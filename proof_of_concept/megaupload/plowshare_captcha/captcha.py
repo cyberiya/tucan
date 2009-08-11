@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -104,9 +102,9 @@ class CaptchaForm(HTMLParser):
 		angle = rotation * (+1 if (index % 2 == 0) else -1)
 		rotated_image = image.rotate(angle, expand=True)
 		return rotated_image.point(lambda x: 0 if x == 1 else 255)
-			
+
 	def build_candidates(self, characters4_pixels_list, uncertain_pixels):
-		"""Build word candidates from characters and uncertains groups."""       
+		"""Build word candidates from characters and uncertains groups."""
 		for plindex, characters4_pixels in enumerate(characters4_pixels_list):
 			logging.debug("Generating words (%d) %d/%d" % (2**len(uncertain_pixels), plindex+1, len(characters4_pixels_list)))
 			for length in range(len(uncertain_pixels)+1):
@@ -122,20 +120,20 @@ class CaptchaForm(HTMLParser):
 
 					images = [self.rotate_character(pixels, cindex) for cindex, pixels in enumerate(characters4_pixels_test)]
 					clean_image = smooth(join_images_horizontal(images), 0)
-					
+
 					ocr = Tesseract(self.data, lambda x: clean_image)
 					text = ocr.get_captcha().strip()
-					
+
 					filtered_text = filter_word(text)
 					if filtered_text:
 						yield filtered_text
 
 	def captcha_solve(self, maxiterations=1):
-		"""Basado en el algoritmo de plowshare"""		
+		"""Basado en el algoritmo de plowshare"""
 		p = ImageFile.Parser()
 		p.feed(self.data)
 		original = p.close()
-		
+
 		# Get background zone
 		width, height = original.size
 		image = Image.new("L", (width+2, height+2), 255)
@@ -145,9 +143,9 @@ class CaptchaForm(HTMLParser):
 
 		# Get characters zones    
 		characters_pixels = sorted(get_zones(image, background_pixels, 0, 10),key=center_of_mass)
-		logging.debug("Characters: %d - %s" % (len(characters_pixels), [len(x) for x in characters_pixels]))    
+		logging.debug("Characters: %d - %s" % (len(characters_pixels), [len(x) for x in characters_pixels]))
 		if len(characters_pixels) >= 4:
-			characters_pixels_list0 = [[union_sets(sets) for sets in x] for x in segment(characters_pixels, 4)]    
+			characters_pixels_list0 = [[union_sets(sets) for sets in x] for x in segment(characters_pixels, 4)]
 			characters4_pixels_list = sorted(characters_pixels_list0, key=lambda pixels_list: get_error(pixels_list, image))[:maxiterations]
 			seen = reduce(set.union, [background_pixels] + characters_pixels)
 			max_uncertain_groups = 8
@@ -155,7 +153,7 @@ class CaptchaForm(HTMLParser):
 			# Get uncertain zones
 			uncertain_pixels = list(sorted(get_zones(image, seen, 255, 20), key=len))[:max_uncertain_groups]
 			logging.debug("Uncertain groups: %d - %s" % (len(uncertain_pixels), [len(x) for x in uncertain_pixels]))
-			
+
 			#build candidates
 			candidates = self.build_candidates(characters4_pixels_list, uncertain_pixels)
 
@@ -170,4 +168,3 @@ class CaptchaForm(HTMLParser):
 if __name__ == "__main__":
 	c = CaptchaForm("http://www.megaupload.com/?d=RDAJ2PYH")
 	print c.link
-	

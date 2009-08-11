@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -34,7 +32,7 @@ class AnonymousDownload(DownloadPlugin):
 	def __init__(self):
 		""""""
 		DownloadPlugin.__init__(self)
-		
+
 	def check_links(self, url):
 		""""""
 		return CheckLinks().check(url)
@@ -45,7 +43,7 @@ class AnonymousDownload(DownloadPlugin):
 		if parser.link:
 			if self.start(path, parser.link, file_name, WAIT):
 				return True
-	
+
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):

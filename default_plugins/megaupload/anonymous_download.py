@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -27,6 +25,8 @@ import pickle
 import logging
 logger = logging.getLogger(__name__)
 
+from url_open import URLOpen
+
 from captcha import CaptchaForm
 from check_links import CheckLinks
 
@@ -43,23 +43,30 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		Slots.__init__(self, 1)
 		DownloadPlugin.__init__(self)
-		
+
 	def add(self, path, link, file_name):
 		""""""
 		if self.get_slot():
 			parser = CaptchaForm(link)
 			if parser.link:
-				return self.start(path, parser.link, file_name, WAIT)
-			else:
-				self.add_wait()
-				self.return_slot()
-				logger.warning("Limit Exceded.")
+				return self.start(path, parser.link, file_name, WAIT, None, self.post_wait)
+
+	def post_wait(self, link):
+		"""Must return link and form"""
+		try:
+			handle = URLOpen().open(link)
+		except Exception, e:
+			self.add_wait()
+			self.return_slot()
+			logger.warning("Limit Exceded.")
+		else:
+			return handle
 
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):
 			logger.info("Stopped %s: %s" % (file_name, self.return_slot()))
-			
+
 	def check_links(self, url):
 		""""""
 		return CheckLinks().check(url)
