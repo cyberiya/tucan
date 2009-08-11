@@ -3,7 +3,7 @@ tucan (0.3.8-1) unstable; urgency=low
   * New upstream release
   * debian-policy updated to 3.8.2
   * License upgraded to GPLv3
-  * New upstream/mainteiner mail
+  * New upstream/maintainer mail
   * Solved data loss (Closes: #531392)
 
  -- Fran Lupion (Crak) <crak@tucaneando.com>  Wed, 15 Jul 2009 22:54:52 +0200
