@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -50,15 +48,15 @@ class FormParser(HTMLParser):
 			handler = opener.open(url)
 			if "text/html" in handler.info()["Content-Type"]:
 				self.feed(handler.read())
-				if self.form_action:				
+				if self.form_action:
 					for line in opener.open(self.form_action, urllib.urlencode({"dl.start": "PREMIUM", "":"Premium user"})).readlines():
-						self.feed(line)					
+						self.feed(line)
 			else:
 				self.url = url
 		except Exception, e:
 			print e
 			logger.error("%s: %s" % (url, e))
-			
+
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "form":
@@ -77,7 +75,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 	def check_links(self, url):
 		""""""
 		return CheckLinks().check(url)
-		
+
 	def add(self, path, link, file_name):
 		""""""
 		cookie = self.get_cookie()

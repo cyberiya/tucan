@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -103,7 +101,7 @@ class Config(SafeConfigParser):
 			else:
 				return False
 		return True
-		
+
 	def create_config(self):
 		""""""
 		for section, options in DEFAULTS.items():
@@ -130,7 +128,7 @@ class Config(SafeConfigParser):
 			enabled = config.getboolean(service_config.SECTION_MAIN, service_config.OPTION_ENABLED)
 			result = os.path.split(os.path.split(path)[0])[1], icon, name, enabled, config
 		return result
-		
+
 	def get_proxy(self):
 		""""""
 		result = None, None

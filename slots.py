@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -33,7 +31,7 @@ class Slots:
 		self.end_wait = 0
 		self.max = slots
 		self.slots = slots
-		
+
 	def get_slot(self):
 		""""""
 		if self.slots > 0:
@@ -41,13 +39,13 @@ class Slots:
 				self.limit = False
 				self.slots -= 1
 				return True
-			
+
 	def add_wait(self):
 		""""""
 		logger.warning("Wait %i seconds." % self.time_limit)
 		self.limit = True
 		self.end_wait = time.time() + self.time_limit
-			
+
 	def return_slot(self):
 		""""""
 		if self.slots < self.max:

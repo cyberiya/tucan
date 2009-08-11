@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -38,24 +36,24 @@ class UploadParser(HTMLParser):
 		self.up_action = None
 		self.up_done_action = None
 		self.id = None
-		
+
 		cookie = cookielib.CookieJar()
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie), MultipartHTTPHandler)
-		
+
 		self.feed(opener.open(urllib2.Request("http://www.megaupload.com/", {})).read())
 		self.close()
 		if self.up_action and self.up_done_action:
 			print self.up_action
 			print self.up_done_action
-			
+
 			req = urllib2.Request(self.up_action, {}, HEADER)
 			handle1 = opener.open(req)
 			print handle1.readline()
-			
+
 			form = {"filecount": "", 'multifile_0"; filename="': "", "UPLOAD_IDENTIFIER": self.id, "sessionid": self.id , "file": open(file_name, "rb"), "toemail": "", "fromemail": "", "message": description, "multiemail": "", "password": "", "url": "", "accept": "on"}
 			req = urllib2.Request(self.up_done_action, form, HEADER)
 			handle2 = opener.open(req)
-			
+
 			print "mierda", req.get_data()
 			data = " "
 			while data:

@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -122,10 +120,10 @@ class FeatherWindow(gtk.Window):
 		self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#000"))
 		vbox = gtk.VBox()
 		self.add(vbox)
-		
+
 		self.plugin = gtk.Label()
 		self.time = gtk.Label()
-		
+
 		vbox.pack_start(gtk.Label(), False)
 		vbox.pack_start(self.plugin, False, False, 5)
 		vbox.pack_start(self.time, False, False, 5)
@@ -147,7 +145,7 @@ class FeatherWindow(gtk.Window):
 		rect = widget.get_allocation()
 		self.move(win_x + rect.x - feather_width, win_y + rect.y - 20)
 		self.show_all()
-		
+
 	def hide_feather(self, widget, event=None):
 		""""""
 		self.hide()

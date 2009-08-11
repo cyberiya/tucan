@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -33,7 +31,7 @@ import config
 import cons
 
 BASE = "https://forja.rediris.es/svn/cusl3-tucan/trunk"
-PLUGINS = "%s/default_plugins/" % BASE
+PLUGINS = "https://forja.rediris.es/svn/cusl3-tucan/branches/default_plugins/"
 CONF_FILE = "service.conf"
 
 class ServiceList(HTMLParser):
@@ -52,7 +50,7 @@ class ServiceList(HTMLParser):
 		""""""
 		if tag == "dir":
 			self.services.append(attrs[1][1])
-			
+
 class ServiceCheck(HTMLParser):
 	""""""
 	def __init__(self, url):
@@ -128,7 +126,9 @@ class ServiceUpdate:
 				f.close()
 				if not self.config.has_option(config.SECTION_SERVICES, service_name):
 					self.config.set(config.SECTION_SERVICES, service_name, os.path.join(cons.PLUGIN_PATH, service_dir, ""))
+
 if __name__ == "__main__":
 	from config import Config
 	s = ServiceUpdate(Config())
-	print len(s.get_updates())
+	print s.server_version
+	print s.get_updates()

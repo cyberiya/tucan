@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -37,12 +35,12 @@ import gobject
 
 from about import About
 from message import Message
-from tray_icon import TrayIcon
 from preferences import Preferences
 from log_view import LogView
 
-from menu_bar import MenuBar
-from toolbar import Toolbar
+import tray_icon
+import menu_bar
+import toolbar
 
 import config
 from sessions import Sessions
@@ -56,11 +54,11 @@ from service_manager import ServiceManager
 from service_update import ServiceUpdate
 
 import cons
-	
+
 class Gui(gtk.Window, ServiceManager):
 	""""""
 	def __init__(self, conf):
-		""""""		
+		""""""
 		#i18n
 		gettext.bindtextdomain(cons.NAME_LOCALES, cons.PATH_LOCALES)
 		gettext.textdomain(cons.NAME_LOCALES)
@@ -73,21 +71,21 @@ class Gui(gtk.Window, ServiceManager):
 		if not self.configuration.configured:
 			Preferences(self.configuration, True)
 		self.preferences_shown =  False
-		
+
 		#l10n
 		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=[self.configuration.get(config.SECTION_MAIN, config.OPTION_LANGUAGE)])
 		lang.install()
 
 		ServiceManager.__init__(self, self.configuration)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
-		
+
 		self.set_icon_from_file(cons.ICON_TUCAN)
 		self.set_title("%s - Version: %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(900, 500)
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
-		
+
 		#menu items
 		menu_load_session = _("Load Session"), lambda x: FileChooser(self, self.load_session, cons.CONFIG_PATH, True)
 		menu_save_session = _("Save Session"), lambda x: FileChooser(self, self.save_session, cons.CONFIG_PATH, save=True)
@@ -97,12 +95,32 @@ class Gui(gtk.Window, ServiceManager):
 		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
 		menu_log = _("Show Logs"), LogView
 		show_uploads = gtk.CheckMenuItem(_("Show Uploads")), self.resize_pane, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS)
-		
-		#menubar
-		file_menu = _("File"), [menu_load_session, menu_save_session, None, menu_quit]
-		view_menu = _("View"), [show_uploads, menu_log, None, menu_preferences]
-		help_menu = _("Help"), [menu_help, menu_about]
-		self.vbox.pack_start(MenuBar([file_menu, view_menu, help_menu]), False)
+
+		#integration menubar
+		integration = None
+		if cons.OS_OSX:
+			try:				
+				about_menu = _("About TucanManager"), About
+				preferences_menu = _("Preferences"), self.preferences
+				file_menu = _("File"), [menu_load_session, menu_save_session]
+				view_menu = _("View"), [show_uploads, None, menu_log]
+				help_menu = _("Help"), [menu_help]
+				quit_menu = _("Quit"), self.quit
+				integration = gtk.Window(gtk.WINDOW_POPUP)
+				vbox = gtk.VBox()
+				integration.add(vbox)
+				vbox.pack_start(menu_bar.OSXMenuBar([file_menu, view_menu, help_menu], about_menu, preferences_menu, quit_menu))
+				
+			except Exception, e:
+				integration = None
+				logger.critical("No OSX menu integration support.")
+	
+		#normal menubar
+		if not integration:
+			file_menu = _("File"), [menu_load_session, menu_save_session, None, menu_quit]
+			view_menu = _("View"), [show_uploads, menu_log, None, menu_preferences]
+			help_menu = _("Help"), [menu_help, menu_about]
+			self.vbox.pack_start(menu_bar.MenuBar([file_menu, view_menu, help_menu]), False)
 
 		#toolbar
 		download = _("Add Downloads"), gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_links
@@ -112,18 +130,34 @@ class Gui(gtk.Window, ServiceManager):
 		down = _("Move Down"), gtk.image_new_from_file(cons.ICON_DOWN), self.move_down
 		start = _("Start Selected"), gtk.image_new_from_file(cons.ICON_START), self.start
 		stop = _("Stop Selected"), gtk.image_new_from_file(cons.ICON_STOP), self.stop
-		self.vbox.pack_start(Toolbar([download, upload, None, clear, None, up, down, None, start, stop]), False)
-		
+		self.vbox.pack_start(toolbar.Toolbar([download, upload, None, clear, None, up, down, None, start, stop]), False)
+
 		copy = gtk.STOCK_COPY, self.copy_clipboard
 		delete = gtk.STOCK_REMOVE, self.delete
 		start = gtk.STOCK_MEDIA_PLAY, self.start
 		stop = gtk.STOCK_MEDIA_STOP, self.stop
-		
+
 		#trees
 		self.downloads = Tree([copy, None, delete], self.download_manager)
 		#self.uploads = Tree()
 		self.uploads = gtk.VBox()
 		
+		#tray icon
+		if cons.OS_OSX:
+			try:
+				#dock integration
+				self.tray_icon = tray_icon.OSXDock(self.show, self.quit)
+				self.connect("hide", self.tray_icon.activate, True)
+			except Exception, e:
+				logger.critical("No OSX dock integration support.")
+				self.tray_icon = None
+		else:
+			#trayicon
+			tray_menu = [menu_preferences, menu_about, None, menu_quit]
+			self.tray_icon = tray_icon.TrayIcon(self.show, self.hide, tray_menu)
+			self.connect("hide", self.tray_icon.activate)
+			self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)		
+
 		#sessions
 		self.session = Sessions()
 		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
@@ -135,29 +169,23 @@ class Gui(gtk.Window, ServiceManager):
 				m = Message(None, cons.SEVERITY_WARNING, title, message, both=True)
 				if m.accepted:
 					self.load_default_session()
-		
+
 		#pane
 		self.pane = gtk.VPaned()
 		self.vbox.pack_start(self.pane)
 		self.pane.pack1(self.downloads, True)
 		self.pane.pack2(self.uploads, True)
 		self.pane.set_position(self.get_size()[1])
-		
+
 		self.connect("key-press-event", self.delete_key)
-		
+
 		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE):
 			self.connect("delete_event", self.hide_on_delete)
 		else:
 			self.connect("delete_event", self.quit)
-		
+
 		self.show_all()
-				
-		#trayicon
-		tray_menu = [menu_preferences, menu_about, None, menu_quit]
-		self.tray_icon = TrayIcon(self.show, self.hide, tray_menu)
-		self.connect("hide", self.tray_icon.activate)
-		self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)
-		
+
 		#Autocheck services
 		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_AUTO_UPDATE):
 			th = threading.Thread(group=None, target=self.check_updates, name=None)
@@ -165,14 +193,14 @@ class Gui(gtk.Window, ServiceManager):
 
 		#ugly polling
 		gobject.timeout_add(120000, self.save_default_session)
-		
+
 	def check_updates(self):
 		""""""
 		s = ServiceUpdate(self.configuration)
 		updates = s.get_updates()
 		if len(updates) > 0:
 			gobject.idle_add(self.update_manager, updates)
-			
+
 	def update_manager(self, updates):
 		""""""
 		if not self.preferences_shown:
@@ -180,40 +208,42 @@ class Gui(gtk.Window, ServiceManager):
 			Preferences(self.configuration, True, updates)
 			self.preferences_shown =  False
 		return False
-		
+
 	def delete_key(self, window, event):
 		"""pressed del key"""
 		if event.keyval == 65535:
 			self.delete()
-			
+
 	def preferences(self, button=None):
 		""""""
 		if not self.preferences_shown:
 			self.preferences_shown = True
 			Preferences(self.configuration)
+			#sincronice statusbar
+			self.downloads.status_bar.synchronize()
 			self.preferences_shown =  False
 
 	def not_implemented(self, widget):
 		""""""
 		w = Message(self, cons.SEVERITY_WARNING, "Not Implemented!", "The functionality you are trying to use is not implemented yet.")
-	
+
 	def resize_pane(self, checkbox):
 		""""""
 		if checkbox.get_active():
 			self.pane.set_position(-1)
 		else:
 			self.pane.set_position(self.get_size()[1])
-		
+
 	def help(self, widget):
 		""""""
 		webbrowser.open(cons.DOC)
-		
+
 	def add_links(self, button):
 		""""""
 		default_path = self.configuration.get(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER)
 		show_advanced_packages = self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES)
 		InputLinks(default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, show_advanced_packages)
-		
+
 	def copy_clipboard(self, button):
 		""""""
 		model, iter = self.downloads.treeview.get_selection().get_selected()
@@ -233,28 +263,28 @@ class Gui(gtk.Window, ServiceManager):
 		except Exception, e:
 			logger.exception("Session not loaded: %s" % e)
 			gobject.idle_add(self.session_error)
-			
+
 	def session_error(self):
 		""""""
 		title = _("Tucan Manager - Session Error.")
 		message = _("There was a problem loading the last session. Links are unrecoverable.")
 		Message(self, cons.SEVERITY_ERROR, title, message)
-		
+
 	def save_session(self, path):
 		""""""
 		packages, info = self.downloads.get_packages()
 		self.session.save_session(path, packages, info)
 		logger.debug("Session saved: %s" % info)
-		
+
 	def load_default_session(self):
 		""""""
 		self.load_session(cons.SESSION_FILE)
-			
+
 	def save_default_session(self):
 		""""""
 		self.save_session(cons.SESSION_FILE)
 		return True
-		
+
 	def manage_packages(self, packages, packages_info):
 		""""""
 		tmp_packages = []
@@ -282,15 +312,15 @@ class Gui(gtk.Window, ServiceManager):
 					plugin, plugin_type = self.get_download_plugin(service)
 					tmp.append((download[0][download[2].index(service)], plugin, plugin_type, service))
 				self.download_manager.add(package_path, download[1], tmp, download[3], download[4])
-			
+
 	def start(self, button):
 		"""Implementado solo para descargas"""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		if len(paths) > 0:
 			if len(paths[0]) > 1:
-				logger.warning("Start file: %s" % self.download_manager.start(model.get_value(model.get_iter(paths[0]), 3)))
+				logger.info("Start file: %s" % self.download_manager.start(model.get_value(model.get_iter(paths[0]), 3)))
 			else:
-				logger.warning("Start package.")
+				logger.info("Start package.")
 				for item in self.downloads.package_files(model.get_iter(paths[0])):
 					self.download_manager.start(item)
 
@@ -299,31 +329,32 @@ class Gui(gtk.Window, ServiceManager):
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		if len(paths) > 0:
 			if len(paths[0]) > 1:
-				logger.warning("Stop file: %s" % self.download_manager.stop(model.get_value(model.get_iter(paths[0]), 3)))
+				logger.info("Stop file: %s" % self.download_manager.stop(model.get_value(model.get_iter(paths[0]), 3)))
 			else:
-				logger.warning("Stop package.")
+				logger.info("Stop package.")
 				for item in self.downloads.package_files(model.get_iter(paths[0])):
 					self.download_manager.stop(item)
 
 	def clear_complete(self, button):
 		"""Implementado solo para descargas"""
 		files = self.downloads.clear()
+		logger.info("Cleared: %s" % files)
 		if len(files) > 0:
 			self.download_manager.clear(files)
-	
+
 	def move_up(self, button):
 		"""Implementado solo para descargas"""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		if len(paths) > 0:
 			if not len(paths[0]) > 1:
-				logger.warning("Move up: %s" % self.downloads.move_up(model.get_iter(paths[0])))
+				logger.info("Move up: %s" % self.downloads.move_up(model.get_iter(paths[0])))
 
 	def move_down(self, button):
 		"""Implementado solo para descargas"""
 		model, paths = self.downloads.treeview.get_selection().get_selected_rows()
 		if len(paths) > 0:
 			if not len(paths[0]) > 1:
-				logger.warning("Move down: %s" % self.downloads.move_down(model.get_iter(paths[0])))
+				logger.info("Move down: %s" % self.downloads.move_down(model.get_iter(paths[0])))
 
 	def delete(self, button=None):
 		"""Implementado solo para descargas"""
@@ -366,11 +397,12 @@ class Gui(gtk.Window, ServiceManager):
 			except Exception, e:
 				logger.info(e)
 		self.hide()
-		self.tray_icon.set_visible(False)
+		if self.tray_icon:
+			self.tray_icon.close()
 		self.stop_all()
 		gtk.main_quit()
 		tucan_exit(0)
-	
+
 if __name__ == "__main__":
 	g = Gui()
 	gobject.threads_init()

@@ -2,13 +2,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -44,11 +42,15 @@ class Tucan:
 		#exception hook
 		self.old_exception_hook = sys.excepthook
 		sys.excepthook = self.exception_hook
-		
+
 		#configuration
 		self.configuration = config.Config()
 		sys.path.append(cons.PLUGIN_PATH)
-		
+
+		#globals
+		__builtin__.max_downloads = self.configuration.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS)
+		__builtin__.max_download_speed = self.configuration.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOAD_SPEED)
+
 		#logging
 		if os.path.exists(cons.LOG_FILE):
 			if os.path.exists("%s.old" % cons.LOG_FILE):
@@ -56,19 +58,19 @@ class Tucan:
 			os.rename(cons.LOG_FILE, "%s.old" % cons.LOG_FILE)
 		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
 		self.logger = logging.getLogger(self.__class__.__name__)
-		
+
 		self.logger.info(cons.TUCAN_VERSION)
+		self.logger.debug("OS: %s" % sys.platform)
 		self.logger.debug("Main path: %s" % cons.PATH)
 		self.logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
-		
+
 		#proxy settings
 		proxy_url, proxy_port = self.configuration.get_proxy()
 		url_open.set_proxy(proxy_url, proxy_port)
-		
+
 		#global custom exit
 		__builtin__.tucan_exit = self.exit
-		
-		
+
 	def exception_hook(self, type, value, trace):
 		""""""
 		file_name = trace.tb_frame.f_code.co_filename
@@ -77,11 +79,11 @@ class Tucan:
 		self.logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
 		print self.old_exception_hook(type, value, trace)
 		self.exit(-1)
-		
+
 	def exit(self, arg=0):
 		""""""
 		self.logger.debug("Exit: %s" % arg)
-		exit(arg)
+		sys.exit(arg)
 
 if __name__ == "__main__":
 	gobject.threads_init()

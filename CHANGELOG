@@ -1,3 +1,21 @@
+Tucan 0.3.8 Alpha 2009-07-15.
+------------------------------
+- Download speed limiter.
+- Clean exit.
+- Enable/Disable Update Manager.
+- Win32 unicode bug solved.
+- Solved many GUI bugs.
+- Corrupt session notification.
+- Link loss notification.
+- Plugin system update.
+- New anonymous Zshare plugin.
+- New anonymous Filefactory plugin.
+- New anonymous Easy-share plugin.
+- New anonymous Badongo plugin.
+- French Localization.
+- Swedish Localization.
+- Updated to GPLv3.
+
 Tucan 0.3.7 Alpha 2009-04-18.
 ------------------------------
 - Proxy support.

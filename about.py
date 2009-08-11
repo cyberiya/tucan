@@ -1,14 +1,11 @@
- # -*- coding: iso-8859-15 -*-
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -28,12 +25,11 @@ import gtk
 import cons
 
 NAME = "Tucan"
-COPYRIGHT = u"© 2008-2009 The Tucan Project"
-AUTHORS = ["Fran Lupion crakotaku(at)yahoo.es", "Paco Salido beakman(at)riseup.net", "JM Cordero betic0(at)gmail.com"]
+COPYRIGHT = "(C) 2008-2009 The Tucan Project"
 LICENSE = """	
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 2 of the License, or
+	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
 
 	This program is distributed in the hope that it will be useful,
@@ -61,7 +57,7 @@ class About(gtk.AboutDialog):
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
-		
+
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()

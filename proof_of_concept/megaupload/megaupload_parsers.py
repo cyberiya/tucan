@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -54,7 +52,7 @@ class CaptchaParser(HTMLParser):
 				self.form_imagecode= attrs[2][1]
 			if attrs[1][1] == "megavar":
 				self.form_megavar = attrs[2][1]
-		
+
 class UrlParser(HTMLParser):
 	""""""
 	def __init__(self, data):
@@ -73,22 +71,22 @@ class UrlParser(HTMLParser):
 				self.url_pos = self.getpos()
 			elif  ('onclick', 'loadingdownload();') in attrs:
 				self.tmp_url = attrs[0][1]
-		
+
 	def get_url(self):
 		""""""
 		vars = {}
 		data = self.data.split("\n")
-		
+
 		tmp = data[self.url_pos[0]].split(" ")
 		vars[tmp[1]] = chr(int(tmp[3].split("-")[1].split(")")[0]))
 
 		tmp = data[self.url_pos[0]+1].split(" ")
 		vars[tmp[1]] = tmp[3].split("\'")[1] + chr(int(math.sqrt(int(tmp[5].split("sqrt(")[1].split(")")[0]))))
-		
+
 		tmp = self.tmp_url.split(" + ")
 		return tmp[0].split("\'")[0] + vars[tmp[1]] + vars[tmp[2]] + tmp[3].split("\'")[1]
 
 if __name__ == "__main__":
-	    f = open("source.html", "r")
-	    c = UrlParser(f.read())
-	    print c.get_url()
+	f = open("source.html", "r")
+	c = UrlParser(f.read())
+	print c.get_url()

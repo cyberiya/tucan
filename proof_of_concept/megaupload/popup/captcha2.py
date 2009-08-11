@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -72,12 +70,12 @@ class CheckLinks(HTMLParser):
 
 		except urllib2.URLError, e:
 			logger.exception("Check failed: %s" % e)
-		
+
 		if error:
 			name = url
 			size = -1
 			unit = None
-		
+
 		if "win" in sys.platform:
 			f = open(os.path.join(cons.PLUGIN_PATH, "megaupload", "check.dat"), "wb")
 			f.write(pickle.dumps((name, size, unit)))
@@ -122,7 +120,7 @@ class CaptchaForm(HTMLParser):
 		if captcha:
 			self.feed(urllib2.urlopen(urllib2.Request(url, urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)]), HEADER)).read())
 			self.close()
-	
+
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "a":
@@ -140,22 +138,22 @@ class CaptchaSolve(gtk.Dialog):
 		gtk.Dialog.__init__(self)
 		self.set_title("Megaupload Captcha")
 		self.set_size_request(300,200)
-		
+
 		self.image = gtk.Image()
 		self.vbox.pack_start(self.image)
-		
+
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 10)
 		self.label = gtk.Label()
 		hbox.pack_start(self.label)
-		
+
 		self.entry = gtk.Entry()
 		hbox.pack_start(self.entry, False, False, 10)
 		self.entry.set_width_chars(5)
 		self.entry.set_max_length(4)
 		self.entry.set_activates_default(True)
 		self.entry.connect("activate", self.store_captcha)
-		
+
 		self.url = url
 		self.link = None
 		self.captcha = None
@@ -171,7 +169,7 @@ class CaptchaSolve(gtk.Dialog):
 		button.connect("clicked", self.store_captcha)
 
 		self.connect("response", self.close)
-		
+
 		if self.captcha:
 			self.show_all()
 			gobject.timeout_add(30000, self.close)
@@ -196,7 +194,7 @@ class CaptchaSolve(gtk.Dialog):
 				else:
 					self.entry.set_text("")
 					self.set_focus(self.entry)
-	
+
 	def new_captcha(self, widget=None):
 		""""""
 		p = CaptchaParser(urllib2.urlopen(urllib2.Request(self.url, None, HEADER)).read())
@@ -237,7 +235,7 @@ class CaptchaSolve(gtk.Dialog):
 		except Exception, e:
 			logger.warning("Captcha database: %s" % e)
 		return True
-	
+
 	def close(self, widget=None, other=None):
 		""""""
 		if "win" in sys.platform:
@@ -245,7 +243,7 @@ class CaptchaSolve(gtk.Dialog):
 			f.write(pickle.dumps(self.link))
 			f.close()
 		self.destroy()
-		
+
 if __name__ == "__main__":
 	import sys
 	if len(sys.argv) > 2:

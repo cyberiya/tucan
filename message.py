@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -40,15 +38,15 @@ class Wait(gtk.Window):
 		self.set_resizable(False)
 		self.set_decorated(False)
 		self.set_size_request(300,100)
-		
+
 		self.progress = gtk.ProgressBar()
 		self.add(self.progress)
 		self.progress.set_text(message)
-		
+
 		self.show_all()
 
 		gobject.timeout_add(100, self.pulse)
-		
+
 	def pulse(self):
 		""""""
 		self.progress.pulse()
@@ -63,9 +61,9 @@ class Message(gtk.Dialog):
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_resizable(False)
 		self.set_transient_for(parent)
-		
+
 		self.accepted = False
-		
+
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, True, True, 10)
 		icon = gtk.STOCK_DIALOG_INFO
@@ -75,12 +73,12 @@ class Message(gtk.Dialog):
 			icon = gtk.STOCK_DIALOG_ERROR
 		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG), True, False, 10)
 		self.set_icon(self.render_icon(icon, gtk.ICON_SIZE_MENU))
-		
+
 		label = gtk.Label(message)
 		hbox.pack_start(label, True, False, 5)
 		label.set_width_chars(35)
 		label.set_line_wrap(True)
-		
+
 		#action area
 		if both:
 			close_button = gtk.Button(None, gtk.STOCK_CANCEL)
@@ -97,18 +95,19 @@ class Message(gtk.Dialog):
 			close_button = gtk.Button(None, gtk.STOCK_CLOSE)
 			self.action_area.pack_start(close_button)
 			close_button.connect("clicked", self.close)
-			
+
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
-		
+
 	def accept(self, button):
 		""""""
 		self.accepted = True
 		self.close()
-		
+
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
+
 if __name__ == "__main__":
 	m = Message(None, cons.SEVERITY_WARNING, "Tucan Manager - Restore previous session.", "Your last session closed unexpectedly.\nTucan will try to restore it now.", both=True)

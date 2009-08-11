@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -34,7 +32,7 @@ class InfoPreferences(gtk.VBox):
 		""""""	
 		gtk.VBox.__init__(self)
 		vbox = gtk.VBox()
-		
+
 		frame = gtk.Frame()
 		label = gtk.Label()
 		label.set_markup("<big><b>" + name + "</b></big>")
@@ -58,7 +56,7 @@ class InfoPreferences(gtk.VBox):
 		label = gtk.Label(config.get(section, service_config.OPTION_VERSION))
 		hbox.pack_start(label, False, False, 10)
 		vbox.pack_start(hbox, False, False, 5)
-		
+
 		if not accounts:
 			hbox = gtk.HBox()
 			label = gtk.Label()
@@ -74,13 +72,13 @@ class InfoPreferences(gtk.VBox):
 			label = gtk.Label(config.get(section, service_config.OPTION_CAPTCHA))
 			hbox.pack_start(label, False)
 			vbox.pack_start(hbox, False, False, 5)
-			
+
 class AccountPreferences(InfoPreferences):
 	""""""
 	def __init__(self, section, name, config, get_cookie):
 		""""""
 		InfoPreferences.__init__(self, section, name, config, True)
-		
+
 		self.get_cookie = get_cookie
 
 		frame = gtk.Frame()
@@ -94,9 +92,9 @@ class AccountPreferences(InfoPreferences):
 		store = gtk.ListStore(gtk.gdk.Pixbuf, str, str, bool, bool, str)
 		self.treeview = gtk.TreeView(store)
 		scroll.add(self.treeview)
-		
+
 		self.treeview.set_rules_hint(True)
-		#self.treeview.set_headers_visible(False)		
+		#self.treeview.set_headers_visible(False)
 
 		tree_icon = gtk.TreeViewColumn('Active') 
 		icon_cell = gtk.CellRendererPixbuf()
@@ -104,7 +102,7 @@ class AccountPreferences(InfoPreferences):
 		tree_icon.pack_start(icon_cell, True)
 		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
 		self.treeview.append_column(tree_icon)
-		
+
 		tree_name = gtk.TreeViewColumn('User Name') 
 		name_cell = gtk.CellRendererText()
 		name_cell.set_property("width", 120)
@@ -134,7 +132,7 @@ class AccountPreferences(InfoPreferences):
 
 		self.active_service_icon = self.treeview.render_icon(gtk.STOCK_YES, gtk.ICON_SIZE_LARGE_TOOLBAR)
 		self.unactive_service_icon = self.treeview.render_icon(gtk.STOCK_NO, gtk.ICON_SIZE_LARGE_TOOLBAR)
-		
+
 		accounts = config.get_accounts(section)
 		for name in accounts.keys():
 			password, enabled, active = accounts[name]
@@ -175,7 +173,7 @@ class AccountPreferences(InfoPreferences):
 		model.set_value(model.get_iter(path), column, new_text)
 		if column == 2:
 			model.set_value(model.get_iter(path), 5, "".join(["*" for i in range(len(new_text))]))		
-		
+
 	def add(self, button):
 		""""""
 		model = self.treeview.get_model()
@@ -235,32 +233,32 @@ class ServicePreferences(gtk.Dialog):
 		self.set_title(service)
 		self.set_transient_for(parent)
 		self.set_size_request(600, 400)
-		
+
 		self.config = config
-		
+
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, True, True, 5)
 		frame = gtk.Frame()
 		hbox.pack_start(frame, False, False, 10)
-		
+
 		store = gtk.TreeStore(str, str, int)
 		self.treeview = gtk.TreeView(store)
 		self.treeview.get_selection().connect("changed", self.select)
 		frame.add(self.treeview)
-		
+
 		self.treeview.set_headers_visible(False)
-		
+
 		tree_name = gtk.TreeViewColumn('Name')
 		name_cell = gtk.CellRendererText()
 		name_cell.set_property("width", 100)
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 1)
 		self.treeview.append_column(tree_name)
-		
+
 		self.notebook = gtk.Notebook()
 		hbox.pack_start(self.notebook, True, True, 10)
 		self.notebook.set_show_tabs(False)
-		
+
 		cont = 0
 		plugin_list = []
 		plugins = self.config.get_download_plugins()
@@ -276,7 +274,7 @@ class ServicePreferences(gtk.Dialog):
 				if section_type == cons.TYPE_ANONYMOUS:
 					page = InfoPreferences(section, section_name, self.config)
 				else:
-					if section_type == cons.TYPE_USER:					
+					if section_type == cons.TYPE_USER:
 						module, name = config.user_cookie()
 					elif section_type == cons.TYPE_PREMIUM:
 						module, name = config.premium_cookie()
@@ -297,11 +295,11 @@ class ServicePreferences(gtk.Dialog):
 		self.action_area.pack_start(save_button)
 		cancel_button.connect("clicked", self.close)
 		save_button.connect("clicked", self.save)
-		
+
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
-		
+
 	def select(self, selection):
 		""""""
 		model, iter = selection.get_selected()
@@ -311,7 +309,7 @@ class ServicePreferences(gtk.Dialog):
 				selection.select_iter(child_iter)
 			else:
 				self.notebook.set_current_page(model.get_value(iter, 2))
-				
+
 	def save(self, button):
 		""""""
 		model = self.treeview.get_model()
@@ -329,6 +327,6 @@ class ServicePreferences(gtk.Dialog):
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
-	
+
 if __name__ == "__main__":
 	x = ServicePreferences("rapidshare.com", gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING), service_config.ServiceConfig("/home/crak/.tucan/plugins/megaupload/"))

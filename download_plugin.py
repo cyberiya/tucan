@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -32,14 +30,14 @@ class DownloadPlugin(object):
 		""""""
 		self.active_downloads = {}
 
-	def start(self, path, url, file_name, wait=None, cookie=None, form=None, post_wait=None):
+	def start(self, path, url, file_name, wait=None, cookie=None, post_wait=None):
 		""""""
 		if file_name not in self.active_downloads:
-			th = Downloader(path, url, file_name, wait, cookie, form, post_wait)
+			th = Downloader(path, url, file_name, wait, cookie, post_wait)
 			th.start()
 			self.active_downloads[file_name] = th
 			return True
-	
+
 	def stop(self, file_name):
 		""""""
 		if file_name in self.active_downloads:
@@ -48,13 +46,13 @@ class DownloadPlugin(object):
 				time.sleep(0.1)
 			del self.active_downloads[file_name]
 			return True
-			
+
 	def stop_all(self):
 		""""""
 		for th in self.active_downloads.values():
 			while th.isAlive():
 				th.stop_flag = True
-	
+
 	def get_status(self, file_name, speed=0):
 		"""return (status, progress, actual_size, unit, speed, time)"""
 		result = cons.STATUS_ERROR, 0, 0, None, 0, 0
@@ -79,7 +77,7 @@ class DownloadPlugin(object):
 				time = int(th.time_remaining)
 			result = th.status, progress, actual_size, unit, speed, time
 		return result
-	
+
 	def get_size(self, num):
 		""""""
 		result = 0, cons.UNIT_KB

@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -40,13 +38,14 @@ class InputFiles(gtk.Dialog):
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(cons.ICON_UPLOAD)
 		self.set_title(("Input Files"))
+		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(600,500)
-		
+
 		self.history_path = cons.DEFAULT_PATH
-		
+
 		main_hbox = gtk.HBox()
 		self.vbox.pack_start(main_hbox)
-		
+
 		self.file_icon = self.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_BUTTON)
 		self.correct_icon = self.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
 		self.incorrect_icon = self.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
@@ -60,31 +59,31 @@ class InputFiles(gtk.Dialog):
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		self.package_treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str, bool))
 		scroll.add(self.package_treeview)
-		
+
 		self.package_treeview.set_rules_hint(True)
 		self.package_treeview.set_headers_visible(False)
-		
+
 		tree_icon = gtk.TreeViewColumn('Icon') 
 		icon_cell = gtk.CellRendererPixbuf()
 		tree_icon.pack_start(icon_cell, True)
 		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
 		self.package_treeview.append_column(tree_icon)
-				  
+
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 1)
 		self.package_treeview.append_column(tree_name)
-		
+
 		tree_size = gtk.TreeViewColumn('Size') 
 		size_cell = gtk.CellRendererText()
 		tree_size.pack_start(size_cell, False)
 		tree_size.add_attribute(size_cell, 'text', 2)
 		self.package_treeview.append_column(tree_size)
-		
+
 		service_vbox = gtk.VBox()
 		main_hbox.pack_start(service_vbox, False, False)
-		
+
 		# services treeview
 		frame = gtk.Frame()
 		service_vbox.pack_start(frame)
@@ -98,35 +97,35 @@ class InputFiles(gtk.Dialog):
 		self.services_treeview = gtk.TreeView(services)
 		self.services_treeview.get_selection().connect("changed", self.select)
 		scroll.add(self.services_treeview)
-		
+
 		self.services_treeview.set_rules_hint(True)
 		self.services_treeview.set_headers_visible(False)
-		
+
 		tree_icon = gtk.TreeViewColumn('Icon') 
 		icon_cell = gtk.CellRendererPixbuf()
 		tree_icon.pack_start(icon_cell, True)
 		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
 		self.services_treeview.append_column(tree_icon)
-				  
+
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 1)
 		self.services_treeview.append_column(tree_name)
-		
+
 		tree_add = gtk.TreeViewColumn('Add')
 		add_cell = gtk.CellRendererToggle()
 		add_cell.connect("toggled", self.toggled)
 		tree_add.pack_start(add_cell, True)
 		tree_add.add_attribute(add_cell, 'active', 4)
 		self.services_treeview.append_column(tree_add)
-		
+
 		#plugins
 		self.plugins_frame = gtk.Frame()
 		service_vbox.pack_start(self.plugins_frame, False, False)
 		self.plugins_frame.set_size_request(200, 100)
 		self.plugins_frame.set_border_width(5)
-		
+
 		for service, size, unit, plugins in upload_services:
 			vbox = gtk.VBox()
 			first = None
@@ -134,7 +133,7 @@ class InputFiles(gtk.Dialog):
 				first = gtk.RadioButton(first, plugin)
 				vbox.pack_start(first, False, False, 1)
 			services.append([self.correct_icon, service, size, unit, False, vbox])
-			
+
 		#choose path
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 5)
@@ -151,7 +150,7 @@ class InputFiles(gtk.Dialog):
 		clear_button.set_size_request(190,40)
 		hbox.pack_start(clear_button, False, False, 5)
 		clear_button.connect("clicked", self.clear)
-		
+
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
 		add_button = gtk.Button(None, gtk.STOCK_ADD)
@@ -159,16 +158,16 @@ class InputFiles(gtk.Dialog):
 		self.action_area.pack_start(add_button)
 		cancel_button.connect("clicked", self.close)
 		add_button.connect("clicked", self.add_files)
-		
+
 		self.connect("response", self.close)
 		self.show_all()
 		self.set_focus(path_button)
 		self.run()
-		
+
 	def clear(self, button):
 		""""""
 		self.package_treeview.get_model().clear()
-		
+
 	def select(self, selection):
 		""""""
 		model, service_iter = selection.get_selected()
@@ -178,13 +177,13 @@ class InputFiles(gtk.Dialog):
 			vbox = model.get_value(service_iter, 5)
 			self.plugins_frame.add(vbox)
 			vbox.show_all()
-		
+
 	def add_files(self, button):
 		""""""
 		result = []
 		package_model = self.package_treeview.get_model()
 		services_model = self.services_treeview.get_model()
-		
+
 		file_iter = package_model.get_iter_root()
 		while file_iter:
 			services = []
@@ -212,12 +211,12 @@ class InputFiles(gtk.Dialog):
 		if button.get_active():
 			active = False
 		button.set_active(active)
-		
+
 		services_model = self.services_treeview.get_model()
 		package_model = self.package_treeview.get_model()
-		
+
 		services_model.set_value(services_model.get_iter(path), 4, active)
-		
+
 		file_iter = package_model.get_iter_root()
 		while file_iter:
 			service_iter = package_model.iter_children(file_iter)
@@ -236,12 +235,12 @@ class InputFiles(gtk.Dialog):
 				if found:
 					package_model.remove(service_iter)
 			file_iter = package_model.iter_next(file_iter)
-				
+
 	def choose_files(self, button):
 		""""""
 		f = FileChooser(self, self.on_choose, self.history_path, True)
 		self.history_path = f.history_path
-		
+
 	def on_choose(self, path):
 		""""""
 		package_model = self.package_treeview.get_model()
@@ -254,7 +253,7 @@ class InputFiles(gtk.Dialog):
 				for row in services_model:
 					if row[4]:
 						self.add_service(package_model, file_iter, row[1], file_size, self.join_size(row[2], row[3]))
-						
+
 	def join_size(self, size, unit):
 		""""""
 		factor = 1
@@ -265,7 +264,7 @@ class InputFiles(gtk.Dialog):
 		elif unit == cons.UNIT_GB:
 			factor = 1024*1024
 		return size*factor
-		
+
 	def split_size(self, size):
 		""""""
 		if size > 0:
@@ -280,7 +279,7 @@ class InputFiles(gtk.Dialog):
 				return size, cons.UNIT_KB
 		else:
 			return 1, cons.UNIT_KB	
-		
+
 	def add_service(self, package_model, file_iter, service, file_size, max_size):
 		""""""
 		if max_size > file_size:
@@ -292,6 +291,6 @@ class InputFiles(gtk.Dialog):
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
-	
+
 if __name__ == "__main__":
 	x = InputFiles(SERVICES)

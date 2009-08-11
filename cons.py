@@ -1,13 +1,11 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crakotaku(at)yahoo.es
-## Copyright (C) 2008-2009 Paco Salido beakman(at)riseup.net
-## Copyright (C) 2008-2009 JM Cordero betic0(at)gmail.com
+## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 2 of the License, or
+## the Free Software Foundation; either version 3 of the License, or
 ## (at your option) any later version.
 ##
 ## This program is distributed in the hope that it will be useful,
@@ -26,16 +24,27 @@ import locale
 import subprocess
 import logging
 
-# project constants
+#project constants
 TUCAN_NAME = "Tucan Manager"
-TUCAN_VERSION = "0.3.7 alpha"
+TUCAN_VERSION = "0.3.8 alpha"
 WEBPAGE = "http://www.tucaneando.com"
 DOC = "http://doc.tucaneando.com"
 
-# user agent
+#OS constants
+OS_UNIX = False
+OS_WINDOWS = False
+OS_OSX = False
+if sys.platform.startswith("win"):
+	OS_WINDOWS = True
+elif "darwin" in sys.platform:
+	OS_OSX = True
+else:
+	OS_UNIX = True
+
+#user agent
 USER_AGENT = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4"}
 
-# status constants
+#status constants
 STATUS_PEND = "pending"
 STATUS_ACTIVE = "active"
 STATUS_WAIT = "waiting"
@@ -67,13 +76,16 @@ TYPE_PREMIUM = "Premium"
 TYPE_UNSUPPORTED = "unsupported"
 
 #path constants
-if "win" in sys.platform:
+if OS_WINDOWS:
 	PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
 	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "").decode(locale.getdefaultlocale()[1])
 	if PATH not in sys.path:
 		sys.path.insert(0, PATH)
 else:
-	PATH = os.path.join(sys.path[0], "")
+	if OS_OSX:
+		PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
+	else:
+		PATH = os.path.join(sys.path[0], "")
 	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "")
 CONFIG_PATH = os.path.join(DEFAULT_PATH, ".tucan" ,"")
 
