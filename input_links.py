@@ -171,21 +171,24 @@ class InputLinks(gtk.Dialog):
 
 	def get_clipboard(self, clipboard, selection_data, data):
 		""""""
-		target_html = "text/html"
-		#target_html = "com.apple.webarchive"
-		if target_html  in list(selection_data):
-			selection = self.clipboard.wait_for_contents(target_html)
-			#print selection.data.decode("utf8", "ignore")
-			if selection:
-				for line in str(selection.data.decode("utf16", "ignore")).split("\n"):
-					try:
-						parser = ClipParser()
-						parser.feed(line)
-						parser.close()
-						if len(parser.url) > 0:
-							self.textview.get_buffer().insert_at_cursor("\n".join(parser.url) + "\n")
-					except HTMLParser.HTMLParseError:
-						pass
+		if cons.OS_OSX:
+			print "mierda"
+		else:
+			target_html = "text/html"
+			#target_html = "com.apple.webarchive"
+			if target_html  in list(selection_data):
+				selection = self.clipboard.wait_for_contents(target_html)
+				#print selection.data.decode("utf8", "ignore")
+				if selection:
+					for line in str(selection.data.decode("utf16", "ignore")).split("\n"):
+						try:
+							parser = ClipParser()
+							parser.feed(line)
+							parser.close()
+							if len(parser.url) > 0:
+								self.textview.get_buffer().insert_at_cursor("\n".join(parser.url) + "\n")
+						except HTMLParser.HTMLParseError:
+							pass
 	def toggled(self, button, path):
 		""""""
 		model = self.treeview.get_model()
