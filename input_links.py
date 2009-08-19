@@ -180,20 +180,29 @@ class InputLinks(gtk.Dialog):
 					for line in str(selection.data.decode("utf8", "ignore")).split("\n"):
 						if '{HYPERLINK "' in line:
 							urls.append(line.split('{HYPERLINK "')[1].split('"}')[0])
+		elif cons.OS_WINDOWS:
+			target_html = "HTML Format"
+			if target_html in list(selection_data):
+				try:
+					parser = ClipParser()
+					parser.feed(self.clipboard.wait_for_contents(target_html).data.decode("utf8", "ignore"))
+					parser.close()
+					if len(parser.url) > 0:
+						urls += parser.url
+				except HTMLParser.HTMLParseError:
+					pass
 		else:
 			target_html = "text/html"
 			if target_html  in list(selection_data):
-				selection = self.clipboard.wait_for_contents(target_html)
-				if selection:
-					for line in str(selection.data.decode("utf16", "ignore")).split("\n"):
-						try:
-							parser = ClipParser()
-							parser.feed(line)
-							parser.close()
-							if len(parser.url) > 0:
-								urls += parser.url
-						except HTMLParser.HTMLParseError:
-							pass
+				for line in str(self.clipboard.wait_for_contents(target_html).data.decode("utf16", "ignore")).split("\n"):
+					try:
+						parser = ClipParser()
+						parser.feed(line)
+						parser.close()
+						if len(parser.url) > 0:
+							urls += parser.url
+					except HTMLParser.HTMLParseError:
+						pass
 		if len(urls) > 0:
 			self.textview.get_buffer().insert_at_cursor("\n".join(urls) + "\n")
 
