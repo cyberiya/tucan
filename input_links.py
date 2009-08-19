@@ -38,14 +38,14 @@ class ClipParser(HTMLParser.HTMLParser):
 	def __init__(self):
 		""""""
 		HTMLParser.HTMLParser.__init__(self)
-		self.url = []
+		self.url = None
 
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "a":
 			for ref, link in attrs:
 				if ref == "href":
-					self.url.append(link)
+					self.url = link
 
 class InputLinks(gtk.Dialog):
 	""""""
@@ -190,8 +190,8 @@ class InputLinks(gtk.Dialog):
 							parser = ClipParser()
 							parser.feed(line)
 							parser.close()
-							if len(parser.url) > 0:
-								self.textview.get_buffer().insert_at_cursor("\n".join(parser.url) + "\n")
+							if parser.url:
+								urls.append(parser.url)
 						except HTMLParser.HTMLParseError:
 							pass
 		if len(urls) > 0:
