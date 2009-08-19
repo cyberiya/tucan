@@ -115,6 +115,9 @@ class CheckLinks:
 					if size == 0:
 						size = 1
 					unit = tmp[1]
+					if unit == "B":
+						size = 1
+						unit = "KB"
 			if not name:
 				name = url
 				size = -1

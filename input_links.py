@@ -59,9 +59,6 @@ class InputLinks(gtk.Dialog):
 
 		self.cancel_check = False
 
-		self.clipboard = gtk.clipboard_get()
-		self.clipboard.request_targets(self.get_clipboard)
-
 		self.default_path = path
 		self.sort_links = sort
 		self.check_links = check
@@ -84,6 +81,9 @@ class InputLinks(gtk.Dialog):
 		self.textview = gtk.TextView(buffer)
 		scroll.add(self.textview)
 		self.textview.set_wrap_mode(gtk.WRAP_CHAR)
+
+		self.clipboard = gtk.clipboard_get()
+		self.clipboard.request_targets(self.get_clipboard)
 
 		#check button
 		button_box = gtk.HButtonBox()
@@ -172,10 +172,12 @@ class InputLinks(gtk.Dialog):
 	def get_clipboard(self, clipboard, selection_data, data):
 		""""""
 		target_html = "text/html"
+		target_html = "com.apple.webarchive"
 		if target_html  in list(selection_data):
 			selection = self.clipboard.wait_for_contents(target_html)
+			#print selection.data.decode("utf8", "ignore")
 			if selection:
-				for line in str(selection.data.decode("utf16")).split("\n"):
+				for line in str(selection.data.decode("utf8", "ignore")).split("\n"):
 					try:
 						parser = ClipParser()
 						parser.feed(line)
