@@ -262,7 +262,7 @@ class InputLinks(gtk.Dialog):
 		store.clear()
 		buffer = self.textview.get_buffer()
 		start, end = buffer.get_bounds()
-		link_list = [link.strip() for link in buffer.get_text(start, end).split("\n")]
+		link_list = [link.lower().strip() for link in buffer.get_text(start, end).split("\n")]
 
 		service_icon = self.treeview.render_icon(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
 		unsupported_icon = self.treeview.render_icon(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_MENU)
