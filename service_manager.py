@@ -201,9 +201,10 @@ class ServiceManager:
 					del files[files.index(i)]
 			else:
 				alone_name = first[1]
-				alone_name = alone_name.split(".")
-				alone_name.pop()
-				alone_name = ".".join(alone_name)
+				if "." in alone_name:
+					alone_name = alone_name.split(".")
+					alone_name.pop()
+					alone_name = ".".join(alone_name)
 				packages.append((alone_name, [first]))
 				del files[files.index(first)]
 		return packages
