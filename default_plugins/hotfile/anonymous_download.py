@@ -22,7 +22,7 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-from parsers import CheckLinks, Parser
+from parsers import CheckLinks, Parser, CaptchaParser
 
 from download_plugin import DownloadPlugin
 from slots import Slots
@@ -52,14 +52,14 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				
 	def post_wait(self, link):
 		"""Must return handle"""
-		opener = URLOpen()
-		for line in opener.open(link, self.form).readlines():
-			if '<table class="downloading"><tr><td>Downloading <b>' in line:
-				if "href" in line:
-					return opener.open(line.split('<a href="')[1].split('">')[0])
-				else:
-					logger.warning("Limit Exceded.")
-					self.add_wait()
+		c = CaptchaParser(link, self.form)
+		if c.link:
+			return URLOpen().open(c.link)
+		elif c.captcha_url:
+			logger.warning("Wrong Captcha!")
+		else:
+			logger.warning("Limit Exceded.")
+			self.add_wait()
 
 	def delete(self, file_name):
 		""""""

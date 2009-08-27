@@ -24,14 +24,84 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
-import sys
-sys.path.append("/Users/Crak/Desktop/tucan-osx/trunk")
+import ImageOps
 
+import sys
+sys.path.append("/home/crak/tucan/trunk")
+
+from tesseract import Tesseract
 from url_open import URLOpen, set_proxy
 
 set_proxy(None)
 
 BASE_URL = "http://hotfile.com"
+
+class CaptchaParser(HTMLParser):
+	def __init__(self, url,  form):
+		""""""
+		HTMLParser.__init__(self)
+		self.link = None
+		self.action = None
+		self.captchaid = None
+		self.hash1 = None
+		self.hash2 = None
+		self.captcha_url = None
+		try:
+			opener = URLOpen()
+			tmp = opener.open(url, form).readlines()
+			for line in tmp:
+				self.feed(line)
+				self.close()
+			if self.captcha_url:
+				tes = Tesseract(opener.open(self.captcha_url).read(), self.filter_image)
+				captcha = tes.get_captcha()
+				logger.warning("Captcha: %s" % captcha)
+				#print captcha
+				form = urllib.urlencode([("action", self.action), ("captchaid", self.captchaid), ("hash1", self.hash1), ("hash2", self.hash2), ("captcha", captcha)])
+				tmp = opener.open(url, form).readlines()
+			for line in tmp:
+				if '<table class="downloading"><tr><td>Downloading <b>' in line:
+					if "href" in line:
+						self.link = line.split('<a href="')[1].split('">')[0]
+		except Exception, e:
+			logger.exception("%s :%s" % (url, e))
+
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "input":
+			if ("name", "action") in attrs:
+				for ref, value in attrs:
+					if ref == "value":
+						self.action = value
+			elif ("name", "captchaid") in attrs:
+				for ref, value in attrs:
+					if ref == "value":
+						self.captchaid = value
+			elif ("name", "hash1") in attrs:
+				for ref, value in attrs:
+					if ref == "value":
+						self.hash1 = value
+			elif ("name", "hash2") in attrs:
+				for ref, value in attrs:
+					if ref == "value":
+						self.hash2 = value
+		elif tag == "img":
+			self.captcha_url = "%s%s" % (BASE_URL, attrs[0][1])
+			
+	def filter_image(self, image):
+		""""""
+		image = image.point(self.filter_pixel)
+		image = ImageOps.grayscale(image)
+		return image
+
+	def filter_pixel(self, pixel):
+		""""""
+		if pixel > 110:
+			return 255
+		if pixel > 90:
+			return 100
+		else:
+			return 1
 
 class Parser(HTMLParser):
 	def __init__(self, url):
@@ -100,5 +170,11 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	c = Parser("http://hotfile.com/dl/10804393/9f439e8/Bruno_-_www.crostuff.net.part1.rar.html")
+	c = Parser("http://hotfile.com/dl/6593904/93f3be2/National.Lampoon.One.Two.Many.2008.x264.part1.rar")
+	import time
+	for i in range(c.wait):
+		print i
+		time.sleep(1)
+	m = CaptchaParser(c.link, c.form)
+	print m.link
 	#print CheckLinks().check("http://hotfile.com/dl/10804393/9f439e8/Bruno_-_www.crostuff.net.part1.rar.html")
