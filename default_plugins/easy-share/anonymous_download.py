@@ -46,6 +46,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			else:
 				logger.warning("Limit Exceded.")
 				self.add_wait()
+				self.return_slot()
 
 	def post_wait(self, link):
 		"""Must return link and form"""
