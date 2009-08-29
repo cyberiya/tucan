@@ -52,7 +52,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				return self.start(path, parser.link, file_name, WAIT, None, self.post_wait)
 
 	def post_wait(self, link):
-		"""Must return link and form"""
+		"""Must return handle"""
 		try:
 			handle = URLOpen().open(link)
 		except Exception, e:

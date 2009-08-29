@@ -49,6 +49,8 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				else:
 					logger.warning("Limit Exceded.")
 					self.add_wait()
+					self.return_slot()
+					
 	def post_wait(self, link):
 		"""Must return handler"""
 		return self.opener.open(link, urllib.urlencode([("pr", "1")]))
