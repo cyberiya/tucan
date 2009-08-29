@@ -55,7 +55,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		c = CaptchaParser(link, self.form)
 		if c.link:
 			return URLOpen().open(c.link)
-		elif c.captcha_url:
+		elif c.action_captcha:
 			logger.warning("Wrong Captcha!")
 		else:
 			logger.warning("Limit Exceded.")
