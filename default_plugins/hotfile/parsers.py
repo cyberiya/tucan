@@ -26,13 +26,13 @@ from HTMLParser import HTMLParser
 
 import ImageOps
 
-#import sys
-#sys.path.append("/home/crak/tucan/trunk")
+import sys
+sys.path.append("/Users/Crak/Desktop/tucan-osx/trunk")
 
 from tesseract import Tesseract
 from url_open import URLOpen, set_proxy
 
-#set_proxy(None)
+set_proxy(None)
 
 BASE_URL = "http://hotfile.com"
 
@@ -41,7 +41,7 @@ class CaptchaParser(HTMLParser):
 		""""""
 		HTMLParser.__init__(self)
 		self.link = None
-		self.action = None
+		self.action_captcha = None
 		self.captchaid = None
 		self.hash1 = None
 		self.hash2 = None
@@ -52,12 +52,11 @@ class CaptchaParser(HTMLParser):
 			for line in tmp:
 				self.feed(line)
 				self.close()
-			if self.captcha_url:
+			if self.action_captcha:
 				tes = Tesseract(opener.open(self.captcha_url).read(), self.filter_image)
 				captcha = tes.get_captcha()
 				logger.warning("Captcha: %s" % captcha)
-				#print captcha
-				form = urllib.urlencode([("action", self.action), ("captchaid", self.captchaid), ("hash1", self.hash1), ("hash2", self.hash2), ("captcha", captcha)])
+				form = urllib.urlencode([("action", self.action_captcha), ("captchaid", self.captchaid), ("hash1", self.hash1), ("hash2", self.hash2), ("captcha", captcha)])
 				tmp = opener.open(url, form).readlines()
 			for line in tmp:
 				if '<table class="downloading"><tr><td>Downloading <b>' in line:
@@ -71,8 +70,8 @@ class CaptchaParser(HTMLParser):
 		if tag == "input":
 			if ("name", "action") in attrs:
 				for ref, value in attrs:
-					if ref == "value":
-						self.action = value
+					if ref == "value" and value == "checkcaptcha":
+						self.action_captcha = value
 			elif ("name", "captchaid") in attrs:
 				for ref, value in attrs:
 					if ref == "value":
@@ -170,7 +169,9 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	c = Parser("http://hotfile.com/dl/6593904/93f3be2/National.Lampoon.One.Two.Many.2008.x264.part1.rar")
+	c = Parser("http://hotfile.com/dl/7174149/00fbb47/Sander_Van_Doorn-Live_at_Sensation_White_Saint-Petersburg-12062009.mp3.html")
+	print c.link
+	print c.form
 	import time
 	for i in range(c.wait):
 		print i
