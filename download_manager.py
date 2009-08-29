@@ -112,11 +112,15 @@ class DownloadManager:
 
 	def clear(self, files):
 		""""""
+		complete = [tmp.name for tmp in self.complete_downloads]
+		pending = [tmp.name for tmp in self.pending_downloads]
 		for name in files:
-			complete = [tmp.name for tmp in self.complete_downloads]
 			if name in complete:
 				logger.info("Cleared %s" % name)
 				del self.complete_downloads[complete.index(name)]
+			elif name in pending:
+				logger.info("Deleted %s" % name)
+				del self.pending_downloads[pending.index(name)]
 
 	def add(self, path, name, links, total_size, size_unit):
 		""""""
