@@ -56,14 +56,15 @@ class Parser(HTMLParser):
 					self.feed(line)
 				self.close()
 				repeat = True
-				while True:
-					tes = Tesseract(opener.open(self.captcha_url).read(), self.filter_image)
-					captcha = tes.get_captcha()
-					if len(captcha) > 4 and len(captcha) < 7:
-						logger.warning("Captcha: %s" % captcha)
-						self.handle = opener.open(self.form_action, urllib.urlencode([("captcha", captcha), ("id", self.id)]))
-						if self.handle.info().getheader("Content-Type") != "text/html":
-							break
+				if self.captcha_url:
+					while True:
+						tes = Tesseract(opener.open(self.captcha_url).read(), self.filter_image)
+						captcha = tes.get_captcha()
+						if len(captcha) > 4 and len(captcha) < 7:
+							logger.warning("Captcha: %s" % captcha)
+							self.handle = opener.open(self.form_action, urllib.urlencode([("captcha", captcha), ("id", self.id)]))
+							if self.handle.info().getheader("Content-Type") != "text/html":
+								break
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 

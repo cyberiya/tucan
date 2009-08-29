@@ -43,15 +43,17 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			parser = Parser(link)
 			if self.start(path, link, file_name, parser.wait, None, self.post_wait):
 				return True
-			else:
-				logger.warning("Limit Exceded.")
-				self.add_wait()
-				self.return_slot()
-
+				
 	def post_wait(self, link):
 		"""Must return link and form"""
 		parser = Parser(link)
-		return parser.handle
+		if parser.captcha_url:
+			return parser.handle
+		else:
+			logger.warning("Limit Exceded.")
+			self.add_wait()
+			self.return_slot()
+
 
 	def delete(self, file_name):
 		""""""
