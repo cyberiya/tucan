@@ -31,15 +31,10 @@ from url_open import URLOpen
 
 BASE_URL = "http://www.easy-share.com"
 
-class Parser(HTMLParser):
+class WaitParser:
+	""""""
 	def __init__(self, url):
 		""""""
-		HTMLParser.__init__(self)
-		self.link = None
-		self.form_action = None
-		self.id = None
-		self.handle = None
-		self.captcha_url = None
 		self.wait = None
 		try:
 			opener = URLOpen()
@@ -49,22 +44,36 @@ class Parser(HTMLParser):
 					for line in opener.open("%s%s" % (BASE_URL, line.split("'")[1])).readlines():
 						if "w=" in line:
 							self.wait = int(line.split("'")[1]) + 1
-			if self.wait:
-				logger.info("%s wait:%s seconds" % (url, self.wait))
-			else:
-				for line in tmp:
-					self.feed(line)
-				self.close()
-				repeat = True
-				if self.captcha_url:
-					while True:
-						tes = Tesseract(opener.open(self.captcha_url).read(), self.filter_image)
-						captcha = tes.get_captcha()
-						if len(captcha) > 4 and len(captcha) < 7:
-							logger.warning("Captcha: %s" % captcha)
-							self.handle = opener.open(self.form_action, urllib.urlencode([("captcha", captcha), ("id", self.id)]))
-							if self.handle.info().getheader("Content-Type") != "text/html":
-								break
+							logger.info("%s wait %s seconds" % (url, self.wait))
+		except Exception, e:
+			logger.exception("%s :%s" % (url, e))
+
+
+class CaptchaParser(HTMLParser):
+	""""""
+	def __init__(self, url):
+		""""""
+		HTMLParser.__init__(self)
+		self.link = None
+		self.form_action = None
+		self.id = None
+		self.handle = None
+		self.captcha_url = None
+		try:
+			opener = URLOpen()
+			for line in opener.open(url).readlines():
+				self.feed(line)
+			self.close()
+			repeat = True
+			if self.captcha_url:
+				while True:
+					tes = Tesseract(opener.open(self.captcha_url).read(), self.filter_image)
+					captcha = tes.get_captcha()
+					if len(captcha) > 4 and len(captcha) < 7:
+						logger.warning("Captcha: %s" % captcha)
+						self.handle = opener.open(self.form_action, urllib.urlencode([("captcha", captcha), ("id", self.id)]))
+						if self.handle.info().getheader("Content-Type") != "text/html":
+							break
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 
