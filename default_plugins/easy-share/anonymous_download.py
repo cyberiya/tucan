@@ -30,7 +30,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def __init__(self):
 		""""""
-		Slots.__init__(self, 1, 60)
+		Slots.__init__(self, 1, 300)
 		DownloadPlugin.__init__(self)
 
 	def check_links(self, url):
@@ -55,11 +55,6 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		parser = CaptchaParser(link)
 		if parser.captcha_url:
 			return parser.handle
-		else:
-			logger.warning("Limit Exceded.")
-			self.add_wait()
-			self.return_slot()
-
 
 	def delete(self, file_name):
 		""""""
