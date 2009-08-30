@@ -21,7 +21,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from parsers import CheckLinks, Parser
+from parsers import CheckLinks, WaitParser, CaptchaParser
 
 from download_plugin import DownloadPlugin
 from slots import Slots
@@ -30,7 +30,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def __init__(self):
 		""""""
-		Slots.__init__(self, 1, 5)
+		Slots.__init__(self, 1, 60)
 		DownloadPlugin.__init__(self)
 
 	def check_links(self, url):
@@ -40,13 +40,19 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	def add(self, path, link, file_name):
 		""""""
 		if self.get_slot():
-			parser = Parser(link)
-			if self.start(path, link, file_name, parser.wait, None, self.post_wait):
-				return True
+			parser = WaitParser(link)
+			if parser.wait:
+				if self.start(path, link, file_name, parser.wait, None, self.post_wait):
+					return True
+			else:
+				logger.warning("Limit Exceded.")
+				self.add_wait()
+				self.return_slot()
+
 				
 	def post_wait(self, link):
-		"""Must return link and form"""
-		parser = Parser(link)
+		"""Must return handle"""
+		parser = CaptchaParser(link)
 		if parser.captcha_url:
 			return parser.handle
 		else:
