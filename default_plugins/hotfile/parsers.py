@@ -61,7 +61,9 @@ class CaptchaParser(HTMLParser):
 			for line in tmp:
 				if '<table class="downloading"><tr><td>Downloading <b>' in line:
 					if "href" in line:
-						self.link = line.split('<a href="')[1].split('">')[0]
+						tmp = line.split('<a href="')[1].split('">')[0].split("/")
+						tmp.append(urllib.quote(tmp.pop()))
+						self.link = "/".join(tmp)
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 
