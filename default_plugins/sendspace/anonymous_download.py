@@ -26,6 +26,7 @@ from parsers import CheckLinks, Parser
 from download_plugin import DownloadPlugin
 from slots import Slots
 
+from url_open import URLOpen
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
@@ -43,13 +44,23 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		if self.get_slot():
 			parser = Parser(link)
 			if parser.link:
-				if self.start(path, parser.link, file_name):
+				if self.start(path, parser.link, file_name, None, None, self.post_wait):
 					return True
-				else:
-					logger.warning("Limit Exceded.")
-					self.add_wait()
-					self.return_slot()
+			else:
+				logger.warning("Limit Exceded.")
+				self.add_wait()
+				self.return_slot()
 
+	def post_wait(self, link):
+		"""Must return handle"""
+		handle = URLOpen().open(link)
+		if "text/html" in handle.info().getheader("Content-Type"):
+			logger.warning("Limit Exceded.")
+			self.add_wait()
+			self.return_slot()
+		else:
+			return handle
+		
 	def delete(self, file_name):
 		""""""
 		if self.stop(file_name):
