@@ -34,6 +34,10 @@ class Parser(HTMLParser.HTMLParser):
 		""""""
 		HTMLParser.HTMLParser.__init__(self)
 		self.link = None
+		code = ""
+		vars = ""
+		var1 = ""
+		var2 = ""
 		try:
 			for line in URLOpen().open(url).readlines():
 				if "base64ToText" in line:
