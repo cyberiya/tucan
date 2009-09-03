@@ -53,8 +53,9 @@ class Parser(HTMLParser.HTMLParser):
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "a":
-			if len(attrs) == 4:
-				self.link = urllib.quote(attrs[2][1], "/:")
+			for ref, value in attrs:
+				if ref == "href":
+					self.link = value
 
 	def decode(self, code, num, text):
 		""""""

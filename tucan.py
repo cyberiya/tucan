@@ -88,5 +88,9 @@ class Tucan:
 if __name__ == "__main__":
 	gobject.threads_init()
 	t = Tucan()
-	Gui(t.configuration)
-	gtk.main()
+	try:
+		Gui(t.configuration)
+		gtk.main()
+	except Exception, e:
+		t.logger.exception(e)
+		t.exit(-1)
