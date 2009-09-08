@@ -20,6 +20,8 @@
 
 import os
 import pickle
+import logging
+logger = logging.getLogger(__name__)
 
 from ConfigParser import SafeConfigParser
 
@@ -65,7 +67,7 @@ class Sessions(SafeConfigParser):
 			f.close()
 			os.rename("%s.tmp" % path, path)
 		except Exception, e:
-			print e
+			logger.exception(e)
 
 if __name__ == "__main__":
 	s = Sessions()
