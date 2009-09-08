@@ -66,8 +66,8 @@ class ServiceConfig(SafeConfigParser):
 		self.path = path
 		if fd:
 			self.readfp(fd)
-		elif os.path.exists(unicode(os.path.join(self.path, CONF))):
-			self.read(unicode(os.path.join(self.path, CONF)))
+		elif os.path.exists(unicode(os.path.join(self.path, CONF), errors="ignore")):
+			self.read(unicode(os.path.join(self.path, CONF), errors="ignore"))
 
 	def check_config(self):
 		""""""

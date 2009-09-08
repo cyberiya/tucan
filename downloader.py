@@ -59,6 +59,7 @@ class Downloader(threading.Thread):
 
 	def run(self):
 		""""""
+		name = unicode(os.path.join(self.path, self.file), errors="ignore")
 		if self.wait:
 			while ((self.wait > 0) and not self.stop_flag):
 				time.sleep(1)
@@ -74,9 +75,9 @@ class Downloader(threading.Thread):
 					self.status = cons.STATUS_ACTIVE
 					logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
 					self.total_size = int(handle.info().getheader("Content-Length"))
-					if not os.path.exists(unicode(self.path)):
+					if not os.path.exists(unicode(self.path), errors="ignore"):
 						os.mkdir(self.path)
-					f = open(unicode(os.path.join(self.path, self.file)), "wb")
+					f = open("%s.part" % name, "wb")
 					self.start_time = time.time()
 					data = "None"
 					while ((len(data) > 0) and not self.stop_flag):
@@ -96,23 +97,24 @@ class Downloader(threading.Thread):
 								time.sleep(0.1)
 						self.speed = BASE_SIZE * tmp_size
 					self.time_remaining = time.time() - self.start_time
+					f.flush()
+					os.fsync(f.fileno())
 					f.close()
-					if not self.stop_flag:
+					if self.stop_flag:
+						os.remove("%s.part" % name)
+						self.status = cons.STATUS_PEND
+					else:
 						self.stop_flag = True
 						if self.actual_size == self.total_size:
+							os.rename("%s.part" % name, name)
 							self.status = cons.STATUS_CORRECT
 						else:
 							self.status = cons.STATUS_ERROR
-				else:
-					self.stop_flag = True
-					self.status = cons.STATUS_PEND
-			#except TypeError, e:
-			#	logger.exception("%s: %s" % (self.file, e))
-			#	self.stop_flag = True
-			#	self.status = cons.STATUS_PEND
 			except Exception, e:
-				logger.exception("%s: %s" % (self.file, e))
 				self.stop_flag = True
+				logger.exception("%s: %s" % (self.file, e))
+				if os.path.exists("%s.part" % name):
+					os.remove("%s.part" % name)
 				self.status = cons.STATUS_ERROR
 
 	def get_speed(self):
