@@ -97,6 +97,8 @@ class Downloader(threading.Thread):
 								time.sleep(0.1)
 						self.speed = BASE_SIZE * tmp_size
 					self.time_remaining = time.time() - self.start_time
+					f.flush()
+					os.fsync(f.fileno())
 					f.close()
 					if self.stop_flag:
 						os.remove("%s.part" % name)
