@@ -57,9 +57,15 @@ class Sessions(SafeConfigParser):
 
 	def save(self, path):
 		""""""
-		f = open(path, "w")
-		self.write(f)
-		f.close()
+		try:
+			f = open("%s.tmp" % path, "w")
+			self.write(f)
+			f.flush()
+			os.fsync(f.fileno())
+			f.close()
+			os.rename("%s.tmp" % path, path)
+		except Exception, e:
+			print e
 
 if __name__ == "__main__":
 	s = Sessions()
