@@ -67,6 +67,8 @@ class Sessions(SafeConfigParser):
 			f.close()
 			os.rename("%s.tmp" % path, path)
 		except Exception, e:
+			if os.path.exists("%s.tmp" % path):
+				os.remove("%s.tmp" % path)
 			logger.exception(e)
 
 if __name__ == "__main__":
