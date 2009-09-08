@@ -295,7 +295,7 @@ class Gui(gtk.Window, ServiceManager):
 		for info in packages_info:
 			package_path = unicode(os.path.join(info[0], info[1].replace(" ", "_"), ""), errors="ignore")
 			if not os.path.exists(package_path):
-				os.mkdir(package_path)
+				os.makedirs(package_path)
 			if info[2]:
 				f = open(package_path + "password.txt", "w")
 				f.write(info[2] + "\n")
