@@ -76,7 +76,7 @@ class Downloader(threading.Thread):
 					logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
 					self.total_size = int(handle.info().getheader("Content-Length"))
 					if not os.path.exists(unicode(self.path, errors="ignore")):
-						os.mkdir(self.path)
+						os.makedirs(self.path)
 					f = open("%s.part" % name, "wb")
 					self.start_time = time.time()
 					data = "None"
