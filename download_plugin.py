@@ -72,6 +72,7 @@ class DownloadPlugin(object):
 				else:
 					time = 0
 			else:
+				actual_size = 0
 				progress = 0
 				speed = 0
 				time = int(th.time_remaining)
