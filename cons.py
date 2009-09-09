@@ -27,14 +27,6 @@ import logging
 #project constants
 TUCAN_NAME = "Tucan Manager"
 TUCAN_VERSION = "0.3.8 alpha"
-TUCAN_REV = ""
-try:
-	rev = subprocess.Popen("svnversion", stdout=subprocess.PIPE).stdout.read().strip()
-except:
-	pass
-else:
-	TUCAN_REV = "r%s" % rev
-
 WEBPAGE = "http://www.tucaneando.com"
 DOC = "http://doc.tucaneando.com"
 

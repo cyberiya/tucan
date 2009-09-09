@@ -59,7 +59,7 @@ class Tucan:
 			console.setFormatter(logging.Formatter('%(levelname)-7s %(name)s: %(message)s'))
 			logging.getLogger("").addHandler(console)
 
-		self.logger.info("%s %s" % (cons.TUCAN_VERSION, cons.TUCAN_REV))
+		self.logger.info(cons.TUCAN_VERSION)
 		self.logger.debug("OS: %s" % sys.platform)
 		self.logger.debug("Main path: %s" % cons.PATH)
 		self.logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
@@ -93,7 +93,7 @@ if __name__ == "__main__":
 	options, args = parser.parse_args()
 	
 	if options.version:
-		print "%s %s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION, cons.TUCAN_REV)
+		print "%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION)
 		sys.exit()
 
 	t = Tucan(options.verbose)
