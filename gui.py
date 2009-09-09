@@ -392,6 +392,8 @@ class Gui(gtk.Window, ServiceManager):
 		self.hide()
 		if self.tray_icon:
 			self.tray_icon.close()
+		gtk.main_quit()
+
 		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
 			self.save_default_session()
 		else:
@@ -400,10 +402,4 @@ class Gui(gtk.Window, ServiceManager):
 			except Exception, e:
 				logger.info(e)
 		self.stop_all()
-		gtk.main_quit()
 		tucan_exit(0)
-
-if __name__ == "__main__":
-	g = Gui()
-	gobject.threads_init()
-	gtk.main()
