@@ -26,6 +26,7 @@ pygtk.require('2.0')
 import gtk
 
 import cons
+import media
 
 if cons.OS_OSX:
 	try:
@@ -63,7 +64,7 @@ class TrayIcon(gtk.StatusIcon):
 		""""""
 		gtk.StatusIcon.__init__(self)
 		self.set_tooltip("Tucan Manager - Version: %s" % cons.TUCAN_VERSION)
-		self.set_from_file(cons.ICON_TUCAN)
+		self.set_from_file(media.ICON_TUCAN)
 		self.set_visible(True)
 
 		self.window_visible = True

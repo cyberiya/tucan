@@ -30,6 +30,8 @@ import gobject
 import pango
 
 import cons
+import media
+
 import config
 import service_config
 import url_open
@@ -46,7 +48,7 @@ class Preferences(gtk.Dialog):
 	def __init__(self, configuration, show_services=False, updates=None):
 		""""""
 		gtk.Dialog.__init__(self)
-		self.set_icon_from_file(cons.ICON_PREFERENCES)
+		self.set_icon_from_file(media.ICON_PREFERENCES)
 		self.set_title("Tucan Preferences")
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(500,500)
@@ -56,9 +58,9 @@ class Preferences(gtk.Dialog):
 		self.notebook = gtk.Notebook()
 		self.notebook.set_property("homogeneous", True)
 		self.vbox.pack_start(self.notebook)
-		self.new_page(_("General Configuration"), cons.ICON_PREFERENCES_MAIN, self.init_main())
-		self.new_page(_("Service Configuration"), cons.ICON_PREFERENCES_SERVICES, self.init_services())
-		self.new_page(_("Advanced Configuration"), cons.ICON_PREFERENCES_ADVANCED, self.init_advanced())
+		self.new_page(_("General Configuration"), media.ICON_PREFERENCES_MAIN, self.init_main())
+		self.new_page(_("Service Configuration"), media.ICON_PREFERENCES_SERVICES, self.init_services())
+		self.new_page(_("Advanced Configuration"), media.ICON_PREFERENCES_ADVANCED, self.init_advanced())
 
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
@@ -132,7 +134,7 @@ class Preferences(gtk.Dialog):
 		vbox = gtk.VBox()
 
 		frame = gtk.Frame()
-		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_LANGUAGE))
+		frame.set_label_widget(gtk.image_new_from_file(media.ICON_LANGUAGE))
 		frame.set_border_width(5)
 		vbox.pack_start(frame, False, False)
 		hbox = gtk.HBox()
@@ -152,7 +154,7 @@ class Preferences(gtk.Dialog):
 		hbox.pack_start(self.language, False, False, 10)
 
 		frame = gtk.Frame()
-		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_NETWORK))
+		frame.set_label_widget(gtk.image_new_from_file(media.ICON_NETWORK))
 		frame.set_border_width(5)
 		vbox.pack_start(frame, False, False)
 		vbox1 = gtk.VBox()
@@ -198,7 +200,7 @@ class Preferences(gtk.Dialog):
 		#vbox1.pack_start(hbox, False, False, 2)
 
 		frame = gtk.Frame()
-		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_FOLDER))
+		frame.set_label_widget(gtk.image_new_from_file(media.ICON_FOLDER))
 		frame.set_border_width(5)
 		vbox.pack_start(frame, False, False)
 		vbox1 = gtk.VBox()
@@ -313,7 +315,7 @@ class Preferences(gtk.Dialog):
 			try:
 				icon = gtk.gdk.pixbuf_new_from_file_at_size(icon_path, 32, 32)
 			except Exception:
-				icon = gtk.gdk.pixbuf_new_from_file_at_size(cons.ICON_MISSING, 32, 32)
+				icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 32, 32)
 				logger.info("Could not load: %s" % icon_path)
 			self.treeview.get_model().append((icon, name, enabled, configuration))
 		else:
@@ -359,7 +361,7 @@ class Preferences(gtk.Dialog):
 	def init_advanced(self):
 		""""""
 		frame = gtk.Frame()
-		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ADVANCED))
+		frame.set_label_widget(gtk.image_new_from_file(media.ICON_ADVANCED))
 		frame.set_border_width(10)
 		hbox = gtk.HBox()
 		frame.add(hbox)

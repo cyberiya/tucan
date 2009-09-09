@@ -27,6 +27,7 @@ from service_update import ServiceUpdate
 from message import Message
 
 import cons
+import media
 
 class UpdateManager(gtk.Dialog, ServiceUpdate):
 	""""""
@@ -36,7 +37,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		ServiceUpdate.__init__(self, config)
 		self.set_transient_for(parent)
 
-		self.set_icon_from_file(cons.ICON_UPDATE)
+		self.set_icon_from_file(media.ICON_UPDATE)
 		self.set_title(("Update Manager"))
 		self.set_size_request(400,300)
 
@@ -126,7 +127,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 	def check_updates(self, updates=None):
 		""""""
 		model = self.treeview.get_model()
-		default_icon = gtk.gdk.pixbuf_new_from_file_at_size(cons.ICON_UPDATE, 32, 32)
+		default_icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_UPDATE, 32, 32)
 
 		updated = 0
 		new = 0

@@ -25,6 +25,8 @@ import gobject
 
 import service_config
 import cons
+import media
+
 
 class InfoPreferences(gtk.VBox):
 	""""""
@@ -82,7 +84,7 @@ class AccountPreferences(InfoPreferences):
 		self.get_cookie = get_cookie
 
 		frame = gtk.Frame()
-		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_ACCOUNT))
+		frame.set_label_widget(gtk.image_new_from_file(media.ICON_ACCOUNT))
 		frame.set_border_width(10)
 		self.pack_start(frame, False, False, 1)
 		scroll = gtk.ScrolledWindow()
@@ -329,4 +331,4 @@ class ServicePreferences(gtk.Dialog):
 		self.destroy()
 
 if __name__ == "__main__":
-	x = ServicePreferences("rapidshare.com", gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING), service_config.ServiceConfig("/home/crak/.tucan/plugins/megaupload/"))
+	x = ServicePreferences("rapidshare.com", gtk.gdk.pixbuf_new_from_file(media.ICON_MISSING), service_config.ServiceConfig("/home/crak/.tucan/plugins/megaupload/"))

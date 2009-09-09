@@ -31,6 +31,7 @@ import gtk
 import gobject
 
 import cons
+import media
 
 class Statusbar(gtk.Statusbar):
 	""""""
@@ -131,7 +132,7 @@ class Statusbar(gtk.Statusbar):
 			if icon_path:
 				icon = gtk.gdk.pixbuf_new_from_file(icon_path)
 			else:
-				icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_MISSING)
+				icon = gtk.gdk.pixbuf_new_from_file(media.ICON_MISSING)
 			hbox.pack_start(gtk.image_new_from_pixbuf(icon.scale_simple(24, 24, gtk.gdk.INTERP_BILINEAR)))
 			hbox.pack_start(gtk.Label(service), True, True, 5)
 			vbox.pack_start(hbox, True, False, 1)

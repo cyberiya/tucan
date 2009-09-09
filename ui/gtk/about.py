@@ -23,6 +23,7 @@ pygtk.require('2.0')
 import gtk
 
 import cons
+import media
 
 NAME = "Tucan"
 COPYRIGHT = "(C) 2008-2009 The Tucan Project"
@@ -47,8 +48,8 @@ class About(gtk.AboutDialog):
 		""""""
 		gtk.AboutDialog.__init__(self)
 		self.set_position(gtk.WIN_POS_CENTER)
-		self.set_icon_from_file(cons.ICON_TUCAN)
-		self.set_logo(gtk.gdk.pixbuf_new_from_file(cons.ICON_TUCAN))
+		self.set_icon_from_file(media.ICON_TUCAN)
+		self.set_logo(gtk.gdk.pixbuf_new_from_file(media.ICON_TUCAN))
 		self.set_name(NAME)
 		self.set_version(cons.TUCAN_VERSION)
 		self.set_copyright(COPYRIGHT)

@@ -25,13 +25,14 @@ import gtk
 from file_chooser import FileChooser
 
 import cons
+import media
 
 class AdvancedPackages(gtk.Dialog):
 	""""""
 	def __init__(self, default_path, packages):
 		""""""
 		gtk.Dialog.__init__(self)
-		self.set_icon_from_file(cons.ICON_PACKAGE)
+		self.set_icon_from_file(media.ICON_PACKAGE)
 		self.set_title(_("Advanced Packages"))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(600,400)
@@ -82,7 +83,7 @@ class AdvancedPackages(gtk.Dialog):
 		self.treeview.append_column(tree_pass)
 
 		#fill treestore
-		package_icon = gtk.gdk.pixbuf_new_from_file(cons.ICON_PACKAGE)
+		package_icon = gtk.gdk.pixbuf_new_from_file(media.ICON_PACKAGE)
 		model = self.treeview.get_model()
 		for package_name, package_links in packages:
 			model.append((package_icon, default_path, package_name, None))

@@ -54,6 +54,7 @@ from service_manager import ServiceManager
 from service_update import ServiceUpdate
 
 import cons
+import media
 
 class Gui(gtk.Window, ServiceManager):
 	""""""
@@ -79,7 +80,7 @@ class Gui(gtk.Window, ServiceManager):
 		ServiceManager.__init__(self, self.configuration)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 
-		self.set_icon_from_file(cons.ICON_TUCAN)
+		self.set_icon_from_file(media.ICON_TUCAN)
 		self.set_title("%s - Version: %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(900, 500)
@@ -123,13 +124,13 @@ class Gui(gtk.Window, ServiceManager):
 			self.vbox.pack_start(menu_bar.MenuBar([file_menu, view_menu, help_menu]), False)
 
 		#toolbar
-		download = _("Add Downloads"), gtk.image_new_from_file(cons.ICON_DOWNLOAD), self.add_links
-		upload = _("Add Uploads"), gtk.image_new_from_file(cons.ICON_UPLOAD), self.not_implemented #self.quit
-		clear = _("Clear Complete"), gtk.image_new_from_file(cons.ICON_CLEAR), self.clear_complete
-		up = _("Move Up"), gtk.image_new_from_file(cons.ICON_UP), self.move_up
-		down = _("Move Down"), gtk.image_new_from_file(cons.ICON_DOWN), self.move_down
-		start = _("Start Selected"), gtk.image_new_from_file(cons.ICON_START), self.start
-		stop = _("Stop Selected"), gtk.image_new_from_file(cons.ICON_STOP), self.stop
+		download = _("Add Downloads"), gtk.image_new_from_file(media.ICON_DOWNLOAD), self.add_links
+		upload = _("Add Uploads"), gtk.image_new_from_file(media.ICON_UPLOAD), self.not_implemented #self.quit
+		clear = _("Clear Complete"), gtk.image_new_from_file(media.ICON_CLEAR), self.clear_complete
+		up = _("Move Up"), gtk.image_new_from_file(media.ICON_UP), self.move_up
+		down = _("Move Down"), gtk.image_new_from_file(media.ICON_DOWN), self.move_down
+		start = _("Start Selected"), gtk.image_new_from_file(media.ICON_START), self.start
+		stop = _("Stop Selected"), gtk.image_new_from_file(media.ICON_STOP), self.stop
 		self.vbox.pack_start(toolbar.Toolbar([download, upload, None, clear, None, up, down, None, start, stop]), False)
 
 		copy = gtk.STOCK_COPY, self.copy_clipboard

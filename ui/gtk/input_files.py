@@ -28,6 +28,7 @@ import gobject
 from file_chooser import FileChooser
 
 import cons
+import media
 
 SERVICES = [("Megaupload", 100, cons.UNIT_MB, ["Anonymous", "Premium"]), ("Rapidshare", 200, cons.UNIT_MB, ["Collector", "Premium"]), ("Gigasize", 100, cons.UNIT_MB, ["Anonymous"])]
 
@@ -36,7 +37,7 @@ class InputFiles(gtk.Dialog):
 	def __init__(self, upload_services):
 		""""""
 		gtk.Dialog.__init__(self)
-		self.set_icon_from_file(cons.ICON_UPLOAD)
+		self.set_icon_from_file(media.ICON_UPLOAD)
 		self.set_title(("Input Files"))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(600,500)
@@ -89,7 +90,7 @@ class InputFiles(gtk.Dialog):
 		service_vbox.pack_start(frame)
 		frame.set_size_request(200, -1)
 		frame.set_border_width(5)
-		frame.set_label_widget(gtk.image_new_from_file(cons.ICON_PREFERENCES_SERVICES))
+		frame.set_label_widget(gtk.image_new_from_file(media.ICON_PREFERENCES_SERVICES))
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
