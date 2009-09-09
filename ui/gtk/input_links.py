@@ -32,6 +32,7 @@ from message import Wait, Message
 from advanced_packages import AdvancedPackages
 
 import cons
+import media
 
 class ClipParser(HTMLParser.HTMLParser):
 	""""""
@@ -52,7 +53,7 @@ class InputLinks(gtk.Dialog):
 	def __init__(self, path, sort, check, create, manage, show_advanced_packages):
 		""""""
 		gtk.Dialog.__init__(self)
-		self.set_icon_from_file(cons.ICON_DOWNLOAD)
+		self.set_icon_from_file(media.ICON_DOWNLOAD)
 		self.set_title(_("Input Links"))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(600,500)
@@ -89,7 +90,7 @@ class InputLinks(gtk.Dialog):
 		button_box = gtk.HButtonBox()
 		hbox.pack_start(button_box, False, False, 10)
 		vbox = gtk.VBox()
-		check_image = gtk.image_new_from_file(cons.ICON_CHECK)
+		check_image = gtk.image_new_from_file(media.ICON_CHECK)
 		vbox.pack_start(check_image)
 		check_label = gtk.Label(_("Check Links"))
 		vbox.pack_start(check_label)

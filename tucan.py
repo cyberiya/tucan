@@ -103,7 +103,7 @@ if __name__ == "__main__":
 		import gtk
 		import gobject
 		
-		from gui import Gui
+		from ui.gtk.gui import Gui
 
 		gobject.threads_init()
 
