@@ -389,6 +389,9 @@ class Gui(gtk.Window, ServiceManager):
 
 	def close(self):
 		""""""
+		self.hide()
+		if self.tray_icon:
+			self.tray_icon.close()
 		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
 			self.save_default_session()
 		else:
@@ -396,9 +399,6 @@ class Gui(gtk.Window, ServiceManager):
 				os.remove(cons.SESSION_FILE)
 			except Exception, e:
 				logger.info(e)
-		self.hide()
-		if self.tray_icon:
-			self.tray_icon.close()
 		self.stop_all()
 		gtk.main_quit()
 		tucan_exit(0)
