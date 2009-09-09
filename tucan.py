@@ -23,13 +23,7 @@ import __builtin__
 import os.path
 import sys
 import logging
-
-import pygtk
-pygtk.require('2.0')
-import gtk
-import gobject
-
-from gui import Gui
+import optparse
 
 import url_open
 import config
@@ -37,7 +31,7 @@ import cons
 
 class Tucan:
 	""""""
-	def __init__(self):
+	def __init__(self, verbose=False):
 		""""""
 		#exception hook
 		self.old_exception_hook = sys.excepthook
@@ -58,6 +52,12 @@ class Tucan:
 			os.rename(cons.LOG_FILE, "%s.old" % cons.LOG_FILE)
 		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
 		self.logger = logging.getLogger(self.__class__.__name__)
+
+		if verbose:
+			console = logging.StreamHandler()
+			console.setLevel(logging.INFO)
+			console.setFormatter(logging.Formatter('%(levelname)-7s %(name)s: %(message)s'))
+			logging.getLogger("").addHandler(console)
 
 		self.logger.info(cons.TUCAN_VERSION)
 		self.logger.debug("OS: %s" % sys.platform)
@@ -86,9 +86,27 @@ class Tucan:
 		sys.exit(arg)
 
 if __name__ == "__main__":
-	gobject.threads_init()
-	t = Tucan()
+	parser = optparse.OptionParser()
+	#parser.add_option("-f", "--file", dest="filename", help="write to FILE", metavar="FILE")
+	parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="print log to stdout")
+	parser.add_option("-V", "--version", action="store_true", dest="version", default=False, help="print version and exit")
+	options, args = parser.parse_args()
+	
+	if options.version:
+		print "%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION)
+		sys.exit()
+
+	t = Tucan(options.verbose)
 	try:
+		import pygtk
+		pygtk.require('2.0')
+		import gtk
+		import gobject
+		
+		from gui import Gui
+
+		gobject.threads_init()
+
 		Gui(t.configuration)
 		gtk.main()
 	except Exception, e:
