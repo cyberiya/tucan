@@ -51,7 +51,6 @@ class Tucan:
 				os.remove("%s.old" % cons.LOG_FILE)
 			os.rename(cons.LOG_FILE, "%s.old" % cons.LOG_FILE)
 		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
-		self.logger = logging.getLogger(self.__class__.__name__)
 
 		if verbose:
 			console = logging.StreamHandler()
@@ -59,6 +58,7 @@ class Tucan:
 			console.setFormatter(logging.Formatter('%(levelname)-7s %(name)s: %(message)s'))
 			logging.getLogger("").addHandler(console)
 
+		self.logger = logging.getLogger(self.__class__.__name__)
 		self.logger.info(cons.TUCAN_VERSION)
 		self.logger.debug("OS: %s" % sys.platform)
 		self.logger.debug("Main path: %s" % cons.PATH)
