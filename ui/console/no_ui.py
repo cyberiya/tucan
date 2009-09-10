@@ -34,27 +34,29 @@ import cons
 
 class NoUi(ServiceManager):
 	""""""
-	def __init__(self, conf, links_file=None):
+	def __init__(self, conf, links_file):
 		""""""
 		self.configuration = conf
+		self.links_file = links_file
 		if self.configuration.configured:
 			ServiceManager.__init__(self, self.configuration)
-			
-			if links_file:
-				f = open(links_file, "r")
-				links =	[link.lower().strip() for link in f.read().split("\n") if link]
-				f.close()
 
-				self.manage_packages(self.create_packages(self.check_links(links)), [])
-				
-				self.run()
-		
 	def run(self):
 		""""""
+		self.load_file()
 		while len(self.download_manager.active_downloads + self.download_manager.pending_downloads) > 0:
 			self.download_manager.update()
 			time.sleep(1)
 		self.quit()
+
+	def load_file(self):
+		""""""
+		if self.links_file:
+			f = open(self.links_file, "r")
+			links =	[link.lower().strip() for link in f.read().split("\n") if link]
+			f.close()
+
+			self.manage_packages(self.create_packages(self.check_links(links)), [])				
 
 	def check_links(self, link_list):
 		""""""

@@ -53,7 +53,7 @@ class Tucan:
 		logging.basicConfig(level=logging.DEBUG, format='[%(asctime)s] %(name)s %(levelname)s: %(message)s', filename=cons.LOG_FILE, filemode='w')
 
 		if verbose:
-			console = logging.StreamHandler()
+			console = logging.StreamHandler(sys.stdout)
 			console.setLevel(logging.INFO)
 			console.setFormatter(logging.Formatter('%(levelname)-7s %(name)s: %(message)s'))
 			logging.getLogger("").addHandler(console)
@@ -103,15 +103,19 @@ if __name__ == "__main__":
 	if options.daemon:
 		try:
 			from ui.console.no_ui import NoUi
-			NoUi(t.configuration, options.links_file)
+			d = NoUi(t.configuration, options.links_file)
+			d.run()
 		except:
-			t.exit(-1)
+			print ""
+			sys.exit(-1)
 	elif options.cli:
-		try:
-			from ui.console.cli import Cli
-			Cli(t.configuration, options.links_file)
-		except:
-			t.exit(-1)
+		#try:
+		from curses.wrapper import wrapper
+		from ui.console.cli import Cli
+		c = Cli(t.configuration, options.links_file)
+		wrapper(c.run)
+		#except:
+		#	sys.exit(-1)
 	else:
 		try:
 			import pygtk
