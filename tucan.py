@@ -89,7 +89,7 @@ if __name__ == "__main__":
 	parser = optparse.OptionParser()
 	parser.add_option("-c", "--cli", action="store_true", dest="cli", default=False, help="command line interface")
 	parser.add_option("-d", "--daemon", action="store_true", dest="daemon", default=False, help="no interaction interface")
-	parser.add_option("-l", "--links", dest="links_file", help="import links from FILE", metavar="FILE")
+	parser.add_option("-i", "--input-links", dest="links_file", help="import links from FILE", metavar="FILE")
 	parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="print log to stdout")
 	parser.add_option("-V", "--version", action="store_true", dest="version", default=False, help="print version and exit")
 	options, args = parser.parse_args()
@@ -99,18 +99,32 @@ if __name__ == "__main__":
 		sys.exit()
 
 	t = Tucan(options.verbose)
-	try:
-		import pygtk
-		pygtk.require('2.0')
-		import gtk
-		import gobject
-		
-		from ui.gtk.gui import Gui
 
-		gobject.threads_init()
+	if options.daemon:
+		try:
+			from ui.console.no_ui import NoUi
+			NoUi(t.configuration, options.links_file)
+		except:
+			t.exit(-1)
+	elif options.cli:
+		try:
+			from ui.console.cli import Cli
+			Cli(t.configuration, options.links_file)
+		except:
+			t.exit(-1)
+	else:
+		try:
+			import pygtk
+			pygtk.require('2.0')
+			import gtk
+			import gobject
+			
+			from ui.gtk.gui import Gui
 
-		Gui(t.configuration)
-		gtk.main()
-	except Exception, e:
-		t.logger.exception(e)
-		t.exit(-1)
+			gobject.threads_init()
+
+			Gui(t.configuration)
+			gtk.main()
+		except Exception, e:
+			t.logger.exception(e)
+			t.exit(-1)
