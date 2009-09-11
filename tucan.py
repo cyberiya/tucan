@@ -108,7 +108,8 @@ if __name__ == "__main__":
 			d.run()
 		except:
 			print ""
-			sys.exit(-1)
+			t.logger.exception("")
+			t.exit(-1)
 	elif options.cli:
 		t = Tucan(False)
 		try:
@@ -117,7 +118,8 @@ if __name__ == "__main__":
 			c = Cli(t.configuration, options.links_file)
 			wrapper(c.run)
 		except:
-			sys.exit(-1)
+			t.logger.exception("")
+			t.exit(-1)
 	else:
 		t = Tucan(options.verbose)
 		try:
@@ -131,6 +133,6 @@ if __name__ == "__main__":
 			gobject.threads_init()
 			Gui(t.configuration)
 			gtk.main()
-		except Exception, e:
-			t.logger.exception(e)
+		except:
+			t.logger.exception("")
 			t.exit(-1)

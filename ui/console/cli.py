@@ -30,6 +30,8 @@ STATUS_LINES = 1
 DOWNLOAD_LINES = 10
 LOG_LINES = 8
 
+WIN_CHARS = 80
+
 class LogStream:
 	""""""
 	def __init__(self):
@@ -79,13 +81,13 @@ class Cli(NoUi):
 		try:
 			curses.curs_set(0)
 
-		except curses.error, e:
-			logger.exception(e)
+		except:
+			logger.warning("Could not hide the cursor")
 
 		#set default screen
-		self.status_win = self.screen.derwin(STATUS_LINES, 80, 0, 0)
-		self.download_win = self.screen.derwin(DOWNLOAD_LINES, 80, 2, 0)
-		self.log_win = self.screen.derwin(LOG_LINES, 80, 16, 0)
+		self.status_win = self.screen.derwin(STATUS_LINES, WIN_CHARS, 0, 0)
+		self.download_win = self.screen.derwin(DOWNLOAD_LINES, WIN_CHARS, 2, 0)
+		self.log_win = self.screen.derwin(LOG_LINES, WIN_CHARS, 15, 0)
 
 		#load links file
 		th = threading.Thread(group=None, target=self.load_file, name=None)
@@ -129,18 +131,18 @@ class Cli(NoUi):
 		if lines:
 			self.log_win.erase()
 			for i in range(len(lines)):
-				self.log_win.addstr(i, 0, lines[i])
+				self.log_win.addnstr(i, 0, lines[i], WIN_CHARS)
 			self.log_win.noutrefresh()
 
 	def update_status(self):
 		""""""				
 		self.status_win.erase()
-		self.status_win.addstr(0, 0, "Downstream: %s KB/s \tTotal %s \tActive %s \tComplete %s" % (0,0,0,0), curses.A_BOLD)
+		self.status_win.addnstr(0, 0, "Downstream: %s KB/s \tTotal %s \tActive %s \tComplete %s" % (0,0,0,0), WIN_CHARS, curses.A_BOLD)
 		self.status_win.noutrefresh()
 
 	def question(self):
 		""""""
 		self.status_win.erase()
-		self.status_win.addstr(0, 0, "Are you sure you want to quit? [y/N]", curses.A_STANDOUT)
+		self.status_win.addnstr(0, 0, "Are you sure you want to quit? [y/N]", WIN_CHARS, curses.A_STANDOUT)
 		self.status_win.noutrefresh()
 		
