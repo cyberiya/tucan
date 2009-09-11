@@ -74,18 +74,19 @@ class Cli(NoUi):
 
 	def run(self, screen):
 		""""""
-		#set default screen
 		self.screen = screen
+		self.screen.nodelay(1)
 		try:
-			self.screen.nodelay(1)
 			curses.curs_set(0)
 
-			self.status_win = self.screen.derwin(STATUS_LINES, 80, 0, 0)
-			self.download_win = self.screen.derwin(DOWNLOAD_LINES, 80, 2, 0)
-			self.log_win = self.screen.derwin(LOG_LINES, 80, 16, 0)
 		except curses.error, e:
-			logger.warning(e)
-			
+			logger.exception(e)
+
+		#set default screen
+		self.status_win = self.screen.derwin(STATUS_LINES, 80, 0, 0)
+		self.download_win = self.screen.derwin(DOWNLOAD_LINES, 80, 2, 0)
+		self.log_win = self.screen.derwin(LOG_LINES, 80, 16, 0)
+
 		#load links file
 		th = threading.Thread(group=None, target=self.load_file, name=None)
 		th.start()
