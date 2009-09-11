@@ -78,8 +78,7 @@ class Cli(NoUi):
 		self.screen = screen
 		try:
 			self.screen.nodelay(1)
-			#curses.curs_set(0)
-			self.screen.leaveok(1)
+			curses.curs_set(0)
 
 			self.status_win = self.screen.derwin(STATUS_LINES, 80, 0, 0)
 			self.download_win = self.screen.derwin(DOWNLOAD_LINES, 80, 2, 0)
