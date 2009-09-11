@@ -38,8 +38,7 @@ class NoUi(ServiceManager):
 		""""""
 		self.configuration = conf
 		self.links_file = links_file
-		if self.configuration.configured:
-			ServiceManager.__init__(self, self.configuration)
+		ServiceManager.__init__(self, self.configuration)
 
 	def run(self):
 		""""""

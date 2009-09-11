@@ -63,6 +63,8 @@ class Tucan:
 		self.logger.debug("OS: %s" % sys.platform)
 		self.logger.debug("Main path: %s" % cons.PATH)
 		self.logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
+		if not self.configuration.configured:
+			self.logger.warning("No configuration found!")
 
 		#proxy settings
 		proxy_url, proxy_port = self.configuration.get_proxy()
@@ -98,9 +100,8 @@ if __name__ == "__main__":
 		print "%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION)
 		sys.exit()
 
-	t = Tucan(options.verbose)
-
 	if options.daemon:
+		t = Tucan(True)
 		try:
 			from ui.console.no_ui import NoUi
 			d = NoUi(t.configuration, options.links_file)
@@ -109,14 +110,16 @@ if __name__ == "__main__":
 			print ""
 			sys.exit(-1)
 	elif options.cli:
-		#try:
-		from curses.wrapper import wrapper
-		from ui.console.cli import Cli
-		c = Cli(t.configuration, options.links_file)
-		wrapper(c.run)
-		#except:
-		#	sys.exit(-1)
+		t = Tucan(False)
+		try:
+			from curses.wrapper import wrapper
+			from ui.console.cli import Cli
+			c = Cli(t.configuration, options.links_file)
+			wrapper(c.run)
+		except:
+			sys.exit(-1)
 	else:
+		t = Tucan(options.verbose)
 		try:
 			import pygtk
 			pygtk.require('2.0')
@@ -126,7 +129,6 @@ if __name__ == "__main__":
 			from ui.gtk.gui import Gui
 
 			gobject.threads_init()
-
 			Gui(t.configuration)
 			gtk.main()
 		except Exception, e:
