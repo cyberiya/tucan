@@ -36,7 +36,6 @@ class LogStream:
 	""""""
 	def __init__(self):
 		""""""
-		self.length = LOG_LINES-2
 		self.new_buffer = []
 		self.old_buffer = []
 
@@ -48,17 +47,27 @@ class LogStream:
 		""""""
 		pass
 		
-	def readlines(self):
+	def readlines(self, length=0):
 		""""""
 		if len(self.new_buffer) > 0:
-			cont = 1
-			for line in self.new_buffer:
-				tmp = self.new_buffer[0]
-				del self.new_buffer[0]
-				self.old_buffer.append(tmp)
-				if cont >= self.length:
-					break
-			return self.old_buffer[-self.length:]
+			if length > 0:
+				cont = 1
+				for line in self.new_buffer:
+					tmp = self.new_buffer[0]
+					del self.new_buffer[0]
+					self.old_buffer.append(tmp)
+					if cont >= length:
+						break
+				return self.old_buffer[-length:]
+			else:
+				tmp = self.new_buffer
+				self.new_buffer = []
+				self.old_buffer += tmp
+				return tmp
+
+	def get_buffer(self):
+		""""""
+		return self.old_buffer
 
 class Cli(NoUi):
 	""""""		
@@ -73,6 +82,7 @@ class Cli(NoUi):
 				
 		NoUi.__init__(self, *kwargs)
 		self.quit_question = False
+		self.win_chars = WIN_CHARS
 
 	def run(self, screen):
 		""""""
@@ -98,6 +108,7 @@ class Cli(NoUi):
 		#	self.download_manager.update()
 		#	print "Active:", [download.name for download in self.download_manager.active_downloads]
 			#self.update_status()
+			y, self.win_chars = self.screen.getmaxyx()
 			self.parse_input()
 			self.update_log()
 			curses.doupdate()
@@ -127,22 +138,22 @@ class Cli(NoUi):
 					
 	def update_log(self):
 		""""""
-		lines = self.stream.readlines()
+		lines = self.stream.readlines(LOG_LINES-2)
 		if lines:
 			self.log_win.erase()
 			for i in range(len(lines)):
-				self.log_win.addnstr(i, 0, lines[i], WIN_CHARS)
+				self.log_win.addnstr(i, 0, lines[i], self.win_chars)
 			self.log_win.noutrefresh()
 
 	def update_status(self):
 		""""""				
 		self.status_win.erase()
-		self.status_win.addnstr(0, 0, "Downstream: %s KB/s \tTotal %s \tActive %s \tComplete %s" % (0,0,0,0), WIN_CHARS, curses.A_BOLD)
+		self.status_win.addnstr(0, 0, "Downstream: %s KB/s \tTotal %s \tActive %s \tComplete %s" % (0,0,0,0), self.win_chars, curses.A_BOLD)
 		self.status_win.noutrefresh()
 
 	def question(self):
 		""""""
 		self.status_win.erase()
-		self.status_win.addnstr(0, 0, "Are you sure you want to quit? [y/N]", WIN_CHARS, curses.A_STANDOUT)
+		self.status_win.addnstr(0, 0, "Are you sure you want to quit? [y/N]", self.win_chars, curses.A_STANDOUT)
 		self.status_win.noutrefresh()
 		

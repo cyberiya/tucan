@@ -106,10 +106,12 @@ if __name__ == "__main__":
 			from ui.console.no_ui import NoUi
 			d = NoUi(t.configuration, options.links_file)
 			d.run()
+		except Exception, e:
+			t.logger.exception(e)
+			t.exit(-1)
 		except:
 			print ""
-			t.logger.exception("")
-			t.exit(-1)
+			sys.exit(-1)
 	elif options.cli:
 		t = Tucan(False)
 		try:
@@ -117,9 +119,11 @@ if __name__ == "__main__":
 			from ui.console.cli import Cli
 			c = Cli(t.configuration, options.links_file)
 			wrapper(c.run)
-		except:
-			t.logger.exception("")
+		except Exception, e:
+			t.logger.exception(e)
 			t.exit(-1)
+		except:
+			sys.exit(-1)
 	else:
 		t = Tucan(options.verbose)
 		try:
@@ -133,6 +137,6 @@ if __name__ == "__main__":
 			gobject.threads_init()
 			Gui(t.configuration)
 			gtk.main()
-		except:
-			t.logger.exception("")
+		except Exception, e:
+			t.logger.exception(e)
 			t.exit(-1)
