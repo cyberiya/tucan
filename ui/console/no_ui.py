@@ -51,11 +51,15 @@ class NoUi(ServiceManager):
 	def load_file(self):
 		""""""
 		if self.links_file:
-			f = open(self.links_file, "r")
-			links =	[link.lower().strip() for link in f.read().split("\n") if link]
-			f.close()
+			try:
+				f = open(self.links_file, "r")
+				links =	[link.lower().strip() for link in f.read().split("\n") if link]
+				f.close()
 
-			self.manage_packages(self.create_packages(self.check_links(links)), [])				
+				self.manage_packages(self.create_packages(self.check_links(links)), [])
+			except Exception, e:
+				logger.error(e)
+				
 
 	def check_links(self, link_list):
 		""""""
