@@ -24,12 +24,7 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
-#import sys
-#sys.path.append("/home/crak/tucan/trunk")
-
-from url_open import URLOpen, set_proxy
-
-#set_proxy(None)
+from url_open import URLOpen
 
 BASE_URL = "http://www.filefactory.com"
 
@@ -37,39 +32,31 @@ class Parser(HTMLParser):
 	def __init__(self, url):
 		""""""
 		HTMLParser.__init__(self)
-		self.form_found = False
 		self.link_found = False
 		self.time_found = False
-		self.form_action = None
 		self.link = None
 		self.wait = None
 		try:
-			self.feed(URLOpen().open(url).read())
-
-			if self.form_action:
-				self.feed(URLOpen().open(self.form_action, urllib.urlencode({"freeBtn": "Free Download"})).read())
+			for line in URLOpen().open(url).readlines():
+				if 'alt="Download Now"' in line:
+					button_action = "%s%s" % (BASE_URL, line.split('<a href="')[1].split('">')[0])
+					self.feed(URLOpen().open(button_action, urllib.urlencode({"freeBtn": "Free Download"})).read())
 			self.close()
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 
 	def handle_starttag(self, tag, attrs):
 		""""""
-		if tag == "form":
-			if self.form_found:
-				self.form_action = "%s%s" % (BASE_URL, attrs[0][1])
-				self.form_found = False
-		elif tag == "div":
-			if len(attrs) > 0:
-				if attrs[0][1] == "freeBtnContainer":
-					self.form_found = True
-				elif attrs[0][1] == "downloadLink":
-					self.link_found = True
-				elif attrs[0][1] == "linkContainer":
-					self.time_found = True
-		elif tag == "a":
+		if tag == "a":
 			if self.link_found:
 				self.link = attrs[0][1]
 				self.link_found = False
+		elif tag == "div":
+			if len(attrs) > 0:
+				if attrs[0][1] == "basicBtn":
+					self.time_found = True
+				elif attrs[0][1] == "downloadLink":
+					self.link_found = True
 		elif tag == "input":
 			if self.time_found:
 				self.wait = int(attrs[2][1])
@@ -106,4 +93,5 @@ class CheckLinks:
 
 if __name__ == "__main__":
 	c = Parser("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	print c.link
 	#print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
