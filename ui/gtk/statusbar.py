@@ -61,13 +61,18 @@ class Statusbar(gtk.Statusbar):
 		self.get_limits = limits
 
 		self.menu = gtk.Menu()
+		
+		frame = gtk.Frame()
+		self.pack_start(frame, False, False)
+		hbox = gtk.HBox()
+		frame.add(hbox)
 
 		label = gtk.Label("Limits: ")
-		self.pack_start(label, False)
+		hbox.pack_start(label, False, False)
 
 		self.button = gtk.Button()
 		self.button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
-		self.pack_start(self.button, False)
+		hbox.pack_start(self.button, False, False)
 
 		self.limits = []
 		self.max_limits = 0
