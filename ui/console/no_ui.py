@@ -28,17 +28,17 @@ logger = logging.getLogger(__name__)
 
 import config
 
-from service_manager import ServiceManager
+from core.core import Core
 
 import cons
 
-class NoUi(ServiceManager):
+class NoUi(Core):
 	""""""
 	def __init__(self, conf, links_file):
 		""""""
 		self.configuration = conf
 		self.links_file = links_file
-		ServiceManager.__init__(self, self.configuration)
+		Core.__init__(self, self.configuration)
 
 	def run(self):
 		""""""
