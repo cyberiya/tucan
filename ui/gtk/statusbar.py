@@ -39,21 +39,22 @@ class Statusbar(gtk.Statusbar):
 		""""""
 		gtk.Statusbar.__init__(self)
 		self.set_has_resize_grip(False)
-
+		
 		#download speed limit
 		frame = gtk.Frame()
+		frame.set_shadow_type(gtk.SHADOW_IN)
 		self.pack_start(frame, False, False)
 		hbox = gtk.HBox()
 		frame.add(hbox)
-		label = gtk.Label(_("Max speed: "))
-		hbox.pack_start(label)
+		label = gtk.Label(_("Max speed:"))
+		hbox.pack_start(label, False, False, 2)
 		self.max_speed = gtk.SpinButton(None, 4, 0)
 		self.max_speed.set_property("shadow-type", gtk.SHADOW_NONE)
 		self.max_speed.set_range(0,5000)
 		self.max_speed.set_increments(4,0)
 		self.max_speed.set_numeric(True)
 		self.max_speed.set_value(__builtin__.max_download_speed)
-		hbox.pack_start(self.max_speed, False, False, 5)
+		hbox.pack_start(self.max_speed, False, False, )
 
 		self.max_speed.connect("value-changed", self.change_speed)
 
@@ -63,16 +64,15 @@ class Statusbar(gtk.Statusbar):
 		self.menu = gtk.Menu()
 		
 		frame = gtk.Frame()
+		frame.set_shadow_type(gtk.SHADOW_IN)
 		self.pack_start(frame, False, False)
 		hbox = gtk.HBox()
 		frame.add(hbox)
-
-		label = gtk.Label("Limits: ")
-		hbox.pack_start(label, False, False)
-
+		label = gtk.Label("Limits:")
+		hbox.pack_start(label, False, False, 2)
 		self.button = gtk.Button()
 		self.button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
-		hbox.pack_start(self.button, False, False)
+		hbox.pack_start(self.button, False, False, 2)
 
 		self.limits = []
 		self.max_limits = 0
