@@ -238,7 +238,7 @@ class DownloadManager:
 		""""""
 		if not self.scheduling:
 			self.scheduling = True
-			if len(self.pending_downloads) > 0:
+			if len(self.pending_downloads + self.active_downloads) > 0:
 				logger.debug("scheduling")
 				for download in self.pending_downloads:
 					if len(self.active_downloads) < max_downloads:
@@ -260,6 +260,6 @@ class DownloadManager:
 		if self.timer:
 			self.scheduling = True
 			self.timer.cancel()
-		for download in self.active_downloads:
-			for link in download.links:
-				link.plugin.stop_all()
+		#for download in self.active_downloads:
+		#	for link in download.links:
+		#		link.plugin.stop_all()

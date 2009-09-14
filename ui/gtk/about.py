@@ -44,9 +44,10 @@ LICENSE = """
 
 class About(gtk.AboutDialog):
 	""""""
-	def __init__(self, widget=None):
+	def __init__(self, parent=None):
 		""""""
 		gtk.AboutDialog.__init__(self)
+		self.set_transient_for(parent)
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_icon_from_file(media.ICON_TUCAN)
 		self.set_logo(gtk.gdk.pixbuf_new_from_file(media.ICON_TUCAN))

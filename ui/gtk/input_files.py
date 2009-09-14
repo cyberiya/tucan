@@ -34,9 +34,10 @@ SERVICES = [("Megaupload", 100, cons.UNIT_MB, ["Anonymous", "Premium"]), ("Rapid
 
 class InputFiles(gtk.Dialog):
 	""""""
-	def __init__(self, upload_services):
+	def __init__(self, parent, upload_services):
 		""""""
 		gtk.Dialog.__init__(self)
+		self.set_transient_for(parent)
 		self.set_icon_from_file(media.ICON_UPLOAD)
 		self.set_title(("Input Files"))
 		self.set_position(gtk.WIN_POS_CENTER)
@@ -294,4 +295,4 @@ class InputFiles(gtk.Dialog):
 		self.destroy()
 
 if __name__ == "__main__":
-	x = InputFiles(SERVICES)
+	x = InputFiles(None, SERVICES)

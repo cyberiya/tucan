@@ -19,7 +19,6 @@
 ###############################################################################
 
 import __builtin__
-import gettext
 import logging
 logger = logging.getLogger(__name__)
 
@@ -45,9 +44,10 @@ LANGUAGES = [("Czech", "cs"), ("English", "en"), ("Spanish", "es"), ("Italian", 
 
 class Preferences(gtk.Dialog):
 	""""""
-	def __init__(self, configuration, show_services=False, updates=None):
+	def __init__(self, parent, configuration, show_services=False, updates=None):
 		""""""
 		gtk.Dialog.__init__(self)
+		self.set_transient_for(parent)
 		self.set_icon_from_file(media.ICON_PREFERENCES)
 		self.set_title("Tucan Preferences")
 		self.set_position(gtk.WIN_POS_CENTER)
@@ -430,8 +430,3 @@ class Preferences(gtk.Dialog):
 		else:
 			Message(self, cons.SEVERITY_WARNING, _("Tucan Manager - No services enabled!") , _("Enable some services and restart Tucan."))
 			self.run()
-
-if __name__ == "__main__":
-	import gettext
-	_ = gettext.gettext
-	x = Preferences(config.Config())
