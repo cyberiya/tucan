@@ -53,6 +53,8 @@ from service_manager import ServiceManager
 
 from service_update import ServiceUpdate
 
+from core.log_stream import LogStream
+
 import cons
 import media
 
@@ -67,6 +69,13 @@ class Gui(gtk.Window, ServiceManager):
 
 		#configuration
 		self.configuration = conf
+		
+		#set logger
+		log_stream = LogStream()
+		handler = logging.StreamHandler(log_stream)
+		handler.setLevel(logging.DEBUG)
+		handler.setFormatter(logging.Formatter(cons.LOG_FORMAT))
+		logging.getLogger("").addHandler(handler)		
 
 		#show preferences if not configured
 		if not self.configuration.configured:
@@ -94,7 +103,7 @@ class Gui(gtk.Window, ServiceManager):
 		menu_help = gtk.STOCK_HELP, self.help
 		menu_about = gtk.STOCK_ABOUT, About
 		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
-		menu_log = _("Show Logs"), LogView
+		menu_log = _("Show Logs"), lambda x: LogView(self, log_stream)
 		show_uploads = gtk.CheckMenuItem(_("Show Uploads")), self.resize_pane, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS)
 
 		#integration menubar
@@ -219,8 +228,7 @@ class Gui(gtk.Window, ServiceManager):
 		""""""
 		if not self.preferences_shown:
 			self.preferences_shown = True
-			Preferences(self.configuration)
-			#sincronice statusbar
+			Preferences(self, self.configuration)
 			self.downloads.status_bar.synchronize()
 			self.preferences_shown =  False
 
@@ -243,7 +251,7 @@ class Gui(gtk.Window, ServiceManager):
 		""""""
 		default_path = self.configuration.get(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER)
 		show_advanced_packages = self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES)
-		InputLinks(default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, show_advanced_packages)
+		InputLinks(self, default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, show_advanced_packages)
 
 	def copy_clipboard(self, button):
 		""""""

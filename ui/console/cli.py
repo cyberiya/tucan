@@ -25,49 +25,11 @@ import logging
 logger = logging.getLogger(__name__)
 
 from no_ui import NoUi
+from core.log_stream import LogStream
 
 STATUS_LINES = 1
 DOWNLOAD_LINES = 10
 LOG_LINES = 8
-
-WIN_CHARS = 80
-
-class LogStream:
-	""""""
-	def __init__(self):
-		""""""
-		self.new_buffer = []
-		self.old_buffer = []
-
-	def write(self, message):
-		""""""
-		self.new_buffer.append(str(message))
-		
-	def flush(self):
-		""""""
-		pass
-		
-	def readlines(self, length=0):
-		""""""
-		if len(self.new_buffer) > 0:
-			if length > 0:
-				cont = 1
-				for line in self.new_buffer:
-					tmp = self.new_buffer[0]
-					del self.new_buffer[0]
-					self.old_buffer.append(tmp)
-					if cont >= length:
-						break
-				return self.old_buffer[-length:]
-			else:
-				tmp = self.new_buffer
-				self.new_buffer = []
-				self.old_buffer += tmp
-				return tmp
-
-	def get_buffer(self):
-		""""""
-		return self.old_buffer
 
 class Cli(NoUi):
 	""""""		
@@ -82,12 +44,13 @@ class Cli(NoUi):
 				
 		NoUi.__init__(self, *kwargs)
 		self.quit_question = False
-		self.win_chars = WIN_CHARS
+		self.win_chars = 1
 
 	def run(self, screen):
 		""""""
 		self.screen = screen
 		self.screen.nodelay(1)
+		y, self.win_chars = self.screen.getmaxyx()
 		try:
 			curses.curs_set(0)
 
@@ -95,9 +58,9 @@ class Cli(NoUi):
 			logger.warning("Could not hide the cursor")
 
 		#set default screen
-		self.status_win = self.screen.derwin(STATUS_LINES, WIN_CHARS, 0, 0)
-		self.download_win = self.screen.derwin(DOWNLOAD_LINES, WIN_CHARS, 2, 0)
-		self.log_win = self.screen.derwin(LOG_LINES, WIN_CHARS, 15, 0)
+		self.status_win = self.screen.derwin(STATUS_LINES, self.win_chars, 0, 0)
+		self.download_win = self.screen.derwin(DOWNLOAD_LINES, self.win_chars, 2, 0)
+		self.log_win = self.screen.derwin(LOG_LINES, self.win_chars, 15, 0)
 
 		#load links file
 		th = threading.Thread(group=None, target=self.load_file, name=None)

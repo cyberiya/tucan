@@ -50,9 +50,10 @@ class ClipParser(HTMLParser.HTMLParser):
 
 class InputLinks(gtk.Dialog):
 	""""""
-	def __init__(self, path, sort, check, create, manage, show_advanced_packages):
+	def __init__(self, parent, path, sort, check, create, manage, show_advanced_packages):
 		""""""
 		gtk.Dialog.__init__(self)
+		self.set_transient_for(parent)
 		self.set_icon_from_file(media.ICON_DOWNLOAD)
 		self.set_title(_("Input Links"))
 		self.set_position(gtk.WIN_POS_CENTER)
@@ -314,7 +315,3 @@ class InputLinks(gtk.Dialog):
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
-
-if __name__ == "__main__":
-	x = InputLinks(None, None, None)
-	gtk.main()

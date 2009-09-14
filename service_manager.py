@@ -211,7 +211,13 @@ class ServiceManager:
 
 	def stop_all(self):
 		""""""
-		self.download_manager.quit()
+		for service in self.services:
+			for plugin in [service.anonymous_download_plugin, service.user_download_plugin, 
+					service.premium_download_plugin, service.anonymous_upload_plugins, 
+					service.user_upload_plugins, service.premium_upload_plugins]:
+				if plugin:
+					plugin.stop_all()
+			self.download_manager.quit()
 
 if __name__ == "__main__":
 	from config import Config

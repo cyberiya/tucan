@@ -30,17 +30,18 @@ COLORS = {"DEBUG": "grey", "INFO": "green", "WARNING": "yellow", "ERROR": "red",
 
 class LogView(gtk.Dialog):
 	""""""
-	def __init__(self, widget=None):
+	def __init__(self, parent, stream):
 		""""""
 		gtk.Dialog.__init__(self)
+		self.set_transient_for(parent)
 		self.set_title("Log View")
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(700,500)
 		self.set_icon(self.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU))
 
-		self.file = open(cons.LOG_FILE, "r")
+		self.stream = stream
 		self.back_buffer = gtk.TextBuffer()
-		self.back_buffer.set_text(self.file.read())
+		self.back_buffer.set_text(self.stream.read())
 
 		frame = gtk.Frame()
 		self.vbox.pack_start(frame)
@@ -121,7 +122,7 @@ class LogView(gtk.Dialog):
 		""""""
 		try:
 			buffer = self.textview.get_buffer()
-			for line in self.file.readlines():
+			for line in self.stream.readlines():
 				self.back_buffer.insert(self.back_buffer.get_end_iter(), line)
 				self.insert_color(buffer, line.strip())
 		except:
@@ -141,8 +142,4 @@ class LogView(gtk.Dialog):
 
 	def close(self, widget=None, other=None):
 		""""""
-		self.file.close()
 		self.destroy()
-
-if __name__ == "__main__":
-	c = LogView()
