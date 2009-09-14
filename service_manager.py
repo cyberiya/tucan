@@ -25,7 +25,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 from config import SECTION_MAIN, OPTION_MAX_DOWNLOADS, OPTION_MAX_DOWNLOAD_SPEED
-from download_manager import DownloadManager
 
 import cons
 
@@ -49,7 +48,6 @@ class ServiceManager:
 		self.services = []
 		__builtin__.max_downloads = configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOADS)
 		__builtin__.max_download_speed = configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOAD_SPEED)
-		self.download_manager = DownloadManager(self.get_download_plugin, self.services)
 		if cons.PLUGIN_PATH not in sys.path:
 			sys.path.append(cons.PLUGIN_PATH)
 		for package, icon, service, enabled, config in configuration.get_services():
@@ -76,24 +74,6 @@ class ServiceManager:
 					elif plugin_type == cons.TYPE_PREMIUM:
 						s.premium_upload_plugin = eval("module" + "." + plugin_name + "(config)")
 				self.services.append(s)
-
-	def prueba(self):
-		""""""
-		import url_open
-		import time
-
-		url_open.set_proxy(None)
-		links = [("mediafire.com", "http://www.mediafire.com/download.php?z0gjmnwk1d0"), ("mediafire.com", "http://www.mediafire.com/download.php?d4j2nyyr4qy")]
-		for service, link in links:
-			name, size, unit = self.get_check_links(service)[0](link)
-			print name, size, unit
-			if name:
-				plugin, plugin_type = self.get_download_plugin(service)
-				self.download_manager.add("/home/crak/downloads/", name, [(link, plugin, plugin_type, service)], size, unit)
-		while len(self.download_manager.active_downloads + self.download_manager.pending_downloads) > 0:
-			print "\n"
-			self.download_manager.update()
-			time.sleep(1)
 
 	def get_download_plugin(self, service_name):
 		""""""
@@ -208,18 +188,3 @@ class ServiceManager:
 				packages.append((alone_name, [first]))
 				del files[files.index(first)]
 		return packages
-
-	def stop_all(self):
-		""""""
-		for service in self.services:
-			for plugin in [service.anonymous_download_plugin, service.user_download_plugin, 
-					service.premium_download_plugin, service.anonymous_upload_plugins, 
-					service.user_upload_plugins, service.premium_upload_plugins]:
-				if plugin:
-					plugin.stop_all()
-			self.download_manager.quit()
-
-if __name__ == "__main__":
-	from config import Config
-	s = ServiceManager(Config())
-	s.prueba()

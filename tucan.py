@@ -50,20 +50,13 @@ class Tucan:
 			os.rename(cons.LOG_FILE, "%s.old" % cons.LOG_FILE)
 
 		logging.basicConfig(level=logging.DEBUG, format=cons.LOG_FORMAT, filename=cons.LOG_FILE, filemode='w')
+		self.logger = logging.getLogger(self.__class__.__name__)
 
 		if verbose:
 			console = logging.StreamHandler(sys.stdout)
 			console.setLevel(logging.INFO)
 			console.setFormatter(logging.Formatter('%(levelname)-7s %(name)s: %(message)s'))
 			logging.getLogger("").addHandler(console)
-
-		self.logger = logging.getLogger(self.__class__.__name__)
-		self.logger.info(cons.TUCAN_VERSION)
-		self.logger.debug("OS: %s" % sys.platform)
-		self.logger.debug("Main path: %s" % cons.PATH)
-		self.logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
-		if not self.configuration.configured:
-			self.logger.warning("No configuration found!")
 
 		#proxy settings
 		proxy_url, proxy_port = self.configuration.get_proxy()

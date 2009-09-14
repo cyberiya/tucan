@@ -49,7 +49,7 @@ from file_chooser import FileChooser
 from tree import Tree
 from input_links import InputLinks
 
-from service_manager import ServiceManager
+from core.core import Core
 
 from service_update import ServiceUpdate
 
@@ -58,7 +58,7 @@ from core.log_stream import LogStream
 import cons
 import media
 
-class Gui(gtk.Window, ServiceManager):
+class Gui(gtk.Window, Core):
 	""""""
 	def __init__(self, conf):
 		""""""
@@ -86,7 +86,7 @@ class Gui(gtk.Window, ServiceManager):
 		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=[self.configuration.get(config.SECTION_MAIN, config.OPTION_LANGUAGE)])
 		lang.install()
 
-		ServiceManager.__init__(self, self.configuration)
+		Core.__init__(self, self.configuration)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 
 		self.set_icon_from_file(media.ICON_TUCAN)
