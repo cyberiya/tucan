@@ -18,7 +18,6 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import __builtin__
 import re
 import sys
 import logging
@@ -46,8 +45,6 @@ class ServiceManager:
 	def __init__(self, configuration):
 		""""""
 		self.services = []
-		__builtin__.max_downloads = configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOADS)
-		__builtin__.max_download_speed = configuration.getint(SECTION_MAIN, OPTION_MAX_DOWNLOAD_SPEED)
 		if cons.PLUGIN_PATH not in sys.path:
 			sys.path.append(cons.PLUGIN_PATH)
 		for package, icon, service, enabled, config in configuration.get_services():
