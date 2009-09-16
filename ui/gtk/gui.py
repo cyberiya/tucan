@@ -101,7 +101,7 @@ class Gui(gtk.Window, Core):
 		menu_save_session = _("Save Session"), lambda x: FileChooser(self, self.save_session, cons.CONFIG_PATH, save=True)
 		menu_quit = gtk.STOCK_QUIT, self.quit
 		menu_help = gtk.STOCK_HELP, self.help
-		menu_about = gtk.STOCK_ABOUT, About
+		menu_about = gtk.STOCK_ABOUT, lambda x: About(self)
 		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
 		menu_log = _("Show Logs"), lambda x: LogView(self, log_stream)
 		show_uploads = gtk.CheckMenuItem(_("Show Uploads")), self.resize_pane, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS)
@@ -110,7 +110,7 @@ class Gui(gtk.Window, Core):
 		integration = None
 		if cons.OS_OSX:
 			try:				
-				about_menu = _("About TucanManager"), About
+				about_menu = _("About TucanManager"), lambda x: About(self)
 				preferences_menu = _("Preferences"), self.preferences
 				file_menu = _("File"), [menu_load_session, menu_save_session]
 				view_menu = _("View"), [show_uploads, None, menu_log]
