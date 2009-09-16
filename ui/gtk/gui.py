@@ -215,7 +215,7 @@ class Gui(gtk.Window, Core):
 		""""""
 		if not self.preferences_shown:
 			self.preferences_shown = True
-			Preferences(self.configuration, True, updates)
+			Preferences(self, self.configuration, True, updates)
 			self.preferences_shown =  False
 		return False
 
