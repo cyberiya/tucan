@@ -73,7 +73,6 @@ class FormParser:
 							else:
 								error = True
 		except Exception, e:
-			print e
 			error = True
 			logger.exception("%s: %s" % (url, e))
 		if server and random and link and name and not error:
