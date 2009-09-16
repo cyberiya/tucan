@@ -23,6 +23,12 @@ import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
+#import sys
+#sys.path.append("/home/crak/tucan/trunk")
+#from url_open import set_proxy
+#set_proxy(None)
+
+from tesseract import Tesseract
 from url_open import URLOpen
 
 class FormParser:
@@ -46,18 +52,21 @@ class FormParser:
 					handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % (urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])])))
 					tmp = handle.readlines()
 					vars = {}
+					
+					tmp1 = tmp[2].split("function dz()")[0].split(";", 4)
+					sum = tmp[2].split("+mL+'/' ")[1].split(" 'g/'+mH+'/'+mY+'")[0]
+					
+					server = tmp1[1].split("'")[1]
+					link = tmp1[2].split("'")[1]
+					name = tmp1[3].split("'")[1]
 
-					server = tmp[11].split("'")[1]
-					link = tmp[12].split("'")[1]
-					name = tmp[13].split("'")[1]
-
-					for var in tmp[14].split(";"):
+					for var in tmp1.pop().strip().split(";"):
 						var = var.split("var")
 						if len(var) > 1:
 							var = var[1].strip().split("=")
 							if ((len(var) > 1) and ("'" in var[1])):
 								vars[var[0]] = var[1].split("'")[1]
-					for var in tmp[27].split(" ")[14].split("+"):
+					for var in sum.split("+"):
 						if len(var) > 0:
 							if var in vars.keys():
 								random += vars[var]
