@@ -79,7 +79,7 @@ class Gui(gtk.Window, Core):
 
 		#show preferences if not configured
 		if not self.configuration.configured:
-			Preferences(self.configuration, True)
+			Preferences(self, self.configuration, True)
 		self.preferences_shown =  False
 
 		#l10n
