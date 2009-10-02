@@ -64,28 +64,26 @@ class CheckLinks:
 		name = None
 		size = 0
 		unit = None
-		size_found = False
+		size_found = 0
 		next_line = 0
 		try:
 			for line in URLOpen().open(url).readlines():
 				if '<span id="fileNameTextSpan">' in line:
 					name = line.split('<span id="fileNameTextSpan">')[1].split('</span>')[0]
-				elif '<td class="finforight">File</td>' in line:
-					size_found = True
-				if size_found:
-					next_line += 1
-					if next_line == 5:
-						size_found = False
-						tmp = line.split(">")[1].split("<")[0].split()
-						unit = tmp[1]
-						if "," in tmp[0]:
-							size = int(tmp[0].replace(",", ""))
-						else:
-							size = int(tmp[0])
-						if size > 1024:
-							if unit == "KB":
-								size = size / 1024
-								unit = "MB"
+				elif '<td class="finfoleft">' in line:
+					size_found += 1
+				elif size_found == 3:
+					size_found = -10
+					tmp = line.split(">")[1].split("<")[0].split()
+					unit = tmp[1]
+					if "," in tmp[0]:
+						size = int(tmp[0].replace(",", ""))
+					else:
+						size = int(tmp[0])
+					if size > 1024:
+						if unit == "KB":
+							size = size / 1024
+							unit = "MB"
 			if not name:
 				name = url
 				size = -1
