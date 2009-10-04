@@ -81,10 +81,14 @@ class AnonymousDownload(DownloadPlugin, Slots):
 					data = urllib.urlencode([("txtNumber", captcha), ("btnLogin.x", "124"), ("btnLogin.y", "12"), ("btnLogin", "Download")])
 					f = FormParser()
 					for line in self.opener.open("http://www.gigasize.com/formdownload.php", data).readlines():
-						if '<font color="#FF0000">YOU HAVE REACHED YOUR HOURLY LIMIT</font><br/>' in line:
+						if '<div id="askPws" style="display:block">' in line:
 							retry = False
 							logger.warning("Limit Exceded.")
 							self.add_wait()
+							self.return_slot()
+						elif '<div id="askPws2" style="display:block">' in line:
+							retry = False
+							logger.error("No password support!")
 							self.return_slot()
 						f.feed(line)
 					self.form = f.form_action
