@@ -22,8 +22,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-import cons
 import media
+import core.cons as cons
 
 NAME = "Tucan"
 COPYRIGHT = "(C) 2008-2009 The Tucan Project"

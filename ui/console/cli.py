@@ -27,9 +27,12 @@ logger = logging.getLogger(__name__)
 from no_ui import NoUi
 from core.log_stream import LogStream
 
+import core.cons as cons
+
 STATUS_LINES = 1
-DOWNLOAD_LINES = 10
-LOG_LINES = 8
+DOWNLOAD_LINES = 60
+LOG_LINES = 50
+WIDTH = 100
 
 class Cli(NoUi):
 	""""""		
@@ -44,39 +47,40 @@ class Cli(NoUi):
 				
 		NoUi.__init__(self, *kwargs)
 		self.quit_question = False
-		self.win_chars = 1
+		self.win_height = 0
+		self.win_chars = 0
+		self.last_length = 0
+		self.total_speed = 0
 
 	def run(self, screen):
 		""""""
 		self.screen = screen
 		self.screen.nodelay(1)
-		y, self.win_chars = self.screen.getmaxyx()
 		try:
 			curses.curs_set(0)
-
 		except:
 			logger.warning("Could not hide the cursor")
 
 		#set default screen
-		self.status_win = self.screen.derwin(STATUS_LINES, self.win_chars, 0, 0)
-		self.download_win = self.screen.derwin(DOWNLOAD_LINES, self.win_chars, 2, 0)
-		self.log_win = self.screen.derwin(LOG_LINES, self.win_chars, 15, 0)
+		self.status_pad = curses.newpad(STATUS_LINES, WIDTH)
+		self.main_pad = curses.newpad(DOWNLOAD_LINES, WIDTH)
+		self.log_pad = curses.newpad(LOG_LINES, WIDTH)
 
 		#load links file
 		th = threading.Thread(group=None, target=self.load_file, name=None)
 		th.start()
 		
 		while True:
-		#while len(self.download_manager.active_downloads + self.download_manager.pending_downloads) > 0:
-		#	self.download_manager.update()
-		#	print "Active:", [download.name for download in self.download_manager.active_downloads]
-			#self.update_status()
-			y, self.win_chars = self.screen.getmaxyx()
+			self.win_height, self.win_chars = self.screen.getmaxyx()
 			self.parse_input()
-			self.update_log()
-			curses.doupdate()
+			try:
+				log_len = self.update_main()
+				self.update_log(log_len)
+			except curses.error, e:
+				logger.warning(e)
+			else:
+				curses.doupdate()
 			time.sleep(0.5)
-		self.quit()
 		
 	def parse_input(self):
 		""""""
@@ -99,24 +103,78 @@ class Cli(NoUi):
 				else:
 					self.update_status()
 					
-	def update_log(self):
+	def update_main(self):
 		""""""
-		lines = self.stream.readlines(LOG_LINES-2)
-		if lines:
-			self.log_win.erase()
-			for i in range(len(lines)):
-				self.log_win.addnstr(i, 0, lines[i], self.win_chars)
-			self.log_win.noutrefresh()
+		if self.win_height > 5:
+			cont = 0
+			self.main_pad.erase()
+			self.total_speed = 0
+			for download in self.download_manager.complete_downloads + self.download_manager.active_downloads:
+				service = "[]"
+				for link in download.links:
+					if link.active:
+						service = "[%s %s]" %(link.plugin_type, link.service)
+				self.total_speed += download.speed
+				percent = "%i%s" % (int(download.progress), "%")
+				speed = "%s KB/s" % download.speed
+				size = "%i%s / %i%s" % (download.actual_size, download.actual_size_unit, download.total_size, download.total_size_unit)
+				time = str(self.calculate_time(download.time))
+				self.main_pad.addnstr(cont, 1, download.name, WIDTH)
+				self.main_pad.addnstr(cont+1, 5, "%s %s \t%s \t%s \t%s" % (percent, service, size, speed, time), WIDTH)
+				cont +=3
+			self.download_manager.update()
+			#2 primeras lineas en blanco
+			cont +=2
+			remain = self.win_height-cont
+			start = 0
+			while remain <= 5:
+					remain += 3
+					start += 3
+			self.main_pad.noutrefresh(start, 0, 2, 0, cont-start, self.win_chars-1)
+			return remain
+
+	def update_log(self, length):
+		""""""
+		if length:
+			lines = self.stream.readnlines(length)
+			if lines:
+				self.last_length = length
+				self.log_pad.erase()
+				for i in range(len(lines)):
+					self.log_pad.addnstr(i, 0, lines[i], WIDTH, curses.A_DIM)
+				self.log_pad.noutrefresh(0, 0, self.win_height-length, 0, self.win_height-1, self.win_chars-1)
 
 	def update_status(self):
-		""""""				
-		self.status_win.erase()
-		self.status_win.addnstr(0, 0, "Downstream: %s KB/s \tTotal %s \tActive %s \tComplete %s" % (0,0,0,0), self.win_chars, curses.A_BOLD)
-		self.status_win.noutrefresh()
+		""""""
+		active = len(self.download_manager.active_downloads)
+		complete = len(self.download_manager.complete_downloads)
+		total = len(self.download_manager.pending_downloads + self.download_manager.active_downloads + self.download_manager.complete_downloads)
+		self.status_pad.erase()
+		self.status_pad.addnstr(0, 0, "Downstream: %s KB/s \tTotal %s \tActive %s \tComplete %s" % (self.total_speed, total, active, complete), WIDTH, curses.A_BOLD)
+		self.status_pad.noutrefresh(0, 0, 0, 0, 0, self.win_chars-1)
 
 	def question(self):
 		""""""
-		self.status_win.erase()
-		self.status_win.addnstr(0, 0, "Are you sure you want to quit? [y/N]", self.win_chars, curses.A_STANDOUT)
-		self.status_win.noutrefresh()
+		self.status_pad.erase()
+		self.status_pad.addnstr(0, 0, "Are you sure you want to quit? [y/N]", WIDTH, curses.A_STANDOUT)
+		self.status_pad.noutrefresh(0, 0, 0, 0, 0, self.win_chars-1)
 		
+	def calculate_time(self, time):
+		""""""
+		result = None
+		hours = 0
+		minutes = 0
+		while time >= cons.HOUR:
+			time = time - cons.HOUR
+			hours += 1
+		while time >= cons.MINUTE:
+			time = time - cons.MINUTE
+			minutes += 1
+		seconds = time
+		if hours > 0:
+			result = str(hours) + "h" + str(minutes) + "m" + str(seconds) + "s"
+		elif minutes > 0:
+			result =  str(minutes) + "m" + str(seconds) + "s"
+		elif seconds > 0:
+			result = str(seconds) + "s"
+		return result

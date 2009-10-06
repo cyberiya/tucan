@@ -20,58 +20,155 @@
 ###############################################################################
 
 import __builtin__
-import os.path
+import os
 import sys
 import logging
 import optparse
 
-import url_open
-import config
-import cons
+import core.misc as misc
+import core.url_open as url_open
+import core.config as config
+import core.cons as cons
 
 class Tucan:
 	""""""
-	def __init__(self, verbose=False):
+	def __init__(self):
 		""""""
 		#exception hook
-		self.old_exception_hook = sys.excepthook
 		sys.excepthook = self.exception_hook
+		
+		#parse options
+		parser = optparse.OptionParser()
+		parser.add_option("-w", "--wizard", dest="wizard", help="setup: accounts, services, updates", metavar="TYPE")
+		parser.add_option("-d", "--daemon", action="store_true", dest="daemon", default=False, help="no interaction interface")
+		parser.add_option("-c", "--cli", action="store_true", dest="cli", default=False, help="command line interface")
+		parser.add_option("-i", "--input-links", dest="links_file", help="import links from FILE", metavar="FILE")
+		parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="print log to stdout")
+		parser.add_option("-V", "--version", action="store_true", dest="version", default=False, help="print version and exit")
+		options, args = parser.parse_args()
+	
+		if options.version:
+			print "%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION)
+			sys.exit()
 
 		#configuration
-		self.configuration = config.Config()
+		__builtin__.configuration = config.Config()
 		sys.path.append(cons.PLUGIN_PATH)
-
-		#globals
-		__builtin__.max_downloads = self.configuration.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS)
-		__builtin__.max_download_speed = self.configuration.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOAD_SPEED)
 
 		#logging
 		if os.path.exists(cons.LOG_FILE):
+			if os.path.exists("%s.old" % cons.LOG_FILE):
+				os.remove("%s.old" % cons.LOG_FILE)
 			os.rename(cons.LOG_FILE, "%s.old" % cons.LOG_FILE)
-
 		logging.basicConfig(level=logging.DEBUG, format=cons.LOG_FORMAT, filename=cons.LOG_FILE, filemode='w')
 		self.logger = logging.getLogger(self.__class__.__name__)
+		
+		#start user interface
+		try:
+			self.set_globals(options)
+			if options.wizard:
+				self.set_verbose()
+				self.start_wizard(options.wizard)
+			elif options.daemon:
+				self.set_verbose()
+				self.start_daemon(options.links_file)
+			elif options.cli:
+				self.start_cli(options.links_file)
+			else:
+				if options.verbose:
+					self.set_verbose()
+				self.start_gui()
+		except KeyboardInterrupt:
+			self.exit("KeyboardInterrupt")
+		except Exception, e:
+			self.logger.exception(e)
+			print e
+			print "Reporting error, please wait..."
+			#print "REPORT ID: %s" % misc.report_log("Automatic", str(e))
+			print "Unhandled Error! Check the log file for details."
+			self.exit(-1)
+			
+	def set_verbose(self, severity=logging.INFO):
+		""""""
+		console = logging.StreamHandler(sys.stdout)
+		console.setLevel(severity)
+		console.setFormatter(logging.Formatter('%(levelname)-7s %(name)s: %(message)s'))
+		logging.getLogger("").addHandler(console)
+		
+	def start_wizard(self, wizard_type):
+		""""""
+		from ui.console.wizard import Wizard
+		
+		w = Wizard()
+		if wizard_type == "accounts":
+			w.account_setup(configuration)
+		elif wizard_type == "services":
+			w.service_setup(configuration)
+		elif wizard_type == "updates":
+			w.update_setup(configuration)
+		else:
+			print "TYPE should be one of: accounts, services or updates"
+		
+	def start_daemon(self, file):
+		""""""
+		from ui.console.no_ui import NoUi
+		
+		d = NoUi(configuration, file)
+		d.run()
 
-		if verbose:
-			console = logging.StreamHandler(sys.stdout)
-			console.setLevel(logging.INFO)
-			console.setFormatter(logging.Formatter('%(levelname)-7s %(name)s: %(message)s'))
-			logging.getLogger("").addHandler(console)
+	def start_cli(self, file):
+		""""""
+		if cons.OS_WINDOWS:
+			print "No curses support."
+			self.exit()
+		else:
+			from curses.wrapper import wrapper
+			from ui.console.cli import Cli
+			
+			c = Cli(configuration, file)
+			wrapper(c.run)
+
+	def start_gui(self):
+		""""""
+		import pygtk
+		pygtk.require('2.0')
+		import gtk
+		import gobject
+		
+		from ui.gtk.gui import Gui
+		
+		try:
+			gtk.init_check()
+		except:
+			print "Could not connect to X server. Use 'tucan --cli' for curses interface."
+		else:
+			gobject.threads_init()
+			Gui(configuration)
+			gtk.main()
+
+	def set_globals(self, options):
+		""""""		
+		#custom exit
+		__builtin__.tucan_exit = self.exit
 
 		#proxy settings
-		proxy_url, proxy_port = self.configuration.get_proxy()
+		__builtin__.PROXY = None
+		proxy_url, proxy_port = configuration.get_proxy()
 		url_open.set_proxy(proxy_url, proxy_port)
-
-		#global custom exit
-		__builtin__.tucan_exit = self.exit
+		
+		__builtin__.max_downloads = configuration.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS)
+		__builtin__.max_download_speed = configuration.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOAD_SPEED)
 
 	def exception_hook(self, type, value, trace):
 		""""""
 		file_name = trace.tb_frame.f_code.co_filename
 		line_no = trace.tb_lineno
 		exception = type.__name__
-		self.logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
-		self.old_exception_hook(type, value, trace)
+		try:
+			self.logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
+		except:
+			pass
+		sys.__excepthook__(type, value, trace)
 		self.exit(-1)
 
 	def exit(self, arg=0):
@@ -80,55 +177,5 @@ class Tucan:
 		sys.exit(arg)
 
 if __name__ == "__main__":
-	parser = optparse.OptionParser()
-	parser.add_option("-c", "--cli", action="store_true", dest="cli", default=False, help="command line interface")
-	parser.add_option("-d", "--daemon", action="store_true", dest="daemon", default=False, help="no interaction interface")
-	parser.add_option("-i", "--input-links", dest="links_file", help="import links from FILE", metavar="FILE")
-	parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="print log to stdout")
-	parser.add_option("-V", "--version", action="store_true", dest="version", default=False, help="print version and exit")
-	options, args = parser.parse_args()
+	t = Tucan()
 	
-	if options.version:
-		print "%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION)
-		sys.exit()
-
-	if options.daemon:
-		t = Tucan(True)
-		try:
-			from ui.console.no_ui import NoUi
-			d = NoUi(t.configuration, options.links_file)
-			d.run()
-		except Exception, e:
-			t.logger.exception(e)
-			t.exit(-1)
-		except:
-			print ""
-			sys.exit(-1)
-	elif options.cli:
-		t = Tucan(False)
-		try:
-			from curses.wrapper import wrapper
-			from ui.console.cli import Cli
-			c = Cli(t.configuration, options.links_file)
-			wrapper(c.run)
-		except Exception, e:
-			t.logger.exception(e)
-			t.exit(-1)
-		except:
-			sys.exit(-1)
-	else:
-		t = Tucan(options.verbose)
-		try:
-			import pygtk
-			pygtk.require('2.0')
-			import gtk
-			import gobject
-			
-			from ui.gtk.gui import Gui
-
-			gobject.threads_init()
-			Gui(t.configuration)
-			gtk.main()
-		except Exception, e:
-			t.logger.exception(e)
-			t.exit(-1)

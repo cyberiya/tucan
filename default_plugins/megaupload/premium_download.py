@@ -22,13 +22,13 @@ import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
-from accounts import Accounts
-from service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
-from download_plugin import DownloadPlugin
-
 from premium_cookie import PremiumCookie
 from premium_parser import PremiumParser
 from check_links import CheckLinks
+
+from core.accounts import Accounts
+from core.service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
+from core.download_plugin import DownloadPlugin
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""

@@ -23,7 +23,7 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-import cons
+import core.cons as cons
 
 class Wait(gtk.Window):
 	""""""
@@ -54,7 +54,7 @@ class Wait(gtk.Window):
 
 class Message(gtk.Dialog):
 	""""""
-	def __init__(self, parent, severity, title, message, accept=False, both=False):
+	def __init__(self, parent, severity, title, message, accept=False, both=False, run=True):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_title(title)
@@ -74,10 +74,10 @@ class Message(gtk.Dialog):
 		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG), True, False, 10)
 		self.set_icon(self.render_icon(icon, gtk.ICON_SIZE_MENU))
 
-		label = gtk.Label(message)
-		hbox.pack_start(label, True, False, 5)
-		label.set_width_chars(35)
-		label.set_line_wrap(True)
+		self.label = gtk.Label(message)
+		hbox.pack_start(self.label, True, False, 5)
+		self.label.set_width_chars(35)
+		self.label.set_line_wrap(True)
 
 		#action area
 		if both:
@@ -98,7 +98,8 @@ class Message(gtk.Dialog):
 
 		self.connect("response", self.close)
 		self.show_all()
-		self.run()
+		if run:
+			self.run()
 
 	def accept(self, button):
 		""""""

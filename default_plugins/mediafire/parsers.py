@@ -23,13 +23,8 @@ import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
-#import sys
-#sys.path.append("/home/crak/tucan/trunk")
-#from url_open import set_proxy
-#set_proxy(None)
-
-from tesseract import Tesseract
-from url_open import URLOpen
+from core.tesseract import Tesseract
+from core.url_open import URLOpen
 
 class FormParser:
 	""""""

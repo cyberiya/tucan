@@ -21,9 +21,8 @@
 import urllib2
 from HTMLParser import HTMLParser
 
-from url_open import URLOpen
-
-import cons
+from core.url_open import URLOpen
+import core.cons as cons
 
 class CheckLinks(HTMLParser):
 	""""""

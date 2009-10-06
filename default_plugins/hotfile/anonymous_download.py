@@ -24,10 +24,9 @@ logger = logging.getLogger(__name__)
 
 from parsers import CheckLinks, Parser, CaptchaParser
 
-from download_plugin import DownloadPlugin
-from slots import Slots
-
-from url_open import URLOpen
+from core.download_plugin import DownloadPlugin
+from core.url_open import URLOpen
+from core.slots import Slots
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""

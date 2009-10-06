@@ -18,6 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import uuid
 import os
 import shutil
 
@@ -37,6 +38,7 @@ SECTION_SERVICES = "services"
 SECTION_ADVANCED = "advanced"
 
 OPTION_VERSION = "version"
+OPTION_UUID = "uuid"
 
 OPTION_LANGUAGE = "language"
 OPTION_MAX_DOWNLOADS = "max_downloads"
@@ -53,7 +55,7 @@ OPTION_ENABLE_PROXY = "enable_proxy"
 OPTION_PROXY_URL = "proxy_url"
 OPTION_PROXY_PORT = "proxy_port"
 
-DEFAULTS = {SECTION_MAIN: {OPTION_VERSION: cons.TUCAN_VERSION, OPTION_LANGUAGE: "en", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_DOWNLOAD_SPEED: "0", OPTION_MAX_UPLOADS: "5", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH}
+DEFAULTS = {SECTION_MAIN: {OPTION_VERSION: cons.TUCAN_VERSION, OPTION_LANGUAGE: "en", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_DOWNLOAD_SPEED: "0", OPTION_MAX_UPLOADS: "5", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH.encode("utf-8")}
 	, SECTION_SERVICES: {}
 	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "False", OPTION_SAVE_SESSION: "True", OPTION_ADVANCED_PACKAGES: "False", OPTION_AUTO_UPDATE: "True",OPTION_SHOW_UPLOADS: "False", OPTION_ENABLE_PROXY: "False", OPTION_PROXY_URL: "", OPTION_PROXY_PORT: "0"}}
 
@@ -80,7 +82,7 @@ class Config(SafeConfigParser):
 					path = os.path.join(cons.PLUGIN_PATH, service, "")
 					package, icon, name, enabled, config = self.service(path)
 					if name:
-						self.set(SECTION_SERVICES, name, path)
+						self.set(SECTION_SERVICES, name, path.encode("utf-8"))
 			self.save()
 
 	def check_config(self):
@@ -109,13 +111,36 @@ class Config(SafeConfigParser):
 				self.add_section(section)
 			for option, value in options.items():
 				self.set(section, option, value)
+		#set uuid
+		self.set(SECTION_MAIN, OPTION_UUID, str(uuid.uuid1()))
 		self.save()
-
+		
+	def get_uuid(self):
+		""""""
+		if self.has_option(SECTION_MAIN, OPTION_UUID):
+			return self.get(SECTION_MAIN, OPTION_UUID)
+		else:
+			new_uuid = str(uuid.uuid1())
+			self.set(SECTION_MAIN, OPTION_UUID, new_uuid)
+			self.save()
+			return new_uuid
+			
+	def get_downloads_folder(self):
+		""""""
+		if self.has_option(SECTION_MAIN, OPTION_DOWNLOADS_FOLDER):
+			return self.get(SECTION_MAIN, OPTION_DOWNLOADS_FOLDER).decode("utf-8")
+		else:
+			return cons.DEFAULT_PATH
+			
+	def set_downloads_folder(self, path):
+		""""""
+		self.set(SECTION_MAIN, OPTION_DOWNLOADS_FOLDER, path.encode("utf-8"))
+			
 	def get_services(self):
 		""""""
 		result = []
 		for service, path in self.items(SECTION_SERVICES):
-			result.append(self.service(path))
+			result.append(self.service(path.decode("utf-8")))
 		return sorted(result)
 
 	def service(self, path):

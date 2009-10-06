@@ -1,3 +1,23 @@
+Tucan 0.3.9 Alpha 2009-10-07.
+------------------------------
+- Command Line interface.
+- Shutdown Addon.
+- Clipboard monitor.
+- New Update Manager.
+- Single Package Mode.
+- Download .part files.
+- Report bugs from LogView.
+- Statusbar limit cancel.
+- Solved many GUI bugs.
+- New anonymous Depositfiles plugin.
+- New anonymous Hotfile plugin.
+- Russian Localization.
+- Greek Localization.
+- Czech Localization.
+- OSX support.
+- Makefile updated.
+- manpage updated.
+
 Tucan 0.3.8 Alpha 2009-07-15.
 ------------------------------
 - Download speed limiter.
@@ -40,7 +60,7 @@ Tucan 0.3.6 Alpha 2009-03-19.
 - Solved Limits bug.
 - New Anonymous 4Shared plugin.
 
-Tucan 0.3.5 Alpha 2009-03-3.
+Tucan 0.3.5 Alpha 2009-03-03.
 ------------------------------
 - Uploads Window.
 - Update Manager.

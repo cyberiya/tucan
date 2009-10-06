@@ -24,16 +24,15 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
-from accounts import Accounts
-from service_config import SECTION_PREMIUM_DOWNLOAD
-from download_plugin import DownloadPlugin
-
-from url_open import URLOpen
-
 from premium_cookie import PremiumCookie
 from check_links import CheckLinks
 
-import cons
+from core.service_config import SECTION_PREMIUM_DOWNLOAD
+from core.download_plugin import DownloadPlugin
+from core.accounts import Accounts
+from core.url_open import URLOpen
+
+import core.cons as cons
 
 class FormParser(HTMLParser):
 	""""""

@@ -18,33 +18,44 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import __builtin__
+import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
-from parsers import CheckLinks, Parser
+import socket
 
-from core.download_plugin import DownloadPlugin
+import cons
 
-WAIT = 50
-
-class AnonymousDownload(DownloadPlugin):
+def set_proxy(url, port=0):
 	""""""
-	def __init__(self):
-		""""""
-		DownloadPlugin.__init__(self)
+	if url:
+		__builtin__.PROXY = {"http": "%s:%i" % (url, port)}
+		socket.setdefaulttimeout(30)
+		logger.info("Using proxy: %s:%i" % (url, port))
+	else:
+		if __builtin__.PROXY:
+			__builtin__.PROXY = None
+			socket.setdefaulttimeout(60)
+			logger.info("Proxy Disabled.")
 
-	def check_links(self, url):
+class URLOpen:
+	""""""
+	def __init__(self, cookie=None):
 		""""""
-		return CheckLinks().check(url)
+		if PROXY:
+			self.opener = urllib2.build_opener(urllib2.ProxyHandler(PROXY), urllib2.HTTPCookieProcessor(cookie))
+		else:
+			self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 
-	def add(self, path, link, file_name):
+	def open(self, url, form=None):
 		""""""
-		parser = Parser(link)
-		if parser.link:
-			if self.start(path, parser.link, file_name, WAIT):
-				return True
+		if form:
+			return self.opener.open(urllib2.Request(url, None, cons.USER_AGENT), form)
+		else:
+			return self.opener.open(urllib2.Request(url, None, cons.USER_AGENT))
 
-	def delete(self, file_name):
-		""""""
-		if self.stop(file_name):
-			logger.warning("Stopped %s" % file_name)
+if __name__ == "__main__":
+	PROXY = {"http": "proxy.alu.uma.es:3128"}
+	o = URLOpen()
+	print o.open("http://www.google.com").read()

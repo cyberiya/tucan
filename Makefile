@@ -30,9 +30,11 @@ EXECFILE	=	tucan.py
 ICONFILE	=	tucan.svg
 MANPAGE		=	tucan.1.gz
 DESKTOPFILE	=	tucan.desktop
+COREDIR		=	core/
 PLUGINDIR	=	default_plugins/
 I18NDIR		=	i18n/
 MEDIADIR	=	media/
+UIDIR		=	ui/
 
 basic-install:
 	mkdir -p $(BINDIR) $(MAINDIR) $(ICONDIR) $(MANDIR) $(DESKTOPDIR)
@@ -40,9 +42,11 @@ basic-install:
 	install -p -m 0644 *.py $(MAINDIR)
 	chmod 0755 $(MAINDIR)$(EXECFILE)
 
+	cp -pR $(COREDIR) $(MAINDIR)
 	cp -pR $(PLUGINDIR) $(MAINDIR)
 	cp -pR $(I18NDIR) $(MAINDIR)
 	cp -pR $(MEDIADIR) $(MAINDIR)
+	cp -pR $(UIDIR) $(MAINDIR)
 
 	install -p -m 0644 $(MEDIADIR)$(ICONFILE) $(ICONDIR)
 

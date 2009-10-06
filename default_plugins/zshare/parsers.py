@@ -22,7 +22,7 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-from url_open import URLOpen
+from core.url_open import URLOpen
 
 class Parser:
 	""""""

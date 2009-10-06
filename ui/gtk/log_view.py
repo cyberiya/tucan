@@ -18,12 +18,18 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import logging
+logger = logging.getLogger(__name__)
+
 import pygtk
 pygtk.require('2.0')
 import gtk
 import gobject
 
-import cons
+from report import Report
+
+import media
+import core.cons as cons
 
 SEVERITY = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 COLORS = {"DEBUG": "grey", "INFO": "green", "WARNING": "yellow", "ERROR": "red", "CRITICAL": "white"}
@@ -34,7 +40,7 @@ class LogView(gtk.Dialog):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_transient_for(parent)
-		self.set_title("Log View")
+		self.set_title("%s - Log View" % cons.TUCAN_NAME)
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(700,500)
 		self.set_icon(self.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU))
@@ -83,7 +89,7 @@ class LogView(gtk.Dialog):
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		hbox.pack_start(aspect)
-
+		
 		self.combo = gtk.combo_box_new_text()
 		buttonbox.pack_start(self.combo)
 		self.combo.connect("changed", self.reload)
@@ -93,6 +99,11 @@ class LogView(gtk.Dialog):
 		self.combo.set_active(2)
 
 		#action area
+		button = gtk.Button("Report ")
+		self.action_area.pack_start(button)
+		pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_SEND, 24, 24)
+		button.set_image(gtk.image_new_from_pixbuf(pixbuf))
+		button.connect("clicked", self.report)
 		button = gtk.Button(None, gtk.STOCK_CLOSE)
 		self.action_area.pack_start(button)
 		button.connect("clicked", self.close)
@@ -102,11 +113,15 @@ class LogView(gtk.Dialog):
 
 		gobject.timeout_add(1000, self.update)
 		self.run()
+		
+	def report(self, button=None):
+		""""""
+		Report(self)
 
 	def insert_color(self, buffer, line):
 		""""""
 		for s in SEVERITY[self.combo.get_active():]:
-			if s in line:
+			if s in line and buffer.get_tag_table().lookup(s):
 				buffer.insert_with_tags(buffer.get_end_iter(), "%s\n" % line, buffer.get_tag_table().lookup(s))
 				break
 
@@ -121,12 +136,14 @@ class LogView(gtk.Dialog):
 	def update(self):
 		""""""
 		try:
-			buffer = self.textview.get_buffer()
-			for line in self.stream.readlines():
-				self.back_buffer.insert(self.back_buffer.get_end_iter(), line)
-				self.insert_color(buffer, line.strip())
-		except:
-			pass
+			lines = self.stream.readlines()
+			if lines:
+				buffer = self.textview.get_buffer()
+				for line in lines:
+					self.back_buffer.insert(self.back_buffer.get_end_iter(), line)
+					self.insert_color(buffer, line.strip())
+		except Exception, e:
+			logger.exception(e)
 		else:
 			return True
 

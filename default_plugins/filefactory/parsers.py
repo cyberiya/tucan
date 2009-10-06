@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
-from url_open import URLOpen
+from core.url_open import URLOpen
 
 BASE_URL = "http://www.filefactory.com"
 

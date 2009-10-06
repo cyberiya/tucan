@@ -23,9 +23,9 @@ import logging
 logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
-from url_open import URLOpen
 
-from tesseract import Tesseract
+from core.url_open import URLOpen
+from core.tesseract import Tesseract
 
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"

@@ -28,28 +28,39 @@ import gtk
 import gobject
 import pango
 
-import cons
-import media
-
-import config
-import service_config
-import url_open
-
 from service_preferences import ServicePreferences
 from message import Message
 from file_chooser import FileChooser
 from update_manager import UpdateManager
 
-LANGUAGES = [("Czech", "cs"), ("English", "en"), ("Spanish", "es"), ("Italian", "it"), ("German", "de"), ("Polish", "pl"), ("Slovak", "sk"), ("Portuguese", "pt")]
+import core.config as config
+import core.url_open as url_open
+import core.service_config as service_config
+
+import media
+import core.cons as cons
+
+LANGUAGES = [	("Czech", "cs"),
+		("English", "en"),
+		("French", "fr"),
+		("German", "de"),
+		("Greek","gr"),
+		("Italian", "it"),
+		("Polish", "pl"),
+		("Portuguese", "pt"),
+		("Russian", "ru"),
+		("Slovak", "sk"),
+		("Spanish", "es"),
+		("Swedish","se")]
 
 class Preferences(gtk.Dialog):
 	""""""
-	def __init__(self, parent, configuration, show_services=False, updates=None):
+	def __init__(self, parent, configuration, show_services=False, remote_info=None):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_transient_for(parent)
 		self.set_icon_from_file(media.ICON_PREFERENCES)
-		self.set_title("Tucan Preferences")
+		self.set_title("%s - Preferences" % cons.TUCAN_NAME)
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(500,500)
 
@@ -75,8 +86,8 @@ class Preferences(gtk.Dialog):
 
 		if show_services:
 			self.notebook.set_current_page(1)
-		if updates:
-			gobject.idle_add(self.update_manager, None, updates)
+		if remote_info:
+			gobject.idle_add(self.update_manager, None, remote_info)
 		self.run()
 
 	def save(self, button):
@@ -90,7 +101,7 @@ class Preferences(gtk.Dialog):
 		__builtin__.max_download_speed = self.max_download_speed.get_value_as_int()
 
 		#self.config.set(config.SECTION_MAIN, config.OPTION_MAX_UPLOADS, str(self.max_uploads.get_value_as_int()))
-		self.config.set(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER, self.downloads_folder.get_label())
+		self.config.set_downloads_folder(self.downloads_folder.get_label())
 
 		model = self.treeview.get_model()
 		iter = model.get_iter_root()
@@ -210,7 +221,7 @@ class Preferences(gtk.Dialog):
 
 		label = gtk.Label(_("Downloads Folder: "))
 		hbox.pack_start(label, False, False, 10)
-		path = self.config.get(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER)
+		path = self.config.get_downloads_folder()
 		self.downloads_folder = gtk.Label(path)
 		self.downloads_folder.set_width_chars(30)
 		self.downloads_folder.set_alignment(0, 0.5)
@@ -321,9 +332,9 @@ class Preferences(gtk.Dialog):
 		else:
 			Message(self, cons.SEVERITY_ERROR, path , _("Service not configured."))
 
-	def update_manager(self, button, updates=None):
+	def update_manager(self, button=None, remote_info=None):
 		""""""
-		UpdateManager(self.config, self, updates)
+		UpdateManager(self, self.config, remote_info)
 		self.treeview.get_model().clear()
 		for path, icon_path, name, enabled, configuration in self.config.get_services():
 			self.add_service(path, icon_path, name, enabled, configuration)

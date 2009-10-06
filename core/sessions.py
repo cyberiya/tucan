@@ -65,6 +65,8 @@ class Sessions(SafeConfigParser):
 			f.flush()
 			os.fsync(f.fileno())
 			f.close()
+			if os.path.exists(path):
+				os.remove(path)
 			os.rename("%s.tmp" % path, path)
 		except Exception, e:
 			if os.path.exists("%s.tmp" % path):

@@ -22,9 +22,9 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-from url_open import URLOpen
-
 import HTMLParser
+
+from core.url_open import URLOpen
 
 B64S = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"';
 

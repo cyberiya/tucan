@@ -21,7 +21,7 @@
 import urllib
 import cookielib
 
-from url_open import URLOpen
+from core.url_open import URLOpen
 
 class PremiumCookie:
 	""""""

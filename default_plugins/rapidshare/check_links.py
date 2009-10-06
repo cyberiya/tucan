@@ -21,9 +21,9 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from url_open import URLOpen
+from core.url_open import URLOpen
 
-import cons
+import core.cons as cons
 
 class CheckLinks:
 	""""""

@@ -28,15 +28,13 @@ from HTMLParser import HTMLParser
 import Image
 import ImageOps
 
-from tesseract import Tesseract
-from download_plugin import DownloadPlugin
-from slots import Slots
-
-from url_open import URLOpen
-
 from check_links import CheckLinks
 
-import cons
+from core.download_plugin import DownloadPlugin
+from core.tesseract import Tesseract
+from core.url_open import URLOpen
+from core.slots import Slots
+import core.cons as cons
 
 WAIT = 60
 

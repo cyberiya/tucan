@@ -25,7 +25,7 @@ import logging
 
 #project constants
 TUCAN_NAME = "Tucan Manager"
-TUCAN_VERSION = "0.3.8 alpha"
+TUCAN_VERSION = "0.3.9 alpha"
 WEBPAGE = "http://www.tucaneando.com"
 DOC = "http://doc.tucaneando.com"
 
@@ -102,3 +102,9 @@ SESSION_FILE = os.path.join(CONFIG_PATH, "last.session")
 #localization constants
 NAME_LOCALES = "tucan"
 PATH_LOCALES = os.path.join(PATH, "i18n")
+
+#events constants
+EVENT_ALL_COMPLETE = "all-complete"
+EVENT_LIMIT_ON = "limit-exceeded-on"
+EVENT_LIMIT_OFF = "limit-exceeded-off"
+EVENT_LIMIT_CANCEL = "limit-exceeded-cancel"
