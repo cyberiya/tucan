@@ -23,8 +23,8 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-import service_config
-import cons
+import core.service_config as service_config
+import core.cons as cons
 import media
 
 

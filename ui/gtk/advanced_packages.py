@@ -18,28 +18,47 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import time
+import logging
+logger = logging.getLogger(__name__)
+
 import pygtk
 pygtk.require('2.0')
 import gtk
 
 from file_chooser import FileChooser
 
-import cons
 import media
+import core.cons as cons
 
 class AdvancedPackages(gtk.Dialog):
 	""""""
-	def __init__(self, default_path, packages):
+	def __init__(self, parent, default_path, packages):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon_from_file(media.ICON_PACKAGE)
-		self.set_title(_("Advanced Packages"))
+		self.set_transient_for(parent)
+		self.set_title("%s - %s" % (cons.TUCAN_NAME, _("Advanced Packages")))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(600,400)
-
-		self.packages = []
+		
+		self.packages = packages
+		self.packages_info = []
 		self.history_path = default_path
-
+		
+		#radio
+		frame = gtk.Frame()
+		self.vbox.pack_start(frame, False, False)
+		frame.set_border_width(10)
+		hbox = gtk.HBox()
+		frame.add(hbox)
+		multi = gtk.RadioButton(None, "Auto Package Mode")
+		multi.connect("toggled", self.change_mode, True)
+		hbox.pack_start(multi)
+		single = gtk.RadioButton(multi, "Single Package Mode")
+		single.connect("toggled", self.change_mode, False)
+		hbox.pack_start(single)
+		
 		#treeview
 		frame = gtk.Frame()
 		self.vbox.pack_start(frame)
@@ -47,7 +66,10 @@ class AdvancedPackages(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.treeview = gtk.TreeView(gtk.ListStore(gtk.gdk.Pixbuf, str, str, str))
+		self.multi_model = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, int)
+		self.single_model = gtk.ListStore(gtk.gdk.Pixbuf, str, str, str, int)
+		self.treeview = gtk.TreeView(self.multi_model)
+		self.treeview.get_selection().connect("changed", self.select)
 		scroll.add(self.treeview)
 
 		self.treeview.set_rules_hint(True)
@@ -83,10 +105,15 @@ class AdvancedPackages(gtk.Dialog):
 		self.treeview.append_column(tree_pass)
 
 		#fill treestore
-		package_icon = gtk.gdk.pixbuf_new_from_file(media.ICON_PACKAGE)
-		model = self.treeview.get_model()
-		for package_name, package_links in packages:
-			model.append((package_icon, default_path, package_name, None))
+		package_icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_PACKAGE, 32, 32)
+		single_package_name = "package-%s" % time.strftime("%Y%m%d%H%M%S")
+		single_package_links = []
+		for package_name, package_links in self.packages:
+			single_package_links += package_links
+			self.multi_model.append((package_icon, default_path, package_name, None, len(package_links)))
+		self.multi_packages = self.packages
+		self.single_package = [(single_package_name, single_package_links)]
+		self.single_model.append((package_icon, default_path, single_package_name, None, len(single_package_links)))
 
 		#choose path
 		hbox = gtk.HBox()
@@ -97,8 +124,26 @@ class AdvancedPackages(gtk.Dialog):
 		path_button.connect("clicked", self.choose_path)
 		path_label = gtk.Label(_("Choose new path for selected Package."))
 		hbox.pack_start(path_label, False, False, 10)
-
+		aspect = gtk.AspectFrame()
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
+		hbox.pack_start(aspect, True, True)
+		
+		#info
+		frame = gtk.Frame()
+		hbox.pack_start(frame)
+		frame.set_border_width(10)
+		self.info_name = gtk.Label()
+		self.info_name.set_markup("<b>%s: </b>" % ("Packages"))
+		frame.set_label_widget(self.info_name)
+		vbox = gtk.VBox()
+		frame.add(vbox)
+		self.info_label = gtk.Label(len(packages))
+		vbox.pack_start(self.info_label, False, False, 5)
+		
 		#action area
+		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
+		self.action_area.pack_start(cancel_button)
+		cancel_button.connect("clicked", self.close)
 		ok_button = gtk.Button(None, gtk.STOCK_OK)
 		self.action_area.pack_start(ok_button)
 		ok_button.connect("clicked", self.configure_packages)
@@ -106,12 +151,38 @@ class AdvancedPackages(gtk.Dialog):
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
+		
+	def change_mode(self, button, multi):
+		""""""
+		if multi:
+			if button.get_active():
+				logger.info("setting Auto Package Mode")
+				self.treeview.set_model(self.multi_model)
+				self.treeview.set_cursor_on_cell(0)
+				self.packages = self.multi_packages
+		else:
+			if button.get_active():
+				logger.info("setting Single Package Mode")
+				self.treeview.set_model(self.single_model)
+				self.treeview.set_cursor_on_cell(0)
+				self.packages = self.single_package
+
+	def set_info(self, num):
+		""""""
+		self.info_name.set_markup("<b>%s: </b>" % ("Files"))
+		self.info_label.set_text(str(num))
+
+	def select(self, selection):
+		""""""
+		model, iter = selection.get_selected()
+		if iter:
+			self.set_info(model.get_value(iter, 4))
 
 	def configure_packages(self, button=None):
 		""""""
 		model = self.treeview.get_model()
 		for package in model:
-			self.packages.append((package[1], package[2], package[3]))
+			self.packages_info.append((package[1], package[2], package[3]))
 		self.close()
 
 	def choose(self, treeview, path, view_column):

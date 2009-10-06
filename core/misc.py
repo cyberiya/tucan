@@ -18,36 +18,37 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import time
+import sys
+import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-class Slots:
+import url_open
+import cons
+
+REPORT_URL = "http://crak.appspot.com/add"
+
+def main_info(log=logger):
 	""""""
-	def __init__(self, slots=1, wait=300):
-		""""""
-		self.time_limit = wait
-		self.limit = False
-		self.end_wait = 0
-		self.max = slots
-		self.slots = slots
-
-	def get_slot(self):
-		""""""
-		if self.slots > 0:
-			if time.time() > self.end_wait:
-				self.limit = False
-				self.slots -= 1
-				return True
-
-	def add_wait(self):
-		""""""
-		logger.warning("Wait %i seconds." % self.time_limit)
-		self.limit = True
-		self.end_wait = time.time() + self.time_limit
-
-	def return_slot(self):
-		""""""
-		if self.slots < self.max:
-			self.slots += 1
-			return True
+	log.info("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
+	log.debug("OS: %s" % sys.platform)
+	log.debug("Main path: %s" % cons.PATH)
+	log.debug("Configuration path: %s" % cons.CONFIG_PATH)
+	
+def report_log(email="", comment=""):
+	""""""
+	try:
+		f = open(cons.LOG_FILE, "r")
+		log = f.read()
+		f.close()
+	except Exception, e:
+		logger.exception("%s" % e)
+	else:
+		form = urllib.urlencode([("uuid", configuration.get_uuid()), ("email", email), ("comment", urllib.quote(comment)), ("log", urllib.quote(log))])
+		try:
+			id = url_open.URLOpen().open(REPORT_URL, form).read().strip()
+			logger.info("REPORT ID: %s" % id)
+		except Exception, e:
+			logger.exception("Could not report: %s" % e)
+		else:
+			return id

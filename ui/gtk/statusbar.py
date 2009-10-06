@@ -18,9 +18,8 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import __builtin__
-
 import time
+import __builtin__
 import logging
 logger = logging.getLogger(__name__)
 
@@ -29,15 +28,18 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-import cons
 import media
+import core.cons as cons
 
 class Statusbar(gtk.Statusbar):
 	""""""
-	def __init__(self, limits):
+	def __init__(self):
 		""""""
 		gtk.Statusbar.__init__(self)
 		self.set_has_resize_grip(False)
+		
+		self.services = configuration.get_services()
+		self.blinks = 0
 		
 		#download speed limit
 		frame = gtk.Frame()
@@ -57,10 +59,11 @@ class Statusbar(gtk.Statusbar):
 
 		self.max_speed.connect("value-changed", self.change_speed)
 
-		#show limits
-		self.get_limits = limits
-
 		self.menu = gtk.Menu()
+		
+		self.limits = {}
+		events.connect(cons.EVENT_LIMIT_ON, self.add_limit)
+		events.connect(cons.EVENT_LIMIT_OFF, self.remove_limit)
 		
 		frame = gtk.Frame()
 		frame.set_shadow_type(gtk.SHADOW_IN)
@@ -72,18 +75,10 @@ class Statusbar(gtk.Statusbar):
 		self.button = gtk.Button()
 		self.button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
 		hbox.pack_start(self.button, False, False, 2)
-
-		self.limits = []
-		self.max_limits = 0
-
-		self.blinking = False
-		self.white = True
 		self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#fff"))
 
 		self.button.connect("clicked", self.show_stack)
 		self.show_all()
-
-		gobject.timeout_add(60000, self.update_limits)
 
 	def synchronize(self):
 		""""""
@@ -92,63 +87,64 @@ class Statusbar(gtk.Statusbar):
 	def change_speed(self, spinbutton):
 		""""""
 		__builtin__.max_download_speed = spinbutton.get_value_as_int()
-
-	def update_limits(self):
-		""""""
-		self.limits = self.get_limits()
-		if len(self.limits) > self.max_limits:
-			if not self.blinking:
-				gobject.timeout_add(800, self.blink)
-				self.blinking = True
-			logger.debug("Limits: %s" % self.limits)
-		self.max_limits = len(self.limits)
-		return True
-
+		
 	def blink(self):
 		""""""
-		if self.white:
-			if self.blinking:
+		if self.blinks < 10:
+			self.blinks += 1
+			if self.blinks % 2:
 				self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#f99"))
-				self.white = False
-				return True
 			else:
-				return False
+				self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#fff"))
+			return True
 		else:
-			self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#fff"))
-			self.white = True
-			if self.blinking:
-				return True
-			else:
-				return False
+			self.blinks = 0
+		
+	def add_limit(self, module):
+		""""""
+		tmp = module.split(".")				
+		callback = lambda x: events.trigger_limit_cancel(module)
+		if not module in self.limits:
+			for name, icon_path, url, enabled, config in self.services:
+				if tmp[0] == name:
+					self.limits[module] = self.new_item(url, tmp[1], icon_path, callback)
+					gobject.timeout_add(500, self.blink)
+					break
+
+	def remove_limit(self, module):
+		""""""
+		if module in self.limits:
+			del self.limits[module]
 
 	def show_stack(self, widget):
 		""""""
-		self.blinking = False
 		for limit in self.menu:
 			self.menu.remove(limit)
-		self.limits = self.get_limits()
 		if len(self.limits) == 0:
-			self.limits = [("None", "", "", None)]
-		for service, type, hour, icon_path in self.limits:
-			limit = gtk.MenuItem()
-			vbox = gtk.VBox()
-			hbox = gtk.HBox()
-			if icon_path:
-				icon = gtk.gdk.pixbuf_new_from_file(icon_path)
-			else:
-				icon = gtk.gdk.pixbuf_new_from_file(media.ICON_MISSING)
-			hbox.pack_start(gtk.image_new_from_pixbuf(icon.scale_simple(24, 24, gtk.gdk.INTERP_BILINEAR)))
-			hbox.pack_start(gtk.Label(service), True, True, 5)
-			vbox.pack_start(hbox, True, False, 1)
-			hbox = gtk.HBox()
-			hbox.pack_start(gtk.Label(hour), True, True)
-			hbox.pack_start(gtk.Label(type), True, True, 5)
-			vbox.pack_start(hbox)
-			limit.add(vbox)
-			self.menu.append(limit)
-			self.menu.append(gtk.SeparatorMenuItem())
+			self.menu.append(self.new_item("None", "", None, lambda x: x))
+		else:
+			for module, item in self.limits.items():
+				self.menu.append(item)
+				self.menu.append(gtk.SeparatorMenuItem())
 		self.menu.show_all()
 		self.menu.popup(None, None, self.menu_position, 1, 0, widget.get_allocation())
+
+	def new_item(self, service, service_type, icon_path, callback):
+		""""""
+		limit = gtk.MenuItem()
+		limit.connect("activate", callback)
+		vbox = gtk.VBox()
+		hbox = gtk.HBox()
+		vbox.pack_start(hbox)
+		if icon_path:
+			icon = gtk.gdk.pixbuf_new_from_file_at_size(icon_path, 32, 32)
+		else:
+			icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 32, 32)
+		hbox.pack_start(gtk.image_new_from_pixbuf(icon))
+		hbox.pack_start(gtk.Label(service))
+		vbox.pack_start(gtk.Label(service_type))
+		limit.add(vbox)
+		return limit
 
 	def menu_position(self, menu, rect):
 		""""""

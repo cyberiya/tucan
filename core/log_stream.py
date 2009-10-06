@@ -40,7 +40,15 @@ class LogStream:
 		self.old_buffer += tmp
 		return "\n".join(self.old_buffer)
 		
-	def readlines(self, length=0):
+	def readlines(self):
+		""""""
+		if len(self.new_buffer) > 0:
+			tmp = self.new_buffer
+			self.new_buffer = []
+			self.old_buffer += tmp
+			return tmp
+
+	def readnlines(self, length=0):
 		""""""
 		if len(self.new_buffer) > 0:
 			if length > 0:
@@ -51,9 +59,4 @@ class LogStream:
 					self.old_buffer.append(tmp)
 					if cont >= length:
 						break
-				return self.old_buffer[-length:]
-			else:
-				tmp = self.new_buffer
-				self.new_buffer = []
-				self.old_buffer += tmp
-				return tmp
+		return self.old_buffer[-length:]

@@ -27,8 +27,8 @@ import gobject
 
 from file_chooser import FileChooser
 
-import cons
 import media
+import core.cons as cons
 
 SERVICES = [("Megaupload", 100, cons.UNIT_MB, ["Anonymous", "Premium"]), ("Rapidshare", 200, cons.UNIT_MB, ["Collector", "Premium"]), ("Gigasize", 100, cons.UNIT_MB, ["Anonymous"])]
 

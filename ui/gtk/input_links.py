@@ -31,8 +31,8 @@ import gobject
 from message import Wait, Message
 from advanced_packages import AdvancedPackages
 
-import cons
 import media
+import core.cons as cons
 
 class ClipParser(HTMLParser.HTMLParser):
 	""""""
@@ -55,7 +55,7 @@ class InputLinks(gtk.Dialog):
 		gtk.Dialog.__init__(self)
 		self.set_transient_for(parent)
 		self.set_icon_from_file(media.ICON_DOWNLOAD)
-		self.set_title(_("Input Links"))
+		self.set_title("%s - %s" % (cons.TUCAN_NAME, _("Input Links")))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(600,500)
 
@@ -125,10 +125,10 @@ class InputLinks(gtk.Dialog):
 
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
-		name_cell.set_property("editable", True)
 		name_cell.connect("edited", self.change_name)
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 2)
+		tree_name.add_attribute(name_cell, 'editable', 7)
 		self.treeview.append_column(tree_name)
 
 		tree_add = gtk.TreeViewColumn('Add')
@@ -140,9 +140,11 @@ class InputLinks(gtk.Dialog):
 		self.treeview.append_column(tree_add)
 
 		#advanced checkbutton
+		hbox = gtk.HBox()
+		self.vbox.pack_start(hbox, False)
 		self.advanced_button = gtk.CheckButton(_("Show advanced Package configuration."))
 		self.advanced_button.set_active(show_advanced_packages)
-		self.vbox.pack_start(self.advanced_button, False)
+		hbox.pack_start(self.advanced_button, False, False, 8)
 
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
@@ -230,17 +232,17 @@ class InputLinks(gtk.Dialog):
 							logger.info("Added: %s %s %s %s %s" % (value[1], value[2], value[3], value[4], value[5]))
 							tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
 		if tmp != {}:
-			self.hide()
 			packages = self.create_packages(tmp)
 			packages_info = None
 			if self.advanced_button.get_active():
-				w = AdvancedPackages(self.default_path, packages)
-				packages_info = w.packages
+				#self.hide()
+				w = AdvancedPackages(self, self.default_path, packages)
+				packages_info = w.packages_info
 				if packages_info:
-					self.packages(packages, packages_info)
+					self.packages(w.packages, packages_info)
 					self.close()
-				else:
-					self.show()
+				#else:
+				#	self.show()
 			else:
 				self.packages(packages, [])
 				self.close()
@@ -253,18 +255,20 @@ class InputLinks(gtk.Dialog):
 
 	def check(self, button):
 		""""""
-		w = Wait(_("Checking links, please wait."), self)
-		w.connect("key-press-event", self.cancel)
-		th = threading.Thread(group=None, target=self.check_all, name=None, args=(w,))
-		th.start()
-
-	def check_all(self, wait):
-		""""""
-		store = self.treeview.get_model()
-		store.clear()
 		buffer = self.textview.get_buffer()
 		start, end = buffer.get_bounds()
-		link_list = [link.lower().strip() for link in buffer.get_text(start, end).split("\n")]
+		link_list = [link.lower() for link in buffer.get_text(start, end).split("\n") if link.strip()]
+		if len(link_list) > 0:
+			w = Wait(_("Checking links, please wait."), self)
+			w.connect("key-press-event", self.cancel)
+			th = threading.Thread(group=None, target=self.check_all, name=None, args=(link_list, w))
+			th.start()
+
+	def check_all(self, link_list, wait):
+		""""""
+		buffer = self.textview.get_buffer()
+		store = self.treeview.get_model()
+		store.clear()
 
 		service_icon = self.treeview.render_icon(gtk.STOCK_INFO, gtk.ICON_SIZE_MENU)
 		unsupported_icon = self.treeview.render_icon(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_MENU)

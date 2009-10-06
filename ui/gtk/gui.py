@@ -33,30 +33,27 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-from about import About
-from message import Message
-from preferences import Preferences
-from log_view import LogView
-
 import tray_icon
 import menu_bar
 import toolbar
 
-import config
-from sessions import Sessions
-from file_chooser import FileChooser
-
+from about import About
+from message import Message
+from preferences import Preferences
+from log_view import LogView
+from shutdown import Shutdown
 from tree import Tree
 from input_links import InputLinks
+from file_chooser import FileChooser
 
 from core.core import Core
-
-from service_update import ServiceUpdate
-
+from core.sessions import Sessions
 from core.log_stream import LogStream
+from core.service_update import ServiceUpdate
 
-import cons
 import media
+import core.cons as cons
+import core.config as config
 
 class Gui(gtk.Window, Core):
 	""""""
@@ -105,32 +102,40 @@ class Gui(gtk.Window, Core):
 		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
 		menu_log = _("Show Logs"), lambda x: LogView(self, log_stream)
 		show_uploads = gtk.CheckMenuItem(_("Show Uploads")), self.resize_pane, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS)
-
+		shutdown = gtk.CheckMenuItem(_("Shutdown Computer")), self.shutdown, False
+		
+		m_file = _("File")
+		m_view = _("View")
+		m_help = _("Help")
+		m_addons = _("Addons")
+		
 		#integration menubar
 		integration = None
 		if cons.OS_OSX:
 			try:				
 				about_menu = _("About TucanManager"), lambda x: About(self)
 				preferences_menu = _("Preferences"), self.preferences
-				file_menu = _("File"), [menu_load_session, menu_save_session]
-				view_menu = _("View"), [show_uploads, None, menu_log]
-				help_menu = _("Help"), [menu_help]
+				file_menu = m_file, [menu_load_session, menu_save_session]
+				view_menu = m_view, [show_uploads, None, menu_log]
+				addons_menu = m_addons, [shutdown]
+				help_menu = m_help, [menu_help]
 				quit_menu = _("Quit"), self.quit
 				integration = gtk.Window(gtk.WINDOW_POPUP)
 				vbox = gtk.VBox()
 				integration.add(vbox)
-				vbox.pack_start(menu_bar.OSXMenuBar([file_menu, view_menu, help_menu], about_menu, preferences_menu, quit_menu))
+				vbox.pack_start(menu_bar.OSXMenuBar([file_menu, view_menu, addons_menu, help_menu], about_menu, preferences_menu, quit_menu))
 				
 			except Exception, e:
 				integration = None
 				logger.critical("No OSX menu integration support.")
-	
+
 		#normal menubar
 		if not integration:
-			file_menu = _("File"), [menu_load_session, menu_save_session, None, menu_quit]
-			view_menu = _("View"), [show_uploads, menu_log, None, menu_preferences]
-			help_menu = _("Help"), [menu_help, menu_about]
-			self.vbox.pack_start(menu_bar.MenuBar([file_menu, view_menu, help_menu]), False)
+			file_menu = m_file, [menu_load_session, menu_save_session, None, menu_quit]
+			view_menu = m_view, [show_uploads, menu_log, None, menu_preferences]
+			addons_menu = m_addons, [shutdown]
+			help_menu = m_help, [menu_help, menu_about]
+			self.vbox.pack_start(menu_bar.MenuBar([file_menu, view_menu, addons_menu, help_menu]), False)
 
 		#toolbar
 		download = _("Add Downloads"), gtk.image_new_from_file(media.ICON_DOWNLOAD), self.add_links
@@ -207,15 +212,14 @@ class Gui(gtk.Window, Core):
 	def check_updates(self):
 		""""""
 		s = ServiceUpdate(self.configuration)
-		updates = s.get_updates()
-		if len(updates) > 0:
-			gobject.idle_add(self.update_manager, updates)
+		if s.get_updates():
+			gobject.idle_add(self.update_manager, s.remote_info)
 
-	def update_manager(self, updates):
+	def update_manager(self, info):
 		""""""
 		if not self.preferences_shown:
 			self.preferences_shown = True
-			Preferences(self, self.configuration, True, updates)
+			Preferences(self, self.configuration, True, info)
 			self.preferences_shown =  False
 		return False
 
@@ -243,13 +247,20 @@ class Gui(gtk.Window, Core):
 		else:
 			self.pane.set_position(self.get_size()[1])
 
+	def shutdown(self, checkbox):
+		""""""
+		if checkbox.get_active():
+			self.shutdown_id = events.connect(cons.EVENT_ALL_COMPLETE, Shutdown, self, self.quit)
+		else:
+			events.disconnect(cons.EVENT_ALL_COMPLETE, self.shutdown_id)
+
 	def help(self, widget):
 		""""""
 		webbrowser.open(cons.DOC)
 
 	def add_links(self, button):
 		""""""
-		default_path = self.configuration.get(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER)
+		default_path = self.configuration.get_downloads_folder()
 		show_advanced_packages = self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES)
 		InputLinks(self, default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, show_advanced_packages)
 
@@ -298,11 +309,11 @@ class Gui(gtk.Window, Core):
 		""""""
 		tmp_packages = []
 		if not len(packages_info) > 0:
-			default_path = self.configuration.get(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER)
+			default_path = self.configuration.get_downloads_folder()
 			packages_info = [(default_path, name, None) for name, package_files in packages]
 		#create directories and password files
 		for info in packages_info:
-			package_path = unicode(os.path.join(info[0], info[1].replace(" ", "_"), ""), errors="ignore")
+			package_path = os.path.join(info[0].decode("utf-8"), info[1].replace(" ", "_"), "")
 			if not os.path.exists(package_path):
 				os.makedirs(package_path)
 			if info[2]:
@@ -313,7 +324,7 @@ class Gui(gtk.Window, Core):
 		for package_name, package_downloads in packages:
 			info = packages_info[packages.index((package_name, package_downloads))]
 			package_name = info[1].replace(" ", "_")
-			package_path = os.path.join(info[0], package_name, "")
+			package_path = os.path.join(info[0].decode("utf-8"), package_name, "")
 			self.downloads.add_package(package_name, package_path, package_downloads, info[2])
 			for download in package_downloads:
 				tmp = []

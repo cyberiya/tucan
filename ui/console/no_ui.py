@@ -26,11 +26,10 @@ import gettext
 import logging
 logger = logging.getLogger(__name__)
 
-import config
-
 from core.core import Core
 
-import cons
+import core.config as config
+import core.cons as cons
 
 class NoUi(Core):
 	""""""
@@ -53,9 +52,8 @@ class NoUi(Core):
 		if self.links_file:
 			try:
 				f = open(self.links_file, "r")
-				links =	[link.lower().strip() for link in f.read().split("\n") if link]
+				links =	[link.lower().strip() for link in f.read().split("\n") if link and not link.startswith("#")]
 				f.close()
-
 				self.manage_packages(self.create_packages(self.check_links(links)), [])
 			except Exception, e:
 				logger.error(e)
@@ -83,7 +81,7 @@ class NoUi(Core):
 	def manage_packages(self, packages, packages_info):
 		""""""
 		if not len(packages_info) > 0:
-			default_path = self.configuration.get(config.SECTION_MAIN, config.OPTION_DOWNLOADS_FOLDER)
+			default_path = self.configuration.get_downloads_folder()
 			packages_info = [(default_path, name, None) for name, package_files in packages]
 		for package_name, package_downloads in packages:
 			info = packages_info[packages.index((package_name, package_downloads))]

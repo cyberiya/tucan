@@ -26,13 +26,8 @@ from HTMLParser import HTMLParser
 
 import ImageOps
 
-#import sys
-#sys.path.append("/Users/Crak/Desktop/tucan-osx/trunk")
-
-from tesseract import Tesseract
-from url_open import URLOpen, set_proxy
-
-#set_proxy(None)
+from core.tesseract import Tesseract
+from core.url_open import URLOpen
 
 BASE_URL = "http://hotfile.com"
 

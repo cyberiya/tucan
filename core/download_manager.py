@@ -78,20 +78,6 @@ class DownloadManager:
 		self.timer = None
 		self.scheduling = False
 
-	def get_limits(self):
-		""""""
-		for service in self.services:
-			if service.anonymous_download_plugin:
-				if "limit" in dir(service.anonymous_download_plugin):
-					if service.anonymous_download_plugin.limit:
-						if service.name not in [name[0] for name in self.limits]:
-							self.limits.append((service.name, cons.TYPE_ANONYMOUS, "[%s]" % time.strftime("%H:%M"), service.icon_path))
-					else:
-						for limit in self.limits:
-							if service.name == limit[0]:
-								self.limits.remove(limit)
-		return self.limits
-
 	def delete_link(self, name, link):
 		""""""
 		for download in self.pending_downloads:
@@ -143,13 +129,17 @@ class DownloadManager:
 				for link in download.links:
 					link.plugin, link.type = self.get_plugin(link.service)
 					if link.plugin.add(download.path, link.url, download.name):
+						try:
+							self.pending_downloads.remove(download)
+						except:
+							pass
+						else:
+							self.active_downloads.append(download)
 						link.active = True
-						self.active_downloads.append(download)
-						self.pending_downloads.remove(download)
 						return True
 					else:
 						link.active = False
-						if not download.status == cons.STATUS_ERROR:
+						if download.status != cons.STATUS_ERROR:
 							download.status = cons.STATUS_PEND
 
 	def stop(self, name):
@@ -213,13 +203,9 @@ class DownloadManager:
 				#print download.name, status, progress, actual_size, unit, speed, new_speed, time
 				if status:
 					download.update(status, progress, actual_size, unit, speed, new_speed, time)
-					#if status in [cons.STATUS_PEND, cons.STATUS_STOP]:
-					#	logger.warning("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
-					#	if ((status == cons.STATUS_PEND) and ("add_wait" in dir(plugin))):
-					#		plugin.add_wait()
-					#	self.stop(download.name)
-					if status == cons.STATUS_ERROR:
-						logger.error("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
+					if status in [cons.STATUS_PEND, cons.STATUS_ERROR]:
+						if status == cons.STATUS_ERROR:
+							logger.error("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						if "return_slot" in dir(link.plugin):
 							plugin.return_slot()
 						link.active = False
@@ -240,19 +226,24 @@ class DownloadManager:
 			self.scheduling = True
 			if len(self.pending_downloads + self.active_downloads) > 0:
 				logger.debug("scheduling")
-				for download in self.pending_downloads:
-					if len(self.active_downloads) < max_downloads:
-						if download.status not in [cons.STATUS_STOP]:
-							if self.start(download.name):
-								logger.info("Started: %s" % download.name)
-								logger.debug("Active: %s" % [tmp.name for tmp in self.active_downloads])
-								logger.debug("Pending: %s" % [tmp.name for tmp in self.pending_downloads])
-								logger.debug("Complete: %s" % [tmp.name for tmp in self.complete_downloads])
-								break
+				try:
+					for download in self.pending_downloads:
+						if len(self.active_downloads) < max_downloads:
+							if download.status not in [cons.STATUS_STOP]:
+								if self.start(download.name):
+									logger.info("Started: %s" % download.name)
+									logger.debug("Active: %s" % [tmp.name for tmp in self.active_downloads])
+									logger.debug("Pending: %s" % [tmp.name for tmp in self.pending_downloads])
+									logger.debug("Complete: %s" % [tmp.name for tmp in self.complete_downloads])
+									break
+				except Exception, e:
+					logger.exception(e)
 				if self.timer:
 					self.timer.cancel()
 				self.timer = threading.Timer(5, self.scheduler)
 				self.timer.start()
+			else:
+				events.trigger_all_complete()
 			self.scheduling = False
 
 	def quit(self):
@@ -260,6 +251,3 @@ class DownloadManager:
 		if self.timer:
 			self.scheduling = True
 			self.timer.cancel()
-		#for download in self.active_downloads:
-		#	for link in download.links:
-		#		link.plugin.stop_all()

@@ -24,8 +24,8 @@ logger = logging.getLogger(__name__)
 
 from parsers import CheckLinks, Parser
 
-from download_plugin import DownloadPlugin
-from slots import Slots
+from core.download_plugin import DownloadPlugin
+from core.slots import Slots
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""

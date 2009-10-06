@@ -20,7 +20,7 @@
 
 import os.path
 
-from cons import PATH
+from core.cons import PATH
 
 #media constants
 PATH_MEDIA = os.path.join(PATH, "media", "")
@@ -45,3 +45,5 @@ ICON_ADVANCED = PATH_MEDIA + "application-x-executable.svg"
 ICON_MISSING = PATH_MEDIA + "image-missing.svg"
 ICON_ACCOUNT = PATH_MEDIA + "system-users.svg"
 ICON_UPDATE = PATH_MEDIA + "software-update-urgent.svg"
+ICON_SEND = PATH_MEDIA + "mail-reply-sender.svg"
+

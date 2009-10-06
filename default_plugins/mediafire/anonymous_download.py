@@ -24,11 +24,9 @@ import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
-from download_plugin import DownloadPlugin
-
 from parsers import CheckLinks, FormParser
 
-import cons
+from core.download_plugin import DownloadPlugin
 
 class AnonymousDownload(DownloadPlugin):
 	""""""

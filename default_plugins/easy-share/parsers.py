@@ -26,8 +26,8 @@ from HTMLParser import HTMLParser
 
 import ImageOps
 
-from tesseract import Tesseract
-from url_open import URLOpen
+from core.tesseract import Tesseract
+from core.url_open import URLOpen
 
 BASE_URL = "http://www.easy-share.com"
 

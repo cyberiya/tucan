@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 import HTMLParser
 
-from url_open import URLOpen
+from core.url_open import URLOpen
 
 class Parser(HTMLParser.HTMLParser):
 	""""""

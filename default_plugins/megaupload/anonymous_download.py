@@ -25,15 +25,14 @@ import pickle
 import logging
 logger = logging.getLogger(__name__)
 
-from url_open import URLOpen
-
 from captcha import CaptchaForm
 from check_links import CheckLinks
 
-from download_plugin import DownloadPlugin
-from slots import Slots
+from core.download_plugin import DownloadPlugin
+from core.url_open import URLOpen
+from core.slots import Slots
 
-import cons
+import core.cons as cons
 
 WAIT = 45
 

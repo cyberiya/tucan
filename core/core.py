@@ -19,24 +19,28 @@
 ###############################################################################
 
 import sys
+import __builtin__
 import logging
 logger = logging.getLogger(__name__)
 
+from events import Events
 from service_manager import ServiceManager
 from download_manager import DownloadManager
 
+import misc
 import cons
 
 class Core(ServiceManager):
 	""""""
 	def __init__(self, configuration):
 		""""""
-		logger.info("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
-		logger.debug("OS: %s" % sys.platform)
-		logger.debug("Main path: %s" % cons.PATH)
-		logger.debug("Configuration path: %s" % cons.CONFIG_PATH)
+		misc.main_info(logger)
+
 		if not configuration.configured:
 			logger.warning("No configuration found!")
+			
+		#events system
+		__builtin__.events = Events()
 
 		ServiceManager.__init__(self, configuration)
 		self.download_manager = DownloadManager(self.get_download_plugin, self.services)

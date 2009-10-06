@@ -25,8 +25,8 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 
-import cons
 import media
+import core.cons as cons
 
 if cons.OS_OSX:
 	try:
@@ -53,7 +53,8 @@ if cons.OS_OSX:
 						self.window_visible = False
 				else:
 					self.show_window()
-					self.window_visible = True	
+					self.window_visible = True
+
 			def close(self):
 				""""""
 				pass
@@ -80,7 +81,7 @@ class TrayIcon(gtk.StatusIcon):
 				tmp.connect('activate', item[1])
 			self.menu.append(tmp)
 		self.menu.show_all()
-
+		
 		self.connect('activate', self.activate)
 		self.connect('popup-menu', self.popup_menu)
 
@@ -95,7 +96,7 @@ class TrayIcon(gtk.StatusIcon):
 
 	def popup_menu(self, statusicon, button, time):
 		""""""
-		self.menu.popup(None, None, gtk.status_icon_position_menu, button, time, self)
+		self.menu.popup(None, None, None, button, time, self)
 
 	def change_tooltip(self, statusbar, context, text):
 		""""""

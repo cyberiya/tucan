@@ -18,45 +18,48 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import __builtin__
-
-import urllib2
+import time
 import logging
 logger = logging.getLogger(__name__)
 
-import socket
-
 import cons
 
-def set_proxy(url, port=0):
+class Slots:
 	""""""
-	if url:
-		PROXY = {"http": "%s:%i" % (url, port)}
-		socket.setdefaulttimeout(60)
-		logger.info("Using proxy: %s:%i" % (url, port))
-	else:
-		PROXY = None
-		socket.setdefaulttimeout(120)
-		logger.info("Proxy Disabled.")
-	__builtin__.PROXY = PROXY
-
-class URLOpen:
-	""""""
-	def __init__(self, cookie=None):
+	def __init__(self, slots=1, wait=300):
 		""""""
-		if PROXY:
-			self.opener = urllib2.build_opener(urllib2.ProxyHandler(PROXY), urllib2.HTTPCookieProcessor(cookie))
-		else:
-			self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+		self.time_limit = wait
+		self.limit = False
+		self.end_wait = 0
+		self.max = slots
+		self.slots = slots
+		events.connect(cons.EVENT_LIMIT_CANCEL, self.cancel_limit)
 
-	def open(self, url, form=None):
+	def get_slot(self):
 		""""""
-		if form:
-			return self.opener.open(urllib2.Request(url, None, cons.USER_AGENT), form)
-		else:
-			return self.opener.open(urllib2.Request(url, None, cons.USER_AGENT))
+		if self.slots > 0:
+			if time.time() > self.end_wait:
+				events.trigger_limit_off(self.__module__)
+				self.limit = False
+				self.slots -= 1
+				return True
 
-if __name__ == "__main__":
-	PROXY = {"http": "proxy.alu.uma.es:3128"}
-	o = URLOpen()
-	print o.open("http://www.google.com").read()
+	def add_wait(self):
+		""""""
+		logger.warning("Wait %i seconds." % self.time_limit)
+		self.limit = True
+		events.trigger_limit_on(self.__module__)
+		self.end_wait = time.time() + self.time_limit
+
+	def return_slot(self):
+		""""""
+		if self.slots < self.max:
+			self.slots += 1
+			return True
+
+	def cancel_limit(self, module):
+		""""""
+		if module == self.__module__:
+			self.limit = False
+			self.end_wait = 0
+			logger.info("Limit canceled manually: %s" % self.__module__)

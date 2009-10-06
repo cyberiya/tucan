@@ -24,12 +24,7 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
-#import sys
-#sys.path.append("/Users/Crak/Desktop/tucan-osx/trunk")
-
-from url_open import URLOpen, set_proxy
-
-#set_proxy(None)
+from core.url_open import URLOpen
 
 BASE_URL = "http://depositfiles.com"
 

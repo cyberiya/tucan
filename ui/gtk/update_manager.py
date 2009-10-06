@@ -18,24 +18,30 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import threading
+
 import pygtk
 pygtk.require('2.0')
 import gtk
 import gobject
 
-from service_update import ServiceUpdate
 from message import Message
+from core.service_update import ServiceUpdate
 
-import cons
 import media
+import core.cons as cons
 
 class UpdateManager(gtk.Dialog, ServiceUpdate):
 	""""""
-	def __init__(self, config, parent, updates=None):
+	def __init__(self, parent, config, info=None):
 		""""""
 		gtk.Dialog.__init__(self)
 		ServiceUpdate.__init__(self, config)
 		self.set_transient_for(parent)
+		self.parent_widget = parent
+		
+		self.installing = False
+		self.remote_info = info
 
 		self.set_icon_from_file(media.ICON_UPDATE)
 		self.set_title(("Update Manager"))
@@ -102,18 +108,24 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.show_all()
 
 		self.progress.hide()
+		
+		gobject.timeout_add(200, self.check_version)
 
-		if self.server_version.split(" ")[0] <= cons.TUCAN_VERSION.split(" ")[0]:
-			gobject.timeout_add(1000, self.check_updates, updates)
-		elif self.server_version == None:
+		self.run()
+		
+	def check_version(self):
+		""""""
+		self.get_updates()
+		if self.remote_version == None:
 			message = "Update Manager can't connect to server.\nTry again later."
 			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Not available!", message)
 			gobject.idle_add(self.close)
+		elif self.remote_version.split(" ")[0] <= cons.TUCAN_VERSION.split(" ")[0]:
+			self.check_updates()
 		else:
 			message = "Version %s released!\nPlease update and enjoy new services." % self.server_version
 			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Outdated!", message)
 			gobject.idle_add(self.close)
-		self.run()
 
 	def toggled(self, button, path):
 		""""""
@@ -124,16 +136,14 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 2, active)
 
-	def check_updates(self, updates=None):
+	def check_updates(self):
 		""""""
 		model = self.treeview.get_model()
 		default_icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_UPDATE, 32, 32)
 
 		updated = 0
 		new = 0
-		if not updates:
-			updates = self.get_updates()
-		for service, options in updates.items():
+		for service, options in self.updates.items():
 			if options[2]:
 				icon = gtk.gdk.pixbuf_new_from_file_at_size(options[2], 32, 32)
 				updated += 1
@@ -150,11 +160,17 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 
 	def install(self, button):
 		""""""
-		model = self.treeview.get_model()
-
+		self.progress.show()
 		self.status_icon.set_from_stock(gtk.STOCK_GO_DOWN, gtk.ICON_SIZE_MENU)
 		self.status_label.set_label("Installing")
-		self.progress.show()
+		self.action_area.set_sensitive(False)
+		th = threading.Thread(group=None, target=self.install_all, name=None)
+		th.start()
+		
+	def install_all(self):
+		""""""
+		self.installing = True
+		model = self.treeview.get_model()
 
 		install_targets = []
 		update_iter = model.get_iter_root()
@@ -163,28 +179,33 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 				install_targets.append(model.get(update_iter, 1, 3, 4))
 			update_iter = model.iter_next(update_iter)
 		if len(install_targets) > 0:
-			self.progress.grab_add()
-			cont = 0.0
-			for service_name, service_dir, file_list in install_targets:
-				self.progress.set_text("%i of %i" % (int(cont), len(install_targets)))
-				#unfreezes widget
-				while gtk.events_pending():
-					gtk.main_iteration_do(False)
-				self.install_service(service_name, service_dir, file_list)
-				cont += 1
-				self.progress.set_fraction(cont/len(install_targets))
-			self.progress.set_text("%i of %i" % (int(cont), len(install_targets)))
-			self.hide()
-			message = "Save your configuration and restart Tucan \nto apply service changes."
-			Message(self, cons.SEVERITY_WARNING, "Tucan Manager - Restart Needed.", message)
-			self.close()
+			cont = 0
+			self.progress.set_text("%i of %i" % (cont, len(install_targets)))
+			for service_name, service_dir, archive in install_targets:
+				if self.install_service(service_name, service_dir, archive):
+					cont += 1
+					self.progress.set_fraction(float(cont)/len(install_targets))
+					self.progress.set_text("%i of %i" % (cont, len(install_targets)))
+			if cont != len(install_targets):
+				message = "Problem updating some services \nTry again later."
+			else:
+				message = "Save your configuration and restart Tucan \nto apply service changes."
+			gobject.idle_add(self.restart, message)
+			self.installing = False
+			gobject.idle_add(self.close)
 		else:
-			self.close()
+			self.installing = False
+			gobject.idle_add(self.close)
+			
+	def restart(self, message):
+		""""""
+		Message(self.parent_widget, cons.SEVERITY_WARNING, "Tucan Manager - Restart Needed.", message)
 
 	def close(self, widget=None, other=None):
 		""""""
-		self.destroy()
+		if not self.installing:
+			self.destroy()
 
 if __name__ == "__main__":
 	from config import Config
-	x = UpdateManager(Config(), None)
+	x = UpdateManager(None, Config(), None)
