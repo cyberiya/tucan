@@ -24,6 +24,11 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
+import sys
+import __builtin__
+sys.path.append("/home/crak/tucan/trunk")
+__builtin__.PROXY = None
+
 from core.url_open import URLOpen
 
 BASE_URL = "http://www.filefactory.com"
@@ -71,8 +76,9 @@ class CheckLinks:
 		unit = None
 		try:
 			for line in URLOpen().open(url).readlines():
-				if '<span href="" class="last">' in line:
-					name = line.split('<span href="" class="last">')[1].split('</span>')[0]
+				if '<span class="last">' in line:
+					name = line.split('<span class="last">')[1].split('</span>')[0]
+					print name
 					if ".." in name:
 						tmp = url.split("/").pop().split("_")
 						name = ".".join(tmp)
@@ -86,12 +92,13 @@ class CheckLinks:
 				name = url
 				size = -1
 		except Exception, e:
+			print e
 			name = url
 			size = -1
 			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
 
 if __name__ == "__main__":
-	c = Parser("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
-	print c.link
-	#print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	#c = Parser("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	#print c.link
+	print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
