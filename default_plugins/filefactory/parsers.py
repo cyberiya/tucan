@@ -24,11 +24,6 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
-import sys
-import __builtin__
-sys.path.append("/home/crak/tucan/trunk")
-__builtin__.PROXY = None
-
 from core.url_open import URLOpen
 
 BASE_URL = "http://www.filefactory.com"
@@ -78,7 +73,6 @@ class CheckLinks:
 			for line in URLOpen().open(url).readlines():
 				if '<span class="last">' in line:
 					name = line.split('<span class="last">')[1].split('</span>')[0]
-					print name
 					if ".." in name:
 						tmp = url.split("/").pop().split("_")
 						name = ".".join(tmp)
