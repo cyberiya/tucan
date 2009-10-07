@@ -20,37 +20,44 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{9B49BFC8-D0C0-42E9-8460-40733DCE3648}
 AppName=Tucan Manager
-AppVerName=Tucan Manager 0.3.6-1
+AppVerName=Tucan Manager 0.3.9
 AppPublisher=Tucan Team
 AppPublisherURL=http://tucaneando.wordpress.com
 AppSupportURL=http://tucaneando.wordpress.com
 AppUpdatesURL=http://tucaneando.wordpress.com
 DefaultDirName=C:\Tucan
 DefaultGroupName=Tucan
-LicenseFile=C:\trunk\LICENSE
-InfoAfterFile=C:\trunk\README
+LicenseFile=C:\tucan-0.3.9\LICENSE
+InfoAfterFile=C:\tucan-0.3.9\README
 OutputDir=C:\Documents and Settings\Administrador\Escritorio\TucaneandoWin
-OutputBaseFilename=Setup
-SetupIconFile=C:\trunk\tucan.ico
+OutputBaseFilename=Tucan-0.3.9_Setup
+SetupIconFile=C:\tucan-0.3.9\tucan.ico
 Compression=lzma
 SolidCompression=yes
 
 [Languages]
-Name: "english"; MessagesFile: "compiler:Default.isl"
-Name: "spanish"; MessagesFile: "compiler:Languages\Spanish.isl"
+Name: english; MessagesFile: compiler:Default.isl
+Name: spanish; MessagesFile: compiler:Languages\Spanish.isl; InfoAfterFile: C:\tucan-0.3.9\README.es
+Name: czech; MessagesFile: compiler:Languages\Czech.isl
+Name: french; MessagesFile: compiler:Languages\French.isl
+Name: german; MessagesFile: compiler:Languages\German.isl
+Name: italian; MessagesFile: compiler:Languages\Italian.isl
+Name: polish; MessagesFile: compiler:Languages\Polish.isl
+Name: portuguese; MessagesFile: compiler:Languages\Portuguese.isl
+Name: russian; MessagesFile: compiler:Languages\Russian.isl
+Name: slovak; MessagesFile: compiler:Languages\Slovak.isl
 
 [Tasks]
-Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked
 
 [Files]
-Source: "C:\trunk\dist\tucan.exe"; DestDir: "{app}"; Flags: ignoreversion
-Source: "C:\trunk\dist\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: C:\tucan-0.3.9\dist\tucan.exe; DestDir: {app}; Flags: ignoreversion
+Source: C:\tucan-0.3.9\dist\*; DestDir: {app}; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
-Name: "{group}\Tucan Manager"; Filename: "{app}\tucan.exe"
-Name: "{commondesktop}\Tucan Manager"; Filename: "{app}\tucan.exe"; Tasks: desktopicon
+Name: {group}\Tucan Manager; Filename: {app}\tucan.exe
+Name: {commondesktop}\Tucan Manager; Filename: {app}\tucan.exe; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\tucan.exe"; Description: "{cm:LaunchProgram,Tucan Manager}"; Flags: nowait postinstall skipifsilent
-
+Filename: {app}\tucan.exe; Description: {cm:LaunchProgram,Tucan Manager}; Flags: nowait postinstall skipifsilent
