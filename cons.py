@@ -19,4 +19,4 @@
 ###############################################################################
 
 #DEPRECATED: Only present for backwards compatibility with 0.3.8 update manager.
-TUCAN_VERSION = "0.3.9 alpha"
+TUCAN_VERSION = "0.3.8 alpha"
