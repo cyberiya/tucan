@@ -46,23 +46,25 @@ class FormParser(HTMLParser):
 			opener = URLOpen(cookie)
 			handler = opener.open(url)
 			if "text/html" in handler.info()["Content-Type"]:
-				self.feed(handler.read())
+				for line in handler.readlines():
+					try:
+						self.feed(line)
+					except Exception, e:
+						pass
 				if self.form_action:
 					for line in opener.open(self.form_action, urllib.urlencode({"dl.start": "PREMIUM", "":"Premium user"})).readlines():
-						self.feed(line)
+						if '<form name="dlf"' in line:
+							self.url = line.split('name="dlf" action="')[1].split('" method="post"')[0]
 			else:
 				self.url = url
 		except Exception, e:
-			print e
 			logger.error("%s: %s" % (url, e))
 
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "form":
-			if len(attrs) == 2:
-				self.form_action = attrs[0][1]
-			elif attrs[0][1] == "dlf":
-				self.url = attrs[1][1]
+			if attrs[0][1] == "ff":
+				self.form_action = attrs[1][1]
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
