@@ -39,17 +39,19 @@ class FormParser(HTMLParser):
 		self.url = None
 		self.wait = None
 		try:
-			self.feed(URLOpen().open(url).read())
-			self.close()
+			for line in URLOpen().open(url).readlines():
+				try:
+					self.feed(line)
+				except Exception, e:
+					pass
 			form = {"dl.start": "Free", "":"Free user"}
 			self.data = urllib.urlencode(form)
 			if self.form_action:
 				for line in URLOpen().open(self.form_action, self.data).readlines():
-					if not self.url:
-						self.feed(line)
-					else:
-						if "var c=" in line:
-							self.wait = int(line.split("var c=")[1].split(";")[0])
+					if "var tt =" in line:
+						self.url = line.split('name="dlf" action="')[1].split('" method="post"')[0]
+					elif "var c=" in line:
+						self.wait = int(line.split("var c=")[1].split(";")[0])
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
@@ -58,8 +60,6 @@ class FormParser(HTMLParser):
 		if tag == "form":
 			if attrs[0][1] == "ff":
 				self.form_action = attrs[1][1]
-			elif attrs[0][1] == "dlf":
-				self.url = attrs[1][1]
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
