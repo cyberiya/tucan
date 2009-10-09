@@ -76,6 +76,7 @@ class DownloadManager:
 		self.active_downloads = []
 		self.complete_downloads = []
 		self.timer = None
+		self.schedules = 0
 		self.scheduling = False
 
 	def delete_link(self, name, link):
@@ -225,7 +226,11 @@ class DownloadManager:
 		if not self.scheduling:
 			self.scheduling = True
 			if len(self.pending_downloads + self.active_downloads) > 0:
-				logger.debug("scheduling")
+				if self.schedules < 11:
+					self.schedules += 1
+				else:
+					self.schedules = 0
+					logger.debug("scheduled 12 times.")
 				try:
 					for download in self.pending_downloads:
 						if len(self.active_downloads) < max_downloads:
