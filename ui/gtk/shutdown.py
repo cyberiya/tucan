@@ -51,7 +51,7 @@ class Shutdown:
 					if subprocess.call(["osascript", "-e", "tell application \"Finder\" to shut down"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
 						quit()
 				else:
-					if subprocess.call(["sudo", "-n", "shutdown", "h", "now"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
+					if subprocess.call(["sudo", "-n", "shutdown", "-h", "now"], stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
 						quit()
 				Message(parent, cons.SEVERITY_ERROR, title, "Could not shut down the computer.")
 			except Exception, e:
