@@ -376,17 +376,9 @@ class Preferences(gtk.Dialog):
 		vbox.pack_start(self.tray_close, False, False, 5)
 		self.tray_close.set_active(self.config.get_tray_close())
 
-		#self.advanced_packages = gtk.CheckButton(_("Default advanced packages."))
-		#vbox.pack_start(self.advanced_packages, False, False, 5)
-		#self.advanced_packages.set_active(self.config.getboolean(config.SECTION_UI, config.OPTION_ADVANCED_PACKAGES))
-
 		self.auto_update = gtk.CheckButton(_("Automatic check for updates."))
 		vbox.pack_start(self.auto_update, False, False, 5)
 		self.auto_update.set_active(self.config.get_auto_update())
-
-		#self.show_uploads = gtk.CheckButton(_("Show uploads."))
-		#vbox.pack_start(self.show_uploads, False, False, 5)
-		#self.show_uploads.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS))
 
 		self.enable_proxy = gtk.CheckButton(_("Enable proxy:"))
 		vbox.pack_start(self.enable_proxy, False, False, 5)

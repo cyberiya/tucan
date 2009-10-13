@@ -23,8 +23,6 @@ import sys
 import logging
 logger = logging.getLogger(__name__)
 
-from config import SECTION_MAIN, OPTION_MAX_DOWNLOADS, OPTION_MAX_DOWNLOAD_SPEED
-
 import cons
 
 class Service:
