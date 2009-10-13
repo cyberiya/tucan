@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Fran Lupion (Crak) <crak@tucaneando.com>
 Build-Depends: debhelper (>= 7)
-Standards-Version: 3.8.2
+Standards-Version: 3.8.3
 Homepage: http://www.tucaneando.com
 
 Package: tucan
@@ -21,6 +21,8 @@ Description: Download and upload manager for 1-Click Hosters
   - http://filefactory.com/
   - http://easy-share.com/
   - http://badongo.com/
+  - http://depositfiles.com/
+  - http://hotfile.com/
   - (...)
  Main Features:
   - Graphical User Interface in GTK+.
