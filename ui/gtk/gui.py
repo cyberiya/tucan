@@ -80,7 +80,7 @@ class Gui(gtk.Window, Core):
 		self.preferences_shown =  False
 
 		#l10n
-		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=[self.configuration.get(config.SECTION_MAIN, config.OPTION_LANGUAGE)])
+		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=[self.configuration.get_languaje()])
 		lang.install()
 
 		Core.__init__(self, self.configuration)
@@ -88,8 +88,18 @@ class Gui(gtk.Window, Core):
 
 		self.set_icon_from_file(media.ICON_TUCAN)
 		self.set_title("%s - Version: %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
-		self.set_position(gtk.WIN_POS_CENTER)
-		self.set_size_request(900, 500)
+		
+		#remember position and size
+		x, y, w, h = self.configuration.get_window_settings()
+		if x >= 0 and y >= 0:
+			self.move(x,y)
+		else:
+			self.set_position(gtk.WIN_POS_CENTER)
+		if w > 0 or h > 0:
+			self.resize(w, h)
+		else:
+			self.resize(900, 500)
+		
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
 
@@ -101,7 +111,8 @@ class Gui(gtk.Window, Core):
 		menu_about = gtk.STOCK_ABOUT, lambda x: About(self)
 		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
 		menu_log = _("Show Logs"), lambda x: LogView(self, log_stream)
-		show_uploads = gtk.CheckMenuItem(_("Show Uploads")), self.resize_pane, self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS)
+		self.show_uploads = gtk.CheckMenuItem(_("Show Uploads"))
+		show_uploads = self.show_uploads, self.resize_pane, self.configuration.get_show_uploads()
 		shutdown = gtk.CheckMenuItem(_("Shutdown Computer")), self.shutdown, False
 		
 		m_file = _("File")
@@ -175,15 +186,7 @@ class Gui(gtk.Window, Core):
 
 		#sessions
 		self.session = Sessions()
-		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
-			self.load_default_session()
-		else:
-			if os.path.exists(cons.SESSION_FILE):
-				title = _("Tucan Manager - Restore previous session.")
-				message = _("Your last session closed unexpectedly.\nTucan will try to restore it now.")
-				m = Message(None, cons.SEVERITY_WARNING, title, message, both=True)
-				if m.accepted:
-					self.load_default_session()
+		self.load_default_session()
 
 		#pane
 		self.pane = gtk.VPaned()
@@ -194,7 +197,7 @@ class Gui(gtk.Window, Core):
 
 		self.connect("key-press-event", self.delete_key)
 
-		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE):
+		if self.configuration.get_tray_close():
 			self.connect("delete_event", self.hide_on_delete)
 		else:
 			self.connect("delete_event", self.quit)
@@ -202,7 +205,7 @@ class Gui(gtk.Window, Core):
 		self.show_all()
 
 		#Autocheck services
-		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_AUTO_UPDATE):
+		if self.configuration.get_auto_update():
 			th = threading.Thread(group=None, target=self.check_updates, name=None)
 			th.start()
 
@@ -261,8 +264,7 @@ class Gui(gtk.Window, Core):
 	def add_links(self, button):
 		""""""
 		default_path = self.configuration.get_downloads_folder()
-		show_advanced_packages = self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES)
-		InputLinks(self, default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, show_advanced_packages)
+		InputLinks(self, default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages)
 
 	def copy_clipboard(self, button):
 		""""""
@@ -409,17 +411,15 @@ class Gui(gtk.Window, Core):
 
 	def close(self):
 		""""""
+		x, y = self.get_position()
+		w, h = self.get_size()
 		self.hide()
 		if self.tray_icon:
 			self.tray_icon.close()
 		gtk.main_quit()
-
-		if self.configuration.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION):
-			self.save_default_session()
-		else:
-			try:
-				os.remove(cons.SESSION_FILE)
-			except Exception, e:
-				logger.info(e)
+		#save ui configuration
+		self.configuration.set_show_uploads(self.show_uploads.get_active())
+		self.configuration.set_window_settings(x, y, w, h)
+		self.configuration.save()
+		self.save_default_session()
 		self.stop_all()
-		tucan_exit(0)
