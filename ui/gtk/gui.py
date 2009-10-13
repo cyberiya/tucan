@@ -196,11 +196,10 @@ class Gui(gtk.Window, Core):
 		self.pane.set_position(self.get_size()[1])
 
 		self.connect("key-press-event", self.delete_key)
-
-		if self.configuration.get_tray_close():
-			self.connect("delete_event", self.hide_on_delete)
-		else:
-			self.connect("delete_event", self.quit)
+		
+		#tray_close
+		self.close_handler_id = None
+		self.toggle_tray_close(self.configuration.get_tray_close())
 
 		self.show_all()
 
@@ -211,6 +210,15 @@ class Gui(gtk.Window, Core):
 
 		#ugly polling
 		gobject.timeout_add(120000, self.save_default_session)
+		
+	def toggle_tray_close(self, hide):
+		""""""
+		if self.close_handler_id:
+			self.disconnect(self.close_handler_id)
+		if hide:
+			self.close_handler_id = self.connect("delete_event", self.hide_on_delete)
+		else:
+			self.close_handler_id = self.connect("delete_event", self.quit)
 
 	def check_updates(self):
 		""""""
@@ -235,7 +243,8 @@ class Gui(gtk.Window, Core):
 		""""""
 		if not self.preferences_shown:
 			self.preferences_shown = True
-			Preferences(self, self.configuration)
+			p = Preferences(self, self.configuration)
+			self.toggle_tray_close(p.tray_close.get_active())
 			self.downloads.status_bar.synchronize()
 			self.preferences_shown =  False
 
