@@ -69,6 +69,8 @@ class ServiceManager:
 					elif plugin_type == cons.TYPE_PREMIUM:
 						s.premium_upload_plugin = eval("module" + "." + plugin_name + "(config)")
 				self.services.append(s)
+		if len(self.services) == 0:
+			logger.warning("No services loaded!")
 
 	def get_download_plugin(self, service_name):
 		""""""
