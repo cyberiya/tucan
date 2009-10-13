@@ -31,13 +31,13 @@ def set_proxy(url, port=0):
 	""""""
 	if url:
 		__builtin__.PROXY = {"http": "%s:%i" % (url, port)}
-		socket.setdefaulttimeout(30)
+		socket.setdefaulttimeout(60)
 		logger.info("Using proxy: %s:%i" % (url, port))
 	else:
 		if __builtin__.PROXY:
 			__builtin__.PROXY = None
-			socket.setdefaulttimeout(60)
 			logger.info("Proxy Disabled.")
+		socket.setdefaulttimeout(30)
 
 class URLOpen:
 	""""""
