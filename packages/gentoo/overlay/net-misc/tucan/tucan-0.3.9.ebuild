@@ -20,6 +20,7 @@ DEPEND="dev-lang/python
 		gnome-base/librsvg"
 
 src_compile() {
+	epatch "${FILESDIR}"/shutdown_typo.patch
 	sed -i \
 		-e '/^DESTDIR/d' \
 		Makefile || die "sed failed"
