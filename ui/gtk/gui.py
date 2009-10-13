@@ -55,6 +55,9 @@ import media
 import core.cons as cons
 import core.config as config
 
+MIN_WIDTH = 250
+MIN_HEIGHT = 200
+
 class Gui(gtk.Window, Core):
 	""""""
 	def __init__(self, conf):
@@ -88,6 +91,7 @@ class Gui(gtk.Window, Core):
 
 		self.set_icon_from_file(media.ICON_TUCAN)
 		self.set_title("%s - Version: %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
+		self.set_size_request(MIN_WIDTH, MIN_HEIGHT)
 		
 		#remember position and size
 		x, y, w, h = self.configuration.get_window_settings()
@@ -95,7 +99,7 @@ class Gui(gtk.Window, Core):
 			self.move(x,y)
 		else:
 			self.set_position(gtk.WIN_POS_CENTER)
-		if w > 0 or h > 0:
+		if w > 0 and h > 0:
 			self.resize(w, h)
 		else:
 			self.resize(900, 500)
