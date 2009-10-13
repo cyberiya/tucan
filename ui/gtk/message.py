@@ -57,7 +57,7 @@ class Message(gtk.Dialog):
 	def __init__(self, parent, severity, title, message, accept=False, both=False, run=True):
 		""""""
 		gtk.Dialog.__init__(self)
-		self.set_title(title)
+		self.set_title("%s - %s" % (cons.TUCAN_NAME, title))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_resizable(False)
 		self.set_transient_for(parent)
@@ -111,4 +111,4 @@ class Message(gtk.Dialog):
 		self.destroy()
 
 if __name__ == "__main__":
-	m = Message(None, cons.SEVERITY_WARNING, "Tucan Manager - Restore previous session.", "Your last session closed unexpectedly.\nTucan will try to restore it now.", both=True)
+	m = Message(None, cons.SEVERITY_WARNING, "Restore previous session.", "Your last session closed unexpectedly.\nTucan will try to restore it now.", both=True)

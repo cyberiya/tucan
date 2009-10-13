@@ -118,13 +118,13 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.get_updates()
 		if self.remote_version == None:
 			message = "Update Manager can't connect to server.\nTry again later."
-			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Not available!", message)
+			Message(self, cons.SEVERITY_ERROR, "Not available!", message)
 			gobject.idle_add(self.close)
 		elif self.remote_version.split(" ")[0] <= cons.TUCAN_VERSION.split(" ")[0]:
 			self.check_updates()
 		else:
 			message = "Version %s released!\nPlease update and enjoy new services." % self.server_version
-			Message(self, cons.SEVERITY_ERROR, "Tucan Manager - Outdated!", message)
+			Message(self, cons.SEVERITY_ERROR, "Outdated!", message)
 			gobject.idle_add(self.close)
 
 	def toggled(self, button, path):
@@ -199,7 +199,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 			
 	def restart(self, message):
 		""""""
-		Message(self.parent_widget, cons.SEVERITY_WARNING, "Tucan Manager - Restart Needed.", message)
+		Message(self.parent_widget, cons.SEVERITY_WARNING, "Restart Needed.", message)
 
 	def close(self, widget=None, other=None):
 		""""""
