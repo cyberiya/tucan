@@ -18,6 +18,8 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import webbrowser
+
 import pygtk
 pygtk.require('2.0')
 import gtk
@@ -56,9 +58,14 @@ class About(gtk.AboutDialog):
 		self.set_copyright(COPYRIGHT)
 		self.set_license(LICENSE)
 		self.set_website(cons.WEBPAGE)
+		gtk.about_dialog_set_url_hook(self.show_homepage)
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
+		
+	def show_homepage(self, widget, url):
+		""""""
+		webbrowser.open(url)
 
 	def close(self, widget=None, other=None):
 		""""""
