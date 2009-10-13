@@ -247,7 +247,7 @@ class InputLinks(gtk.Dialog):
 				self.packages(packages, [])
 				self.close()
 		else:		
-			title = _("Input Links - Nothing to add.")
+			title = _("Nothing to add.")
 			message = _("There aren't links to add.\nPlease check the links before adding.")
 			m = Message(self, cons.SEVERITY_INFO, title, message, both=True)
 			if not m.accepted:
