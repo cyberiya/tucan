@@ -18,7 +18,6 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import __builtin__
 import logging
 logger = logging.getLogger(__name__)
 
@@ -92,17 +91,14 @@ class Preferences(gtk.Dialog):
 
 	def save(self, button):
 		""""""
-		self.config.set(config.SECTION_MAIN, config.OPTION_LANGUAGE, [lang[1] for lang in LANGUAGES][self.language.get_active()])
-
-		#live changes
-		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS, str(self.max_downloads.get_value_as_int()))
-		__builtin__.max_downloads = self.max_downloads.get_value_as_int()
-		self.config.set(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOAD_SPEED, str(self.max_download_speed.get_value_as_int()))
-		__builtin__.max_download_speed = self.max_download_speed.get_value_as_int()
-
-		#self.config.set(config.SECTION_MAIN, config.OPTION_MAX_UPLOADS, str(self.max_uploads.get_value_as_int()))
+		#main_preferences
+		self.config.set_languaje([lang[1] for lang in LANGUAGES][self.language.get_active()])
+		self.config.set_max_downloads(self.max_downloads.get_value_as_int())
+		self.config.set_max_download_speed(self.max_download_speed.get_value_as_int())
+		#self.config.set_max_uploads(self.max_uploads.get_value_as_int())
 		self.config.set_downloads_folder(self.downloads_folder.get_label())
-
+		
+		#service_preferences
 		model = self.treeview.get_model()
 		iter = model.get_iter_root()
 		while iter:
@@ -112,14 +108,11 @@ class Preferences(gtk.Dialog):
 				self.config.set(config.SECTION_SERVICES, model.get_value(iter,1), configuration.path)
 			iter = model.iter_next(iter)
 
-		self.config.set(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE, str(self.tray_close.get_active()))
-		self.config.set(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES, str(self.advanced_packages.get_active()))
-		self.config.set(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION, str(self.save_session.get_active()))
-		self.config.set(config.SECTION_ADVANCED, config.OPTION_AUTO_UPDATE, str(self.auto_update.get_active()))
-		self.config.set(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS, str(self.show_uploads.get_active()))
-		self.config.set(config.SECTION_ADVANCED, config.OPTION_ENABLE_PROXY, str(self.enable_proxy.get_active()))
-		self.config.set(config.SECTION_ADVANCED, config.OPTION_PROXY_URL, self.proxy_url.get_text())
-		self.config.set(config.SECTION_ADVANCED, config.OPTION_PROXY_PORT, str(self.proxy_port.get_value_as_int()))
+		#advanced preferences
+		self.config.set_tray_close(self.tray_close.get_active())
+		self.config.set_auto_update(self.auto_update.get_active())
+		self.config.set_proxy_enabled(self.enable_proxy.get_active())
+		self.config.set_proxy(self.proxy_url.get_text(), self.proxy_port.get_value_as_int())
 
 		#change proxy settings
 		if self.enable_proxy.get_active():
@@ -161,7 +154,7 @@ class Preferences(gtk.Dialog):
 		self.language = gtk.combo_box_new_text()
 		for lang in [lang[0] for lang in LANGUAGES]:
 			self.language.append_text(lang)
-		self.language.set_active([lang[1] for lang in LANGUAGES].index(self.config.get(config.SECTION_MAIN, config.OPTION_LANGUAGE)))
+		self.language.set_active([lang[1] for lang in LANGUAGES].index(self.config.get_languaje()))
 		hbox.pack_start(self.language, False, False, 10)
 
 		frame = gtk.Frame()
@@ -180,7 +173,7 @@ class Preferences(gtk.Dialog):
 		self.max_downloads.set_range(1,20)
 		self.max_downloads.set_increments(1,0)
 		self.max_downloads.set_numeric(True)
-		self.max_downloads.set_value(self.config.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS))
+		self.max_downloads.set_value(self.config.get_max_downloads())
 		hbox.pack_start(self.max_downloads, False, False, 10)
 		vbox1.pack_start(hbox, False, False, 2)
 		hbox = gtk.HBox()
@@ -193,7 +186,7 @@ class Preferences(gtk.Dialog):
 		self.max_download_speed.set_range(0,5000)
 		self.max_download_speed.set_increments(4,0)
 		self.max_download_speed.set_numeric(True)
-		self.max_download_speed.set_value(self.config.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOAD_SPEED))
+		self.max_download_speed.set_value(self.config.get_max_download_speed())
 		hbox.pack_start(self.max_download_speed, False, False, 10)
 		vbox1.pack_start(hbox, False, False, 2)
 		#hbox = gtk.HBox()
@@ -206,7 +199,7 @@ class Preferences(gtk.Dialog):
 		#self.max_uploads.set_range(1,10)
 		#self.max_uploads.set_increments(1,0)
 		#self.max_uploads.set_numeric(True)
-		#self.max_uploads.set_value(self.config.getint(config.SECTION_MAIN, config.OPTION_MAX_UPLOADS))
+		#self.max_uploads.set_value(self.config.get_max_uploads())
 		#hbox.pack_start(self.max_uploads, False, False, 10)
 		#vbox1.pack_start(hbox, False, False, 2)
 
@@ -381,35 +374,32 @@ class Preferences(gtk.Dialog):
 
 		self.tray_close = gtk.CheckButton(_("Close to tray."))
 		vbox.pack_start(self.tray_close, False, False, 5)
-		self.tray_close.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_TRAY_CLOSE))
+		self.tray_close.set_active(self.config.get_tray_close())
 
-		self.save_session = gtk.CheckButton(_("Save session on close."))
-		vbox.pack_start(self.save_session, False, False, 5)
-		self.save_session.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_SAVE_SESSION))
-
-		self.advanced_packages = gtk.CheckButton(_("Default advanced packages."))
-		vbox.pack_start(self.advanced_packages, False, False, 5)
-		self.advanced_packages.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_ADVANCED_PACKAGES))
+		#self.advanced_packages = gtk.CheckButton(_("Default advanced packages."))
+		#vbox.pack_start(self.advanced_packages, False, False, 5)
+		#self.advanced_packages.set_active(self.config.getboolean(config.SECTION_UI, config.OPTION_ADVANCED_PACKAGES))
 
 		self.auto_update = gtk.CheckButton(_("Automatic check for updates."))
 		vbox.pack_start(self.auto_update, False, False, 5)
-		self.auto_update.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_AUTO_UPDATE))
+		self.auto_update.set_active(self.config.get_auto_update())
 
-		self.show_uploads = gtk.CheckButton(_("Show uploads."))
-		vbox.pack_start(self.show_uploads, False, False, 5)
-		self.show_uploads.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS))
+		#self.show_uploads = gtk.CheckButton(_("Show uploads."))
+		#vbox.pack_start(self.show_uploads, False, False, 5)
+		#self.show_uploads.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_SHOW_UPLOADS))
 
 		self.enable_proxy = gtk.CheckButton(_("Enable proxy:"))
 		vbox.pack_start(self.enable_proxy, False, False, 5)
-		self.enable_proxy.set_active(self.config.getboolean(config.SECTION_ADVANCED, config.OPTION_ENABLE_PROXY))
+		self.enable_proxy.set_active(self.config.get_proxy_enabled())
 		self.enable_proxy.connect("toggled", self.change_state)
 
+		url, port = self.config.get_proxy()
 		self.proxy_box = gtk.HBox()
 		vbox.pack_start(self.proxy_box, False, False, 5)
 		self.proxy_box.pack_start(gtk.Label("HTTP Proxy:"), False, False, 5)
 		self.proxy_url = gtk.Entry()
 		self.proxy_box.pack_start(self.proxy_url, True, True, 5)
-		self.proxy_url.set_text(self.config.get(config.SECTION_ADVANCED, config.OPTION_PROXY_URL))
+		self.proxy_url.set_text(url)
 
 		self.proxy_box.pack_start(gtk.Label("Port:"), False, False, 5)
 		self.proxy_port = gtk.SpinButton(None, 1, 0)
@@ -417,7 +407,7 @@ class Preferences(gtk.Dialog):
 		self.proxy_port.set_range(0,65535)
 		self.proxy_port.set_increments(1,0)
 		self.proxy_port.set_numeric(True)
-		self.proxy_port.set_value(self.config.getint(config.SECTION_ADVANCED, config.OPTION_PROXY_PORT))
+		self.proxy_port.set_value(port)
 
 		self.change_state()
 

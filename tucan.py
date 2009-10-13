@@ -87,6 +87,8 @@ class Tucan:
 			#print "REPORT ID: %s" % misc.report_log("Automatic", str(e))
 			print "Unhandled Error! Check the log file for details."
 			self.exit(-1)
+		else:
+			self.exit()
 			
 	def set_verbose(self, severity=logging.INFO):
 		""""""
@@ -148,16 +150,14 @@ class Tucan:
 
 	def set_globals(self, options):
 		""""""		
-		#custom exit
-		__builtin__.tucan_exit = self.exit
-
 		#proxy settings
 		__builtin__.PROXY = None
-		proxy_url, proxy_port = configuration.get_proxy()
-		url_open.set_proxy(proxy_url, proxy_port)
+		if configuration.get_proxy_enabled():
+			proxy_url, proxy_port = configuration.get_proxy()
+			url_open.set_proxy(proxy_url, proxy_port)
 		
-		__builtin__.max_downloads = configuration.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOADS)
-		__builtin__.max_download_speed = configuration.getint(config.SECTION_MAIN, config.OPTION_MAX_DOWNLOAD_SPEED)
+		__builtin__.max_downloads = configuration.get_max_downloads()
+		__builtin__.max_download_speed = configuration.get_max_download_speed()
 
 	def exception_hook(self, type, value, trace):
 		""""""

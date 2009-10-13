@@ -18,9 +18,12 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import uuid
 import os
+import uuid
 import shutil
+import __builtin__
+import logging
+logger = logging.getLogger(__name__)
 
 from ConfigParser import SafeConfigParser
 
@@ -35,29 +38,35 @@ COMMENT = """# Tucan Manager's default configuration.
 
 SECTION_MAIN = "main"
 SECTION_SERVICES = "services"
+SECTION_UI = "ui"
 SECTION_ADVANCED = "advanced"
 
+#main options
 OPTION_VERSION = "version"
 OPTION_UUID = "uuid"
 
 OPTION_LANGUAGE = "language"
 OPTION_MAX_DOWNLOADS = "max_downloads"
 OPTION_MAX_DOWNLOAD_SPEED = "max_download_speed"
-OPTION_MAX_UPLOADS = "max_uploads"
+#OPTION_MAX_UPLOADS = "max_uploads"
 OPTION_DOWNLOADS_FOLDER = "downloads_folder"
 
+#ui options
 OPTION_TRAY_CLOSE = "tray_close"
+OPTION_WINDOW_SETTINGS = "window_settings"
 OPTION_ADVANCED_PACKAGES = "advanced_packages"
-OPTION_SAVE_SESSION = "save_session"
-OPTION_AUTO_UPDATE = "auto_update"
 OPTION_SHOW_UPLOADS = "show_uploads"
+
+#advanced options
+OPTION_AUTO_UPDATE = "auto_update"
 OPTION_ENABLE_PROXY = "enable_proxy"
 OPTION_PROXY_URL = "proxy_url"
 OPTION_PROXY_PORT = "proxy_port"
 
-DEFAULTS = {SECTION_MAIN: {OPTION_VERSION: cons.TUCAN_VERSION, OPTION_LANGUAGE: "en", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_DOWNLOAD_SPEED: "0", OPTION_MAX_UPLOADS: "5", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH.encode("utf-8")}
+DEFAULTS = {SECTION_MAIN: {OPTION_VERSION: cons.TUCAN_VERSION, OPTION_LANGUAGE: "en", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_DOWNLOAD_SPEED: "0", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH.encode("utf-8")}
 	, SECTION_SERVICES: {}
-	, SECTION_ADVANCED: {OPTION_TRAY_CLOSE: "False", OPTION_SAVE_SESSION: "True", OPTION_ADVANCED_PACKAGES: "False", OPTION_AUTO_UPDATE: "True",OPTION_SHOW_UPLOADS: "False", OPTION_ENABLE_PROXY: "False", OPTION_PROXY_URL: "", OPTION_PROXY_PORT: "0"}}
+	, SECTION_UI: {OPTION_TRAY_CLOSE: "False", OPTION_WINDOW_SETTINGS: "-1,-1,-1,-1", OPTION_ADVANCED_PACKAGES: "False",OPTION_SHOW_UPLOADS: "False"}
+	, SECTION_ADVANCED: {OPTION_AUTO_UPDATE: "True", OPTION_ENABLE_PROXY: "False", OPTION_PROXY_URL: "", OPTION_PROXY_PORT: "0"}}
 
 class Config(SafeConfigParser):
 	""""""
@@ -114,6 +123,11 @@ class Config(SafeConfigParser):
 		#set uuid
 		self.set(SECTION_MAIN, OPTION_UUID, str(uuid.uuid1()))
 		self.save()
+
+	def get_version(self):
+		""""""
+		if self.has_option(SECTION_MAIN, OPTION_VERSION):
+			return self.get(SECTION_MAIN, OPTION_VERSION)
 		
 	def get_uuid(self):
 		""""""
@@ -125,6 +139,32 @@ class Config(SafeConfigParser):
 			self.save()
 			return new_uuid
 			
+	def get_languaje(self):
+		""""""
+		return self.get(SECTION_MAIN, OPTION_LANGUAGE)
+
+	def set_languaje(self, value):
+		""""""
+		self.set(SECTION_MAIN, OPTION_LANGUAGE, value)
+
+	def get_max_downloads(self):
+		""""""
+		return self.getint(SECTION_MAIN, OPTION_MAX_DOWNLOADS)
+
+	def set_max_downloads(self, value):
+		""""""
+		self.set(SECTION_MAIN, OPTION_MAX_DOWNLOADS, str(value))
+		__builtin__.max_downloads = value
+		
+	def get_max_download_speed(self):
+		""""""
+		return self.getint(SECTION_MAIN, OPTION_MAX_DOWNLOAD_SPEED)
+
+	def set_max_download_speed(self, value):
+		""""""
+		self.set(SECTION_MAIN, OPTION_MAX_DOWNLOAD_SPEED, str(value))
+		__builtin__.max_download_speed = value
+		
 	def get_downloads_folder(self):
 		""""""
 		if self.has_option(SECTION_MAIN, OPTION_DOWNLOADS_FOLDER):
@@ -135,7 +175,81 @@ class Config(SafeConfigParser):
 	def set_downloads_folder(self, path):
 		""""""
 		self.set(SECTION_MAIN, OPTION_DOWNLOADS_FOLDER, path.encode("utf-8"))
+		
+	def get_tray_close(self):
+		""""""
+		return self.getboolean(SECTION_UI, OPTION_TRAY_CLOSE)
+
+	def set_tray_close(self, value):
+		""""""
+		self.set(SECTION_UI, OPTION_TRAY_CLOSE, str(value))
+				
+	def get_window_settings(self):
+		""""""
+		if self.has_option(SECTION_UI, OPTION_WINDOW_SETTINGS):
+			tmp = self.get(SECTION_UI, OPTION_WINDOW_SETTINGS)
+			try:
+				x, y, w, h = tmp.split(",")
+				x = int(x)
+				y = int(y)
+				w = int(w)
+				h = int(h)
+			except:
+				logger.warning("Wrong window settings!: %s" % tmp)
+				return -1, -1, -1, -1
+			return x, y, w, h
+		else:
+			return -1, -1, -1, -1
 			
+	def set_window_settings(self, x, y, w, h):
+		""""""
+		self.set(SECTION_UI, OPTION_WINDOW_SETTINGS, "%i,%i,%i,%i" % (x, y, w, h))
+
+	def get_advanced_packages(self):
+		""""""
+		return self.getboolean(SECTION_UI, OPTION_ADVANCED_PACKAGES)
+
+	def set_advanced_packages(self, value):
+		""""""
+		self.set(SECTION_UI, OPTION_ADVANCED_PACKAGES, str(value))
+		
+	def get_show_uploads(self):
+		""""""
+		return self.getboolean(SECTION_UI, OPTION_SHOW_UPLOADS)
+
+	def set_show_uploads(self, value):
+		""""""
+		self.set(SECTION_UI, OPTION_SHOW_UPLOADS, str(value))
+
+	def get_auto_update(self):
+		""""""
+		return self.getboolean(SECTION_ADVANCED, OPTION_AUTO_UPDATE)
+
+	def set_auto_update(self, value):
+		""""""
+		self.set(SECTION_ADVANCED, OPTION_AUTO_UPDATE, str(value))
+
+	def get_proxy_enabled(self):
+		""""""
+		return self.getboolean(SECTION_ADVANCED, OPTION_ENABLE_PROXY)
+
+	def set_proxy_enabled(self, value):
+		""""""
+		self.set(SECTION_ADVANCED, OPTION_ENABLE_PROXY, str(value))
+
+	def get_proxy(self):
+		""""""
+		result = "", 0
+		if self.has_section(SECTION_ADVANCED):
+			if self.getboolean(SECTION_ADVANCED, OPTION_ENABLE_PROXY):
+				result = self.get(SECTION_ADVANCED, OPTION_PROXY_URL), self.getint(SECTION_ADVANCED, OPTION_PROXY_PORT)
+		return result
+		
+	def set_proxy(self, url, port):
+		""""""
+		self.set(SECTION_ADVANCED, OPTION_PROXY_URL, url)
+		self.set(SECTION_ADVANCED, OPTION_PROXY_PORT, str(port))
+
 	def get_services(self):
 		""""""
 		result = []
@@ -152,14 +266,6 @@ class Config(SafeConfigParser):
 			name = config.get(service_config.SECTION_MAIN, service_config.OPTION_NAME)
 			enabled = config.getboolean(service_config.SECTION_MAIN, service_config.OPTION_ENABLED)
 			result = os.path.split(os.path.split(path)[0])[1], icon, name, enabled, config
-		return result
-
-	def get_proxy(self):
-		""""""
-		result = None, None
-		if self.has_section(SECTION_ADVANCED):
-			if self.getboolean(SECTION_ADVANCED, OPTION_ENABLE_PROXY):
-				result = self.get(SECTION_ADVANCED, OPTION_PROXY_URL), self.getint(SECTION_ADVANCED, OPTION_PROXY_PORT)
 		return result
 
 	def save(self, comment=True):

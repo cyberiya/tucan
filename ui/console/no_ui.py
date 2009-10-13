@@ -97,4 +97,3 @@ class NoUi(Core):
 	def quit(self):
 		""""""
 		self.stop_all()
-		tucan_exit(0)
