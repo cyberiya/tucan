@@ -301,7 +301,7 @@ class Gui(gtk.Window, Core):
 
 	def session_error(self):
 		""""""
-		title = _("Tucan Manager - Session Error.")
+		title = _("Session Error.")
 		message = _("There was a problem loading the last session. Links are unrecoverable.")
 		Message(self, cons.SEVERITY_ERROR, title, message)
 
@@ -413,7 +413,7 @@ class Gui(gtk.Window, Core):
 		""""""
 		if len(self.download_manager.active_downloads) > 0:
 			message = "Tucan still has active downloads.\n Are you sure you want to quit?"
-			m = Message(self, cons.SEVERITY_WARNING, "Tucan Manager - Active Downloads.", message, True, True)
+			m = Message(self, cons.SEVERITY_WARNING, "Active Downloads.", message, True, True)
 			if m.accepted:
 				self.close()
 			else:

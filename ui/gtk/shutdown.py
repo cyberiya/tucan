@@ -37,7 +37,7 @@ class Shutdown:
 	def __init__(self, parent, quit):
 		""""""
 		self.time = 60
-		title = "Tucan Manager - Shutting down!"
+		title = "Shutting down!"
 		self.message = "The system is going to shut down in"
 		self.dialog = Message(parent, cons.SEVERITY_WARNING, title, "%s 1 minute." % self.message, True, True, False)
 		gobject.timeout_add(1000, self.counter)
