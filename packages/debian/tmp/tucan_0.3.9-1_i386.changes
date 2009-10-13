@@ -20,25 +20,25 @@ Changes:
    * debian-policy updated to 3.8.3
    * Solved shutdown typo r1282
 Checksums-Sha1: 
- e4852f8a71cb80dc20f7df33766b0a33e6220a6c 969 tucan_0.3.9-1.dsc
+ 4ad22e3ac4db09e9255174912623b2914634d3da 969 tucan_0.3.9-1.dsc
  c2aa4447a6a802c975b218815648536814ea2ae4 338109 tucan_0.3.9.orig.tar.gz
- d5bb7b453d3a1c7ca36662bc39a87e7ded8f44c1 2505 tucan_0.3.9-1.diff.gz
- e4ea2e83c6797c0d8307d1712f5e7e22e5d10202 184960 tucan_0.3.9-1_all.deb
+ 0e7136c1771fdb7ab4e016754a87dfe5d82cdec9 2495 tucan_0.3.9-1.diff.gz
+ f0d2c75a583a773bb7ef13bc1d0048d2c65857d1 184948 tucan_0.3.9-1_all.deb
 Checksums-Sha256: 
- f6610c67692dc8decec6db2cbd5b754595ffc4f2493de4fef91642da6234c3c8 969 tucan_0.3.9-1.dsc
+ 8dc203ec4418400dfa9a117fe924949dd25b9d7151d501702855f20fb5edd324 969 tucan_0.3.9-1.dsc
  ec1cb4f28b444af36389be5f5080774f2bd90ef55d3a9a3b748cbe16eef1cab5 338109 tucan_0.3.9.orig.tar.gz
- 7ec346c21b6dc578cff80ac61dd3e73bf180b31b22b96a9ec927e3668a6ac165 2505 tucan_0.3.9-1.diff.gz
- d4e6a59fda47071b4505c4702cf59004152b611195b4712a74014a3e320a9db1 184960 tucan_0.3.9-1_all.deb
+ 5c63c5b20187f224e318dffb347507131260811f1394d7eb0703d9c853b79ebf 2495 tucan_0.3.9-1.diff.gz
+ 37459d2ac30750dd99f699ea10a0edc154db145161a28567df83dd72e072689c 184948 tucan_0.3.9-1_all.deb
 Files: 
- e9cd4ba5369df0eb93e0f79d4f62158c 969 net optional tucan_0.3.9-1.dsc
+ 034319d49f4fddae9847a0db88d7b976 969 net optional tucan_0.3.9-1.dsc
  1c085c71eea6e64af1e52f3a8e8d0905 338109 net optional tucan_0.3.9.orig.tar.gz
- 3e782373e1b9aad49fdb028261414225 2505 net optional tucan_0.3.9-1.diff.gz
- b8d15d6eccf2c65e1f79a0cda6b728b1 184960 net optional tucan_0.3.9-1_all.deb
+ d10830d747f893341d642406c247c9d0 2495 net optional tucan_0.3.9-1.diff.gz
+ b340729cd686dae5606e5bcda6807c4c 184948 net optional tucan_0.3.9-1_all.deb
 
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.10 (GNU/Linux)
 
-iEYEARECAAYFAkrU7nAACgkQ7EXKTG+aztb/vQCeLUGXf4wcDUkJ2dcGRrH3rwdg
-TE4An0OnhAZngB57BbKc/oUw8j8ZUoFw
-=Y8WG
+iEYEARECAAYFAkrU8E8ACgkQ7EXKTG+aztYDewCfT1i+Dfy8JL+PFpOVY2EwEntt
+RpcAnj6S2KPFaESY9Eq2o5JcKQPk+iiT
+=gSO/
 -----END PGP SIGNATURE-----
