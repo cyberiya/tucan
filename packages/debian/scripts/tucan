@@ -1,2 +1,3 @@
 #!/bin/sh
-python /usr/share/tucan/tucan.py
+shift
+python /usr/share/tucan/tucan.py $@
