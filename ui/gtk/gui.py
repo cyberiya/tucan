@@ -95,7 +95,7 @@ class Gui(gtk.Window, Core):
 		
 		#remember position and size
 		x, y, w, h = self.configuration.get_window_settings()
-		if gtk.gdk.screen_width() == w:
+		if gtk.gdk.screen_width() <= w or gtk.gdk.screen_height() <= h:
 			self.maximize()
 		elif w > MIN_WIDTH and h > MIN_HEIGHT:
 			self.resize(w, h)
@@ -429,7 +429,6 @@ class Gui(gtk.Window, Core):
 		""""""
 		x, y = self.get_position()
 		w, h = self.get_size()
-		print x, y, w, h
 		self.hide()
 		if self.tray_icon:
 			self.tray_icon.close()
