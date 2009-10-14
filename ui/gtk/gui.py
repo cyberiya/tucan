@@ -95,14 +95,17 @@ class Gui(gtk.Window, Core):
 		
 		#remember position and size
 		x, y, w, h = self.configuration.get_window_settings()
-		if x >= 0 and y >= 0:
-			self.move(x,y)
-		else:
-			self.set_position(gtk.WIN_POS_CENTER)
-		if w > 0 and h > 0:
+		if gtk.gdk.screen_width() == w:
+			self.maximize()
+		elif w > MIN_WIDTH and h > MIN_HEIGHT:
 			self.resize(w, h)
+			if x >= 0 and y >= 0:
+				self.move(x,y)
+			else:
+				self.set_position(gtk.WIN_POS_CENTER)
 		else:
 			self.resize(900, 500)
+			self.set_position(gtk.WIN_POS_CENTER)
 		
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
@@ -426,6 +429,7 @@ class Gui(gtk.Window, Core):
 		""""""
 		x, y = self.get_position()
 		w, h = self.get_size()
+		print x, y, w, h
 		self.hide()
 		if self.tray_icon:
 			self.tray_icon.close()
