@@ -40,6 +40,7 @@ import media
 import core.cons as cons
 
 LANGUAGES = [	("Czech", "cs"),
+		("Danish", "da"),
 		("English", "en"),
 		("French", "fr"),
 		("German", "de"),
