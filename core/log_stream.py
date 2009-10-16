@@ -18,6 +18,8 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+SEVERITY = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+
 class LogStream:
 	""""""
 	def __init__(self):
@@ -27,7 +29,11 @@ class LogStream:
 
 	def write(self, message):
 		""""""
-		self.new_buffer.append(str(message))
+		for line in message.split("\n"):
+			for s in SEVERITY:
+				if s in line:
+					self.new_buffer.append(str(line))
+					break
 		
 	def flush(self):
 		""""""

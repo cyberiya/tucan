@@ -28,10 +28,11 @@ import gobject
 
 from report import Report
 
+from core.log_stream import SEVERITY
+
 import media
 import core.cons as cons
 
-SEVERITY = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 COLORS = {"DEBUG": "grey", "INFO": "green", "WARNING": "yellow", "ERROR": "red", "CRITICAL": "white"}
 
 class LogView(gtk.Dialog):
