@@ -155,6 +155,8 @@ class Tucan:
 		if configuration.get_proxy_enabled():
 			proxy_url, proxy_port = configuration.get_proxy()
 			url_open.set_proxy(proxy_url, proxy_port)
+		else:
+			url_open.set_proxy(None)
 		
 		__builtin__.max_downloads = configuration.get_max_downloads()
 		__builtin__.max_download_speed = configuration.get_max_download_speed()
