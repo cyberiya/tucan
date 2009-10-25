@@ -47,7 +47,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				if self.start(path, parser.link, file_name, WAIT):
 					return True
 				else:
-					logger.warning("Limit Exceded.")
+					logger.warning("Limit Exceeded.")
 					self.add_wait()
 					self.return_slot()
 

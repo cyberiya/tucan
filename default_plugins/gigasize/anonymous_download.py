@@ -81,7 +81,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 					for line in self.opener.open("http://www.gigasize.com/formdownload.php", data).readlines():
 						if '<div id="askPws" style="display:block">' in line:
 							retry = False
-							logger.warning("Limit Exceded.")
+							logger.warning("Limit Exceeded.")
 							self.add_wait()
 							self.return_slot()
 						elif '<div id="askPws2" style="display:block">' in line:

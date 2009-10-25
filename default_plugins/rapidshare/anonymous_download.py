@@ -81,7 +81,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			else:
 				self.add_wait()
 				self.return_slot()
-				logger.warning("Limit Exceded.")
+				logger.warning("Limit Exceeded.")
 
 	def delete(self, file_name):
 		""""""

@@ -46,7 +46,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				if self.start(path, parser.link, file_name, None, None, self.post_wait):
 					return True
 			else:
-				logger.warning("Limit Exceded.")
+				logger.warning("Limit Exceeded.")
 				self.add_wait()
 				self.return_slot()
 
@@ -54,7 +54,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		"""Must return handle"""
 		handle = URLOpen().open(link)
 		if "text/html" in handle.info().getheader("Content-Type"):
-			logger.warning("Limit Exceded.")
+			logger.warning("Limit Exceeded.")
 			self.add_wait()
 			self.return_slot()
 		else:
