@@ -41,7 +41,8 @@ else:
 	OS_UNIX = True
 
 #user agent
-USER_AGENT = "Mozilla/5.0 (X11; U; Linux i686) Gecko/20090919 Firefox/3.5.3"
+USER_AGENT = "Mozilla/5.0 (X11; U; Linux i686; en-US) Gecko/20090919 Firefox/3.5.3"
+
 
 #status constants
 STATUS_PEND = "pending"
