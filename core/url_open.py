@@ -48,12 +48,15 @@ class URLOpen:
 		else:
 			self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 
-	def open(self, url, form=None):
+	def open(self, url, form=None, range=None):
 		""""""
+		headers = {"User-Agent": cons.USER_AGENT}
+		if range:
+			headers["Range"] = "bytes=%s-" % starting
 		if form:
-			return self.opener.open(urllib2.Request(url, None, cons.USER_AGENT), form)
+			return self.opener.open(urllib2.Request(url, None, headers), form)
 		else:
-			return self.opener.open(urllib2.Request(url, None, cons.USER_AGENT))
+			return self.opener.open(urllib2.Request(url, None, headers))
 
 if __name__ == "__main__":
 	PROXY = {"http": "proxy.alu.uma.es:3128"}

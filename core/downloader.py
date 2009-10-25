@@ -107,6 +107,7 @@ class Downloader(threading.Thread):
 						self.stop_flag = True
 						if self.actual_size == self.total_size:
 							os.rename("%s.part" % name, name)
+							#windows bug!
 							self.status = cons.STATUS_CORRECT
 						else:
 							self.status = cons.STATUS_ERROR
