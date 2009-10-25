@@ -57,7 +57,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		elif c.action_captcha:
 			logger.warning("Wrong Captcha!")
 		else:
-			logger.warning("Limit Exceded.")
+			logger.warning("Limit Exceeded.")
 			self.add_wait()
 			self.return_slot()
 

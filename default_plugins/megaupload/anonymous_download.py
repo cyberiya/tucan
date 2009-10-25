@@ -57,7 +57,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		except Exception, e:
 			self.add_wait()
 			self.return_slot()
-			logger.warning("Limit Exceded.")
+			logger.warning("Limit Exceeded.")
 		else:
 			return handle
 
