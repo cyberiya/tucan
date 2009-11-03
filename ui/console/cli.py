@@ -46,6 +46,7 @@ class Cli(NoUi):
 		logging.getLogger("").addHandler(handler)
 				
 		NoUi.__init__(self, *kwargs)
+		self.running = True
 		self.quit_question = False
 		self.win_height = 0
 		self.win_chars = 0
@@ -70,7 +71,7 @@ class Cli(NoUi):
 		th = threading.Thread(group=None, target=self.load_file, name=None)
 		th.start()
 		
-		while True:
+		while self.running:
 			self.win_height, self.win_chars = self.screen.getmaxyx()
 			self.parse_input()
 			try:
@@ -178,3 +179,9 @@ class Cli(NoUi):
 		elif seconds > 0:
 			result = str(seconds) + "s"
 		return result
+		
+	def quit(self):
+		""""""
+		self.running = False
+		NoUi.quit(self)
+		
