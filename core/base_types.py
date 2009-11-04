@@ -40,38 +40,54 @@ class Base:
 	def get_name(self):
 		""""""
 		return self.name
-
-class Container:
-	""""""
-	def __init__(self):
+		
+	def set_name(self, name):
 		""""""
+		self.name = name
+
+class Container(Base):
+	""""""
+	def __init__(self, name):
+		""""""
+		Base.__init__(self, name)
 		self.items = []
 
 	def add_item(self, item):
 		""""""
-		pass
+		if item.get_id() in [item.get_id() for item in self.items]:
+			logger.warning("Item already present: %s" % item.get_name())
+		else:
+			self.items.append(item)
+			return True
 		
 	def add_items(self, items):
 		""""""
 		for item in items:
-			if not self.add_item(item):
-				logger.warning("Could not add %s" % item.get_name())
-
-class Item(Base):
-	""""""
-	def __init__(self, name, path, size):
+			self.add_item(item)
+		
+	def get_item(self, id):
 		""""""
-		Base.__init__(self, name)
+		pass
+
+	def remove_item(self, id):
+		""""""
+		pass
+
+	def remove_items(self, ids):
+		""""""
+		for id in ids:
+			self.remove_item(id)
+
+class Item:
+	""""""
+	def __init__(self, path, size):
+		""""""
 		self.status = cons.STATUS_PEND
 		self.path = path
 		self.total_size = size
 		self.actual_size = 0
 		self.elapsed_time = 0
-		
-	def set_name(self, name):
-		""""""
-		self.name = name
-		
+				
 	def get_status(self):
 		""""""
 		return self.status
