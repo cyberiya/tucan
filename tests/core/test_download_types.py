@@ -20,6 +20,8 @@
 
 import unittest
 
+from core.download_types import Link
+
 LINK = "http://megaupload.com/?d=9CE8MEPF"
 SERVICE = "megaupload.com"
 
@@ -30,7 +32,6 @@ def get_suite():
 
 class TestLink(unittest.TestCase):
 	def setUp(self):
-		from core.download_types import Link
 		self.link = Link(LINK, SERVICE)
 
 	def test_active(self):

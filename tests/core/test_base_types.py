@@ -20,8 +20,12 @@
 
 import unittest
 
+from core.base_types import Base
+from core.base_types import Container
+from core.base_types import Item
+
 NAME = "something"
-LINK = "another"
+NAME2 = "another"
 PATH = ""
 SIZE = 0
 
@@ -34,7 +38,6 @@ def get_suite():
 
 class TestBase(unittest.TestCase):
 	def setUp(self):
-		from core.base_types import Base
 		self.base = Base(NAME)
 		
 	def test_id(self):
@@ -42,30 +45,33 @@ class TestBase(unittest.TestCase):
 	
 	def test_name(self):
 		self.assertTrue(self.base.get_name(), "name should not be empty")
+
+	def test_set_name(self):
+		self.base.set_name(NAME2)
+		self.assertNotEqual(self.base.get_name(), NAME, "name should be updated")	
+		self.assertEqual(self.base.get_name(), NAME2, "name should be updated")	
 				
 	def tearDown(self):
 		del self.base
 
 class TestContainer(unittest.TestCase):
 	def setUp(self):
-		from core.base_types import Container
-		self.container = Container()
+		self.container = Container(NAME)
 		
-	def test_(self):
-		pass
+	def test_add_item(self):
+		item = Base(NAME)
+		self.assertTrue(self.container.add_item(item), "item should be added")
+		self.assertFalse(self.container.add_item(item), "item should not be added")
 					
 	def tearDown(self):
 		del self.container
 
 class TestItem(unittest.TestCase):
 	def setUp(self):
-		from core.base_types import Item
-		self.item = Item(NAME, PATH, SIZE)
+		self.item = Item(PATH, SIZE)
 				
-	def test_set_name(self):
-		self.item.set_name(LINK)
-		self.assertNotEqual(self.item.get_name(), NAME, "name should be updated")	
-		self.assertEqual(self.item.get_name(), LINK, "name should be updated")	
-		
+	def test_(self):
+		pass
+
 	def tearDown(self):
 		del self.item

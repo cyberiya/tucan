@@ -20,6 +20,9 @@
 
 import unittest
 
+import sys
+sys.path.append("/Users/Crak/Desktop/tucan/trunk")
+
 import test_base_types
 import test_download_types
 
@@ -35,6 +38,6 @@ def get_types():
 	return unittest.TestSuite(suite)
 
 if __name__ == '__main__':
-	import sys
-	sys.path.append("/Users/Crak/Desktop/tucan/trunk")
+	import logging
+	logging.basicConfig(level=logging.CRITICAL)
 	unittest.TextTestRunner(verbosity=2).run(get_all())
