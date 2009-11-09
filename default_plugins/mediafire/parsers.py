@@ -87,7 +87,10 @@ class CheckLinks(HTMLParser):
 				tmp = url.split("file/")
 				url = "%s?%s" % (tmp[0], tmp[1].split("/")[0])
 			for line in URLOpen().open(url).readlines():
-				if self.size and self.unit:
+				if "Password Protected File" in line:
+					logger.exception("Password Protected File: %s" % url)
+					break
+				elif self.size and self.unit:
 					break
 				else:
 					self.feed(line)
@@ -106,6 +109,7 @@ class CheckLinks(HTMLParser):
 				self.unit = tmp[1]
 
 if __name__ == "__main__":
-	f = FormParser("http://www.mediafire.com/download.php?z0gjmnwk1d0", cookielib.CookieJar())
-	print f.url
+	#f = FormParser("http://www.mediafire.com/download.php?z0gjmnwk1d0", cookielib.CookieJar())
+	#print f.url
 	#print CheckLinks().check("http://www.mediafire.com/download.php?z0gjmnwk1d0")
+	print CheckLinks().check("http://www.mediafire.com/?0ojmelsgdn4")
