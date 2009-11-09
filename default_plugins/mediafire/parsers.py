@@ -23,6 +23,13 @@ import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
+from HTMLParser import HTMLParser
+
+import sys
+sys.path.append("/home/crak/tucan/trunk")
+import __builtin__
+__builtin__.PROXY = None
+
 from core.tesseract import Tesseract
 from core.url_open import URLOpen
 
@@ -43,19 +50,18 @@ class FormParser:
 				url = "%s?%s" % (tmp[0], tmp[1].split("/")[0])
 			for line in opener.open(url).readlines():
 				if "cu(" in line:
-					tmp = eval(line.split("cu(")[1].split(");")[0])
+					tmp = line.split("cu('")[1].split("');")[0].split("','")
 					handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % (urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])])))
 					tmp = handle.readlines()
 					vars = {}
 					
-					tmp1 = tmp[2].split("function dz()")[0].split(";", 4)
-					sum = tmp[2].split("+mL+'/' ")[1].split(" 'g/'+mH+'/'+mY+'")[0]
+					sum = tmp[1].split("+mL+'/' ")[1].split(" 'g/'+mH+'/'+mY+'")[0]
 					
-					server = tmp1[1].split("'")[1]
-					link = tmp1[2].split("'")[1]
-					name = tmp1[3].split("'")[1]
+					server = tmp[1].split("mL='")[1].split("';")[0]
+					link = tmp[1].split("mH='")[1].split("';")[0]
+					name = tmp[1].split("mY='")[1].split("';")[0]
 
-					for var in tmp1.pop().strip().split(";"):
+					for var in tmp[1].split(";"):
 						var = var.split("var")
 						if len(var) > 1:
 							var = var[1].strip().split("=")
@@ -68,38 +74,43 @@ class FormParser:
 							else:
 								error = True
 		except Exception, e:
+			print e
 			error = True
 			logger.exception("%s: %s" % (url, e))
 		if server and random and link and name and not error:
 			self.url = "http://%s/%sg/%s/%s" % (server, random, link, name)
 
-class CheckLinks:
+class CheckLinks(HTMLParser):
 	""""""
 	def check(self, url):
 		""""""
-		name = None
-		size = 0
-		unit = None
+		self.name = url
+		self.size = 0
+		self.unit = None
 		try:
 			if "/file/" in url:
 				tmp = url.split("file/")
 				url = "%s?%s" % (tmp[0], tmp[1].split("/")[0])
 			for line in URLOpen().open(url).readlines():
-				if "You requested:" in line:
-					tmp = line.split("You requested:")[1].split("</div>")[0].strip().split(" ")
-					unit = tmp.pop().split(")")[0]
-					size = int(float(tmp.pop().split("(")[1]))
-					name = "_".join(tmp)
-				if not name:
-					name = url
-					size = -1
+				if self.size and self.unit:
+					break
+				else:
+					self.feed(line)
 		except Exception, e:
-			name = url
-			size = -1
 			logger.exception("%s: %s" % (url, e))
-		return name, size, unit
+		return self.name, self.size, self.unit
+
+	def handle_starttag(self, tag, attrs):
+		""""""
+		if tag == "input":
+			if attrs[1][1] == "sharedtabsfileinfo1-fn":
+				self.name = attrs[2][1]
+			elif attrs[1][1] == "sharedtabsfileinfo1-fs":
+				tmp = attrs[2][1].split(" ")
+				self.size = int(float(tmp[0]))
+				self.unit = tmp[1]
 
 if __name__ == "__main__":
-	f = FormParser("http://www.mediafire.com/download.php?0zhaznzw3oz", cookielib.CookieJar())
+	f = FormParser("http://www.mediafire.com/download.php?z0gjmnwk1d0", cookielib.CookieJar())
 	print f.url
-	#print CheckLinks().check("http://www.mediafire.com/file/jdzq4mn44ay/tHe.uNvTd.XvId.part7.rar")
+	#print CheckLinks().check("http://www.mediafire.com/download.php?z0gjmnwk1d0")
