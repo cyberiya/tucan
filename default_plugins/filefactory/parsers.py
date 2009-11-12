@@ -87,7 +87,6 @@ class CheckLinks:
 				name = url
 				size = -1
 		except Exception, e:
-			print e
 			name = url
 			size = -1
 			logger.exception("%s :%s" % (url, e))
