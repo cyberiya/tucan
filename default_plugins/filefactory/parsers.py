@@ -40,7 +40,8 @@ class Parser(HTMLParser):
 			for line in URLOpen().open(url).readlines():
 				if 'alt="Download Now"' in line:
 					button_action = "%s%s" % (BASE_URL, line.split('<a href="')[1].split('">')[0])
-					self.feed(URLOpen().open(button_action, urllib.urlencode({"freeBtn": "Free Download"})).read())
+					for line2 in URLOpen().open(button_action).readlines()[100:]:
+						self.feed(line2)
 			self.close()
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
@@ -93,6 +94,7 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	#c = Parser("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
-	#print c.link
-	print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	c = Parser("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	#c = Parser("http://www.filefactory.com/file/a0h9c7a/n/Just_M_-_Njene_sanje_Hocem_sosedo_-_karaoke.mp3")
+	print c.link, c.wait
+	#print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
