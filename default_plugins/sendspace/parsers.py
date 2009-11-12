@@ -39,14 +39,18 @@ class Parser(HTMLParser.HTMLParser):
 		var1 = ""
 		var2 = ""
 		try:
-			for line in URLOpen().open(url).readlines():
+			
+			for line in URLOpen().open(url, urllib.urlencode([("download", "&nbsp;REGULAR DOWNLOAD&nbsp;")])).readlines():
 				if "base64ToText" in line:
 					code = line.split("base64ToText('")[1].split("')));")[0]
 				elif "enc(text)" in line:
 					vars = line.split(";")
 					var1 = int(vars[1].split("=")[1])
 					var2 = vars[5].split("=")[1].split("'")[1]
-			self.feed(self.decode(code, var1, var2))
+			if code:
+				self.feed(self.decode(code, var1, var2))
+			else:
+				logger.warning("Free service at full capacity.")
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 
@@ -142,6 +146,6 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	#c = Parser("http://www.sendspace.com/file/lpd6p3")
-	print CheckLinks().check("http://www.sendspace.com/file/z57jja")
-	print CheckLinks().check("http://www.sendspace.com/file/x1itz8")
+	c = Parser("http://www.sendspace.com/file/x1itz8")
+	print c.link
+	#print CheckLinks().check("http://www.sendspace.com/file/x1itz8")
