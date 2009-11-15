@@ -257,7 +257,7 @@ class InputLinks(gtk.Dialog):
 		""""""
 		buffer = self.textview.get_buffer()
 		start, end = buffer.get_bounds()
-		link_list = [link.lower() for link in buffer.get_text(start, end).split("\n") if link.strip()]
+		link_list = [link.strip() for link in buffer.get_text(start, end).split("\n") if link.strip()]
 		if len(link_list) > 0:
 			w = Wait(_("Checking links, please wait."), self)
 			w.connect("key-press-event", self.cancel)
