@@ -43,6 +43,8 @@ class FormParser:
 			if "/file/" in url:
 				tmp = url.split("file/")
 				url = "%s?%s" % (tmp[0], tmp[1].split("/")[0])
+			elif "download.php" in url:
+				url = "".join(url.split("download.php"))
 			for line in opener.open(url).readlines():
 				if "cu(" in line:
 					tmp = line.split("cu('")[1].split("');")[0].split("','")
@@ -55,7 +57,7 @@ class FormParser:
 					server = tmp[1].split("mL='")[1].split("';")[0]
 					link = tmp[1].split("mH='")[1].split("';")[0]
 					name = tmp[1].split("mY='")[1].split("';")[0]
-
+					
 					for var in tmp[1].split(";"):
 						var = var.split("var")
 						if len(var) > 1:
@@ -69,7 +71,6 @@ class FormParser:
 							else:
 								error = True
 		except Exception, e:
-			print e
 			error = True
 			logger.exception("%s: %s" % (url, e))
 		if server and random and link and name and not error:
@@ -86,6 +87,8 @@ class CheckLinks(HTMLParser):
 			if "/file/" in url:
 				tmp = url.split("file/")
 				url = "%s?%s" % (tmp[0], tmp[1].split("/")[0])
+			elif "download.php" in url:
+				url = "".join(url.split("download.php"))
 			for line in URLOpen().open(url).readlines():
 				if self.size and self.unit:
 					break
@@ -106,7 +109,8 @@ class CheckLinks(HTMLParser):
 				self.unit = tmp[1]
 
 if __name__ == "__main__":
-	#f = FormParser("http://www.mediafire.com/download.php?z0gjmnwk1d0", cookielib.CookieJar())
-	#print f.url
-	print CheckLinks().check("http://www.mediafire.com/download.php?z0gjmnwk1d0")
-	print CheckLinks().check("http://www.mediafire.com/?0ojmelsgdn4")
+	f = FormParser("http://www.mediafire.com/?ja1mn1gz1ji", cookielib.CookieJar())
+	print f.url
+	#print CheckLinks().check("http://www.mediafire.com/download.php?z0gjmnwk1d0")
+	#print CheckLinks().check("http://www.mediafire.com/?0ojmelsgdn4")
+	#print CheckLinks().check("http://www.mediafire.com/?mnqzmm5dm0g")
