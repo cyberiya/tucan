@@ -30,7 +30,7 @@ WEBPAGE = "http://www.tucaneando.com"
 DOC = "http://doc.tucaneando.com"
 
 #OS constants
-OS_PLATFORM = platform.platform()
+OS_VERSION = platform.platform()
 OS_PYTHON = sys.version
 OS_UNIX = False
 OS_WINDOWS = False
