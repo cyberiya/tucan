@@ -21,7 +21,7 @@
 import sys
 import os
 import locale
-import subprocess
+import platform
 
 #project constants
 TUCAN_NAME = "Tucan Manager"
@@ -30,28 +30,17 @@ WEBPAGE = "http://www.tucaneando.com"
 DOC = "http://doc.tucaneando.com"
 
 #OS constants
+OS_PLATFORM = platform.platform()
 OS_PYTHON = sys.version
-OS_VERSION = "UNKNOWN"
 OS_UNIX = False
 OS_WINDOWS = False
 OS_OSX = False
 if sys.platform.startswith("win"):
 	OS_WINDOWS = True
-	OS_VERSION = str(sys.getwindowsversion())
 elif "darwin" in sys.platform:
 	OS_OSX = True
-	try:
-		OS_VERSION = subprocess.Popen(["sw_vers", "-productVersion"], stdout=subprocess.PIPE).communicate()[0]
-	except:
-		pass
 else:
 	OS_UNIX = True
-	try:
-		f = open("/proc/version", "r")
-		OS_VERSION = str(f.read()).strip()
-		f.close()
-	except:
-		pass
 
 #user agent
 USER_AGENT = "Mozilla/5.0 (X11; U; Linux i686; en-US) Gecko/20090919 Firefox/3.5.3"

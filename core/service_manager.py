@@ -50,7 +50,7 @@ class ServiceManager:
 			if enabled:
 				#download plugins
 				for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
-					logger.info("Loading: %s.%s" % (package, plugin_module))
+					logger.info("Loading: %s.%s, %i" % (package, plugin_module, config.get_update()))
 					module = __import__(package + "." + plugin_module, None, None, [''])
 					if plugin_type == cons.TYPE_ANONYMOUS:
 						s.anonymous_download_plugin = eval("module" + "." + plugin_name + "()")
