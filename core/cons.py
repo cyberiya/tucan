@@ -30,6 +30,7 @@ WEBPAGE = "http://www.tucaneando.com"
 DOC = "http://doc.tucaneando.com"
 
 #OS constants
+OS_PYTHON = sys.version
 OS_VERSION = "UNKNOWN"
 OS_UNIX = False
 OS_WINDOWS = False
@@ -46,7 +47,7 @@ elif "darwin" in sys.platform:
 else:
 	OS_UNIX = True
 	try:
-		f = open("/etc/issue", "r")
+		f = open("/proc/version", "r")
 		OS_VERSION = str(f.read()).strip()
 		f.close()
 	except:
