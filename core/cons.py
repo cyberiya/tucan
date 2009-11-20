@@ -30,7 +30,7 @@ WEBPAGE = "http://www.tucaneando.com"
 DOC = "http://doc.tucaneando.com"
 
 #OS constants
-OS_VERSION = ""
+OS_VERSION = "UNKNOWN"
 OS_UNIX = False
 OS_WINDOWS = False
 OS_OSX = False
