@@ -31,7 +31,7 @@ REPORT_URL = "http://crak.appspot.com/add"
 def main_info(log=logger):
 	""""""
 	log.info("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
-	log.debug("OS: %s" % sys.platform)
+	log.debug("OS: %s, %s" % (sys.platform, cons.OS_VERSION))
 	log.debug("Main path: %s" % cons.PATH)
 	log.debug("Configuration path: %s" % cons.CONFIG_PATH)
 	
