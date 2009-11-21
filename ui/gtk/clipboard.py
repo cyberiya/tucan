@@ -90,7 +90,7 @@ class Clipboard:
 		self.monitor = ClipboardMonitor(parent)
 		self.content_callback = callback
 		self.services = services
-		gobject.timeout_add(1000, self.poll_clipboard)
+		gtk.clipboard_get().connect("owner-change", self.poll_clipboard)
 		
 	def show_monitor(self, clipboard, selection_data, data):
 		""""""
@@ -110,13 +110,11 @@ class Clipboard:
 					self.content_callback(None, content)
 		self.monitor_active = False
 
-	def poll_clipboard(self):
+	def poll_clipboard(self, clipboard, event):
 		""""""
 		if not self.monitor_active:
 			self.monitor_active = True
-			clipboard = gtk.clipboard_get()
 			clipboard.request_targets(self.show_monitor)
-		return True
 
 
 class ClipboardMonitor(gtk.Dialog):
