@@ -67,15 +67,14 @@ def check_contents(clipboard, selection_data):
 	else:
 		target = "text/html"
 		if target in list(selection_data):
-			for line in str(clipboard.wait_for_contents(target).data.decode("utf16", "ignore")).split("\n"):
-				try:
-					parser = ClipParser()
-					parser.feed(line)
-					parser.close()
-					if len(parser.url) > 0:
-						urls += parser.url
-				except HTMLParser.HTMLParseError:
-					pass
+			try:
+				parser = ClipParser()
+				parser.feed(clipboard.wait_for_contents(target).data.decode("utf16", "ignore"))
+				parser.close()
+				if len(parser.url) > 0:
+					urls += parser.url
+			except HTMLParser.HTMLParseError:
+				pass
 	return urls
 
 class ClipParser(HTMLParser.HTMLParser):
@@ -197,11 +196,14 @@ class ClipboardMonitor(gtk.Dialog):
 		
 	def open(self, html, text):
 		""""""
-		self.notebook.set_current_page(0)
 		self.html_buffer.insert_at_cursor("\n".join(html) + "\n")
 		self.text_buffer.insert_at_cursor("\n".join(text) + "\n")
 		self.all_buffer.insert_at_cursor("\n".join(html+text) + "\n")
 		self.show_all()
+		if len(html) > 0:
+			self.notebook.set_current_page(0)
+		else:
+			self.notebook.set_current_page(1)
 		self.run()
 		
 	def close(self, widget=None, other=None):
