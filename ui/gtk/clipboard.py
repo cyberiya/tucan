@@ -81,17 +81,28 @@ class ClipParser(HTMLParser.HTMLParser):
 			for ref, link in attrs:
 				if ref == "href":
 					self.url.append(link)
-					
+
 class Clipboard:
 	""""""
-	def __init__(self, parent, callback, services):
+	def __init__(self, enable, callback, services):
 		""""""
-		self.monitor_active = False
-		self.monitor = ClipboardMonitor(parent)
+		self.handler_id = None
+		self.monitor = ClipboardMonitor()
+		self.monitor_open = False
 		self.content_callback = callback
 		self.services = services
-		gtk.clipboard_get().connect("owner-change", self.poll_clipboard)
+		if enable:
+			self.enable()
 		
+	def enable(self):
+		""""""
+		self.handler_id = gtk.clipboard_get().connect("owner-change", self.poll_clipboard)
+
+	def disable(self):
+		""""""
+		if self.handler_id:
+			gtk.clipboard_get().disconnect(self.handler_id)
+
 	def show_monitor(self, clipboard, selection_data, data):
 		""""""
 		urls = check_contents(clipboard, selection_data)
@@ -103,26 +114,24 @@ class Clipboard:
 						links.append(url)
 						break
 			if len(links) > 0:
-				clipboard.set_text("", 0)
 				self.monitor.open(links)
 				content = self.monitor.get_content()
 				if content:
 					self.content_callback(None, content)
-		self.monitor_active = False
+		self.monitor_open = False
 
 	def poll_clipboard(self, clipboard, event):
 		""""""
-		if not self.monitor_active:
-			self.monitor_active = True
+		if not self.monitor_open:
+			self.monitor_open = True
 			clipboard.request_targets(self.show_monitor)
 
 
 class ClipboardMonitor(gtk.Dialog):
 	""""""
-	def __init__(self, parent):
+	def __init__(self):
 		""""""
 		gtk.Dialog.__init__(self)
-		self.set_transient_for(parent)
 		self.set_icon(self.render_icon(gtk.STOCK_PASTE, gtk.ICON_SIZE_MENU))
 		self.set_title("%s - %s" % (cons.TUCAN_NAME, ("Clipboard Monitor")))
 		self.set_position(gtk.WIN_POS_CENTER)

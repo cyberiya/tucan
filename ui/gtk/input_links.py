@@ -218,7 +218,7 @@ class InputLinks(gtk.Dialog):
 		start, end = buffer.get_bounds()
 		link_list = [link.strip() for link in buffer.get_text(start, end).split("\n") if link.strip()]
 		if len(link_list) > 0:
-			w = Wait(_("Checking links, please wait. (ESC to cancel)"), self)
+			w = Wait("%s\n\t%s" % (_("Checking links, please wait."), _("(ESC to cancel)")), self)
 			w.connect("key-press-event", self.cancel)
 			th = threading.Thread(group=None, target=self.check_all, name=None, args=(link_list, w))
 			th.start()
