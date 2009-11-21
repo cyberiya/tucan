@@ -207,7 +207,7 @@ class Gui(gtk.Window, Core):
 		
 		#tray_close
 		self.close_handler_id = None
-		self.toggle_tray_close(self.configuration.get_tray_close())
+		self.update_tray_close(self.configuration.get_tray_close())
 
 		self.show_all()
 
@@ -217,12 +217,13 @@ class Gui(gtk.Window, Core):
 			th.start()
 		
 		#Clipboard Monitor
-		self.clipboard_monitor = Clipboard(True, self.add_downloads, [service.name for service in self.services])
+		services = [service.name for service in self.services]
+		self.clipboard_monitor = Clipboard(self.configuration.get_clipboard_monitor(), self.add_downloads, services)
 
 		#ugly polling
 		gobject.timeout_add(120000, self.save_default_session)
 		
-	def toggle_tray_close(self, hide):
+	def update_tray_close(self, hide):
 		""""""
 		if self.close_handler_id:
 			self.disconnect(self.close_handler_id)
@@ -230,6 +231,13 @@ class Gui(gtk.Window, Core):
 			self.close_handler_id = self.connect("delete_event", self.hide_on_delete)
 		else:
 			self.close_handler_id = self.connect("delete_event", self.quit)
+
+	def update_clipboard_monitor(self, enable):
+		""""""
+		if enable:
+			self.clipboard_monitor.enable()
+		else:
+			self.clipboard_monitor.disable()
 
 	def check_updates(self):
 		""""""
@@ -255,7 +263,8 @@ class Gui(gtk.Window, Core):
 		if not self.preferences_shown:
 			self.preferences_shown = True
 			p = Preferences(self, self.configuration)
-			self.toggle_tray_close(p.tray_close.get_active())
+			self.update_tray_close(self.configuration.get_tray_close())
+			self.update_clipboard_monitor(self.configuration.get_clipboard_monitor())
 			self.downloads.status_bar.synchronize()
 			self.preferences_shown =  False
 

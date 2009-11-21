@@ -112,6 +112,7 @@ class Preferences(gtk.Dialog):
 
 		#advanced preferences
 		self.config.set_tray_close(self.tray_close.get_active())
+		self.config.set_clipboard_monitor(self.clipboard_monitor.get_active())
 		self.config.set_auto_update(self.auto_update.get_active())
 		self.config.set_proxy_enabled(self.enable_proxy.get_active())
 		self.config.set_proxy(self.proxy_url.get_text(), self.proxy_port.get_value_as_int())
@@ -374,15 +375,19 @@ class Preferences(gtk.Dialog):
 		vbox = gtk.VBox()
 		hbox.pack_start(vbox, True, True, 10)
 
-		self.tray_close = gtk.CheckButton(_("Close to tray."))
+		self.tray_close = gtk.CheckButton(_("Close to tray"))
 		vbox.pack_start(self.tray_close, False, False, 5)
 		self.tray_close.set_active(self.config.get_tray_close())
 
-		self.auto_update = gtk.CheckButton(_("Automatic check for updates."))
+		self.clipboard_monitor = gtk.CheckButton(_("Clipboard Monitor"))
+		vbox.pack_start(self.clipboard_monitor, False, False, 5)
+		self.clipboard_monitor.set_active(self.config.get_clipboard_monitor())
+
+		self.auto_update = gtk.CheckButton(_("Automatic check for updates"))
 		vbox.pack_start(self.auto_update, False, False, 5)
 		self.auto_update.set_active(self.config.get_auto_update())
 
-		self.enable_proxy = gtk.CheckButton(_("Enable proxy:"))
+		self.enable_proxy = gtk.CheckButton(_("Enable proxy"))
 		vbox.pack_start(self.enable_proxy, False, False, 5)
 		self.enable_proxy.set_active(self.config.get_proxy_enabled())
 		self.enable_proxy.connect("toggled", self.change_state)

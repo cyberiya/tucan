@@ -53,6 +53,7 @@ OPTION_DOWNLOADS_FOLDER = "downloads_folder"
 
 #ui options
 OPTION_TRAY_CLOSE = "tray_close"
+OPTION_CLIPBOARD_MONITOR = "clipboard_monitor"
 OPTION_WINDOW_SETTINGS = "window_settings"
 OPTION_ADVANCED_PACKAGES = "advanced_packages"
 OPTION_SHOW_UPLOADS = "show_uploads"
@@ -65,7 +66,7 @@ OPTION_PROXY_PORT = "proxy_port"
 
 DEFAULTS = {SECTION_MAIN: {OPTION_VERSION: cons.TUCAN_VERSION, OPTION_LANGUAGE: "en", OPTION_MAX_DOWNLOADS: "5", OPTION_MAX_DOWNLOAD_SPEED: "0", OPTION_DOWNLOADS_FOLDER: cons.DEFAULT_PATH.encode("utf-8")}
 	, SECTION_SERVICES: {}
-	, SECTION_UI: {OPTION_TRAY_CLOSE: "False", OPTION_WINDOW_SETTINGS: "-1,-1,-1,-1", OPTION_ADVANCED_PACKAGES: "False",OPTION_SHOW_UPLOADS: "False"}
+	, SECTION_UI: {OPTION_TRAY_CLOSE: "False", OPTION_CLIPBOARD_MONITOR: "True", OPTION_WINDOW_SETTINGS: "-1,-1,-1,-1", OPTION_ADVANCED_PACKAGES: "False",OPTION_SHOW_UPLOADS: "False"}
 	, SECTION_ADVANCED: {OPTION_AUTO_UPDATE: "True", OPTION_ENABLE_PROXY: "False", OPTION_PROXY_URL: "", OPTION_PROXY_PORT: "0"}}
 
 class Config(SafeConfigParser):
@@ -183,7 +184,15 @@ class Config(SafeConfigParser):
 	def set_tray_close(self, value):
 		""""""
 		self.set(SECTION_UI, OPTION_TRAY_CLOSE, str(value))
-				
+
+	def get_clipboard_monitor(self):
+		""""""
+		return self.getboolean(SECTION_UI, OPTION_CLIPBOARD_MONITOR)
+
+	def set_clipboard_monitor(self, value):
+		""""""
+		self.set(SECTION_UI, OPTION_CLIPBOARD_MONITOR, str(value))
+
 	def get_window_settings(self):
 		""""""
 		if self.has_option(SECTION_UI, OPTION_WINDOW_SETTINGS):
