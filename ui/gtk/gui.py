@@ -217,7 +217,7 @@ class Gui(gtk.Window, Core):
 			th.start()
 		
 		#Clipboard Monitor
-		Clipboard(self, self.add_downloads, [service.name for service in self.services])
+		self.clipboard_monitor = Clipboard(True, self.add_downloads, [service.name for service in self.services])
 
 		#ugly polling
 		gobject.timeout_add(120000, self.save_default_session)
@@ -284,7 +284,11 @@ class Gui(gtk.Window, Core):
 	def add_downloads(self, button, content=None):
 		""""""
 		default_path = self.configuration.get_downloads_folder()
+		self.clipboard_monitor.disable()
+		self.set_urgency_hint(True)
 		InputLinks(self, default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, content)
+		self.set_urgency_hint(False)
+		self.clipboard_monitor.enable()
 
 	def copy_clipboard(self, button):
 		""""""
