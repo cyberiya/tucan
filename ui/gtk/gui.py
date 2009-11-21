@@ -45,6 +45,7 @@ from shutdown import Shutdown
 from tree import Tree
 from input_links import InputLinks
 from file_chooser import FileChooser
+from clipboard import Clipboard
 
 from core.core import Core
 from core.sessions import Sessions
@@ -156,7 +157,7 @@ class Gui(gtk.Window, Core):
 			self.vbox.pack_start(menu_bar.MenuBar([file_menu, view_menu, addons_menu, help_menu]), False)
 
 		#toolbar
-		download = _("Add Downloads"), gtk.image_new_from_file(media.ICON_DOWNLOAD), self.add_links
+		download = _("Add Downloads"), gtk.image_new_from_file(media.ICON_DOWNLOAD), self.add_downloads
 		upload = _("Add Uploads"), gtk.image_new_from_file(media.ICON_UPLOAD), self.not_implemented #self.quit
 		clear = _("Clear Complete"), gtk.image_new_from_file(media.ICON_CLEAR), self.clear_complete
 		up = _("Move Up"), gtk.image_new_from_file(media.ICON_UP), self.move_up
@@ -214,6 +215,9 @@ class Gui(gtk.Window, Core):
 		if self.configuration.get_auto_update():
 			th = threading.Thread(group=None, target=self.check_updates, name=None)
 			th.start()
+		
+		#Clipboard Monitor
+		Clipboard(self, self.add_downloads, [service.name for service in self.services])
 
 		#ugly polling
 		gobject.timeout_add(120000, self.save_default_session)
@@ -277,10 +281,10 @@ class Gui(gtk.Window, Core):
 		""""""
 		webbrowser.open(cons.DOC)
 
-	def add_links(self, button):
+	def add_downloads(self, button, content=None):
 		""""""
 		default_path = self.configuration.get_downloads_folder()
-		InputLinks(self, default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages)
+		InputLinks(self, default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, content)
 
 	def copy_clipboard(self, button):
 		""""""
