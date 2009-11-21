@@ -46,28 +46,28 @@ def check_contents(clipboard, selection_data):
 	""""""
 	urls = []
 	if cons.OS_OSX:
-		target_html = "public.rtf"
-		if target_html  in list(selection_data):
-			selection = clipboard.wait_for_contents(target_html)
+		target = "public.rtf"
+		if target  in list(selection_data):
+			selection = clipboard.wait_for_contents(target)
 			if selection:
 				for line in str(selection.data.decode("utf8", "ignore")).split("\n"):
 					if '{HYPERLINK "' in line:
 						urls.append(line.split('{HYPERLINK "')[1].split('"}')[0])
 	elif cons.OS_WINDOWS:
-		target_html = "HTML Format"
-		if target_html in list(selection_data):
+		target = "HTML Format"
+		if target in list(selection_data):
 			try:
 				parser = ClipParser()
-				parser.feed(clipboard.wait_for_contents(target_html).data.decode("utf8", "ignore"))
+				parser.feed(clipboard.wait_for_contents(target).data.decode("utf8", "ignore"))
 				parser.close()
 				if len(parser.url) > 0:
 					urls += parser.url
 			except HTMLParser.HTMLParseError:
 				pass
 	else:
-		target_html = "text/html"
-		if target_html in list(selection_data):
-			for line in str(clipboard.wait_for_contents(target_html).data.decode("utf16", "ignore")).split("\n"):
+		target = "text/html"
+		if target in list(selection_data):
+			for line in str(clipboard.wait_for_contents(target).data.decode("utf16", "ignore")).split("\n"):
 				try:
 					parser = ClipParser()
 					parser.feed(line)
@@ -197,6 +197,7 @@ class ClipboardMonitor(gtk.Dialog):
 		
 	def open(self, html, text):
 		""""""
+		self.notebook.set_current_page(0)
 		self.html_buffer.insert_at_cursor("\n".join(html) + "\n")
 		self.text_buffer.insert_at_cursor("\n".join(text) + "\n")
 		self.all_buffer.insert_at_cursor("\n".join(html+text) + "\n")
