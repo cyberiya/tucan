@@ -32,6 +32,16 @@ sys.path.append("/home/crak/tucan/trunk/")
 
 import core.cons as cons
 
+def check_text(clipboard, selection_data):
+	""""""
+	urls = []
+	tmp = clipboard.wait_for_text()
+	if tmp:
+		for line in tmp.split("\n"):
+			if "http://" in line:
+				urls.append(line.strip())
+	return urls
+
 def check_contents(clipboard, selection_data):
 	""""""
 	urls = []
@@ -56,7 +66,7 @@ def check_contents(clipboard, selection_data):
 				pass
 	else:
 		target_html = "text/html"
-		if target_html  in list(selection_data):
+		if target_html in list(selection_data):
 			for line in str(clipboard.wait_for_contents(target_html).data.decode("utf16", "ignore")).split("\n"):
 				try:
 					parser = ClipParser()
@@ -103,21 +113,25 @@ class Clipboard:
 		if self.handler_id:
 			gtk.clipboard_get().disconnect(self.handler_id)
 
+	def check_supported(self, urls):
+		""""""
+		links = []
+		for url in urls:
+			for name in self.services:
+				if url.find(name) > 0:
+					links.append(url)
+					break
+		return links
+
 	def show_monitor(self, clipboard, selection_data, data):
 		""""""
-		urls = check_contents(clipboard, selection_data)
-		if len(urls) > 0:
-			links = []
-			for url in urls:
-				for name in self.services:
-					if url.find(name) > 0:
-						links.append(url)
-						break
-			if len(links) > 0:
-				self.monitor.open(links)
-				content = self.monitor.get_content()
-				if content:
-					self.content_callback(None, content)
+		html_links = self.check_supported(check_contents(clipboard, selection_data))
+		text_links = self.check_supported(check_text(clipboard, selection_data))
+		if len(html_links) > 0 or len(text_links) > 0:
+			self.monitor.open(html_links, text_links)
+			content = self.monitor.get_content()
+			if content:
+				self.content_callback(None, content)
 		self.monitor_open = False
 
 	def poll_clipboard(self, clipboard, event):
@@ -137,19 +151,24 @@ class ClipboardMonitor(gtk.Dialog):
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(400,200)
 
-		#textview
-		frame = gtk.Frame(("Supported links:"))
-		self.vbox.pack_start(frame)
-		frame.set_border_width(10)
-		hbox = gtk.HBox()
-		frame.add(hbox)
-		scroll = gtk.ScrolledWindow()
-		hbox.pack_start(scroll, True, True)
-		scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-		buffer = gtk.TextBuffer()
-		self.textview = gtk.TextView(buffer)
-		scroll.add(self.textview)
-		self.textview.set_wrap_mode(gtk.WRAP_CHAR)
+		self.html_buffer = gtk.TextBuffer()
+		self.text_buffer = gtk.TextBuffer()
+		self.all_buffer = gtk.TextBuffer()
+
+		self.notebook = gtk.Notebook()
+		self.vbox.pack_start(self.notebook)
+		for tab, buffer in [("HTML", self.html_buffer),  ("TEXT", self.text_buffer),  ("ALL", self.all_buffer)]:
+			frame = gtk.Frame()
+			self.notebook.append_page(frame, gtk.Label(tab))
+			frame.set_border_width(10)
+			hbox = gtk.HBox()
+			frame.add(hbox)
+			scroll = gtk.ScrolledWindow()
+			hbox.pack_start(scroll, True, True)
+			scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+			textview = gtk.TextView(buffer)
+			scroll.add(textview)
+			textview.set_wrap_mode(gtk.WRAP_CHAR)
 		
 		self.content = None
 		
@@ -165,7 +184,7 @@ class ClipboardMonitor(gtk.Dialog):
 		
 	def set_content(self, button=None):
 		""""""
-		buffer = self.textview.get_buffer()
+		buffer = [self.html_buffer, self.text_buffer, self.all_buffer][self.notebook.get_current_page()]
 		start, end = buffer.get_bounds()
 		self.content = buffer.get_text(start, end)
 		self.close()
@@ -176,13 +195,17 @@ class ClipboardMonitor(gtk.Dialog):
 		self.content = None
 		return result
 		
-	def open(self, links):
+	def open(self, html, text):
 		""""""
-		self.textview.get_buffer().insert_at_cursor("\n".join(links) + "\n")
+		self.html_buffer.insert_at_cursor("\n".join(html) + "\n")
+		self.text_buffer.insert_at_cursor("\n".join(text) + "\n")
+		self.all_buffer.insert_at_cursor("\n".join(html+text) + "\n")
 		self.show_all()
 		self.run()
 		
 	def close(self, widget=None, other=None):
 		""""""
 		self.hide()
-		self.textview.get_buffer().set_text("")
+		self.html_buffer.set_text("")
+		self.text_buffer.set_text("")
+		self.all_buffer.set_text("")
