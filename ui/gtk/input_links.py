@@ -18,7 +18,6 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import HTMLParser
 import threading
 import logging
 logger = logging.getLogger(__name__)
@@ -29,28 +28,15 @@ import gtk
 import gobject
 
 from message import Wait, Message
+from clipboard import check_contents
 from advanced_packages import AdvancedPackages
 
 import media
 import core.cons as cons
 
-class ClipParser(HTMLParser.HTMLParser):
-	""""""
-	def __init__(self):
-		""""""
-		HTMLParser.HTMLParser.__init__(self)
-		self.url = []
-
-	def handle_starttag(self, tag, attrs):
-		""""""
-		if tag == "a":
-			for ref, link in attrs:
-				if ref == "href":
-					self.url.append(link)
-
 class InputLinks(gtk.Dialog):
 	""""""
-	def __init__(self, parent, path, sort, check, create, manage):
+	def __init__(self, parent, path, sort, check, create, manage, content):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_transient_for(parent)
@@ -83,9 +69,13 @@ class InputLinks(gtk.Dialog):
 		self.textview = gtk.TextView(buffer)
 		scroll.add(self.textview)
 		self.textview.set_wrap_mode(gtk.WRAP_CHAR)
-
-		self.clipboard = gtk.clipboard_get()
-		self.clipboard.request_targets(self.get_clipboard)
+		
+		if content:
+			buffer.set_text(content)
+			gobject.idle_add(self.check)
+		else:
+			self.clipboard = gtk.clipboard_get()
+			self.clipboard.request_targets(self.get_clipboard)
 
 		#check button
 		button_box = gtk.HButtonBox()
@@ -175,38 +165,7 @@ class InputLinks(gtk.Dialog):
 
 	def get_clipboard(self, clipboard, selection_data, data):
 		""""""
-		urls = []
-		if cons.OS_OSX:
-			target_html = "public.rtf"
-			if target_html  in list(selection_data):
-				selection = self.clipboard.wait_for_contents(target_html)
-				if selection:
-					for line in str(selection.data.decode("utf8", "ignore")).split("\n"):
-						if '{HYPERLINK "' in line:
-							urls.append(line.split('{HYPERLINK "')[1].split('"}')[0])
-		elif cons.OS_WINDOWS:
-			target_html = "HTML Format"
-			if target_html in list(selection_data):
-				try:
-					parser = ClipParser()
-					parser.feed(self.clipboard.wait_for_contents(target_html).data.decode("utf8", "ignore"))
-					parser.close()
-					if len(parser.url) > 0:
-						urls += parser.url
-				except HTMLParser.HTMLParseError:
-					pass
-		else:
-			target_html = "text/html"
-			if target_html  in list(selection_data):
-				for line in str(self.clipboard.wait_for_contents(target_html).data.decode("utf16", "ignore")).split("\n"):
-					try:
-						parser = ClipParser()
-						parser.feed(line)
-						parser.close()
-						if len(parser.url) > 0:
-							urls += parser.url
-					except HTMLParser.HTMLParseError:
-						pass
+		urls = check_contents(clipboard, selection_data)
 		if len(urls) > 0:
 			self.textview.get_buffer().insert_at_cursor("\n".join(urls) + "\n")
 
@@ -219,7 +178,7 @@ class InputLinks(gtk.Dialog):
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 6, active)
 
-	def add_links(self, button):
+	def add_links(self, button=None):
 		""""""
 		tmp = {}
 		store = self.treeview.get_model()
@@ -253,13 +212,13 @@ class InputLinks(gtk.Dialog):
 			if not m.accepted:
 				self.close()
 
-	def check(self, button):
+	def check(self, button=None):
 		""""""
 		buffer = self.textview.get_buffer()
 		start, end = buffer.get_bounds()
 		link_list = [link.strip() for link in buffer.get_text(start, end).split("\n") if link.strip()]
 		if len(link_list) > 0:
-			w = Wait(_("Checking links, please wait."), self)
+			w = Wait(_("Checking links, please wait. (ESC to cancel)"), self)
 			w.connect("key-press-event", self.cancel)
 			th = threading.Thread(group=None, target=self.check_all, name=None, args=(link_list, w))
 			th.start()
