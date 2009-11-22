@@ -27,9 +27,6 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-import sys
-sys.path.append("/home/crak/tucan/trunk/")
-
 import core.cons as cons
 
 def check_text(clipboard, selection_data):
@@ -52,29 +49,25 @@ def check_contents(clipboard, selection_data):
 			if selection:
 				for line in str(selection.data.decode("utf8", "ignore")).split("\n"):
 					if '{HYPERLINK "' in line:
-						urls.append(line.split('{HYPERLINK "')[1].split('"}')[0])
-	elif cons.OS_WINDOWS:
-		target = "HTML Format"
-		if target in list(selection_data):
-			try:
-				parser = ClipParser()
-				parser.feed(clipboard.wait_for_contents(target).data.decode("utf8", "ignore"))
-				parser.close()
-				if len(parser.url) > 0:
-					urls += parser.url
-			except HTMLParser.HTMLParseError:
-				pass
+						urls.append(line.split('{HYPERLINK "')[1].split('"}')[0])		
 	else:
-		target = "text/html"
+		if cons.OS_WINDOWS:
+			target = "HTML Format"
+			codec = "utf8"
+		else:
+			target = "text/html"
+			codec = "utf16"
 		if target in list(selection_data):
-			try:
-				parser = ClipParser()
-				parser.feed(clipboard.wait_for_contents(target).data.decode("utf16", "ignore"))
-				parser.close()
-				if len(parser.url) > 0:
-					urls += parser.url
-			except HTMLParser.HTMLParseError:
-				pass
+			selection = clipboard.wait_for_contents(target)
+			if selection:
+				for line in selection.data.decode(codec, "ignore").split("\n"):
+					try:
+						parser = ClipParser()
+						parser.feed(line)
+					except HTMLParser.HTMLParseError:
+						parser.reset()
+					else:
+						urls += parser.urls
 	return urls
 
 class ClipParser(HTMLParser.HTMLParser):
@@ -82,14 +75,14 @@ class ClipParser(HTMLParser.HTMLParser):
 	def __init__(self):
 		""""""
 		HTMLParser.HTMLParser.__init__(self)
-		self.url = []
+		self.urls = []
 
 	def handle_starttag(self, tag, attrs):
 		""""""
 		if tag == "a":
 			for ref, link in attrs:
 				if ref == "href":
-					self.url.append(link)
+					self.urls.append(link)
 
 class Clipboard:
 	""""""
