@@ -60,7 +60,7 @@ def check_contents(clipboard, selection_data):
 		if target in list(selection_data):
 			selection = clipboard.wait_for_contents(target)
 			if selection:
-				for line in selection.data.decode(codec, "ignore").split("\n"):
+				for line in str(selection.data.decode(codec, "ignore")).split("\n"):
 					try:
 						parser = ClipParser()
 						parser.feed(line)
