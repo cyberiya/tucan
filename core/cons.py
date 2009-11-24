@@ -91,6 +91,9 @@ else:
 	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "")
 CONFIG_PATH = os.path.join(DEFAULT_PATH, ".tucan" ,"")
 
+#pid file
+PID_FILE = os.path.join(CONFIG_PATH, "tucan.pid")
+
 #log constants
 LOG_FILE = os.path.join(CONFIG_PATH, "tucan.log")
 LOG_FORMAT = "[%(asctime)s] %(name)s %(levelname)s: %(message)s"

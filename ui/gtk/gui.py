@@ -59,24 +59,34 @@ import core.config as config
 MIN_WIDTH = 250
 MIN_HEIGHT = 200
 
+def init_gettext():
+	""""""
+	gettext.bindtextdomain(cons.NAME_LOCALES, cons.PATH_LOCALES)
+	gettext.textdomain(cons.NAME_LOCALES)
+	__builtin__._ = gettext.gettext
+	
+def already_running():
+	""""""
+	init_gettext()
+	message = "There is another instance running or could not open the pid file."
+	Message(None, cons.SEVERITY_WARNING, "Already Running!", message)
+
 class Gui(gtk.Window, Core):
 	""""""
 	def __init__(self, conf):
 		""""""
-		#i18n
-		gettext.bindtextdomain(cons.NAME_LOCALES, cons.PATH_LOCALES)
-		gettext.textdomain(cons.NAME_LOCALES)
-		__builtin__._ = gettext.gettext
-
 		#configuration
 		self.configuration = conf
+		
+		#i18n
+		init_gettext()
 		
 		#set logger
 		log_stream = LogStream()
 		handler = logging.StreamHandler(log_stream)
 		handler.setLevel(logging.DEBUG)
 		handler.setFormatter(logging.Formatter(cons.LOG_FORMAT))
-		logging.getLogger("").addHandler(handler)		
+		logging.getLogger("").addHandler(handler)
 
 		#show preferences if not configured
 		if not self.configuration.configured:
@@ -221,7 +231,7 @@ class Gui(gtk.Window, Core):
 		self.clipboard_monitor = Clipboard(self.configuration.get_clipboard_monitor(), self.add_downloads, services)
 
 		#ugly polling
-		gobject.timeout_add(120000, self.save_default_session)
+		gobject.timeout_add(60000, self.save_default_session)
 		
 	def update_tray_close(self, hide):
 		""""""
@@ -270,7 +280,7 @@ class Gui(gtk.Window, Core):
 
 	def not_implemented(self, widget):
 		""""""
-		w = Message(self, cons.SEVERITY_WARNING, "Not Implemented!", "The functionality you are trying to use is not implemented yet.")
+		Message(self, cons.SEVERITY_WARNING, "Not Implemented!", "The functionality you are trying to use is not implemented yet.")
 
 	def resize_pane(self, checkbox):
 		""""""

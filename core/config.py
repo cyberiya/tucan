@@ -75,8 +75,6 @@ class Config(SafeConfigParser):
 		""""""
 		SafeConfigParser.__init__(self)
 		self.configured = True
-		if not os.path.exists(cons.CONFIG_PATH):
-			os.mkdir(cons.CONFIG_PATH)
 		if not os.path.exists(cons.CONFIG_PATH + CONF):
 			self.create_config()
 			self.configured = False

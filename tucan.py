@@ -26,6 +26,7 @@ import logging
 import optparse
 
 import core.misc as misc
+import core.pid_file as pid_file
 import core.url_open as url_open
 import core.config as config
 import core.cons as cons
@@ -34,9 +35,6 @@ class Tucan:
 	""""""
 	def __init__(self):
 		""""""
-		#exception hook
-		sys.excepthook = self.exception_hook
-		
 		#parse options
 		parser = optparse.OptionParser()
 		parser.add_option("-w", "--wizard", dest="wizard", help="setup: accounts, services, updates", metavar="TYPE")
@@ -45,58 +43,61 @@ class Tucan:
 		parser.add_option("-i", "--input-links", dest="links_file", help="import links from FILE", metavar="FILE")
 		parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="print log to stdout")
 		parser.add_option("-V", "--version", action="store_true", dest="version", default=False, help="print version and exit")
-		options, args = parser.parse_args()
+		self.options, args = parser.parse_args()
 	
-		if options.version:
-			print "%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION)
-			sys.exit()
-
-		#configuration
-		__builtin__.configuration = config.Config()
-		sys.path.append(cons.PLUGIN_PATH)
-
-		#logging
-		if os.path.exists(cons.LOG_FILE):
-			if os.path.exists("%s.old" % cons.LOG_FILE):
-				os.remove("%s.old" % cons.LOG_FILE)
-			os.rename(cons.LOG_FILE, "%s.old" % cons.LOG_FILE)
-		logging.basicConfig(level=logging.DEBUG, format=cons.LOG_FORMAT, filename=cons.LOG_FILE, filemode='w')
-		self.logger = logging.getLogger(self.__class__.__name__)
+		if self.options.version:
+			sys.exit("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
 		
-		#start user interface
-		try:
-			self.set_globals(options)
-			if options.wizard:
-				self.set_verbose()
-				self.start_wizard(options.wizard)
-			elif options.daemon:
-				self.set_verbose()
-				self.start_daemon(options.links_file)
-			elif options.cli:
-				self.start_cli(options.links_file)
-			else:
-				if options.verbose:
-					self.set_verbose()
-				self.start_gui()
-		except KeyboardInterrupt:
-			self.exit("KeyboardInterrupt")
-		except Exception, e:
-			self.logger.exception(e)
-			print e
-			print "Reporting error, please wait..."
-			#print "REPORT ID: %s" % misc.report_log("Automatic", str(e))
-			print "Unhandled Error! Check the log file for details."
-			self.exit(-1)
+		if not os.path.exists(cons.CONFIG_PATH):
+			os.mkdir(cons.CONFIG_PATH)
+		
+		#check for previous running instance
+		self.pid_file = pid_file.PidFile(cons.PID_FILE)
+		if self.pid_file.start():
+			#configuration
+			__builtin__.configuration = config.Config()
+			sys.path.append(cons.PLUGIN_PATH)
+
+			#logging
+			if os.path.exists(cons.LOG_FILE):
+				if os.path.exists("%s.old" % cons.LOG_FILE):
+					os.remove("%s.old" % cons.LOG_FILE)
+				os.rename(cons.LOG_FILE, "%s.old" % cons.LOG_FILE)
+			logging.basicConfig(level=logging.DEBUG, format=cons.LOG_FORMAT, filename=cons.LOG_FILE, filemode='w')
+			self.logger = logging.getLogger(self.__class__.__name__)
 		else:
-			self.exit()
-			
+			if self.options.wizard or self.options.daemon or self.options.cli:
+				sys.exit("Already running or could not open ~/.tucan/tucan.pid")
+			else:
+				self.start_gui(False)
+				sys.exit()
+
 	def set_verbose(self, severity=logging.INFO):
 		""""""
 		console = logging.StreamHandler(sys.stdout)
 		console.setLevel(severity)
 		console.setFormatter(logging.Formatter('%(levelname)-7s %(name)s: %(message)s'))
 		logging.getLogger("").addHandler(console)
-		
+
+	def start_ui(self, options):
+		""""""
+		#exception hook
+		sys.excepthook = self.exception_hook
+
+		self.set_globals(options)
+		if options.wizard:
+			self.set_verbose()
+			self.start_wizard(options.wizard)
+		elif options.daemon:
+			self.set_verbose()
+			self.start_daemon(options.links_file)
+		elif options.cli:
+			self.start_cli(options.links_file)
+		else:
+			if options.verbose:
+				self.set_verbose()
+			self.start_gui()
+
 	def start_wizard(self, wizard_type):
 		""""""
 		from ui.console.wizard import Wizard
@@ -109,7 +110,7 @@ class Tucan:
 		elif wizard_type == "updates":
 			w.update_setup(configuration)
 		else:
-			print "TYPE should be one of: accounts, services or updates"
+			self.exit("TYPE should be one of: accounts, services or updates")
 		
 	def start_daemon(self, file):
 		""""""
@@ -121,8 +122,7 @@ class Tucan:
 	def start_cli(self, file):
 		""""""
 		if cons.OS_WINDOWS:
-			print "No curses support."
-			self.exit()
+			self.exit("No curses support.")
 		else:
 			from curses.wrapper import wrapper
 			from ui.console.cli import Cli
@@ -130,23 +130,26 @@ class Tucan:
 			c = Cli(configuration, file)
 			wrapper(c.run)
 
-	def start_gui(self):
+	def start_gui(self, unique=True):
 		""""""
 		import pygtk
 		pygtk.require('2.0')
 		import gtk
 		import gobject
 		
-		from ui.gtk.gui import Gui
+		from ui.gtk.gui import Gui, already_running
 		
 		try:
 			gtk.init_check()
 		except:
-			print "Could not connect to X server. Use 'tucan --cli' for curses interface."
+			self.exit("Could not connect to X server. Use 'tucan --cli' for curses interface.")
 		else:
-			gobject.threads_init()
-			Gui(configuration)
-			gtk.main()
+			if unique:
+				gobject.threads_init()
+				Gui(configuration)
+				gtk.main()
+			else:
+				already_running()
 
 	def set_globals(self, options):
 		""""""		
@@ -166,18 +169,27 @@ class Tucan:
 		file_name = trace.tb_frame.f_code.co_filename
 		line_no = trace.tb_lineno
 		exception = type.__name__
-		try:
-			self.logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
-		except:
-			pass
+		self.logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
 		sys.__excepthook__(type, value, trace)
 		self.exit(-1)
 
 	def exit(self, arg=0):
 		""""""
-		self.logger.debug("Exit: %s" % arg)
+		self.logger.debug("Exit: %s" % str(arg))
+		self.pid_file.destroy()
 		sys.exit(arg)
 
 if __name__ == "__main__":
-	t = Tucan()
-	
+	tucan = Tucan()
+	try:
+		tucan.start_ui(tucan.options)
+	except KeyboardInterrupt:
+		tucan.exit("KeyboardInterrupt")
+	except Exception, e:
+		print e
+		tucan.logger.exception(e)
+		#print "Reporting error, please wait..."
+		#print "REPORT ID: %s" % misc.report_log("AUTOMATIC", str(e))
+		tucan.exit("Unhandled Error! Check the log file for details.")
+	else:
+		tucan.exit()
