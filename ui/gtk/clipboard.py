@@ -28,6 +28,7 @@ import gtk
 import gobject
 
 import core.cons as cons
+import media
 
 def check_text(clipboard, selection_data):
 	""""""
@@ -166,11 +167,13 @@ class ClipboardMonitor(gtk.Dialog):
 		
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
-		add_button = gtk.Button(None, gtk.STOCK_ADD)
 		self.action_area.pack_start(cancel_button)
-		self.action_area.pack_start(add_button)
+		button = gtk.Button("Check")
+		self.action_area.pack_start(button)
+		pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_CHECK, 24, 24)
+		button.set_image(gtk.image_new_from_pixbuf(pixbuf))
+		button.connect("clicked", self.set_content)
 		cancel_button.connect("clicked", self.close)
-		add_button.connect("clicked", self.set_content)
 
 		self.connect("response", self.close)
 		

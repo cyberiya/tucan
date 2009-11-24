@@ -66,16 +66,20 @@ class Message(gtk.Dialog):
 
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, True, True, 10)
-		icon = gtk.STOCK_DIALOG_INFO
+		aspect = gtk.AspectFrame()
+		hbox.pack_start(aspect, True, True, 10)
+		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		if severity == cons.SEVERITY_WARNING:
 			icon = gtk.STOCK_DIALOG_WARNING
 		elif severity == cons.SEVERITY_ERROR:
 			icon = gtk.STOCK_DIALOG_ERROR
-		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG), True, False, 10)
+		else:
+			icon = gtk.STOCK_DIALOG_INFO
+		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG))
 		self.set_icon(self.render_icon(icon, gtk.ICON_SIZE_MENU))
 
 		self.label = gtk.Label(message)
-		hbox.pack_start(self.label, True, False, 5)
+		hbox.pack_start(self.label)
 		self.label.set_width_chars(35)
 		self.label.set_line_wrap(True)
 
