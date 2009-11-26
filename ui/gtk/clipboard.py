@@ -87,24 +87,35 @@ class ClipParser(HTMLParser.HTMLParser):
 
 class Clipboard:
 	""""""
-	def __init__(self, enable, callback, services):
+	def __init__(self, enable, callback, set_hint, services):
 		""""""
 		self.handler_id = None
+		self.enabled = False
+		self.old_content = ""
+		self.len_old = 0
 		self.monitor = ClipboardMonitor()
 		self.monitor_open = False
 		self.content_callback = callback
+		self.hint = set_hint
 		self.services = services
 		if enable:
 			self.enable()
 		
 	def enable(self):
 		""""""
-		self.handler_id = gtk.clipboard_get().connect("owner-change", self.poll_clipboard)
+		if cons.OS_WINDOWS or cons.OS_OSX:
+			self.enabled = True
+			gobject.timeout_add(1000, self.check_clipboard)
+		else:
+			self.handler_id = gtk.clipboard_get().connect("owner-change", self.poll_clipboard)
 
 	def disable(self):
 		""""""
-		if self.handler_id:
-			gtk.clipboard_get().disconnect(self.handler_id)
+		if cons.OS_WINDOWS or cons.OS_OSX:
+			self.enabled = False
+		else:
+			if self.handler_id:
+				gtk.clipboard_get().disconnect(self.handler_id)
 
 	def check_supported(self, urls):
 		""""""
@@ -118,16 +129,40 @@ class Clipboard:
 
 	def show_monitor(self, clipboard, selection_data, data):
 		""""""
+		print selection_data
 		html_links = self.check_supported(check_contents(clipboard, selection_data))
 		text_links = self.check_supported(check_text(clipboard, selection_data))
 		if len(html_links) > 0 or len(text_links) > 0:
 			self.monitor.open(html_links, text_links)
 			content = self.monitor.get_content()
 			if content:
+				self.hint(True)
 				self.content_callback(None, content)
+				self.hint(False)
 		self.monitor_open = False
+		
+	def check_clipboard(self):
+		"""Windows and OSX support"""
+		if not self.monitor_open:
+			clipboard = gtk.clipboard_get()
+			tmp = clipboard.wait_for_text()
+			if tmp:
+				len_tmp = len(tmp)
+				if len(tmp) != self.len_old:
+					self.old_content = tmp
+					self.len_old = len_tmp
+					self.poll_clipboard(clipboard)
+				else:
+					for i in range(len_tmp):
+						if tmp[i] != self.old_content[i]:
+							self.old_content = tmp
+							self.len_old = len_tmp
+							self.poll_clipboard(clipboard)
+							break
+		if self.enabled:
+			return True
 
-	def poll_clipboard(self, clipboard, event):
+	def poll_clipboard(self, clipboard, event=None):
 		""""""
 		if not self.monitor_open:
 			self.monitor_open = True
