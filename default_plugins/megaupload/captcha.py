@@ -39,8 +39,11 @@ class CaptchaParser(HTMLParser):
 		self.captcha = None
 		self.captchacode = ""
 		self.megavar = ""
-		self.feed(data)
-		self.close()
+		for line in data:
+			try:
+				self.feed(line)
+			except:
+				self.reset()
 
 	def handle_starttag(self, tag, attrs):
 		""""""
@@ -69,7 +72,7 @@ class CaptchaForm(HTMLParser):
 			del tmp[3]
 			url = "/".join(tmp)
 		while not self.link:
-			p = CaptchaParser(URLOpen().open(url).read())
+			p = CaptchaParser(URLOpen().open(url).readlines())
 			if p.captcha:
 				handle = URLOpen().open(p.captcha)
 				if handle.info()["Content-Type"] == "image/gif":
@@ -78,8 +81,11 @@ class CaptchaForm(HTMLParser):
 					if captcha:
 						handle = URLOpen().open(url, urllib.urlencode([(CAPTCHACODE, p.captchacode), (MEGAVAR, p.megavar), ("captcha", captcha)]))
 						self.reset()
-						self.feed(handle.read())
-						self.close()
+						for line in handle.readlines():
+							try:
+								self.feed(line)
+							except:
+								self.reset()
 						logger.info("Captcha %s: %s" % (p.captcha, captcha))
 
 	def handle_starttag(self, tag, attrs):
