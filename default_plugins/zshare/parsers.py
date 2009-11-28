@@ -19,8 +19,14 @@
 ###############################################################################
 
 import urllib
+import cookielib
 import logging
 logger = logging.getLogger(__name__)
+
+import sys
+sys.path.append("/home/crak/tucan/trunk")
+import __builtin__
+__builtin__.PROXY = None
 
 from core.url_open import URLOpen
 
@@ -29,6 +35,7 @@ class Parser:
 	def __init__(self, url):
 		""""""
 		self.link = None
+		self.cookie = cookielib.CookieJar()
 		try:
 			if "/video/" in url:
 				url = url.replace("/video/", "/download/")
@@ -36,7 +43,7 @@ class Parser:
 				url = url.replace("/audio/", "/download/")
 			elif "/image/" in url:
 				url = url.replace("/image/", "/download/")
-			opener = URLOpen()
+			opener = URLOpen(self.cookie)
 			form = urllib.urlencode([("referer2", ""), ("download", 1), ("imageField.x", 81), ("imageField.y", 29)])
 			for line in opener.open(url, form).readlines():
 				if "var link_enc=new Array(" in line:
@@ -82,5 +89,6 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	#c = Parser("http://www.zshare.net/download/58856573188bda3b/")
-	print CheckLinks().check("http://www.zshare.net/download/58856573188bda3b/")
+	c = Parser("http://www.zshare.net/download/68008797261d4a03/")
+	print c.link
+	#print CheckLinks().check("http://www.zshare.net/download/68008797261d4a03/")
