@@ -41,7 +41,7 @@ class AnonymousDownload(DownloadPlugin):
 		""""""
 		parser = Parser(link)
 		if parser.link:
-			if self.start(path, parser.link, file_name, WAIT):
+			if self.start(path, parser.link, file_name, WAIT, parser.cookie):
 				return True
 
 	def delete(self, file_name):
