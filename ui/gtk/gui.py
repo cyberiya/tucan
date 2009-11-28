@@ -46,6 +46,7 @@ from tree import Tree
 from input_links import InputLinks
 from file_chooser import FileChooser
 from clipboard import Clipboard
+from recover import halt
 
 from core.core import Core
 from core.sessions import Sessions
@@ -71,6 +72,14 @@ def already_running():
 	message = "There is another instance running or could not open the pid file."
 	Message(None, cons.SEVERITY_WARNING, "Already Running!", message)
 
+def exception_hook(type, value, trace):
+	""""""
+	file_name = trace.tb_frame.f_code.co_filename
+	line_no = trace.tb_lineno
+	exception = type.__name__
+	logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
+	halt()
+
 class Gui(gtk.Window, Core):
 	""""""
 	def __init__(self, conf):
@@ -81,6 +90,9 @@ class Gui(gtk.Window, Core):
 		#i18n
 		init_gettext()
 		
+		#recovery help
+		sys.excepthook = exception_hook
+
 		#set logger
 		log_stream = LogStream()
 		handler = logging.StreamHandler(log_stream)
