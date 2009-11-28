@@ -25,7 +25,6 @@ import sys
 import logging
 import optparse
 
-import core.misc as misc
 import core.pid_file as pid_file
 import core.url_open as url_open
 import core.config as config
@@ -138,6 +137,7 @@ class Tucan:
 		import gobject
 		
 		from ui.gtk.gui import Gui, already_running
+		from ui.gtk.recover import halt
 		
 		try:
 			gtk.init_check()
@@ -146,8 +146,13 @@ class Tucan:
 		else:
 			if unique:
 				gobject.threads_init()
-				Gui(configuration)
-				gtk.main()
+				try:
+					Gui(configuration)
+					gtk.main()
+				except Exception, e:
+					self.logger.critical(e)
+					halt()
+					gtk.main()
 			else:
 				already_running()
 
@@ -188,8 +193,6 @@ if __name__ == "__main__":
 	except Exception, e:
 		print e
 		tucan.logger.exception(e)
-		#print "Reporting error, please wait..."
-		#print "REPORT ID: %s" % misc.report_log("AUTOMATIC", str(e))
 		tucan.exit("Unhandled Error! Check the log file for details.")
 	else:
 		tucan.exit()
