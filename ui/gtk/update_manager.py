@@ -156,7 +156,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.status_icon.set_from_stock(gtk.STOCK_DIALOG_WARNING, gtk.ICON_SIZE_BUTTON)
 		self.status_label.set_label("%i New and %i Updated." % (new, updated))
 		if updated == 0 and new == 0:
-			gobject.timeout_add(5000, self.close)
+			gobject.timeout_add_seconds(5, self.close)
 
 	def install(self, button):
 		""""""

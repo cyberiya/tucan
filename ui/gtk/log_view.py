@@ -112,7 +112,7 @@ class LogView(gtk.Dialog):
 		self.connect("response", self.close)
 		self.show_all()
 
-		gobject.timeout_add(1000, self.update)
+		gobject.timeout_add_seconds(1, self.update)
 		self.run()
 		
 	def report(self, button=None):

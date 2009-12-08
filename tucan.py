@@ -80,9 +80,6 @@ class Tucan:
 
 	def start_ui(self, options):
 		""""""
-		#exception hook
-		sys.excepthook = self.exception_hook
-
 		self.set_globals(options)
 		if options.wizard:
 			self.set_verbose()
@@ -100,7 +97,11 @@ class Tucan:
 	def start_wizard(self, wizard_type):
 		""""""
 		from ui.console.wizard import Wizard
-		
+		from ui.console.no_ui import exception_hook
+
+		#exception hook
+		sys.excepthook = exception_hook
+
 		w = Wizard()
 		if wizard_type == "accounts":
 			w.account_setup(configuration)
@@ -113,8 +114,11 @@ class Tucan:
 		
 	def start_daemon(self, file):
 		""""""
-		from ui.console.no_ui import NoUi
-		
+		from ui.console.no_ui import NoUi, exception_hook
+
+		#exception hook
+		sys.excepthook = exception_hook
+
 		d = NoUi(configuration, file)
 		d.run()
 
@@ -123,9 +127,13 @@ class Tucan:
 		if cons.OS_WINDOWS:
 			self.exit("No curses support.")
 		else:
+			from ui.console.no_ui import exception_hook
 			from curses.wrapper import wrapper
 			from ui.console.cli import Cli
-			
+
+			#exception hook
+			sys.excepthook = exception_hook
+
 			c = Cli(configuration, file)
 			wrapper(c.run)
 
@@ -136,15 +144,18 @@ class Tucan:
 		import gtk
 		import gobject
 		
-		from ui.gtk.gui import Gui, already_running
+		from ui.gtk.gui import Gui, already_running, exception_hook
 		from ui.gtk.recover import halt
 		
 		try:
 			gtk.init_check()
 		except:
-			self.exit("Could not connect to X server. Use 'tucan --cli' for curses interface.")
+			sys.exit("Could not connect to X server. Use 'tucan --cli' for curses interface.")
 		else:
 			if unique:
+				#recovery help
+				sys.excepthook = exception_hook
+				
 				gobject.threads_init()
 				try:
 					Gui(configuration)
@@ -168,15 +179,6 @@ class Tucan:
 		
 		__builtin__.max_downloads = configuration.get_max_downloads()
 		__builtin__.max_download_speed = configuration.get_max_download_speed()
-
-	def exception_hook(self, type, value, trace):
-		""""""
-		file_name = trace.tb_frame.f_code.co_filename
-		line_no = trace.tb_lineno
-		exception = type.__name__
-		self.logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
-		sys.__excepthook__(type, value, trace)
-		self.exit(-1)
 
 	def exit(self, arg=0):
 		""""""

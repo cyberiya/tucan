@@ -31,6 +31,15 @@ from core.core import Core
 import core.config as config
 import core.cons as cons
 
+def exception_hook(self, type, value, trace):
+	""""""
+	file_name = trace.tb_frame.f_code.co_filename
+	line_no = trace.tb_lineno
+	exception = type.__name__
+	logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
+	sys.__excepthook__(type, value, trace)
+	sys.exit(-1)
+
 class NoUi(Core):
 	""""""
 	def __init__(self, conf, links_file):
