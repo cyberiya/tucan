@@ -40,7 +40,7 @@ class Shutdown:
 		title = "Shutting down!"
 		self.message = "The system is going to shut down in"
 		self.dialog = Message(parent, cons.SEVERITY_WARNING, title, "%s 1 minute." % self.message, True, True, False)
-		gobject.timeout_add(1000, self.counter)
+		gobject.timeout_add_seconds(1, self.counter)
 		self.dialog.run()
 		if self.dialog.accepted:
 			try:

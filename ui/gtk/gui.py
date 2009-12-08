@@ -65,20 +65,21 @@ def init_gettext():
 	gettext.bindtextdomain(cons.NAME_LOCALES, cons.PATH_LOCALES)
 	gettext.textdomain(cons.NAME_LOCALES)
 	__builtin__._ = gettext.gettext
-	
-def already_running():
-	""""""
-	init_gettext()
-	message = "There is another instance running or could not open the pid file."
-	Message(None, cons.SEVERITY_WARNING, "Already Running!", message)
 
 def exception_hook(type, value, trace):
 	""""""
 	file_name = trace.tb_frame.f_code.co_filename
 	line_no = trace.tb_lineno
 	exception = type.__name__
-	logger.critical("File %s line %i - %s: %s" % (file_name, line_no, exception, value))
-	halt()
+	message = "File %s line %i - %s: %s" % (file_name, line_no, exception, value)
+	logger.critical(message)
+	halt(message)
+
+def already_running():
+	""""""
+	init_gettext()
+	message = "There is another instance running or could not open the pid file."
+	m = Message(None, cons.SEVERITY_WARNING, "Already Running!", message)
 
 class Gui(gtk.Window, Core):
 	""""""
@@ -90,9 +91,6 @@ class Gui(gtk.Window, Core):
 		#i18n
 		init_gettext()
 		
-		#recovery help
-		sys.excepthook = exception_hook
-
 		#set logger
 		log_stream = LogStream()
 		handler = logging.StreamHandler(log_stream)
@@ -243,7 +241,7 @@ class Gui(gtk.Window, Core):
 		self.clipboard_monitor = Clipboard(self.configuration.get_clipboard_monitor(), self.add_downloads, self.set_urgency_hint, services)
 
 		#ugly polling
-		gobject.timeout_add(60000, self.save_default_session)
+		gobject.timeout_add_seconds(60, self.save_default_session)
 		
 	def update_tray_close(self, hide):
 		""""""

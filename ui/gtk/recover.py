@@ -28,30 +28,34 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
+sys.path.append("/home/crak/tucan/trunk/")
+
 from report import Report
 
 import core.cons as cons
 import media
 
-def halt():
+def halt(message):
 	""""""
 	for window in gtk.window_list_toplevels():
 		window.hide()
-	gobject.idle_add(show_recover)
+	gobject.idle_add(show_recover, message)
+	gtk.main()
 
-def show_recover():
-	""""""
-	Recover()
+def show_recover(message):
+	"""Needed for windows"""
+	gobject.quit()
+	r = Recover(message)
+	r.run()
 
 class Recover(gtk.Dialog):
 	""""""
-	def __init__(self):
+	def __init__(self, message):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon(self.render_icon(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DND))
 		self.set_title("%s - %s" % (cons.TUCAN_NAME, ("Recover Help")))
 		self.set_position(gtk.WIN_POS_CENTER)
-		self.set_size_request(400, 150)
 		
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, True, False, 5)
@@ -65,6 +69,23 @@ class Recover(gtk.Dialog):
 		label.set_width_chars(35)
 		label.set_line_wrap(True)
 		
+		expander = gtk.Expander("Show details")
+		self.vbox.pack_start(expander, True, True, 5)
+		frame = gtk.Frame()
+		expander.add(frame)
+		frame.set_border_width(10)
+		scroll = gtk.ScrolledWindow()
+		frame.add(scroll)
+		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+		buffer = gtk.TextBuffer()
+		buffer.set_text(message)
+		textview = gtk.TextView(buffer)
+		scroll.add(textview)
+		textview.set_wrap_mode(gtk.WRAP_WORD)
+		textview.set_editable(False)
+		textview.set_cursor_visible(False)
+		
+
 		hbox = gtk.HButtonBox()
 		self.vbox.pack_start(hbox, True, True, 5)
 		hbox.set_layout(gtk.BUTTONBOX_SPREAD)
@@ -108,3 +129,6 @@ class Recover(gtk.Dialog):
 		self.destroy()
 		gtk.main_quit()
 		sys.exit()
+		
+if __name__ == "__main__":
+	show_recover("puta mierda")

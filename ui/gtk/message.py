@@ -24,6 +24,7 @@ import gtk
 import gobject
 
 import core.cons as cons
+import media
 
 class Wait(gtk.Window):
 	""""""
@@ -76,7 +77,10 @@ class Message(gtk.Dialog):
 		else:
 			icon = gtk.STOCK_DIALOG_INFO
 		hbox.pack_start(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_DIALOG))
-		self.set_icon(self.render_icon(icon, gtk.ICON_SIZE_MENU))
+		if parent:
+			self.set_icon(self.render_icon(icon, gtk.ICON_SIZE_MENU))
+		else:
+			self.set_icon_from_file(media.ICON_TUCAN)
 
 		self.label = gtk.Label(message)
 		hbox.pack_start(self.label)
