@@ -24,6 +24,12 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
+#test plugins
+import sys
+sys.path.append("/home/crak/tucan/trunk")
+import __builtin__
+__builtin__.PROXY = None
+
 from core.url_open import URLOpen
 
 BASE_URL = "http://www.filefactory.com"
@@ -33,7 +39,6 @@ class Parser(HTMLParser):
 		""""""
 		HTMLParser.__init__(self)
 		self.link_found = False
-		self.time_found = False
 		self.link = None
 		self.wait = None
 		try:
@@ -54,14 +59,11 @@ class Parser(HTMLParser):
 				self.link_found = False
 		elif tag == "div":
 			if len(attrs) > 0:
-				if attrs[0][1] == "basicBtn":
-					self.time_found = True
-				elif attrs[0][1] == "downloadLink":
+				if attrs[0][1] == "downloadLink":
 					self.link_found = True
 		elif tag == "input":
-			if self.time_found:
+			if len(attrs) > 2 and attrs[1][1] == "startWait":
 				self.wait = int(attrs[2][1])
-				self.time_found = False
 
 class CheckLinks:
 	""""""
@@ -97,3 +99,4 @@ if __name__ == "__main__":
 	#c = Parser("http://www.filefactory.com/file/a0h9c7a/n/Just_M_-_Njene_sanje_Hocem_sosedo_-_karaoke.mp3")
 	print c.link, c.wait
 	#print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	#print CheckLinks().check("http://www.filefactory.com/file/4460d3/n/Intelligent_Sounds_Music_BazzISM_VSTi_v2_0d_MAC_OSX_UB_Incl_Keygen-ArCADE_rar")
