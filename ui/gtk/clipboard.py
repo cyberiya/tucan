@@ -94,13 +94,13 @@ class ClipParser(HTMLParser.HTMLParser):
 
 class Clipboard:
 	""""""
-	def __init__(self, parent, callback, set_hint, services):
+	def __init__(self, callback, set_hint, services):
 		""""""
 		self.handler_id = None
 		self.enabled = False
 		self.old_content = ""
 		self.len_old = 0
-		self.monitor = ClipboardMonitor(parent)
+		self.monitor = ClipboardMonitor()
 		self.monitor_open = False
 		self.content_callback = callback
 		self.hint = set_hint
@@ -175,10 +175,9 @@ class Clipboard:
 
 class ClipboardMonitor(gtk.Dialog):
 	""""""
-	def __init__(self, parent):
+	def __init__(self):
 		""""""
 		gtk.Dialog.__init__(self)
-		self.set_transient_for(parent)
 		self.set_icon(self.render_icon(gtk.STOCK_PASTE, gtk.ICON_SIZE_MENU))
 		self.set_title("%s - %s" % (cons.TUCAN_NAME, ("Clipboard Monitor")))
 		self.set_position(gtk.WIN_POS_CENTER)
