@@ -19,6 +19,9 @@
 ###############################################################################
 
 import os
+import ctypes
+
+import cons
 
 class PidFile:
 	""""""
@@ -32,16 +35,27 @@ class PidFile:
 			f = open(self.pid_file, "r")
 			pid = int(f.read())
 			f.close()
-			os.kill(pid, 0)
-		except:
-			try:
-				f = open(self.pid_file, "w")
-				f.write(str(os.getpid()))
-				f.close()
-			except:
-				pass
+			if cons.OS_WINDOWS:
+				if ctypes.windll.kernel32.OpenProcess(1, False, pid) > 0:
+					return False
+				else:
+					return self.set_pid()
 			else:
-				return True
+				os.kill(pid, 0)
+		except:
+			return self.set_pid()
+
+	def set_pid(self):
+		""""""
+		try:
+			f = open(self.pid_file, "w")
+			f.write(str(os.getpid()))
+			f.close()
+		except:
+			return False
+		else:
+			return True
+
 
 	def destroy(self):
 		""""""
