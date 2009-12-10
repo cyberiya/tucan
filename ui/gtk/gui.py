@@ -52,6 +52,7 @@ from core.core import Core
 from core.sessions import Sessions
 from core.log_stream import LogStream
 from core.service_update import ServiceUpdate
+from core.misc import get_exception_info
 
 import media
 import core.cons as cons
@@ -68,10 +69,7 @@ def init_gettext():
 
 def exception_hook(type, value, trace):
 	""""""
-	file_name = trace.tb_frame.f_code.co_filename
-	line_no = trace.tb_lineno
-	exception = type.__name__
-	message = "File %s line %i - %s: %s" % (file_name, line_no, exception, value)
+	message = get_exception_info(type, value, trace)
 	logger.critical(message)
 	halt(message)
 
@@ -238,11 +236,20 @@ class Gui(gtk.Window, Core):
 		
 		#Clipboard Monitor
 		services = [service.name for service in self.services]
-		self.clipboard_monitor = Clipboard(self.configuration.get_clipboard_monitor(), self.add_downloads, self.set_urgency_hint, services)
-
+		self.clipboard_monitor = Clipboard(self.add_downloads, self.set_urgency_hint, services)
+		gobject.timeout_add_seconds(5, self.enable_clipboard)
+		
 		#ugly polling
 		gobject.timeout_add_seconds(60, self.save_default_session)
 		
+	def enable_clipboard(self, enable=True):
+		""""""
+		if enable:
+			if self.configuration.get_clipboard_monitor():
+				self.clipboard_monitor.enable()
+		else:
+			self.clipboard_monitor.disable()
+
 	def update_tray_close(self, hide):
 		""""""
 		if self.close_handler_id:
@@ -251,13 +258,6 @@ class Gui(gtk.Window, Core):
 			self.close_handler_id = self.connect("delete_event", self.hide_on_delete)
 		else:
 			self.close_handler_id = self.connect("delete_event", self.quit)
-
-	def update_clipboard_monitor(self, enable):
-		""""""
-		if enable:
-			self.clipboard_monitor.enable()
-		else:
-			self.clipboard_monitor.disable()
 
 	def check_updates(self):
 		""""""
@@ -282,10 +282,11 @@ class Gui(gtk.Window, Core):
 		""""""
 		if not self.preferences_shown:
 			self.preferences_shown = True
+			self.enable_clipboard(False)
 			p = Preferences(self, self.configuration)
 			self.update_tray_close(self.configuration.get_tray_close())
-			self.update_clipboard_monitor(self.configuration.get_clipboard_monitor())
 			self.downloads.status_bar.synchronize()
+			self.enable_clipboard(True)
 			self.preferences_shown =  False
 
 	def not_implemented(self, widget):
@@ -313,10 +314,9 @@ class Gui(gtk.Window, Core):
 	def add_downloads(self, button, content=None):
 		""""""
 		default_path = self.configuration.get_downloads_folder()
-		self.clipboard_monitor.disable()
+		self.enable_clipboard(False)
 		InputLinks(self, default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, content)
-		if self.configuration.get_clipboard_monitor():
-			self.clipboard_monitor.enable()
+		self.enable_clipboard(True)
 
 	def copy_clipboard(self, button):
 		""""""
