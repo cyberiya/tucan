@@ -263,7 +263,7 @@ class InputLinks(gtk.Dialog):
 							logger.info("Checked: %s %s %s" % (file_name, size, size_unit))
 							store.append(service_iter, [icon, link, file_name, size, size_unit, plugin_type, marked, marked])
 							self.treeview.expand_row(store.get_path(service_iter), True)
-		except:
+		except Exception:
 			gobject.idle_add(wait.destroy)
 		else:
 			buffer.set_text("")
