@@ -236,7 +236,7 @@ class Gui(gtk.Window, Core):
 		
 		#Clipboard Monitor
 		services = [service.name for service in self.services]
-		self.clipboard_monitor = Clipboard(self.add_downloads, self.set_urgency_hint, services)
+		self.clipboard_monitor = Clipboard(self, self.add_downloads, self.set_urgency_hint, services)
 		gobject.timeout_add_seconds(5, self.enable_clipboard)
 		
 		#ugly polling
