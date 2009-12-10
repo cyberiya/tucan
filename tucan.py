@@ -162,8 +162,7 @@ class Tucan:
 					gtk.main()
 				except Exception, e:
 					self.logger.critical(e)
-					halt()
-					gtk.main()
+					halt(str(e))
 			else:
 				already_running()
 
