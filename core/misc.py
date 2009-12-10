@@ -53,3 +53,14 @@ def report_log(email="", comment=""):
 			logger.exception("Could not report: %s" % e)
 		else:
 			return id
+
+def get_exception_info(type, value, trace):
+	""""""
+	try:
+		file_name = trace.tb_frame.f_code.co_filename
+		line_no = trace.tb_lineno
+		exception = type.__name__
+	except:
+		return "Unhandled Error! No info available"
+	else:
+		return "File %s line %i - %s: %s" % (file_name, line_no, exception, value)
