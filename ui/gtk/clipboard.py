@@ -42,33 +42,40 @@ def check_text(clipboard, selection_data):
 
 def check_contents(clipboard, selection_data):
 	""""""
-	urls = []
 	if cons.OS_OSX:
-		target = "public.rtf"
-		if target  in list(selection_data):
-			selection = clipboard.wait_for_contents(target)
-			if selection:
-				for line in str(selection.data.decode("utf8", "ignore")).split("\n"):
-					if '{HYPERLINK "' in line:
-						urls.append(line.split('{HYPERLINK "')[1].split('"}')[0])		
+		return check_osx_html(clipboard, selection_data)		
+	elif cons.OS_WINDOWS:
+		return check_html(clipboard, selection_data, "HTML Format", "utf8")
 	else:
-		if cons.OS_WINDOWS:
-			target = "HTML Format"
-			codec = "utf8"
-		else:
-			target = "text/html"
-			codec = "utf16"
-		if target in list(selection_data):
-			selection = clipboard.wait_for_contents(target)
-			if selection:
-				for line in str(selection.data.decode(codec, "ignore")).split("\n"):
-					try:
-						parser = ClipParser()
-						parser.feed(line)
-					except HTMLParser.HTMLParseError:
-						parser.reset()
-					else:
-						urls += parser.urls
+		return check_html(clipboard, selection_data, "text/html", "utf16")
+						
+def check_osx_html(clipboard, selection_data):
+	""""""
+	urls = []
+	target = "public.rtf"
+	if target  in list(selection_data):
+		selection = clipboard.wait_for_contents(target)
+		if selection:
+			for line in str(selection.data.decode("utf8", "ignore")).split("\n"):
+				if '{HYPERLINK "' in line:
+					urls.append(line.split('{HYPERLINK "')[1].split('"}')[0])
+	return urls
+
+	
+def check_html(clipboard, selection_data, target, codec):
+	""""""
+	urls = []
+	if target in list(selection_data):
+		selection = clipboard.wait_for_contents(target)
+		if selection:
+			for line in str(selection.data.decode(codec, "ignore")).split("\n"):
+				try:
+					parser = ClipParser()
+					parser.feed(line)
+				except HTMLParser.HTMLParseError:
+					parser.reset()
+				else:
+					urls += parser.urls
 	return urls
 
 class ClipParser(HTMLParser.HTMLParser):
@@ -87,7 +94,7 @@ class ClipParser(HTMLParser.HTMLParser):
 
 class Clipboard:
 	""""""
-	def __init__(self, enable, callback, set_hint, services):
+	def __init__(self, callback, set_hint, services):
 		""""""
 		self.handler_id = None
 		self.enabled = False
@@ -98,9 +105,7 @@ class Clipboard:
 		self.content_callback = callback
 		self.hint = set_hint
 		self.services = services
-		if enable:
-			self.enable()
-		
+					
 	def enable(self):
 		""""""
 		if cons.OS_WINDOWS or cons.OS_OSX:
@@ -129,7 +134,6 @@ class Clipboard:
 
 	def show_monitor(self, clipboard, selection_data, data):
 		""""""
-		print selection_data
 		html_links = self.check_supported(check_contents(clipboard, selection_data))
 		text_links = self.check_supported(check_text(clipboard, selection_data))
 		if len(html_links) > 0 or len(text_links) > 0:
@@ -140,7 +144,7 @@ class Clipboard:
 				self.content_callback(None, content)
 				self.hint(False)
 		self.monitor_open = False
-		
+
 	def check_clipboard(self):
 		"""Windows and OSX support"""
 		if not self.monitor_open:
