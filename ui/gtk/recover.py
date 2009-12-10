@@ -39,7 +39,6 @@ def halt(message):
 	""""""
 	for window in gtk.window_list_toplevels():
 		window.hide()
-	gtk.main_quit()
 	gobject.idle_add(show_recover, message)
 	gtk.main()
 
