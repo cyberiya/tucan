@@ -110,6 +110,10 @@ class Clipboard:
 		""""""
 		if cons.OS_WINDOWS or cons.OS_OSX:
 			self.enabled = True
+			tmp = gtk.clipboard_get().wait_for_text()
+			if tmp:
+				self.old_content = tmp
+				self.len_old = len(tmp)
 			gobject.timeout_add_seconds(1, self.check_clipboard)
 		else:
 			self.handler_id = gtk.clipboard_get().connect("owner-change", self.poll_clipboard)

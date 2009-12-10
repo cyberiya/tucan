@@ -237,7 +237,7 @@ class Gui(gtk.Window, Core):
 		#Clipboard Monitor
 		services = [service.name for service in self.services]
 		self.clipboard_monitor = Clipboard(self.add_downloads, self.set_urgency_hint, services)
-		gobject.idle_add(self.enable_clipboard)
+		self.enable_clipboard()
 		
 		#ugly polling
 		gobject.timeout_add_seconds(60, self.save_default_session)
@@ -269,7 +269,9 @@ class Gui(gtk.Window, Core):
 		""""""
 		if not self.preferences_shown:
 			self.preferences_shown = True
+			self.enable_clipboard(False)
 			Preferences(self, self.configuration, True, info)
+			self.enable_clipboard(True)
 			self.preferences_shown =  False
 		return False
 
