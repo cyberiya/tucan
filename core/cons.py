@@ -79,7 +79,7 @@ TYPE_UNSUPPORTED = "unsupported"
 
 #path constants
 if OS_WINDOWS:
-	PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
+	PATH = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "")
 	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "").decode(locale.getdefaultlocale()[1])
 	if PATH not in sys.path:
 		sys.path.insert(0, PATH)

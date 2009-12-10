@@ -119,6 +119,7 @@ class Recover(gtk.Dialog):
 
 	def restart(self, button):
 		""""""
+		logging.shutdown()
 		command = "%stucan.py" % cons.PATH
 		subprocess.Popen(["python", command])
 		self.close()
