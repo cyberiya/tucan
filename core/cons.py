@@ -85,7 +85,7 @@ if OS_WINDOWS:
 		sys.path.insert(0, PATH)
 else:
 	if OS_OSX:
-		PATH = os.path.abspath(os.path.dirname(sys.argv[0]))
+		PATH = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "")
 	else:
 		PATH = os.path.join(sys.path[0], "")
 	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "")
