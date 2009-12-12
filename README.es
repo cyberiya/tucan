@@ -28,6 +28,7 @@
 
  - Escrito enteramente en python.
  - Interfaz gráfica de usuario escrita en PyGTK (GTK+ toolkit).
+ - Interfaz de línea de comandos.
  - Multiplataforma (GNU/Linux, FreeBSD, Microsoft Windows ...).
  - Fácil de ampliar con plugins.
  - Ligero y rápido.
