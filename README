@@ -28,6 +28,7 @@
 
  - Written entirely in Python.
  - Graphical User Interface written in PyGTK (GTK+ toolkit).
+ - Command Line Interface.
  - Multiplatform (GNU/Linux, FreeBSD, Microsoft Windows...).
  - Easy to expand with plugins.
  - Lightweight and fast.
@@ -117,7 +118,7 @@
 
 
 ===================
- Download
+ Downloads
 =========
 
  - Stable version:
