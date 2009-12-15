@@ -111,7 +111,7 @@
  | pil       | python-imaging     | python-imaging | python-imaging |
  +-----------+--------------------+----------------+----------------+
  | tesseract | tesseract          | tesseract      | tesseract      |
- |           | tesseract-langpack |                |                |
+ |           | tesseract-langpack |                | tesseract-eng  |
  +-----------+--------------------+----------------+----------------+
  | librsvg   | librsvg2           | librsvg        | librsvg        |
  +-----------+--------------------+----------------+----------------+
