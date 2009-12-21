@@ -22,8 +22,6 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-from HTMLParser import HTMLParser
-
 from premium_cookie import PremiumCookie
 from check_links import CheckLinks
 
@@ -34,37 +32,26 @@ from core.url_open import URLOpen
 
 import core.cons as cons
 
-class FormParser(HTMLParser):
+class FormParser:
 	""""""
 	def __init__(self, url, cookie):
 		""""""
-		HTMLParser.__init__(self)
-		self.form_action = None
 		self.url = None
-		self.close()
 		try:
 			opener = URLOpen(cookie)
 			handler = opener.open(url)
 			if "text/html" in handler.info()["Content-Type"]:
 				for line in handler.readlines():
-					try:
-						self.feed(line)
-					except Exception, e:
-						pass
-				if self.form_action:
-					for line in opener.open(self.form_action, urllib.urlencode({"dl.start": "PREMIUM", "":"Premium user"})).readlines():
-						if '<form name="dlf"' in line:
-							self.url = line.split('name="dlf" action="')[1].split('" method="post"')[0]
+					if '<form id="ff"' in line:
+						form_action = line.split('action="')[1].split('" method="post">')[0]
+						for line in opener.open(form_action, urllib.urlencode({"dl.start": "PREMIUM", "":"Premium user"})).readlines():
+							if '<form name="dlf"' in line:
+								self.url = line.split('name="dlf" action="')[1].split('" method="post"')[0]
+						break
 			else:
 				self.url = url
 		except Exception, e:
 			logger.error("%s: %s" % (url, e))
-
-	def handle_starttag(self, tag, attrs):
-		""""""
-		if tag == "form":
-			if attrs[0][1] == "ff":
-				self.form_action = attrs[1][1]
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
@@ -91,4 +78,5 @@ class PremiumDownload(DownloadPlugin, Accounts):
 
 if __name__ == "__main__":
 	c = PremiumCookie()
-	p = FormParser("", c.get_cookie("",""))
+	p = FormParser("http://rapidshare.com/files/28374629/30_-_Buscate_la_Vida_-_Novia_2000_by_shagazz.part2.rar", c.get_cookie("",""))
+	print p.url
