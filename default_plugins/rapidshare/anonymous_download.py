@@ -22,44 +22,32 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-from HTMLParser import HTMLParser
-
 from check_links import CheckLinks
 
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
 from core.slots import Slots
 
-class FormParser(HTMLParser):
+class FormParser:
 	""""""
 	def __init__(self, url):
 		""""""
-		HTMLParser.__init__(self)
-		self.form_action = None
 		self.url = None
 		self.wait = None
 		try:
 			for line in URLOpen().open(url).readlines():
-				try:
-					self.feed(line)
-				except Exception, e:
-					pass
-			form = {"dl.start": "Free", "":"Free user"}
-			self.data = urllib.urlencode(form)
-			if self.form_action:
-				for line in URLOpen().open(self.form_action, self.data).readlines():
-					if "var tt =" in line:
-						self.url = line.split('name="dlf" action="')[1].split('" method="post"')[0]
-					elif "var c=" in line:
-						self.wait = int(line.split("var c=")[1].split(";")[0])
+				if '<form id="ff"' in line:
+					form_action = line.split('action="')[1].split('" method="post">')[0]
+					self.data = urllib.urlencode({"dl.start": "Free", "":"Free user"})
+					for line in URLOpen().open(form_action, self.data).readlines():
+						if "var tt =" in line:
+							self.url = line.split('name="dlf" action="')[1].split('" method="post"')[0]
+						elif "var c=" in line:
+							self.wait = int(line.split("var c=")[1].split(";")[0])
+					break
 		except Exception, e:
+			print e
 			logger.exception("%s: %s" % (url, e))
-
-	def handle_starttag(self, tag, attrs):
-		""""""
-		if tag == "form":
-			if attrs[0][1] == "ff":
-				self.form_action = attrs[1][1]
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
@@ -87,3 +75,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		""""""
 		if self.stop(file_name):
 			logger.warning("Stopped %s: %s" % (file_name, self.return_slot()))
+
+if __name__ == "__main__":
+	p = FormParser("http://rapidshare.com/files/28374629/30_-_Buscate_la_Vida_-_Novia_2000_by_shagazz.part2.rar")
+	print p.url
