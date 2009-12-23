@@ -75,7 +75,7 @@ class CaptchaParser(HTMLParser):
 						self.handle = opener.open(self.form_action, urllib.urlencode([("captcha", captcha), ("id", self.id)]))
 						if self.handle.info().getheader("Content-Type") != "text/html":
 							break
-			else:
+			elif self.form_action:
 				self.handle = opener.open(self.form_action, urllib.urlencode([("captcha", ""), ("id", self.id)]))
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
