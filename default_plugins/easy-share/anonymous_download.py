@@ -53,7 +53,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 	def post_wait(self, link):
 		"""Must return handle"""
 		parser = CaptchaParser(link)
-		if parser.captcha_url:
+		if parser.form_action:
 			return parser.handle
 
 	def delete(self, file_name):

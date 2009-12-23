@@ -45,6 +45,8 @@ class WaitParser:
 						if "w=" in line:
 							self.wait = int(line.split("'")[1]) + 1
 							logger.info("%s wait %s seconds" % (url, self.wait))
+			if not self.wait:
+				self.wait = 1
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 
@@ -54,7 +56,6 @@ class CaptchaParser(HTMLParser):
 	def __init__(self, url):
 		""""""
 		HTMLParser.__init__(self)
-		self.link = None
 		self.form_action = None
 		self.id = None
 		self.handle = None
@@ -74,6 +75,8 @@ class CaptchaParser(HTMLParser):
 						self.handle = opener.open(self.form_action, urllib.urlencode([("captcha", captcha), ("id", self.id)]))
 						if self.handle.info().getheader("Content-Type") != "text/html":
 							break
+			else:
+				self.handle = opener.open(self.form_action, urllib.urlencode([("captcha", ""), ("id", self.id)]))
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 
@@ -120,5 +123,5 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	c = Parser("http://www.easy-share.com/1903816814/Frank%20Gehry%20-%20The%20City%20and%20the%20Music.pdf")
+	c = WaitParser("http://www.easy-share.com/1903816814")
 	#print CheckLinks().check("http://www.easy-share.com/1903816814/Frank%20Gehry%20-%20The%20City%20and%20the%20Music.pdf")
