@@ -236,12 +236,17 @@ class Gui(gtk.Window, Core):
 		
 		#Clipboard Monitor
 		services = [service.name for service in self.services]
-		self.clipboard_monitor = Clipboard(self.add_downloads, self.set_urgency_hint, services)
+		self.clipboard_monitor = Clipboard(self, self.add_downloads, self.set_urgency_hint, services)
 		self.enable_clipboard()
 		
 		#ugly polling
 		gobject.timeout_add_seconds(60, self.save_default_session)
 		
+	def delete_key(self, window, event):
+		"""pressed del key"""
+		if event.keyval == 65535:
+			self.delete()
+
 	def enable_clipboard(self, enable=True):
 		""""""
 		if enable:
@@ -263,29 +268,17 @@ class Gui(gtk.Window, Core):
 		""""""
 		s = ServiceUpdate(self.configuration)
 		if s.get_updates():
-			gobject.idle_add(self.update_manager, s.remote_info)
+			gobject.idle_add(self.preferences, None, s.remote_info)
 
-	def update_manager(self, info):
+	def preferences(self, button=None, info=None):
 		""""""
 		if not self.preferences_shown:
 			self.preferences_shown = True
 			self.enable_clipboard(False)
-			Preferences(self, self.configuration, True, info)
-			self.enable_clipboard(True)
-			self.preferences_shown =  False
-		return False
-
-	def delete_key(self, window, event):
-		"""pressed del key"""
-		if event.keyval == 65535:
-			self.delete()
-
-	def preferences(self, button=None):
-		""""""
-		if not self.preferences_shown:
-			self.preferences_shown = True
-			self.enable_clipboard(False)
-			p = Preferences(self, self.configuration)
+			if info:
+				Preferences(self, self.configuration, True, info)
+			else:
+				Preferences(self, self.configuration)
 			self.update_tray_close(self.configuration.get_tray_close())
 			self.downloads.status_bar.synchronize()
 			self.enable_clipboard(True)
