@@ -96,6 +96,7 @@ class Clipboard:
 	""""""
 	def __init__(self, parent_window, callback, set_hint, services):
 		""""""
+		dfdf
 		self.handler_id = None
 		self.parent = parent_window
 		self.enabled = False
