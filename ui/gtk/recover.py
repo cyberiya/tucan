@@ -19,6 +19,7 @@
 ###############################################################################
 
 import sys
+import shutil
 import subprocess
 import logging
 logger = logging.getLogger(__name__)
@@ -28,17 +29,20 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-sys.path.append("/home/crak/tucan/trunk/")
-
 from report import Report
 
 import core.cons as cons
 import media
+import gui
 
 def halt(message):
 	""""""
 	for window in gtk.window_list_toplevels():
-		window.hide()
+		if isinstance(window, gui.Gui):
+			window.stop_all()
+			window.destroy()
+		else:
+			window.hide()
 	gobject.idle_add(show_recover, message)
 	gtk.main()
 
@@ -112,6 +116,8 @@ class Recover(gtk.Dialog):
 	def remove_conf(self, button):
 		""""""
 		button.set_sensitive(False)
+		logging.shutdown()
+		shutil.rmtree(cons.CONFIG_PATH, True)
 
 	def report_problem(self, button):
 		""""""
