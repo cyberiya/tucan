@@ -94,13 +94,13 @@ class ClipParser(HTMLParser.HTMLParser):
 
 class Clipboard:
 	""""""
-	def __init__(self, callback, set_hint, services):
+	def __init__(self, parent_window, callback, set_hint, services):
 		""""""
 		self.handler_id = None
+		self.parent = parent_window
 		self.enabled = False
 		self.old_content = ""
 		self.len_old = 0
-		self.monitor = ClipboardMonitor()
 		self.monitor_open = False
 		self.content_callback = callback
 		self.hint = set_hint
@@ -141,8 +141,11 @@ class Clipboard:
 		html_links = self.check_supported(check_contents(clipboard, selection_data))
 		text_links = self.check_supported(check_text(clipboard, selection_data))
 		if len(html_links) > 0 or len(text_links) > 0:
-			self.monitor.open(html_links, text_links)
-			content = self.monitor.get_content()
+			if cons.OS_WINDOWS or cons.OS_OSX:
+				monitor = ClipboardMonitor(self.parent, html_links, text_links)
+			else:
+				monitor = ClipboardMonitor(None, html_links, text_links)
+			content = monitor.get_content()
 			if content:
 				self.hint(True)
 				self.content_callback(None, content)
@@ -179,17 +182,22 @@ class Clipboard:
 
 class ClipboardMonitor(gtk.Dialog):
 	""""""
-	def __init__(self):
+	def __init__(self, parent, html, text):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_icon(self.render_icon(gtk.STOCK_PASTE, gtk.ICON_SIZE_MENU))
 		self.set_title("%s - %s" % (cons.TUCAN_NAME, ("Clipboard Monitor")))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(400,200)
+		if parent:
+			self.set_transient_for(parent)
 
 		self.html_buffer = gtk.TextBuffer()
+		self.html_buffer.insert_at_cursor("\n".join(html) + "\n")
 		self.text_buffer = gtk.TextBuffer()
+		self.text_buffer.insert_at_cursor("\n".join(text) + "\n")
 		self.all_buffer = gtk.TextBuffer()
+		self.all_buffer.insert_at_cursor("\n".join(html+text) + "\n")
 
 		self.notebook = gtk.Notebook()
 		self.vbox.pack_start(self.notebook)
@@ -219,6 +227,16 @@ class ClipboardMonitor(gtk.Dialog):
 		cancel_button.connect("clicked", self.close)
 
 		self.connect("response", self.close)
+		self.show_all()
+
+		#must be after show_all
+		if len(html) > 0:
+			self.notebook.set_current_page(0)
+		else:
+			self.notebook.set_current_page(1)
+
+		self.run()
+
 		
 	def set_content(self, button=None):
 		""""""
@@ -232,22 +250,10 @@ class ClipboardMonitor(gtk.Dialog):
 		result = self.content
 		self.content = None
 		return result
-		
-	def open(self, html, text):
-		""""""
-		self.html_buffer.insert_at_cursor("\n".join(html) + "\n")
-		self.text_buffer.insert_at_cursor("\n".join(text) + "\n")
-		self.all_buffer.insert_at_cursor("\n".join(html+text) + "\n")
-		self.show_all()
-		if len(html) > 0:
-			self.notebook.set_current_page(0)
-		else:
-			self.notebook.set_current_page(1)
-		self.run()
-		
+				
 	def close(self, widget=None, other=None):
 		""""""
-		self.hide()
 		self.html_buffer.set_text("")
 		self.text_buffer.set_text("")
 		self.all_buffer.set_text("")
+		self.destroy()
