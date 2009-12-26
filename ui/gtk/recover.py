@@ -40,9 +40,7 @@ def halt(message):
 	for window in gtk.window_list_toplevels():
 		if isinstance(window, gui.Gui):
 			window.stop_all()
-			window.destroy()
-		else:
-			window.hide()
+		window.hide()
 	gobject.idle_add(show_recover, message)
 	gtk.main()
 
@@ -59,7 +57,9 @@ class Recover(gtk.Dialog):
 		self.set_icon(self.render_icon(gtk.STOCK_DIALOG_ERROR, gtk.ICON_SIZE_DND))
 		self.set_title("%s - %s" % (cons.TUCAN_NAME, ("Recover Help")))
 		self.set_position(gtk.WIN_POS_CENTER)
-		
+		self.set_modal(True)
+		self.set_resizable(False)
+
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, True, False, 5)
 		aspect = gtk.AspectFrame()
