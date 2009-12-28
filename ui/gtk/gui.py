@@ -341,7 +341,6 @@ class Gui(gtk.Window, Core):
 
 	def save_session(self, path):
 		""""""
-		mierda
 		packages, info = self.downloads.get_packages()
 		self.session.save_session(path, packages, info)
 		logger.debug("Session saved: %s" % info)

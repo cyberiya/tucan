@@ -188,6 +188,7 @@ class ClipboardMonitor(gtk.Dialog):
 		self.set_icon(self.render_icon(gtk.STOCK_PASTE, gtk.ICON_SIZE_MENU))
 		self.set_title("%s - %s" % (cons.TUCAN_NAME, ("Clipboard Monitor")))
 		self.set_position(gtk.WIN_POS_CENTER)
+		self.set_modal(True)
 		self.set_size_request(400,200)
 		if parent:
 			self.set_transient_for(parent)
