@@ -36,6 +36,13 @@ I18NDIR		=	i18n/
 MEDIADIR	=	media/
 UIDIR		=	ui/
 
+compile:
+
+install:
+	make basic-install
+
+	ln -sf $(MAINDIR)$(EXECFILE) $(BINDIR)$(NAME)
+
 basic-install:
 	mkdir -p $(BINDIR) $(MAINDIR) $(ICONDIR) $(MANDIR) $(DESKTOPDIR)
 
@@ -53,11 +60,6 @@ basic-install:
 	install -p -m 0644 $(MANPAGE) $(MANDIR)
 
 	install -p -m 0644 $(DESKTOPFILE) $(DESKTOPDIR)
-
-install:
-	make basic-install
-
-	ln -sf $(MAINDIR)$(EXECFILE) $(BINDIR)$(NAME)
 
 uninstall:
 	rm -rf $(MAINDIR)
