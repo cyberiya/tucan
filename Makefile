@@ -38,9 +38,7 @@ UIDIR		=	ui/
 
 compile:
 
-install:
-	make basic-install
-
+install:	basic-install
 	ln -sf $(MAINDIR)$(EXECFILE) $(BINDIR)$(NAME)
 
 basic-install:
