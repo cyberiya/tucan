@@ -139,11 +139,18 @@ class Tucan:
 
 	def start_gui(self, unique=True):
 		""""""
-		import pygtk
-		pygtk.require('2.0')
-		import gtk
-		import gobject
-		
+		try:
+			mierda
+			import pygtk
+			pygtk.require('2.0')
+			import gtk
+			import gobject
+		except:
+			if unique:
+				sys.exit("Tucan installed without GTK support. Use 'tucan --cli' for curses interface.")
+			else:
+				sys.exit("Already running or could not open ~/.tucan/tucan.pid")
+
 		from ui.gtk.gui import Gui, already_running, exception_hook
 		from ui.gtk.recover import halt
 		
