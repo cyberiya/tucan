@@ -140,38 +140,35 @@ class Tucan:
 	def start_gui(self, unique=True):
 		""""""
 		try:
-			mierda
 			import pygtk
 			pygtk.require('2.0')
 			import gtk
 			import gobject
 		except:
-			if unique:
-				sys.exit("Tucan installed without GTK support. Use 'tucan --cli' for curses interface.")
-			else:
-				sys.exit("Already running or could not open ~/.tucan/tucan.pid")
-
-		from ui.gtk.gui import Gui, already_running, exception_hook
-		from ui.gtk.recover import halt
-		
+			sys.exit("No GTK support. Use 'tucan --cli' for curses interface.")
 		try:
 			gtk.init_check()
 		except:
 			sys.exit("Could not connect to X server. Use 'tucan --cli' for curses interface.")
-		else:
-			if unique:
-				#recovery help
-				sys.excepthook = exception_hook
+		try:
+			from ui.gtk.gui import Gui, already_running, exception_hook
+			from ui.gtk.recover import halt
+		except:
+			sys.exit("Tucan installed without GUI support. Use 'tucan --cli' for curses interface.")
+	
+		if unique:
+			#recovery help
+			sys.excepthook = exception_hook
 				
-				gobject.threads_init()
-				try:
-					Gui(configuration)
-					gtk.main()
-				except Exception, e:
-					self.logger.critical(e)
-					halt(str(e))
-			else:
-				already_running()
+			gobject.threads_init()
+			try:
+				Gui(configuration)
+				gtk.main()
+			except Exception, e:
+				self.logger.critical(e)
+				halt(str(e))
+		else:
+			already_running()
 
 	def set_globals(self, options):
 		""""""		
