@@ -27,7 +27,7 @@ src_install() {
 	emake DESTDIR="${D}"/usr install || die "emake install failed"
 	dodoc CHANGELOG README || die "dodoc failed"
 	if use gtk ; then
-		doicon media/tucan.svg "${PN}.svg" || die "doicon failed"
+		doicon media/tucan.svg || die "doicon failed"
 		make_desktop_entry tucan Tucan
 	fi
 }
@@ -36,8 +36,6 @@ pkg_postinst() {
 	if ! use gtk ; then
 		ewarn "Please be aware that Tucan curses interface is still under"
 		ewarn "development."
-		ewarn "You may encounter some issue if you try to load tucan with"
-		ewarn "its Graphical User Interface."
 		ewarn
 		ewarn "You can still use 'tucan --cli' for curses interface or"
 		ewarn "simply use 'tucan --daemon' to use it daemonized."

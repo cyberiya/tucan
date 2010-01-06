@@ -1,32 +1,37 @@
-# Copyright 1999-2009 Gentoo Foundation
+# Copyright 1999-2010 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Header: $
 
-inherit subversion
+EAPI="2"
+
+inherit eutils subversion
 
 ESVN_REPO_URI="https://forja.rediris.es/svn/cusl3-tucan/trunk/"
 ESVN_PROJECT="tucan-svn"
 ESVN_STORE_DIR="${D}/svn-src"
 
-LICENSE="GPLv3"
+DESCRIPTION="Manages automatically downloads and uploads from one-click hosting sites like RapidShare"
+HOMEPAGE="http://tucaneando.com/"
+SRC_URI="http://forja.rediris.es/frs/download.php/1470/${P}.tar.gz"
+
+LICENSE="GPL-3"
 SLOT="0"
 KEYWORDS=""
+IUSE="gtk"
 
-IUSE=""
-DEPEND="dev-lang/python
-		dev-python/pygtk
-		dev-python/imaging
-		app-text/tesseract[linguas_en]
-		gnome-base/librsvg"
+RDEPEND="dev-lang/python
+	gtk? ( dev-python/pygtk
+		gnome-base/librsvg )
+	app-text/tesseract[linguas_en]
+	dev-python/imaging"
 
-src_compile() {
-	sed -i \
-		-e '/^DESTDIR/d' \
-		Makefile || die "sed failed"
-}
+src_compile() { :; }
 
 src_install() {
 	emake DESTDIR="${D}"/usr install || die "emake install failed"
-	dodoc CHANGELOG README || die
-	newicon media/tucan.svg "${PN}.svg"
+	dodoc CHANGELOG README || die "dodoc failed"
+	if use gtk ; then
+		doicon media/tucan.svg || die "doicon failed"
+		make_desktop_entry tucan Tucan
+	fi
 }
