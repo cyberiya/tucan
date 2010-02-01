@@ -52,8 +52,7 @@ class FormParser:
 					tmp = handle.readlines()
 					vars = {}
 					
-					sum = tmp[1].split("+mL+'/' ")[1].split(" 'g/'+mH+'/'+mY+'")[0]
-					
+					sum = tmp[1].split("+mL+'/' ")[1].split(" 'g/'")[0]
 					server = tmp[1].split("mL='")[1].split("';")[0]
 					link = tmp[1].split("mH='")[1].split("';")[0]
 					name = tmp[1].split("mY='")[1].split("';")[0]
