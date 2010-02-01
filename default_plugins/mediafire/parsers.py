@@ -23,6 +23,11 @@ import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
+import sys
+sys.path.append("/home/crak/tucan/trunk")
+import __builtin__
+__builtin__.PROXY = None
+
 from HTMLParser import HTMLParser
 
 from core.tesseract import Tesseract
@@ -47,28 +52,31 @@ class FormParser:
 				url = "".join(url.split("download.php"))
 			for line in opener.open(url).readlines():
 				if "cu(" in line:
-					tmp = line.split("cu('")[1].split("');")[0].split("','")
-					handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % (urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])])))
-					tmp = handle.readlines()
-					vars = {}
-					
-					sum = tmp[1].split("+mL+'/' ")[1].split(" 'g/'")[0]
-					server = tmp[1].split("mL='")[1].split("';")[0]
-					link = tmp[1].split("mH='")[1].split("';")[0]
-					name = tmp[1].split("mY='")[1].split("';")[0]
-					
-					for var in tmp[1].split(";"):
-						var = var.split("var")
-						if len(var) > 1:
-							var = var[1].strip().split("=")
-							if ((len(var) > 1) and ("'" in var[1])):
-								vars[var[0]] = var[1].split("'")[1]
-					for var in sum.split("+"):
-						if len(var) > 0:
-							if var in vars.keys():
-								random += vars[var]
-							else:
-								error = True
+					if "recaptcha" in line:
+						logger.warning("Unable to solve Recaptcha")
+					else:
+						tmp = line.split("cu('")[1].split("');")[0].split("','")
+						handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % (urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])])))
+						tmp = handle.readlines()
+						vars = {}
+						
+						sum = tmp[1].split("+mL+'/' ")[1].split(" 'g/'")[0]
+						server = tmp[1].split("mL='")[1].split("';")[0]
+						link = tmp[1].split("mH='")[1].split("';")[0]
+						name = tmp[1].split("mY='")[1].split("';")[0]
+						
+						for var in tmp[1].split(";"):
+							var = var.split("var")
+							if len(var) > 1:
+								var = var[1].strip().split("=")
+								if ((len(var) > 1) and ("'" in var[1])):
+									vars[var[0]] = var[1].split("'")[1]
+						for var in sum.split("+"):
+							if len(var) > 0:
+								if var in vars.keys():
+									random += vars[var]
+								else:
+									error = True
 		except Exception, e:
 			error = True
 			logger.exception("%s: %s" % (url, e))
