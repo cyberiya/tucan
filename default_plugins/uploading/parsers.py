@@ -23,30 +23,33 @@ import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
-from HTMLParser import HTMLParser
-
 from core.url_open import URLOpen
 
 JS_URL = "http://uploading.com/files/get/?JsHttpRequest=0-xml"
 
-class Parser(HTMLParser):
+class Parser:
 	def __init__(self, url):
 		""""""
-		HTMLParser.__init__(self)
-		self.form_action = None
-		self.link_id = None
 		self.link = url
-		self.wait = 60
+		self.link_id = None
+		self.wait = 1
 		self.opener = URLOpen(cookielib.CookieJar())
 		try:
 			for line in self.opener.open(url).readlines():
-				self.feed(line)
-			self.close()
+				if 'id="downloadform"' in line:
+					form_action = line.split('<form action="')[1].split('"')[0]
+				elif "file_id" in line:
+					self.link_id = line.split('value="')[1].split('"')[0]
 			data = urllib.urlencode([("action", "second_page"), ("file_id", self.link_id)])
-			if self.form_action:
-				self.opener.open(self.form_action, data).read()
+			if form_action:
+				for line in self.opener.open(form_action, data).readlines():
+					if "start_timer(" in line:
+						try:
+							self.wait = int(line.split("start_timer(")[1].split(")")[0])
+						except:
+							pass
 		except Exception, e:
-			logger.exception("%s :%s" % (url, e))
+			logger.exception("%s :%s" % (self.link, e))
 			
 	def get_handler(self):
 		""""""
@@ -57,16 +60,7 @@ class Parser(HTMLParser):
 				link = urllib.unquote(tmp.split(' "id": "0", "js": { "answer": { "link": "')[1].split('" }')[0]).replace("\\", "")
 				return self.opener.open(link)
 		except Exception, e:
-			logger.exception("%s :%s" % (url, e))
-
-	def handle_starttag(self, tag, attrs):
-		""""""
-		if tag == "form":
-			if attrs[2][1] == "downloadform":
-				self.form_action = attrs[0][1]
-		elif tag == "input":
-			if attrs[1][1] == "file_id":
-				self.link_id = attrs[2][1]
+			logger.exception("%s :%s" % (self.link, e))
 
 class CheckLinks:
 	""""""
@@ -95,6 +89,6 @@ class CheckLinks:
 if __name__ == "__main__":
 	c = Parser("http://uploading.com/files/MQJ6TLCW/")
 	import time
-	time.sleep(60)
+	time.sleep(c.wait)
 	print c.get_handler()
 	#print CheckLinks().check("http://uploading.com/files/MQJ6TLCW/")
