@@ -32,17 +32,18 @@ class Parser:
 		""""""
 		self.link = url
 		self.link_id = None
+		self.form_action = None
 		self.wait = 1
 		self.opener = URLOpen(cookielib.CookieJar())
 		try:
 			for line in self.opener.open(url).readlines():
 				if 'id="downloadform"' in line:
-					form_action = line.split('<form action="')[1].split('"')[0]
+					self.form_action = line.split('<form action="')[1].split('"')[0]
 				elif "file_id" in line:
 					self.link_id = line.split('value="')[1].split('"')[0]
 			data = urllib.urlencode([("action", "second_page"), ("file_id", self.link_id)])
-			if form_action:
-				for line in self.opener.open(form_action, data).readlines():
+			if self.form_action:
+				for line in self.opener.open(self.form_action, data).readlines():
 					if "start_timer(" in line:
 						try:
 							self.wait = int(line.split("start_timer(")[1].split(")")[0])
