@@ -108,5 +108,5 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	c = Parser("http://depositfiles.com/files/7n5ulr17r")
-	#print CheckLinks().check("http://depositfiles.com/files/7n5ulr17r")
+	c = Parser("http://depositfiles.com/files/hh5emnb1c")
+	#print CheckLinks().check("http://depositfiles.com/files/hh5emnb1c")

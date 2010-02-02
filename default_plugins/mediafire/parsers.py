@@ -52,7 +52,8 @@ class FormParser:
 				url = "".join(url.split("download.php"))
 			for line in opener.open(url).readlines():
 				if "cu(" in line:
-					if "recaptcha" in line:
+					if "GetCaptcha" in line:
+						print line
 						logger.warning("Unable to solve Recaptcha")
 					else:
 						tmp = line.split("cu('")[1].split("');")[0].split("','")
