@@ -45,7 +45,10 @@ class Parser(HTMLParser):
 				form = urllib.urlencode({"": self.input, "gateway_result":"1"})
 				for line in opener.open("%s%s" % (BASE_URL, self.form_action), form).readlines():
 					if self.wait:
-						self.feed(line)
+						try:
+							self.feed(line)
+						except Exception, e:
+							logger.exception("%s :%s" % (url, e))
 					else:
 						if '<td><span id="download_waiter_remain">' in line:
 							self.wait = int(line.split('<td><span id="download_waiter_remain">')[1].split('</span></td>')[0])
