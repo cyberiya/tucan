@@ -47,7 +47,7 @@ class Parser(HTMLParser.HTMLParser):
 						next_line = 1
 					elif next_line:
 						next_line = 0
-						self.link = line.split("<a href='")[1].split("'>")[0]
+						self.link = line.split("<a href='")[1].split("'")[0]
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 
@@ -95,4 +95,5 @@ class CheckLinks:
 
 if __name__ == "__main__":
 	c = Parser("http://www.4shared.com/file/91343636/4fa0632e/AF_Shamo_-_13_-_130.html")
-	#print CheckLinks().check("http://www.4shared.com/file/91343636/4fa0632e/AF_Shamo_-_13_-_130.html")
+	print c.link
+	print CheckLinks().check("http://www.4shared.com/file/91343636/4fa0632e/AF_Shamo_-_13_-_130.html")
