@@ -41,6 +41,7 @@ from about import About
 from message import Message
 from preferences import Preferences
 from log_view import LogView
+from history_view import HistoryView
 from shutdown import Shutdown
 from tree import Tree
 from input_links import InputLinks
@@ -137,6 +138,7 @@ class Gui(gtk.Window, Core):
 		menu_about = gtk.STOCK_ABOUT, lambda x: About(self)
 		menu_preferences = gtk.STOCK_PREFERENCES, self.preferences
 		menu_log = _("Show Logs"), lambda x: LogView(self, log_stream)
+		menu_history = _("Show History"), lambda x: HistoryView(self, self.history, [(s.name, s.icon_path) for s in self.services])
 		self.show_uploads = gtk.CheckMenuItem(_("Show Uploads"))
 		show_uploads = self.show_uploads, self.resize_pane, self.configuration.get_show_uploads()
 		shutdown = gtk.CheckMenuItem(_("Shutdown Computer")), self.shutdown, False
@@ -153,7 +155,7 @@ class Gui(gtk.Window, Core):
 				about_menu = _("About TucanManager"), lambda x: About(self)
 				preferences_menu = _("Preferences"), self.preferences
 				file_menu = m_file, [menu_load_session, menu_save_session]
-				view_menu = m_view, [show_uploads, None, menu_log]
+				view_menu = m_view, [show_uploads, None, menu_log, menu_history]
 				addons_menu = m_addons, [shutdown]
 				help_menu = m_help, [menu_help]
 				quit_menu = _("Quit"), self.quit
@@ -169,7 +171,7 @@ class Gui(gtk.Window, Core):
 		#normal menubar
 		if not integration:
 			file_menu = m_file, [menu_load_session, menu_save_session, None, menu_quit]
-			view_menu = m_view, [show_uploads, menu_log, None, menu_preferences]
+			view_menu = m_view, [show_uploads, menu_log, menu_history, None, menu_preferences]
 			addons_menu = m_addons, [shutdown]
 			help_menu = m_help, [menu_help, menu_about]
 			self.vbox.pack_start(menu_bar.MenuBar([file_menu, view_menu, addons_menu, help_menu]), False)

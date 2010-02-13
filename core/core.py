@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 from events import Events
 from service_manager import ServiceManager
 from download_manager import DownloadManager
+from history import History
 
 import misc
 import cons
@@ -43,6 +44,7 @@ class Core(ServiceManager):
 		__builtin__.events = Events()
 
 		ServiceManager.__init__(self, configuration)
+		self.history = History()
 		self.download_manager = DownloadManager(self.get_download_plugin, self.services)
 
 	def stop_all(self):
