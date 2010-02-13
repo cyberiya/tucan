@@ -54,6 +54,7 @@ class Events:
 				try:
 					callback(*(kargs+kargs2))
 				except Exception, e:
+					print e
 					logger.exception(e)
 
 	def trigger_limit_off(self, module):
@@ -71,7 +72,13 @@ class Events:
 		logger.debug("triggered: %s from %s" % (cons.EVENT_LIMIT_CANCEL, module))
 		self.trigger(cons.EVENT_LIMIT_CANCEL, module)
 	
+	def trigger_file_complete(self, name, size, unit, service):
+		""""""
+		logger.debug("triggered: %s" % cons.EVENT_FILE_COMPLETE)
+		self.trigger(cons.EVENT_FILE_COMPLETE, name, size, unit, service)
+		
 	def trigger_all_complete(self):
 		""""""
 		logger.debug("triggered: %s" % cons.EVENT_ALL_COMPLETE)
 		self.trigger(cons.EVENT_ALL_COMPLETE)
+		
