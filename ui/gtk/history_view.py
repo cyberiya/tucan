@@ -41,7 +41,7 @@ class HistoryView(gtk.Dialog):
 		
 		self.history = history
 		self.services = services
-		self.icons = {"None": gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 16, 16)}
+		self.icons = {}
 
 		# treeview
 		frame = gtk.Frame()
@@ -133,7 +133,7 @@ class HistoryView(gtk.Dialog):
 						self.icons[service] = gtk.gdk.pixbuf_new_from_file_at_size(path, 16, 16)
 			return self.icons[service]
 		except:
-			return self.icons["None"]
+			return gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 16, 16)
 
 	def close(self, widget=None, other=None):
 		""""""
