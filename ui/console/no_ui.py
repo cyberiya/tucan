@@ -41,31 +41,34 @@ def exception_hook(self, type, value, trace):
 
 class NoUi(Core):
 	""""""
-	def __init__(self, conf, links_file):
+	def __init__(self, conf, links_file, url):
 		""""""
 		self.configuration = conf
 		self.links_file = links_file
+		self.url = url
 		Core.__init__(self, self.configuration)
 
 	def run(self):
 		""""""
-		self.load_file()
+		self.load_links()
 		while len(self.download_manager.active_downloads + self.download_manager.pending_downloads) > 0:
 			self.download_manager.update()
 			time.sleep(1)
 		self.quit()
 
-	def load_file(self):
+	def load_links(self):
 		""""""
-		if self.links_file:
-			try:
+		links = [""]
+		try:
+			if self.url:
+				links = [self.url]
+			elif self.links_file:
 				f = open(self.links_file, "r")
 				links =	[link.lower().strip() for link in f.read().split("\n") if link and not link.startswith("#")]
 				f.close()
-				self.manage_packages(self.create_packages(self.check_links(links)), [])
-			except Exception, e:
-				logger.error(e)
-				
+			self.manage_packages(self.create_packages(self.check_links(links)), [])
+		except Exception, e:
+			logger.error(e)
 
 	def check_links(self, link_list):
 		""""""
@@ -84,6 +87,9 @@ class NoUi(Core):
 					logger.info("Checked: %s %s %s" % (file_name, size, size_unit))
 				if len(tmp) > 0:
 					result[service] = tmp
+			else:
+				for link in links:
+					logger.info("Unsupported: %s" % link)
 		return result
 
 	def manage_packages(self, packages, packages_info):

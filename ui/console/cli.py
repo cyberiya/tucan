@@ -68,7 +68,7 @@ class Cli(NoUi):
 		self.log_pad = curses.newpad(LOG_LINES, WIDTH)
 
 		#load links file
-		th = threading.Thread(group=None, target=self.load_file, name=None)
+		th = threading.Thread(group=None, target=self.load_links, name=None)
 		th.start()
 		
 		while self.running:

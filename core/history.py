@@ -73,7 +73,6 @@ class History(SafeConfigParser):
 				total_size /= 1024
 				unit = cons.UNIT_GB
 		except Exception, e:
-			print e
 			logger.error("Could not get history: %s" % e)
 		return "%.2f %s" % (total_size, unit), len(tmp), history
 

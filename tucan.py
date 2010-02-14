@@ -42,7 +42,7 @@ class Tucan:
 		parser.add_option("-i", "--input-links", dest="links_file", help="import links from FILE", metavar="FILE")
 		parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="print log to stdout")
 		parser.add_option("-V", "--version", action="store_true", dest="version", default=False, help="print version and exit")
-		self.options, args = parser.parse_args()
+		self.options, self.args = parser.parse_args()
 	
 		if self.options.version:
 			sys.exit("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
@@ -78,19 +78,27 @@ class Tucan:
 		console.setFormatter(logging.Formatter('%(levelname)-7s %(name)s: %(message)s'))
 		logging.getLogger("").addHandler(console)
 
-	def start_ui(self, options):
+	def start_ui(self):
 		""""""
-		self.set_globals(options)
-		if options.wizard:
+		self.set_globals()
+		if self.options.wizard:
 			self.set_verbose()
-			self.start_wizard(options.wizard)
-		elif options.daemon:
+			self.start_wizard(self.options.wizard)
+		elif self.options.daemon:
 			self.set_verbose()
-			self.start_daemon(options.links_file)
-		elif options.cli:
-			self.start_cli(options.links_file)
+			if len(self.args) > 0:
+				url = self.args[0]
+			else:
+				url = None
+			self.start_daemon(self.options.links_file, url)
+		elif self.options.cli:
+			if len(self.args) > 0:
+				url = self.args[0]
+			else:
+				url = None
+			self.start_cli(self.options.links_file, url)
 		else:
-			if options.verbose:
+			if self.options.verbose:
 				self.set_verbose()
 			self.start_gui()
 
@@ -112,17 +120,17 @@ class Tucan:
 		else:
 			self.exit("TYPE should be one of: accounts, services or updates")
 		
-	def start_daemon(self, file):
+	def start_daemon(self, file, url):
 		""""""
 		from ui.console.no_ui import NoUi, exception_hook
 
 		#exception hook
 		sys.excepthook = exception_hook
 
-		d = NoUi(configuration, file)
+		d = NoUi(configuration, file, url)
 		d.run()
 
-	def start_cli(self, file):
+	def start_cli(self, file, url):
 		""""""
 		if cons.OS_WINDOWS:
 			self.exit("No curses support.")
@@ -134,7 +142,7 @@ class Tucan:
 			#exception hook
 			sys.excepthook = exception_hook
 
-			c = Cli(configuration, file)
+			c = Cli(configuration, file, url)
 			wrapper(c.run)
 
 	def start_gui(self, unique=True):
@@ -170,7 +178,7 @@ class Tucan:
 		else:
 			already_running()
 
-	def set_globals(self, options):
+	def set_globals(self):
 		""""""		
 		#proxy settings
 		__builtin__.PROXY = None
@@ -192,7 +200,7 @@ class Tucan:
 if __name__ == "__main__":
 	tucan = Tucan()
 	try:
-		tucan.start_ui(tucan.options)
+		tucan.start_ui()
 	except KeyboardInterrupt:
 		tucan.exit("KeyboardInterrupt")
 	except Exception, e:
