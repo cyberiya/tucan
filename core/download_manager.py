@@ -216,11 +216,7 @@ class DownloadManager:
 					elif status == cons.STATUS_CORRECT:
 						logger.info("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						#history_trigger
-						for link in download.links:
-							if link.active:
-								service_name = link.service
-								break
-						events.trigger_file_complete(download.name, actual_size, unit, service_name)
+						events.trigger_file_complete(download.name, actual_size, unit, download.links)
 						if "return_slot" in dir(link.plugin):
 							plugin.return_slot()
 						download.progress = 100

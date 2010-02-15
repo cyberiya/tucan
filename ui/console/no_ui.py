@@ -45,6 +45,7 @@ class NoUi(Core):
 		""""""
 		self.configuration = conf
 		self.links_file = links_file
+		self.buffer = []
 		self.url = url
 		Core.__init__(self, self.configuration)
 
@@ -63,12 +64,30 @@ class NoUi(Core):
 			if self.url:
 				links = [self.url]
 			elif self.links_file:
+				events.connect(cons.EVENT_FILE_COMPLETE, self.comment_link)
 				f = open(self.links_file, "r")
-				links =	[link.lower().strip() for link in f.read().split("\n") if link and not link.startswith("#")]
+				self.buffer = f.readlines()
+				links =	[link.strip() for link in self.buffer if link and not link.startswith("#")]
 				f.close()
 			self.manage_packages(self.create_packages(self.check_links(links)), [])
 		except Exception, e:
 			logger.error(e)
+			
+	def comment_link(self, name, size, unit, links):
+		""""""
+		try:
+			for link in links:
+				print link.url
+				for line in self.buffer:
+					if link.url in line:
+						self.buffer[self.buffer.index(line)] = "#%s" % line
+						break
+			f = open(self.links_file, "w")
+			f.write("".join(self.buffer))
+			f.close()
+		except Exception, e:
+			logger.error(e)
+
 
 	def check_links(self, link_list):
 		""""""
