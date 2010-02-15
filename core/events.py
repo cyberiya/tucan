@@ -72,10 +72,10 @@ class Events:
 		logger.debug("triggered: %s from %s" % (cons.EVENT_LIMIT_CANCEL, module))
 		self.trigger(cons.EVENT_LIMIT_CANCEL, module)
 	
-	def trigger_file_complete(self, name, size, unit, service):
+	def trigger_file_complete(self, name, size, unit, links):
 		""""""
 		logger.debug("triggered: %s" % cons.EVENT_FILE_COMPLETE)
-		self.trigger(cons.EVENT_FILE_COMPLETE, name, size, unit, service)
+		self.trigger(cons.EVENT_FILE_COMPLETE, name, size, unit, links)
 		
 	def trigger_all_complete(self):
 		""""""

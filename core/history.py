@@ -33,7 +33,7 @@ HISTORY = "tucan.history"
 OPTION_PLAYED = "played"
 OPTION_DATE = "date"
 OPTION_NAME = "name"
-OPTION_SERVICE = "service"
+OPTION_LINK = "link"
 OPTION_SIZE = "size"
 
 class History(SafeConfigParser):
@@ -67,8 +67,8 @@ class History(SafeConfigParser):
 					total_size += float(tmp_size)*1024
 				elif tmp_unit == cons.UNIT_KB:
 					total_size += float(tmp_size)/1024
-				service = self.get(section, OPTION_SERVICE)
-				history.append((section, played, service, date, name, size))
+				link = self.get(section, OPTION_LINK)
+				history.append((section, played, link, date, name, size))
 			if total_size > 1024:
 				total_size /= 1024
 				unit = cons.UNIT_GB
@@ -82,7 +82,7 @@ class History(SafeConfigParser):
 			self.set(id, OPTION_PLAYED, str(value))
 			self.save()
 		
-	def add_history(self, name, size, unit, service):
+	def add_history(self, name, size, unit, links):
 		id = str(self.id)
 		self.id += 1
 		self.add_section(id)
@@ -90,7 +90,10 @@ class History(SafeConfigParser):
 		self.set(id, OPTION_DATE, time.strftime("%Y-%m-%d"))
 		self.set(id, OPTION_NAME, name)
 		self.set(id, OPTION_SIZE, "%i %s" % (size, unit))
-		self.set(id, OPTION_SERVICE, service)
+		for link in links:
+			if link.active:
+				self.set(id, OPTION_LINK, link.url)
+				break
 		self.save()
 
 	def save(self):

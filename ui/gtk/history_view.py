@@ -37,7 +37,7 @@ class HistoryView(gtk.Dialog):
 		self.set_transient_for(parent)
 		self.set_icon(self.render_icon(gtk.STOCK_INDEX, gtk.ICON_SIZE_MENU))
 		self.set_title(("History View"))
-		self.set_size_request(400,300)
+		self.set_size_request(600,400)
 		
 		self.history = history
 		self.services = services
@@ -53,7 +53,7 @@ class HistoryView(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.store = gtk.ListStore(str, bool, gtk.gdk.Pixbuf, str, str, str)
+		self.store = gtk.ListStore(str, bool, gtk.gdk.Pixbuf, str, str, str, str)
 		self.treeview = gtk.TreeView(self.store)
 		scroll.add(self.treeview)
 
@@ -90,13 +90,13 @@ class HistoryView(gtk.Dialog):
 		tree_size = gtk.TreeViewColumn('Size') 
 		size_cell = gtk.CellRendererText()
 		tree_size.pack_start(size_cell, True)
-		tree_size.add_attribute(size_cell, 'text', 5)
+		tree_size.add_attribute(size_cell, 'text', 6)
 		self.treeview.append_column(tree_size)
 		
 		#fill store
 		total_size, num_files, history = self.history.get_all()
-		for id, played, service, date, name, size in history:
-			self.store.append((id, played, self.get_icon(service), date, name, size))
+		for id, played, link, date, name, size in history:
+			self.store.append((id, played, self.get_icon(link), date, "%s\n%s" % (name, link), link, size))
 			
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 10)
@@ -109,9 +109,30 @@ class HistoryView(gtk.Dialog):
 		self.action_area.pack_start(close_button)
 		close_button.connect("clicked", self.close)
 
+		self.treeview.connect("button-press-event", self.mouse_menu)
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
+		
+	def mouse_menu(self, widget, event):
+		"""right button"""
+		if event.button == 3:
+			model, paths = self.treeview.get_selection().get_selected_rows()
+			if len(paths) > 0:
+				subitem = gtk.ImageMenuItem(gtk.STOCK_COPY)
+				subitem.connect("activate", self.copy_clipboard)
+				menu = gtk.Menu()
+				menu.append(subitem)
+				menu.show_all()
+				menu.popup(None, None, None, event.button, event.time)
+				
+	def copy_clipboard(self, button):
+		""""""
+		model, iter = self.treeview.get_selection().get_selected()
+		if iter:
+			clipboard = gtk.Clipboard()
+			clipboard.clear()
+			clipboard.set_text(model.get_value(iter, 5))
 
 	def toggled(self, button, path):
 		""""""
@@ -124,16 +145,20 @@ class HistoryView(gtk.Dialog):
 		self.history.set_played(id, active)
 		model.set_value(model.get_iter(path), 1, active)
 		
-	def get_icon(self, service):
+	def get_icon(self, link):
 		""""""
 		try:
+			service = ""
+			for name, path in self.services:
+				if name in link:
+					service = name
 			if service not in self.icons:
 				for name, path in self.services:
 					if service == name:
-						self.icons[service] = gtk.gdk.pixbuf_new_from_file_at_size(path, 16, 16)
+						self.icons[service] = gtk.gdk.pixbuf_new_from_file_at_size(path, 24, 24)
 			return self.icons[service]
 		except:
-			return gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 16, 16)
+			return gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 24, 24)
 
 	def close(self, widget=None, other=None):
 		""""""
