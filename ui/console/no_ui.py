@@ -88,7 +88,6 @@ class NoUi(Core):
 		except Exception, e:
 			logger.error(e)
 
-
 	def check_links(self, link_list):
 		""""""
 		result = {}
