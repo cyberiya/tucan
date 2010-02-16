@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ class Shutdown:
 				Message(parent, cons.SEVERITY_ERROR, title, "Could not shut down the computer.")
 			except Exception, e:
 				logger.exception(e)
-				
+
 	def counter(self):
 		""""""
 		if self.time > 0:
@@ -69,4 +69,3 @@ class Shutdown:
 
 if __name__ == "__main__":
 	Shutdown(None, None)
-	

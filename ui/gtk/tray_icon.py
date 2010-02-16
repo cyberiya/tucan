@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ if cons.OS_OSX:
 				
 				self.connect("quit-activate", quit)
 				self.connect("clicked", self.activate)
-				
+
 			def activate(self, statusicon, closed=False):
 				""""""
 				if self.window_visible:
@@ -81,7 +81,7 @@ class TrayIcon(gtk.StatusIcon):
 				tmp.connect('activate', item[1])
 			self.menu.append(tmp)
 		self.menu.show_all()
-		
+
 		self.connect('activate', self.activate)
 		self.connect('popup-menu', self.popup_menu)
 
@@ -104,7 +104,7 @@ class TrayIcon(gtk.StatusIcon):
 		tmp = text.split("\t")
 		message = "Downloads: " + "".join(tmp[1:]) + "\n" + tmp[0].strip()
 		self.set_tooltip(message)
-	
+
 	def close(self):
 		""""""
 		self.set_visible(False)

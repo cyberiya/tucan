@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ def main_info(log=logger):
 	log.debug("PYTHON: %s" % cons.OS_PYTHON)
 	log.debug("Main path: %s" % cons.PATH)
 	log.debug("Configuration path: %s" % cons.CONFIG_PATH)
-	
+
 def report_log(email="", comment=""):
 	""""""
 	try:

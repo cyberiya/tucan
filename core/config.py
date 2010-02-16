@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -127,7 +127,7 @@ class Config(SafeConfigParser):
 		""""""
 		if self.has_option(SECTION_MAIN, OPTION_VERSION):
 			return self.get(SECTION_MAIN, OPTION_VERSION)
-		
+
 	def get_uuid(self):
 		""""""
 		if self.has_option(SECTION_MAIN, OPTION_UUID):
@@ -137,7 +137,7 @@ class Config(SafeConfigParser):
 			self.set(SECTION_MAIN, OPTION_UUID, new_uuid)
 			self.save()
 			return new_uuid
-			
+
 	def get_languaje(self):
 		""""""
 		return self.get(SECTION_MAIN, OPTION_LANGUAGE)
@@ -154,7 +154,7 @@ class Config(SafeConfigParser):
 		""""""
 		self.set(SECTION_MAIN, OPTION_MAX_DOWNLOADS, str(value))
 		__builtin__.max_downloads = value
-		
+
 	def get_max_download_speed(self):
 		""""""
 		return self.getint(SECTION_MAIN, OPTION_MAX_DOWNLOAD_SPEED)
@@ -163,18 +163,18 @@ class Config(SafeConfigParser):
 		""""""
 		self.set(SECTION_MAIN, OPTION_MAX_DOWNLOAD_SPEED, str(value))
 		__builtin__.max_download_speed = value
-		
+
 	def get_downloads_folder(self):
 		""""""
 		if self.has_option(SECTION_MAIN, OPTION_DOWNLOADS_FOLDER):
 			return self.get(SECTION_MAIN, OPTION_DOWNLOADS_FOLDER).decode("utf-8")
 		else:
 			return cons.DEFAULT_PATH
-			
+
 	def set_downloads_folder(self, path):
 		""""""
 		self.set(SECTION_MAIN, OPTION_DOWNLOADS_FOLDER, path.encode("utf-8"))
-		
+
 	def get_tray_close(self):
 		""""""
 		return self.getboolean(SECTION_UI, OPTION_TRAY_CLOSE)
@@ -207,7 +207,7 @@ class Config(SafeConfigParser):
 			return x, y, w, h
 		else:
 			return -1, -1, -1, -1
-			
+
 	def set_window_settings(self, x, y, w, h):
 		""""""
 		self.set(SECTION_UI, OPTION_WINDOW_SETTINGS, "%i,%i,%i,%i" % (x, y, w, h))
@@ -219,7 +219,7 @@ class Config(SafeConfigParser):
 	def set_advanced_packages(self, value):
 		""""""
 		self.set(SECTION_UI, OPTION_ADVANCED_PACKAGES, str(value))
-		
+
 	def get_show_uploads(self):
 		""""""
 		return self.getboolean(SECTION_UI, OPTION_SHOW_UPLOADS)
@@ -251,7 +251,7 @@ class Config(SafeConfigParser):
 			if self.getboolean(SECTION_ADVANCED, OPTION_ENABLE_PROXY):
 				result = self.get(SECTION_ADVANCED, OPTION_PROXY_URL), self.getint(SECTION_ADVANCED, OPTION_PROXY_PORT)
 		return result
-		
+
 	def set_proxy(self, url, port):
 		""""""
 		self.set(SECTION_ADVANCED, OPTION_PROXY_URL, url)

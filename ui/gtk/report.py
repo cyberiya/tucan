@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ class Report(gtk.Dialog):
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(400, 300)
 		self.set_icon_from_file(media.ICON_SEND)
-		
+
 		self.sending = False
 
 		frame = gtk.Frame()
@@ -115,7 +115,7 @@ class Report(gtk.Dialog):
 		id = report_log(self.email.get_text(), comment)
 		self.sending = False
 		gobject.idle_add(self.reported, id)
-		
+
 	def reported(self, id):
 		""""""
 		if id:

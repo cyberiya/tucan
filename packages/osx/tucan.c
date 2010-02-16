@@ -2,7 +2,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -29,39 +29,39 @@
 #define TUCAN_FILE "/src/tucan.py"
 
 int main()
-{	
+{
 	int result = 0;
-	
+
 	CFBundleRef mainBundle = CFBundleGetMainBundle();
-        CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
-        char path[PATH_MAX];
-	
-        if (CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX))
-        {
+	CFURLRef resourcesURL = CFBundleCopyResourcesDirectoryURL(mainBundle);
+	char path[PATH_MAX];
+
+	if (CFURLGetFileSystemRepresentation(resourcesURL, TRUE, (UInt8 *)path, PATH_MAX))
+	{
 		char *tucan_path;
-		
+
 		tucan_path = (char *)calloc(strlen(path) + strlen(TUCAN_FILE) + 1, sizeof(char));
 		strcpy(tucan_path, path);
 		strcat(tucan_path, TUCAN_FILE);
-                printf("Tucan Path: %s\n", tucan_path);
-		
+		printf("Tucan Path: %s\n", tucan_path);
+
 		FILE *fp = fopen(tucan_path, "r");
-		
+
 		Py_Initialize();
-		
+
 		char *argv[1];
 		argv[0] = tucan_path;
 		argv[1] = NULL;
-		
+
 		PySys_SetArgv(1, argv);
 		result = PyRun_SimpleFile(fp, tucan_path);
-		
+
 		//printf("PATH: %s\n", Py_GetPath());
 		Py_Finalize();
 
 		free(tucan_path);
-        }
-        CFRelease(resourcesURL);
-	
+	}
+	CFRelease(resourcesURL);
+
 	return result;
 }

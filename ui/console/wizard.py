@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -29,7 +29,7 @@ import core.misc
 import core.cons as cons
 
 class Wizard:
-	""""""		
+	""""""
 	def __init__(self):
 		""""""
 		core.misc.main_info()
@@ -59,7 +59,7 @@ class Wizard:
 			except Exception, e:
 				logger.error("Error. %s" % e)
 		logger.info("DONE")
-		
+
 	def account_setup2(self, service, get_cookie):
 		""""""
 		end = False
@@ -118,7 +118,7 @@ class Wizard:
 				pass
 			except Exception, e:
 				logger.error("Error. %s" % e)
-				
+
 	def check_account(self, user, password, get_cookie):
 		""""""
 		logger.info("Checking account '%s'..." % user)
@@ -138,7 +138,7 @@ class Wizard:
 			return user
 		else:
 			logger.error("No user name.")
-		
+
 	def get_password(self):
 		""""""
 		while True:
@@ -222,4 +222,4 @@ class Wizard:
 			logger.error("Error updating. %s" % e)
 		else:
 			config.save()
-			logger.info("DONE")			
+			logger.info("DONE")

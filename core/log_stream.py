@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -34,18 +34,18 @@ class LogStream:
 				if s in line:
 					self.new_buffer.append(str(line))
 					break
-		
+
 	def flush(self):
 		""""""
 		pass
-		
+
 	def read(self):
 		""""""
 		tmp = self.new_buffer
 		self.new_buffer = []
 		self.old_buffer += tmp
 		return "\n".join(self.old_buffer)
-		
+
 	def readlines(self):
 		""""""
 		if len(self.new_buffer) > 0:

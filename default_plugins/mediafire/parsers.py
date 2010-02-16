@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ class FormParser:
 						handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % (urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])])))
 						tmp = handle.readlines()
 						vars = {}
-						
+
 						sum = tmp[1].split("+mL+'/' ")[1].split(" 'g/'")[0]
 						server = tmp[1].split("mL='")[1].split("';")[0]
 						link = tmp[1].split("mH='")[1].split("';")[0]

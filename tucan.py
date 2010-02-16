@@ -2,7 +2,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -43,13 +43,13 @@ class Tucan:
 		parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="print log to stdout")
 		parser.add_option("-V", "--version", action="store_true", dest="version", default=False, help="print version and exit")
 		self.options, self.args = parser.parse_args()
-	
+
 		if self.options.version:
 			sys.exit("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
-		
+
 		if not os.path.exists(cons.CONFIG_PATH):
 			os.mkdir(cons.CONFIG_PATH)
-		
+
 		#check for previous running instance
 		self.pid_file = pid_file.PidFile(cons.PID_FILE)
 		if self.pid_file.start():
@@ -163,11 +163,11 @@ class Tucan:
 			from ui.gtk.recover import halt
 		except:
 			sys.exit("Tucan installed without GUI support. Use 'tucan --cli' for curses interface.")
-	
+
 		if unique:
 			#recovery help
 			sys.excepthook = exception_hook
-				
+
 			gobject.threads_init()
 			try:
 				Gui(configuration)
@@ -179,7 +179,7 @@ class Tucan:
 			already_running()
 
 	def set_globals(self):
-		""""""		
+		""""""
 		#proxy settings
 		__builtin__.PROXY = None
 		if configuration.get_proxy_enabled():
@@ -187,7 +187,7 @@ class Tucan:
 			url_open.set_proxy(proxy_url, proxy_port)
 		else:
 			url_open.set_proxy(None)
-		
+
 		__builtin__.max_downloads = configuration.get_max_downloads()
 		__builtin__.max_download_speed = configuration.get_max_download_speed()
 
