@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -36,17 +36,17 @@ class TestLink(unittest.TestCase):
 
 	def test_active(self):
 		self.assertFalse(self.link.get_active(), "should be inactive by default")
-	
+
 	def test_set_active(self):
 		self.link.set_active()
 		self.assertTrue(self.link.get_active(), "should be active")
-	
+
 	def test_url(self):
 		self.assertTrue(self.link.get_url(), "url should not be empty")
-	
+
 	def test_name(self):
-		self.assertEqual(self.link.get_name(), self.link.get_url(), "name and url should be equal")	
-	
+		self.assertEqual(self.link.get_name(), self.link.get_url(), "name and url should be equal")
+
 	def test_service(self):
 		self.assertTrue(self.link.get_service(), "service should not be empty")
 

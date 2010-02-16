@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -280,7 +280,7 @@ class InputFiles(gtk.Dialog):
 			else:
 				return size, cons.UNIT_KB
 		else:
-			return 1, cons.UNIT_KB	
+			return 1, cons.UNIT_KB
 
 	def add_service(self, package_model, file_iter, service, file_size, max_size):
 		""""""

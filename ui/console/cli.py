@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -35,16 +35,16 @@ LOG_LINES = 50
 WIDTH = 100
 
 class Cli(NoUi):
-	""""""		
+	""""""
 	def __init__(self, *kwargs):
-		""""""		
+		""""""
 		#set logger
 		self.stream = LogStream()
 		handler = logging.StreamHandler(self.stream)
 		handler.setLevel(logging.INFO)
 		handler.setFormatter(logging.Formatter('%(levelname)-7s %(message)s'))
 		logging.getLogger("").addHandler(handler)
-				
+
 		NoUi.__init__(self, *kwargs)
 		self.running = True
 		self.quit_question = False
@@ -70,7 +70,7 @@ class Cli(NoUi):
 		#load links file
 		th = threading.Thread(group=None, target=self.load_links, name=None)
 		th.start()
-		
+
 		while self.running:
 			self.win_height, self.win_chars = self.screen.getmaxyx()
 			self.parse_input()
@@ -82,7 +82,7 @@ class Cli(NoUi):
 			else:
 				curses.doupdate()
 			time.sleep(0.5)
-		
+
 	def parse_input(self):
 		""""""
 		try:
@@ -103,7 +103,7 @@ class Cli(NoUi):
 					self.question()
 				else:
 					self.update_status()
-					
+
 	def update_main(self):
 		""""""
 		if self.win_height > 5:
@@ -159,7 +159,7 @@ class Cli(NoUi):
 		self.status_pad.erase()
 		self.status_pad.addnstr(0, 0, "Are you sure you want to quit? [y/N]", WIDTH, curses.A_STANDOUT)
 		self.status_pad.noutrefresh(0, 0, 0, 0, 0, self.win_chars-1)
-		
+
 	def calculate_time(self, time):
 		""""""
 		result = None
@@ -179,9 +179,8 @@ class Cli(NoUi):
 		elif seconds > 0:
 			result = str(seconds) + "s"
 		return result
-		
+
 	def quit(self):
 		""""""
 		self.running = False
 		NoUi.quit(self)
-		

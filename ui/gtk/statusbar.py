@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -37,10 +37,10 @@ class Statusbar(gtk.Statusbar):
 		""""""
 		gtk.Statusbar.__init__(self)
 		self.set_has_resize_grip(False)
-		
+
 		self.services = configuration.get_services()
 		self.blinks = 0
-		
+
 		#download speed limit
 		frame = gtk.Frame()
 		frame.set_shadow_type(gtk.SHADOW_IN)
@@ -60,11 +60,11 @@ class Statusbar(gtk.Statusbar):
 		self.max_speed.connect("value-changed", self.change_speed)
 
 		self.menu = gtk.Menu()
-		
+
 		self.limits = {}
 		events.connect(cons.EVENT_LIMIT_ON, self.add_limit)
 		events.connect(cons.EVENT_LIMIT_OFF, self.remove_limit)
-		
+
 		frame = gtk.Frame()
 		frame.set_shadow_type(gtk.SHADOW_IN)
 		self.pack_start(frame, False, False)
@@ -87,7 +87,7 @@ class Statusbar(gtk.Statusbar):
 	def change_speed(self, spinbutton):
 		""""""
 		__builtin__.max_download_speed = spinbutton.get_value_as_int()
-		
+
 	def blink(self):
 		""""""
 		if self.blinks < 10:
@@ -99,10 +99,10 @@ class Statusbar(gtk.Statusbar):
 			return True
 		else:
 			self.blinks = 0
-		
+
 	def add_limit(self, module):
 		""""""
-		tmp = module.split(".")				
+		tmp = module.split(".")
 		callback = lambda x: events.trigger_limit_cancel(module)
 		if not module in self.limits:
 			for name, icon_path, url, enabled, config in self.services:

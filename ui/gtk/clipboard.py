@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -43,12 +43,12 @@ def check_text(clipboard, selection_data):
 def check_contents(clipboard, selection_data):
 	""""""
 	if cons.OS_OSX:
-		return check_osx_html(clipboard, selection_data)		
+		return check_osx_html(clipboard, selection_data)
 	elif cons.OS_WINDOWS:
 		return check_html(clipboard, selection_data, "HTML Format", "utf8")
 	else:
 		return check_html(clipboard, selection_data, "text/html", "utf16")
-						
+
 def check_osx_html(clipboard, selection_data):
 	""""""
 	urls = []
@@ -61,7 +61,7 @@ def check_osx_html(clipboard, selection_data):
 					urls.append(line.split('{HYPERLINK "')[1].split('"}')[0])
 	return urls
 
-	
+
 def check_html(clipboard, selection_data, target, codec):
 	""""""
 	urls = []
@@ -105,7 +105,7 @@ class Clipboard:
 		self.content_callback = callback
 		self.hint = set_hint
 		self.services = services
-					
+
 	def enable(self):
 		""""""
 		if cons.OS_WINDOWS or cons.OS_OSX:
@@ -214,9 +214,9 @@ class ClipboardMonitor(gtk.Dialog):
 			textview = gtk.TextView(buffer)
 			scroll.add(textview)
 			textview.set_wrap_mode(gtk.WRAP_CHAR)
-		
+
 		self.content = None
-		
+
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
 		self.action_area.pack_start(cancel_button)
@@ -238,20 +238,20 @@ class ClipboardMonitor(gtk.Dialog):
 
 		self.run()
 
-		
+
 	def set_content(self, button=None):
 		""""""
 		buffer = [self.html_buffer, self.text_buffer, self.all_buffer][self.notebook.get_current_page()]
 		start, end = buffer.get_bounds()
 		self.content = buffer.get_text(start, end)
 		self.close()
-		
+
 	def get_content(self):
 		""""""
 		result = self.content
 		self.content = None
 		return result
-				
+
 	def close(self, widget=None, other=None):
 		""""""
 		self.html_buffer.set_text("")

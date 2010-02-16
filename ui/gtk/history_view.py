@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ class HistoryView(gtk.Dialog):
 		self.set_icon(self.render_icon(gtk.STOCK_INDEX, gtk.ICON_SIZE_MENU))
 		self.set_title(("History View"))
 		self.set_size_request(600,400)
-		
+
 		self.history = history
 		self.services = services
 		self.icons = {}
@@ -73,7 +73,7 @@ class HistoryView(gtk.Dialog):
 		tree_icon.add_attribute(icon_cell, 'pixbuf', 2)
 		tree_icon.set_property('min-width', 32)
 		self.treeview.append_column(tree_icon)
-		
+
 		tree_date = gtk.TreeViewColumn('Date') 
 		date_cell = gtk.CellRendererText()
 		tree_date.pack_start(date_cell, True)
@@ -86,18 +86,18 @@ class HistoryView(gtk.Dialog):
 		tree_name.add_attribute(name_cell, 'text', 4)
 		tree_name.set_property('min-width', 180)
 		self.treeview.append_column(tree_name)
-		
+
 		tree_size = gtk.TreeViewColumn('Size') 
 		size_cell = gtk.CellRendererText()
 		tree_size.pack_start(size_cell, True)
 		tree_size.add_attribute(size_cell, 'text', 6)
 		self.treeview.append_column(tree_size)
-		
+
 		#fill store
 		total_size, num_files, history = self.history.get_all()
 		for id, played, link, date, name, size in history:
 			self.store.append((id, played, self.get_icon(link), date, "%s\n%s" % (name, link), link, size))
-			
+
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 10)
 		label = gtk.Label()
@@ -113,7 +113,7 @@ class HistoryView(gtk.Dialog):
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
-		
+
 	def mouse_menu(self, widget, event):
 		"""right button"""
 		if event.button == 3:
@@ -125,7 +125,7 @@ class HistoryView(gtk.Dialog):
 				menu.append(subitem)
 				menu.show_all()
 				menu.popup(None, None, None, event.button, event.time)
-				
+
 	def copy_clipboard(self, button):
 		""""""
 		model, iter = self.treeview.get_selection().get_selected()
@@ -144,7 +144,7 @@ class HistoryView(gtk.Dialog):
 		id = model.get_value(model.get_iter(path), 0)
 		self.history.set_played(id, active)
 		model.set_value(model.get_iter(path), 1, active)
-		
+
 	def get_icon(self, link):
 		""""""
 		try:

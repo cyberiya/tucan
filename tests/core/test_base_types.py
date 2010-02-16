@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -39,37 +39,37 @@ def get_suite():
 class TestBase(unittest.TestCase):
 	def setUp(self):
 		self.base = Base(NAME)
-		
+
 	def test_id(self):
 		self.assertEqual(len(self.base.get_id()), 36, "id should have 36 characters")
-	
+
 	def test_name(self):
 		self.assertTrue(self.base.get_name(), "name should not be empty")
 
 	def test_set_name(self):
 		self.base.set_name(NAME2)
-		self.assertNotEqual(self.base.get_name(), NAME, "name should be updated")	
-		self.assertEqual(self.base.get_name(), NAME2, "name should be updated")	
-				
+		self.assertNotEqual(self.base.get_name(), NAME, "name should be updated")
+		self.assertEqual(self.base.get_name(), NAME2, "name should be updated")
+
 	def tearDown(self):
 		del self.base
 
 class TestContainer(unittest.TestCase):
 	def setUp(self):
 		self.container = Container(NAME)
-		
+
 	def test_add_item(self):
 		item = Base(NAME)
 		self.assertTrue(self.container.add_item(item), "item should be added")
 		self.assertFalse(self.container.add_item(item), "item should not be added")
-					
+
 	def tearDown(self):
 		del self.container
 
 class TestItem(unittest.TestCase):
 	def setUp(self):
 		self.item = Item(PATH, SIZE)
-				
+
 	def test_(self):
 		pass
 

@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -113,7 +113,7 @@ class Downloader(threading.Thread):
 							self.status = cons.STATUS_ERROR
 				else:
 					self.stop_flag = True
-					self.status = cons.STATUS_PEND					
+					self.status = cons.STATUS_PEND
 			except Exception, e:
 				self.stop_flag = True
 				logger.exception("%s: %s" % (self.file, e))

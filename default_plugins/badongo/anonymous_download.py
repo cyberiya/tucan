@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 					logger.warning("Limit Exceeded.")
 					self.add_wait()
 					self.return_slot()
-					
+
 	def post_wait(self, link):
 		"""Must return handler"""
 		return self.opener.open(link, urllib.urlencode([("pr", "1")]))

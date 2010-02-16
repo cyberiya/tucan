@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ class LogView(gtk.Dialog):
 		hbox.pack_start(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		scroll.get_vadjustment().connect("changed", self.changed)
-		scroll.get_vadjustment().connect("value-changed", self.value_changed)		
+		scroll.get_vadjustment().connect("value-changed", self.value_changed)
 
 		#textview
 		buffer = gtk.TextBuffer()

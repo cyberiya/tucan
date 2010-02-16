@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -72,7 +72,7 @@ class NoUi(Core):
 			self.manage_packages(self.create_packages(self.check_links(links)), [])
 		except Exception, e:
 			logger.error(e)
-			
+
 	def comment_link(self, name, size, unit, links):
 		""""""
 		try:

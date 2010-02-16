@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -83,7 +83,7 @@ class CaptchaParser(HTMLParser):
 						self.hash2 = value
 		elif tag == "img":
 			self.captcha_url = "%s%s" % (BASE_URL, attrs[0][1])
-			
+
 	def filter_image(self, image):
 		""""""
 		image = image.point(self.filter_pixel)

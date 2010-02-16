@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -64,12 +64,12 @@ class InputLinks(gtk.Dialog):
 		scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
 		#auto scroll
 		scroll.get_vadjustment().connect("changed", self.changed)
-		scroll.get_vadjustment().connect("value-changed", self.value_changed)		
+		scroll.get_vadjustment().connect("value-changed", self.value_changed)
 		buffer = gtk.TextBuffer()		
 		self.textview = gtk.TextView(buffer)
 		scroll.add(self.textview)
 		self.textview.set_wrap_mode(gtk.WRAP_CHAR)
-		
+
 		if content:
 			buffer.set_text(content)
 			gobject.idle_add(self.check)
@@ -99,7 +99,7 @@ class InputLinks(gtk.Dialog):
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
 		#auto scroll
 		scroll.get_vadjustment().connect("changed", self.changed)
-		scroll.get_vadjustment().connect("value-changed", self.value_changed)		
+		scroll.get_vadjustment().connect("value-changed", self.value_changed)
 
 		self.treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, int, str, str, bool, bool))
 		scroll.add(self.treeview)
@@ -205,7 +205,7 @@ class InputLinks(gtk.Dialog):
 			else:
 				self.packages(packages, [])
 				self.close()
-		else:		
+		else:
 			title = _("Nothing to add.")
 			message = _("There aren't links to add.\nPlease check the links before adding.")
 			m = Message(self, cons.SEVERITY_INFO, title, message, both=True)

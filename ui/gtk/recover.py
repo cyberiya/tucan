@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ class Recover(gtk.Dialog):
 		hbox.pack_start(label)
 		label.set_width_chars(35)
 		label.set_line_wrap(True)
-		
+
 		expander = gtk.Expander("Show details")
 		self.vbox.pack_start(expander, True, True, 5)
 		frame = gtk.Frame()
@@ -87,7 +87,7 @@ class Recover(gtk.Dialog):
 		textview.set_wrap_mode(gtk.WRAP_WORD)
 		textview.set_editable(False)
 		textview.set_cursor_visible(False)
-		
+
 
 		hbox = gtk.HButtonBox()
 		self.vbox.pack_start(hbox, True, True, 5)
@@ -98,7 +98,7 @@ class Recover(gtk.Dialog):
 		button = gtk.Button("Report Problem")
 		hbox.pack_start(button)
 		button.connect("clicked", self.report_problem)
-		
+
 		#action area
 		button = gtk.Button(None, gtk.STOCK_QUIT)
 		self.action_area.pack_start(button)
@@ -112,7 +112,7 @@ class Recover(gtk.Dialog):
 		self.show_all()
 		self.set_focus(button)
 		self.set_urgency_hint(True)
-		
+
 	def remove_conf(self, button):
 		""""""
 		button.set_sensitive(False)
@@ -129,12 +129,12 @@ class Recover(gtk.Dialog):
 		command = "%stucan.py" % cons.PATH
 		subprocess.Popen(["python", command])
 		self.close()
-		
+
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
 		gtk.main_quit()
 		sys.exit()
-		
+
 if __name__ == "__main__":
 	show_recover("puta mierda")

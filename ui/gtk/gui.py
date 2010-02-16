@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -86,10 +86,10 @@ class Gui(gtk.Window, Core):
 		""""""
 		#configuration
 		self.configuration = conf
-		
+
 		#i18n
 		init_gettext()
-		
+
 		#set logger
 		log_stream = LogStream()
 		handler = logging.StreamHandler(log_stream)
@@ -112,7 +112,7 @@ class Gui(gtk.Window, Core):
 		self.set_icon_from_file(media.ICON_TUCAN)
 		self.set_title("%s - Version: %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
 		self.set_size_request(MIN_WIDTH, MIN_HEIGHT)
-		
+
 		#remember position and size
 		x, y, w, h = self.configuration.get_window_settings()
 		if gtk.gdk.screen_width() <= w or gtk.gdk.screen_height() <= h:
@@ -126,7 +126,7 @@ class Gui(gtk.Window, Core):
 		else:
 			self.resize(900, 500)
 			self.set_position(gtk.WIN_POS_CENTER)
-		
+
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
 
@@ -142,16 +142,16 @@ class Gui(gtk.Window, Core):
 		self.show_uploads = gtk.CheckMenuItem(_("Show Uploads"))
 		show_uploads = self.show_uploads, self.resize_pane, self.configuration.get_show_uploads()
 		shutdown = gtk.CheckMenuItem(_("Shutdown Computer")), self.shutdown, False
-		
+
 		m_file = _("File")
 		m_view = _("View")
 		m_help = _("Help")
 		m_addons = _("Addons")
-		
+
 		#integration menubar
 		integration = None
 		if cons.OS_OSX:
-			try:				
+			try:
 				about_menu = _("About TucanManager"), lambda x: About(self)
 				preferences_menu = _("Preferences"), self.preferences
 				file_menu = m_file, [menu_load_session, menu_save_session]
@@ -163,7 +163,7 @@ class Gui(gtk.Window, Core):
 				vbox = gtk.VBox()
 				integration.add(vbox)
 				vbox.pack_start(menu_bar.OSXMenuBar([file_menu, view_menu, addons_menu, help_menu], about_menu, preferences_menu, quit_menu))
-				
+
 			except Exception, e:
 				integration = None
 				logger.critical("No OSX menu integration support.")
@@ -195,7 +195,7 @@ class Gui(gtk.Window, Core):
 		self.downloads = Tree([copy, None, delete], self.download_manager)
 		#self.uploads = Tree()
 		self.uploads = gtk.VBox()
-		
+
 		#tray icon
 		if cons.OS_OSX:
 			try:
@@ -224,7 +224,7 @@ class Gui(gtk.Window, Core):
 		self.pane.set_position(self.get_size()[1])
 
 		self.connect("key-press-event", self.delete_key)
-		
+
 		#tray_close
 		self.close_handler_id = None
 		self.update_tray_close(self.configuration.get_tray_close())
@@ -235,15 +235,15 @@ class Gui(gtk.Window, Core):
 		if self.configuration.get_auto_update():
 			th = threading.Thread(group=None, target=self.check_updates, name=None)
 			th.start()
-		
+
 		#Clipboard Monitor
 		services = [service.name for service in self.services]
 		self.clipboard_monitor = Clipboard(self, self.add_downloads, self.set_urgency_hint, services)
 		self.enable_clipboard()
-		
+
 		#ugly polling
 		gobject.timeout_add_seconds(60, self.save_default_session)
-		
+
 	def delete_key(self, window, event):
 		"""pressed del key"""
 		if event.keyval == 65535:

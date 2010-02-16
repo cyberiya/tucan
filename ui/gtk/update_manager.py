@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		ServiceUpdate.__init__(self, config)
 		self.set_transient_for(parent)
 		self.parent_widget = parent
-		
+
 		self.installing = False
 		self.remote_info = info
 
@@ -108,11 +108,11 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.show_all()
 
 		self.progress.hide()
-		
+
 		gobject.timeout_add(200, self.check_version)
 
 		self.run()
-		
+
 	def check_version(self):
 		""""""
 		self.get_updates()
@@ -166,7 +166,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.action_area.set_sensitive(False)
 		th = threading.Thread(group=None, target=self.install_all, name=None)
 		th.start()
-		
+
 	def install_all(self):
 		""""""
 		self.installing = True
@@ -196,7 +196,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		else:
 			self.installing = False
 			gobject.idle_add(self.close)
-			
+
 	def restart(self, message):
 		""""""
 		Message(self.parent_widget, cons.SEVERITY_WARNING, "Restart Needed.", message)

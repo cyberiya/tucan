@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import media
 import core.cons as cons
 
 NAME = "Tucan"
-COPYRIGHT = "(C) 2008-2009 The Tucan Project"
+COPYRIGHT = "(C) 2008-2010 The Tucan Project"
 LICENSE = """	
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ class About(gtk.AboutDialog):
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
-		
+
 	def show_homepage(self, widget, url):
 		""""""
 		webbrowser.open(url)

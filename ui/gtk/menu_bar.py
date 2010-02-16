@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -65,7 +65,7 @@ if cons.OS_OSX:
 
 				macmenu = MacMenu()
 				macmenu.set_menu_bar(self)
-		
+
 				quit_item = gtk.MenuItem(menu_quit[0])
 				quit_item.connect("activate", menu_quit[1])
 				macmenu.set_quit_menu_item(quit_item)
@@ -74,7 +74,7 @@ if cons.OS_OSX:
 				item = gtk.MenuItem(menu_about[0])
 				item.connect("activate", menu_about[1])
 				group.add_app_menu_item(item, None)
-		
+
 				group = macmenu.add_app_menu_group()
 				item = gtk.MenuItem(menu_preferences[0])
 				item.connect("activate", menu_preferences[1])

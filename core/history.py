@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@ class History(SafeConfigParser):
 		if self.has_section(id):
 			self.set(id, OPTION_PLAYED, str(value))
 			self.save()
-		
+
 	def add_history(self, name, size, unit, links):
 		id = str(self.id)
 		self.id += 1

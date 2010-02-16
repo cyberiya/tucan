@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -32,15 +32,15 @@ class Base:
 		""""""
 		self.id = str(uuid.uuid1())
 		self.name = name
-		
+
 	def get_id(self):
 		""""""
 		return self.id
-		
+
 	def get_name(self):
 		""""""
 		return self.name
-		
+
 	def set_name(self, name):
 		""""""
 		self.name = name
@@ -59,12 +59,12 @@ class Container(Base):
 		else:
 			self.items.append(item)
 			return True
-		
+
 	def add_items(self, items):
 		""""""
 		for item in items:
 			self.add_item(item)
-		
+
 	def get_item(self, id):
 		""""""
 		pass
@@ -87,11 +87,11 @@ class Item:
 		self.total_size = size
 		self.actual_size = 0
 		self.elapsed_time = 0
-				
+
 	def get_status(self):
 		""""""
 		return self.status
-		
+
 	def set_status(self, status):
 		""""""
 		if status in VALID_STATUS:

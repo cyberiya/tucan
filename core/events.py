@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ class Events:
 	def __init__(self):
 		""""""
 		self.registered = {}
-		
+
 	def connect(self, event, callback, *kargs):
 		""""""
 		if event in self.registered:
@@ -61,7 +61,7 @@ class Events:
 		""""""
 		logger.debug("triggered: %s from %s" % (cons.EVENT_LIMIT_OFF, module))
 		self.trigger(cons.EVENT_LIMIT_OFF, module)
-	
+
 	def trigger_limit_on(self, module):
 		""""""
 		logger.debug("triggered: %s from %s" % (cons.EVENT_LIMIT_ON, module))
@@ -71,14 +71,13 @@ class Events:
 		""""""
 		logger.debug("triggered: %s from %s" % (cons.EVENT_LIMIT_CANCEL, module))
 		self.trigger(cons.EVENT_LIMIT_CANCEL, module)
-	
+
 	def trigger_file_complete(self, name, size, unit, links):
 		""""""
 		logger.debug("triggered: %s" % cons.EVENT_FILE_COMPLETE)
 		self.trigger(cons.EVENT_FILE_COMPLETE, name, size, unit, links)
-		
+
 	def trigger_all_complete(self):
 		""""""
 		logger.debug("triggered: %s" % cons.EVENT_ALL_COMPLETE)
 		self.trigger(cons.EVENT_ALL_COMPLETE)
-		

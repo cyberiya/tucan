@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -41,11 +41,11 @@ class AdvancedPackages(gtk.Dialog):
 		self.set_title("%s - %s" % (cons.TUCAN_NAME, _("Advanced Packages")))
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(600,400)
-		
+
 		self.packages = packages
 		self.packages_info = []
 		self.history_path = default_path
-		
+
 		#radio
 		frame = gtk.Frame()
 		self.vbox.pack_start(frame, False, False)
@@ -58,7 +58,7 @@ class AdvancedPackages(gtk.Dialog):
 		single = gtk.RadioButton(multi, "Single Package Mode")
 		single.connect("toggled", self.change_mode, False)
 		hbox.pack_start(single)
-		
+
 		#treeview
 		frame = gtk.Frame()
 		self.vbox.pack_start(frame)
@@ -127,7 +127,7 @@ class AdvancedPackages(gtk.Dialog):
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		hbox.pack_start(aspect, True, True)
-		
+
 		#info
 		frame = gtk.Frame()
 		hbox.pack_start(frame)
@@ -139,7 +139,7 @@ class AdvancedPackages(gtk.Dialog):
 		frame.add(vbox)
 		self.info_label = gtk.Label(len(packages))
 		vbox.pack_start(self.info_label, False, False, 5)
-		
+
 		#action area
 		cancel_button = gtk.Button(None, gtk.STOCK_CANCEL)
 		self.action_area.pack_start(cancel_button)
@@ -151,7 +151,7 @@ class AdvancedPackages(gtk.Dialog):
 		self.connect("response", self.close)
 		self.show_all()
 		self.run()
-		
+
 	def change_mode(self, button, multi):
 		""""""
 		if multi:

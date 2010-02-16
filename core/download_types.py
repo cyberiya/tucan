@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ class Link(Base):
 	def set_active(self, active=True):
 		""""""
 		self.active = active
-		
+
 	def get_active(self):
 		""""""
 		return self.active
@@ -39,8 +39,7 @@ class Link(Base):
 	def get_url(self):
 		""""""
 		return self.name
-		
+
 	def get_service(self):
 		""""""
 		return self.service
-		

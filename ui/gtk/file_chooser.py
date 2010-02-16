@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ class FileChooser(gtk.FileChooserDialog):
 	""""""
 	def __init__(self, parent, func, default_path=None, files=False, save=False):
 		""""""
-		gtk.FileChooserDialog.__init__(self, "%s - %s" % (cons.TUCAN_NAME,_("Select a Folder")), parent)	
+		gtk.FileChooserDialog.__init__(self, "%s - %s" % (cons.TUCAN_NAME,_("Select a Folder")), parent)
 		self.set_position(gtk.WIN_POS_CENTER)
 
 		if default_path:

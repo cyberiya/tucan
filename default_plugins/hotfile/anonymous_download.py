@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
 ##
-## Copyright (C) 2008-2009 Fran Lupion crak@tucaneando.com
+## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			if parser.link:
 				if self.start(path, parser.link, file_name, parser.wait, None, self.post_wait):
 					return True
-				
+
 	def post_wait(self, link):
 		"""Must return handle"""
 		c = CaptchaParser(link, self.form)
