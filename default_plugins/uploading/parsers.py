@@ -60,7 +60,6 @@ class Parser:
 		try:
 			data = urllib.urlencode([("action", "get_link"), ("file_id", self.link_id), ("code", self.code), ("pass", "undefined")])
 			tmp = self.opener.open(JS_URL, data).read()
-			print tmp
 			if '{ "id": "0", "js": { "answer": { "link": "' in tmp:
 				link = urllib.unquote(tmp.split(' "id": "0", "js": { "answer": { "link": "')[1].split('" }')[0]).replace("\\", "")
 				return self.opener.open(link)
