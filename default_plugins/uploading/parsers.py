@@ -33,15 +33,18 @@ class Parser:
 		self.link = url
 		self.link_id = None
 		self.form_action = None
+		self.code = None
 		self.wait = 1
 		self.opener = URLOpen(cookielib.CookieJar())
 		try:
 			for line in self.opener.open(url).readlines():
 				if 'id="downloadform"' in line:
 					self.form_action = line.split('<form action="')[1].split('"')[0]
-				elif "file_id" in line:
+				elif '"file_id"' in line:
 					self.link_id = line.split('value="')[1].split('"')[0]
-			data = urllib.urlencode([("action", "second_page"), ("file_id", self.link_id)])
+				elif '"code"' in line:
+					self.code = line.split('value="')[1].split('"')[0]
+			data = urllib.urlencode([("action", "second_page"), ("file_id", self.link_id), ("code", self.code)])
 			if self.form_action:
 				for line in self.opener.open(self.form_action, data).readlines():
 					if "start_timer(" in line:
@@ -55,8 +58,9 @@ class Parser:
 	def get_handler(self):
 		""""""
 		try:
-			data = urllib.urlencode([("action", "get_link"), ("file_id", self.link_id), ("pass", "undefined")])
+			data = urllib.urlencode([("action", "get_link"), ("file_id", self.link_id), ("code", self.code), ("pass", "undefined")])
 			tmp = self.opener.open(JS_URL, data).read()
+			print tmp
 			if '{ "id": "0", "js": { "answer": { "link": "' in tmp:
 				link = urllib.unquote(tmp.split(' "id": "0", "js": { "answer": { "link": "')[1].split('" }')[0]).replace("\\", "")
 				return self.opener.open(link)
