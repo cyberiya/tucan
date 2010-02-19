@@ -52,7 +52,8 @@ class URLOpen:
 		""""""
 		headers = {"User-Agent": cons.USER_AGENT}
 		if range:
-			headers["Range"] = "bytes=%s-" % starting
+			headers["Range"] = "bytes=%s-" % range
+			print headers
 		if form:
 			return self.opener.open(urllib2.Request(url, None, headers), form)
 		else:
