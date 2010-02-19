@@ -77,6 +77,13 @@ class Downloader(threading.Thread):
 					self.total_size = int(handle.info().getheader("Content-Length"))
 					if not os.path.exists(self.path):
 						os.makedirs(self.path)
+					if os.path.exists(name):
+						if os.path.getsize(name) == self.total_size:
+							self.actual_size = self.total_size
+							self.status = cons.STATUS_CORRECT
+							return
+						else:
+							os.remove(name)
 					f = open("%s.part" % name, "wb")
 					self.start_time = time.time()
 					data = "None"
@@ -107,7 +114,6 @@ class Downloader(threading.Thread):
 						self.stop_flag = True
 						if self.actual_size == self.total_size:
 							os.rename("%s.part" % name, name)
-							#windows bug!
 							self.status = cons.STATUS_CORRECT
 						else:
 							self.status = cons.STATUS_ERROR
