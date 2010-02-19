@@ -54,6 +54,7 @@ class Downloader(threading.Thread):
 		self.speed = 0
 		self.tmp_time = 0
 		self.tmp_size = 0
+		self.range = None
 		#build opener
 		self.opener = URLOpen(cookie)
 
@@ -67,23 +68,28 @@ class Downloader(threading.Thread):
 				self.time_remaining = self.wait
 		if not self.stop_flag:
 			try:
+				#check files
+				if not os.path.exists(self.path):
+					os.makedirs(self.path)
+				elif os.path.exists(name):
+					if os.path.getsize(name) == self.total_size:
+						self.actual_size = self.total_size
+						self.status = cons.STATUS_CORRECT
+						return
+					else:
+						os.remove(name)
+				#elif os.path.exists("%s.part" % name):
+				#	tmp_size = os.path.getsize("%s.part" % name)
+				#	if tmp_size > 0:
+				#		self.range = tmp_size
 				if self.post_wait:
 					handle = self.post_wait(self.url)
 				else:
-					handle = self.opener.open(self.url)
+					handle = self.opener.open(self.url, None, self.range)
 				if handle:
 					self.status = cons.STATUS_ACTIVE
 					logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
 					self.total_size = int(handle.info().getheader("Content-Length"))
-					if not os.path.exists(self.path):
-						os.makedirs(self.path)
-					if os.path.exists(name):
-						if os.path.getsize(name) == self.total_size:
-							self.actual_size = self.total_size
-							self.status = cons.STATUS_CORRECT
-							return
-						else:
-							os.remove(name)
 					f = open("%s.part" % name, "wb")
 					self.start_time = time.time()
 					data = "None"
@@ -97,6 +103,7 @@ class Downloader(threading.Thread):
 						while (time.time() - start_seconds) < 1:
 							if max_size == 0 or tmp_size < max_size:
 								data = handle.read(BUFFER_SIZE)
+								#print data
 								f.write(data)
 								self.actual_size += len(data)
 								tmp_size += 1
@@ -108,7 +115,7 @@ class Downloader(threading.Thread):
 					os.fsync(f.fileno())
 					f.close()
 					if self.stop_flag:
-						os.remove("%s.part" % name)
+						#os.remove("%s.part" % name)
 						self.status = cons.STATUS_PEND
 					else:
 						self.stop_flag = True
@@ -123,8 +130,8 @@ class Downloader(threading.Thread):
 			except Exception, e:
 				self.stop_flag = True
 				logger.exception("%s: %s" % (self.file, e))
-				if os.path.exists("%s.part" % name):
-					os.remove("%s.part" % name)
+				#if os.path.exists("%s.part" % name):
+				#	os.remove("%s.part" % name)
 				self.status = cons.STATUS_ERROR
 
 	def get_speed(self):
