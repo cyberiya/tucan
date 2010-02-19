@@ -64,7 +64,7 @@ class InfoPreferences(gtk.VBox):
 			label = gtk.Label()
 			label.set_markup("<b>" + _("Slots") + ":</b>")
 			hbox.pack_start(label, False, False, 10)
-			label = gtk.Label(config.get(section, service_config.OPTION_SLOTS))
+			label = gtk.Label(config.get_slots(section))
 			hbox.pack_start(label, False)
 			vbox.pack_start(hbox, False, False, 5)
 			hbox = gtk.HBox()
@@ -74,7 +74,30 @@ class InfoPreferences(gtk.VBox):
 			label = gtk.Label(config.get(section, service_config.OPTION_CAPTCHA))
 			hbox.pack_start(label, False)
 			vbox.pack_start(hbox, False, False, 5)
-
+			aspect = gtk.AspectFrame()
+			aspect.set_shadow_type(gtk.SHADOW_NONE)
+			vbox.pack_start(aspect)			
+			hbox = gtk.HBox()
+			vbox.pack_start(hbox, False, False, 5)
+			label = gtk.Label()
+			label.set_markup("<b>%s:</b>\n<i>* %s</i>" % (_("Wait"), _("Seconds to wait on Limit Exceeded.")))
+			hbox.pack_start(label, False, False, 5)
+			aspect = gtk.AspectFrame()
+			aspect.set_shadow_type(gtk.SHADOW_NONE)
+			hbox.pack_start(aspect)
+			wait = gtk.SpinButton(None, 4, 0)
+			wait.set_property("shadow-type", gtk.SHADOW_NONE)
+			wait.set_range(5,3600)
+			wait.set_increments(5,0)
+			wait.set_numeric(True)
+			wait.set_value(config.get_wait(section))
+			hbox.pack_start(wait, False, False, 5)
+			wait.connect("value-changed", self.change_wait, section, config.set_wait)
+			
+	def change_wait(self, button, section, func):
+		""""""
+		func(section, button.get_value_as_int())
+		
 class AccountPreferences(InfoPreferences):
 	""""""
 	def __init__(self, section, name, config, get_cookie):

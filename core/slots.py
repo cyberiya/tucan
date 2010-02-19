@@ -38,11 +38,16 @@ class Slots:
 	def get_slot(self):
 		""""""
 		if self.slots > 0:
-			if time.time() > self.end_wait:
-				events.trigger_limit_off(self.__module__)
-				self.limit = False
+			if self.wait_finished():
 				self.slots -= 1
 				return True
+				
+	def wait_finished(self):
+		""""""
+		if time.time() > self.end_wait:
+			events.trigger_limit_off(self.__module__)
+			self.limit = False
+			return True
 
 	def add_wait(self):
 		""""""

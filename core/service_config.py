@@ -53,6 +53,7 @@ OPTION_PATH = "path"
 OPTION_AUTHOR = "author"
 OPTION_VERSION = "version"
 OPTION_SLOTS = "slots"
+OPTION_WAIT = "wait"
 OPTION_CAPTCHA = "captcha"
 OPTION_ACCOUNTS = "accounts"
 
@@ -154,6 +155,28 @@ class ServiceConfig(SafeConfigParser):
 			f = open(self.path + self.get(section, OPTION_ACCOUNTS), "wb")
 			f.write(base64.b64encode(pickle.dumps(accounts)))
 			f.close()
+			
+	def get_slots(self, section):
+		""""""
+		if self.has_option(section, OPTION_SLOTS):
+			try:
+				return self.getint(section, OPTION_SLOTS)
+			except:
+				#-1 deberia ser ilimitado
+				return self.get(section, OPTION_SLOTS)
+
+	def get_wait(self, section):
+		""""""
+		if self.has_option(section, OPTION_WAIT):
+			return self.getint(section, OPTION_WAIT)
+		else:
+			return 0
+
+	def set_wait(self, section, wait):
+		""""""
+		if self.has_section(section):
+			self.set(section, OPTION_WAIT, str(wait))
+			self.save()
 
 	def save(self):
 		""""""
