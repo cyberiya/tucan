@@ -96,7 +96,7 @@ class HistoryView(gtk.Dialog):
 		#fill store
 		total_size, num_files, history = self.history.get_all()
 		for id, played, link, date, name, size in history:
-			self.store.append((id, played, self.get_icon(link), date, "%s\n%s" % (name, link), link, size))
+			self.store.append((id, played, self.get_icon(link), date, name, link, size))
 
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 10)
@@ -155,10 +155,10 @@ class HistoryView(gtk.Dialog):
 			if service not in self.icons:
 				for name, path in self.services:
 					if service == name:
-						self.icons[service] = gtk.gdk.pixbuf_new_from_file_at_size(path, 24, 24)
+						self.icons[service] = gtk.gdk.pixbuf_new_from_file_at_size(path, 16, 16)
 			return self.icons[service]
 		except:
-			return gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 24, 24)
+			return gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 16, 16)
 
 	def close(self, widget=None, other=None):
 		""""""
