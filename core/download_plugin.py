@@ -19,6 +19,7 @@
 ###############################################################################
 
 import time
+import threading
 
 from downloader import Downloader
 
@@ -41,11 +42,16 @@ class DownloadPlugin(object):
 	def stop(self, file_name):
 		""""""
 		if file_name in self.active_downloads:
-			while self.active_downloads[file_name].isAlive():
-				self.active_downloads[file_name].stop_flag = True
-				time.sleep(0.1)
+			th = threading.Thread(group=None, target=self.stop_thread, name=None, args=(self.active_downloads[file_name],))
+			th.start()
 			del self.active_downloads[file_name]
 			return True
+			
+	def stop_thread(self, thread):
+		""""""
+		while thread.isAlive():
+			thread.stop_flag = True
+			time.sleep(1)
 
 	def stop_all(self):
 		""""""

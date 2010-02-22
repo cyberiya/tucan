@@ -139,7 +139,7 @@ class DownloadManager:
 						link.active = True
 						return True
 					else:
-						link.active = False
+						#link.active = False
 						if download.status != cons.STATUS_ERROR:
 							download.status = cons.STATUS_PEND
 
