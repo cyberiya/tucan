@@ -1,0 +1,19 @@
+	Tucan Manager 0.4 beta
+---------------------------------------
+-- CORE
+- Core API.
+- Package support on download_manager.
+- Resume support. Rewrite all plugins.
+- Upload System. 
+- Unit tests. QA needed.
+
+-- GUI
+- Cell data functions. TreeModel only contains IDs.
+- New TreeViews.
+
+-- CLI
+- Session support.
+
+-- DOC
+- Fill all docstrings.
+- Translate documentation.
