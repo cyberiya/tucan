@@ -20,28 +20,39 @@
 
 import time
 import threading
+import logging
+logger = logging.getLogger(__name__)
 
 from downloader import Downloader
+from slots import Slots
 
 import cons
 
-class DownloadPlugin(object):
+class DownloadPlugin(Slots):
 	""""""
-	def __init__(self):
+	def __init__(self, config, section):
 		""""""
+		Slots.__init__(self, 1, 300)
 		self.active_downloads = {}
+		
+	def link_parser(self, link, wait_func):
+		""""""
+		pass
 
-	def start(self, path, url, file_name, wait=None, cookie=None, post_wait=None):
+	def add(self, path, url, file_name):
 		""""""
 		if file_name not in self.active_downloads:
-			th = Downloader(path, url, file_name, wait, cookie, post_wait)
-			th.start()
-			self.active_downloads[file_name] = th
-			return True
+			if self.get_slot():
+				logger.info("Started %s: %s" % (file_name, self.return_slot()))
+				th = Downloader(path, url, file_name, self.link_parser)
+				th.start()
+				self.active_downloads[file_name] = th
+				return True
 
-	def stop(self, file_name):
+	def delete(self, file_name):
 		""""""
 		if file_name in self.active_downloads:
+			logger.info("Stopped %s: %s" % (file_name, self.return_slot()))
 			th = threading.Thread(group=None, target=self.stop_thread, name=None, args=(self.active_downloads[file_name],))
 			th.start()
 			del self.active_downloads[file_name]

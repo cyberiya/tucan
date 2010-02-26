@@ -152,9 +152,7 @@ class DownloadManager:
 			if name == download.name:
 				for link in download.links:
 					if link.active:
-						if link.plugin.stop(download.name):
-							if "return_slot" in dir(link.plugin):
-								link.plugin.return_slot()
+						if link.plugin.delete(download.name):
 							link.active = False
 							self.pending_downloads.append(download)
 							self.active_downloads.remove(download)
@@ -207,8 +205,7 @@ class DownloadManager:
 					if status in [cons.STATUS_PEND, cons.STATUS_ERROR]:
 						if status == cons.STATUS_ERROR:
 							logger.error("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
-						if "return_slot" in dir(link.plugin):
-							plugin.return_slot()
+						plugin.return_slot()
 						link.active = False
 						self.pending_downloads.append(download)
 						self.active_downloads.remove(download)
@@ -217,8 +214,7 @@ class DownloadManager:
 						logger.info("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						#history_trigger
 						events.trigger_file_complete(download.name, actual_size, unit, download.links)
-						if "return_slot" in dir(link.plugin):
-							plugin.return_slot()
+						plugin.return_slot()
 						download.progress = 100
 						self.complete_downloads.append(download)
 						self.active_downloads.remove(download)
@@ -238,7 +234,7 @@ class DownloadManager:
 						if len(self.active_downloads) < max_downloads:
 							if download.status not in [cons.STATUS_STOP]:
 								if self.start(download.name):
-									logger.info("Started: %s" % download.name)
+									#logger.info("Started: %s" % download.name)
 									logger.debug("Active: %s" % [tmp.name for tmp in self.active_downloads])
 									logger.debug("Pending: %s" % [tmp.name for tmp in self.pending_downloads])
 									logger.debug("Complete: %s" % [tmp.name for tmp in self.complete_downloads])

@@ -27,6 +27,8 @@ import socket
 
 import cons
 
+__builtin__.PROXY = None
+
 def set_proxy(url, port=0):
 	""""""
 	if url:

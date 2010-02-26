@@ -31,12 +31,43 @@ class Service:
 		""""""
 		self.icon_path = icon
 		self.name = name
-		self.anonymous_download_plugin = None
-		self.user_download_plugin = None
-		self.premium_download_plugin = None
-		self.anonymous_upload_plugins = None
-		self.user_upload_plugins = None
-		self.premium_upload_plugins = None
+		self.download_plugins = {}
+		self.upload_plugins = {}
+		
+	def add_plugins(self, package, config):
+		""""""
+		#download plugins
+		for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
+			logger.info("Loading: %s.%s, %i" % (package, plugin_module, config.get_update()))
+			module = __import__("%s.%s" % (package, plugin_module), None, None, [''])
+			self.download_plugins[plugin_type] = eval("module.%s(config, '%s')" % (plugin_name, plugin_module))
+		#upload plugins
+		for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
+			logger.info("Loading: %s.%s, %i" % (package, plugin_module, config.get_update()))
+			module = __import__(package + "." + plugin_module, None, None, [''])
+			self.upload_plugins[plugin_type] = eval("module.%s(config, '%s')" % (plugin_name, plugin_module))
+
+	def get_plugin(self, upload=False):
+		""""""
+		if upload:
+			plugins = self.upload_plugins
+		else:
+			plugins = self.download_plugins
+		if cons.TYPE_PREMIUM in plugins:
+			if plugins[cons.TYPE_PREMIUM].active:
+				return plugins[cons.TYPE_PREMIUM], cons.TYPE_PREMIUM
+		elif cons.TYPE_USER in plugins:
+			if plugins[cons.TYPE_USER].active:
+				return plugins[cons.TYPE_USER], cons.TYPE_USER
+		elif cons.TYPE_ANONYMOUS in plugins:
+			return plugins[cons.TYPE_ANONYMOUS], cons.TYPE_ANONYMOUS
+			
+	def clean(self):
+		""""""
+		for plugin in self.download_plugins.values():
+			plugin.stop_all()
+		for plugin in self.upload_plugins.values():
+			plugin.stop_all()
 
 class ServiceManager:
 	""""""
@@ -48,27 +79,12 @@ class ServiceManager:
 		for package, icon, service, enabled, config in configuration.get_services():
 			s = Service(service, icon)
 			if enabled:
-				#download plugins
-				for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
-					logger.info("Loading: %s.%s, %i" % (package, plugin_module, config.get_update()))
-					module = __import__(package + "." + plugin_module, None, None, [''])
-					if plugin_type == cons.TYPE_ANONYMOUS:
-						s.anonymous_download_plugin = eval("module" + "." + plugin_name + "()")
-					elif plugin_type == cons.TYPE_USER:
-						s.user_download_plugin = eval("module" + "." + plugin_name + "()")
-					elif plugin_type == cons.TYPE_PREMIUM:
-						s.premium_download_plugin = eval("module" + "." + plugin_name + "(config)")
-				#upload plugins
-				for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
-					logger.info("Loading: %s.%s" % (package, plugin_module))
-					module = __import__(package + "." + plugin_module, None, None, [''])
-					if plugin_type == cons.TYPE_ANONYMOUS:
-						s.anonymous_upload_plugin = eval("module" + "." + plugin_name + "()")
-					elif plugin_type == cons.TYPE_USER:
-						s.user_upload_plugin = eval("module" + "." + plugin_name + "()")
-					elif plugin_type == cons.TYPE_PREMIUM:
-						s.premium_upload_plugin = eval("module" + "." + plugin_name + "(config)")
-				self.services.append(s)
+				try:
+					s.add_plugins(package, config)
+				except Exception, e:
+					logger.error("Unable to load %s: %s" % (service, e))
+				else:
+					self.services.append(s)
 		if len(self.services) == 0:
 			logger.warning("No services loaded!")
 
@@ -76,31 +92,28 @@ class ServiceManager:
 		""""""
 		for service in self.services:
 			if service.name == service_name:
-				if ((service.premium_download_plugin) and (service.premium_download_plugin.active)):
-					return service.premium_download_plugin, cons.TYPE_PREMIUM
-				else:
-					return service.anonymous_download_plugin, cons.TYPE_ANONYMOUS
+				return service.get_plugin(False)
 
 	def get_upload_plugin(self, service_name):
 		""""""
 		for service in self.services:
 			if service.name == service_name:
-				return service.anonymous_upload_plugin
+				return service.get_plugin(True)
 
 	def get_check_links(self, service_name):
 		""""""
-		for service in self.services:
-			if service.name == service_name:
-				if ((service.premium_download_plugin) and (service.premium_download_plugin.active)):
-					return service.premium_download_plugin.check_links, cons.TYPE_PREMIUM
-				else:
-					return service.anonymous_download_plugin.check_links, cons.TYPE_ANONYMOUS
+		plugin, type = self.get_download_plugin(service_name)
+		return plugin.check_links, type
 
 	def get_check_files(self, service_name):
 		""""""
+		plugin, type = self.get_upload_plugin(service_name)
+		return plugin.check_files, type
+		
+	def stop_all(self):
+		""""""
 		for service in self.services:
-			if service.name == service_name:
-				return service.check_files.check
+			service.clean()
 
 	def filter_service(self, links):
 		""""""
