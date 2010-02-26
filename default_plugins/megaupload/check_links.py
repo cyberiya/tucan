@@ -58,6 +58,3 @@ class CheckLinks:
 			if tmp > 0:
 				result = tmp, cons.UNIT_MB
 		return result
-
-if __name__ == "__main__":
-	print CheckLinks().check("http://www.megaupload.com/?d=1UY9LV7O")

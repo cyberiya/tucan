@@ -66,9 +66,14 @@ class DownloadPlugin(Slots):
 
 	def stop_all(self):
 		""""""
-		for th in self.active_downloads.values():
-			while th.isAlive():
-				th.stop_flag = True
+		active_downloads = self.active_downloads.values()
+		while len(active_downloads) > 0:
+			for th in active_downloads:
+				if th.isAlive():
+					th.stop_flag = True
+				else:
+					active_downloads.remove(th)
+			time.sleep(0.1)
 
 	def get_status(self, file_name, speed=0):
 		"""return (status, progress, actual_size, unit, speed, time)"""

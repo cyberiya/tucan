@@ -46,3 +46,8 @@ class Core(ServiceManager):
 		ServiceManager.__init__(self, configuration)
 		self.history = History()
 		self.download_manager = DownloadManager(self.get_download_plugin, self.services)
+		
+	def stop_all(self):
+		""""""
+		self.download_manager.quit()
+		ServiceManager.stop_all(self)

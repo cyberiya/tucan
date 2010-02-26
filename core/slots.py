@@ -40,13 +40,14 @@ class Slots:
 		if self.max < 0:
 			if self.wait_finished():
 				return True
-		if self.slots > 0:
+		elif self.slots > 0:
 			if self.wait_finished():
 				self.slots -= 1
 				return True
 				
 	def return_slot(self):
 		""""""
+		print "mierda"
 		if self.slots < self.max:
 			self.slots += 1
 			return True

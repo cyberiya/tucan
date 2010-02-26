@@ -205,7 +205,7 @@ class DownloadManager:
 					if status in [cons.STATUS_PEND, cons.STATUS_ERROR]:
 						if status == cons.STATUS_ERROR:
 							logger.error("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
-						plugin.return_slot()
+							plugin.return_slot()
 						link.active = False
 						self.pending_downloads.append(download)
 						self.active_downloads.remove(download)
