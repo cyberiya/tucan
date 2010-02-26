@@ -18,6 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import time
 import __builtin__
 import unittest
 
@@ -28,10 +29,15 @@ sys.path.append("/home/crak/tucan/0.3.10/default_plugins/")
 from core.events import Events
 import core.url_open
 
+import core.cons as cons
+
 from megaupload.anonymous_download import AnonymousDownload
 
+TEST_DIR = "/tmp/"
 TEST_LINK = "http://www.megaupload.com/?d=3VCUBE3Y"
-CHECK_LINK_RESULT = ('prueba.bin', 113, 'KB')
+TEST_NAME = "prueba.bin"
+TEST_SIZE = 113
+TEST_UNIT = "KB"
 
 class TestAnonymous(unittest.TestCase):
 	""""""
@@ -43,20 +49,31 @@ class TestAnonymous(unittest.TestCase):
 	def test_check_link(self):
 		""""""
 		name, size, unit = self.plugin.check_links(TEST_LINK)
-		self.assertEqual(name, CHECK_LINK_RESULT[0], "%s != %s" % (name, CHECK_LINK_RESULT[0]))
-		self.assertEqual(size, CHECK_LINK_RESULT[1], "%s != %i" % (size, CHECK_LINK_RESULT[1]))
-		self.assertEqual(unit, CHECK_LINK_RESULT[2], "%s != %s" % (unit, CHECK_LINK_RESULT[2]))
+		self.assertEqual(name, TEST_NAME, "%s != %s" % (name, TEST_NAME))
+		self.assertEqual(size, TEST_SIZE, "%s != %i" % (size, TEST_SIZE))
+		self.assertEqual(unit, TEST_UNIT, "%s != %s" % (unit, TEST_UNIT))
 
 	def test_download(self):
 		""""""
-		pass
+		self.assertTrue(self.plugin.add(TEST_DIR, TEST_LINK, TEST_NAME), "check slots or limits")
+		status = cons.STATUS_WAIT
+		while ((status != cons.STATUS_ERROR) and (status != cons.STATUS_CORRECT)):
+			status, progress, actual_size, unit, speed, time_ = self.plugin.get_status(TEST_NAME)
+			time.sleep(1)
+		f1 = file(TEST_NAME, "r")
+		f2 = file(TEST_DIR + TEST_NAME, "r")
+		local = f1.read()
+		remote = f2.read()
+		f1.close()
+		f2.close()
+		self.assertEqual(local, remote, "%i != %i" % (len(local), len(remote)))
 
 	def tearDown(self):
 		""""""
-		pass
+		del self.plugin
 
 if __name__ == '__main__':
 	import logging
-	logging.basicConfig(level=logging.CRITICAL)
+	logging.basicConfig(level=logging.DEBUG)
 	unittest.TextTestRunner(verbosity=2).run(unittest.TestLoader().loadTestsFromTestCase(TestAnonymous))
 
