@@ -18,6 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib
 import logging
 logger = logging.getLogger(__name__)
 
@@ -31,18 +32,51 @@ import core.cons as cons
 
 WAIT = 45
 
+CAPTCHACODE = "captchacode"
+MEGAVAR = "megavar"
+
 class AnonymousDownload(DownloadPlugin):
 	""""""
-	def link_parser(self, link, wait_func):
+	def link_parser(self, url, wait_func):
 		""""""
-		parser = CaptchaForm(link)
-		if parser.link:
-			try:
-				handle = URLOpen().open(link)
-			except Exception, e:
-				self.set_limit_exceeded()
-			else:
-				return handle
+		link = None
+		captcha_img = None
+		captchacode = ""
+		megavar = ""
+		try:
+			tmp = url.split("/")
+			if len(tmp) > 4:
+				del tmp[3]
+				url = "/".join(tmp)
+			while not link:
+				for line in URLOpen().open(url).readlines():
+					if "captchacode" in line:
+						captchacode = line.split('value="')[1].split('">')[0]
+					elif "megavar" in line:
+						megavar = line.split('value="')[1].split('">')[0]
+					elif "gencap.php" in line:
+						captcha_img = line.split('src="')[1].split('"')[0]
+				if captcha_img:
+					handle = URLOpen().open(captcha_img)
+					if handle.info()["Content-Type"] == "image/gif":
+						tess = Tesseract(handle.read())
+						captcha = tess.get_captcha()
+						logger.info("Captcha %s: %s" % (captcha_img, captcha))
+						if len(captcha) == 4:
+							handle = URLOpen().open(url, urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)]))
+							for line in handle.readlines():
+								if 'id="downloadlink"' in line:
+									link = line.split('<a href="')[1].split('"')[0]
+									break
+			wait_func(WAIT)
+		except Exception, e:
+			logger.error(e)
+		try:
+			handle = URLOpen().open(link)
+		except Exception, e:
+			self.set_limit_exceeded()
+		else:
+			return handle
 
 	def check_links(self, url):
 		""""""

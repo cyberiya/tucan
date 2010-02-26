@@ -134,4 +134,4 @@ class Downloader(threading.Thread):
 		while ((wait > 0) and not self.stop_flag):
 			time.sleep(1)
 			wait -= 1
-			self.time_remaining = self.wait
+			self.time_remaining = wait
