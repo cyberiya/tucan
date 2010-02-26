@@ -462,13 +462,13 @@ class Gui(gtk.Window, Core):
 		""""""
 		x, y = self.get_position()
 		w, h = self.get_size()
-		self.hide()
 		if self.tray_icon:
 			self.tray_icon.close()
+		self.save_default_session()
+		self.destroy()
 		gtk.main_quit()
 		#save ui configuration
 		self.configuration.set_show_uploads(self.show_uploads.get_active())
 		self.configuration.set_window_settings(x, y, w, h)
 		self.configuration.save()
-		self.save_default_session()
 		self.stop_all()
