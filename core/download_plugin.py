@@ -43,7 +43,7 @@ class DownloadPlugin(Slots):
 		""""""
 		if file_name not in self.active_downloads:
 			if self.get_slot():
-				logger.info("Started %s: %s" % (file_name, self.return_slot()))
+				logger.info("Started %s" % (file_name))
 				th = Downloader(path, url, file_name, self.link_parser)
 				th.start()
 				self.active_downloads[file_name] = th
@@ -81,8 +81,8 @@ class DownloadPlugin(Slots):
 		th = None
 		if file_name in self.active_downloads:
 			th = self.active_downloads[file_name]
-			if self.active_downloads[file_name].stop_flag:
-				del self.active_downloads[file_name]
+			#if self.active_downloads[file_name].stop_flag:
+			#	del self.active_downloads[file_name]
 		if th:
 			actual_size, unit = self.get_size(th.actual_size)
 			if th.status == cons.STATUS_ACTIVE:

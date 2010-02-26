@@ -115,14 +115,14 @@ class Downloader(threading.Thread):
 				#os.remove("%s.part" % name)
 				self.status = cons.STATUS_PEND
 			else:
-				self.stop_flag = True
+				#self.stop_flag = True
 				if self.actual_size == self.total_size:
 					os.rename("%s.part" % name, name)
 					self.status = cons.STATUS_CORRECT
 				else:
 					self.status = cons.STATUS_ERROR
 		else:
-			self.stop_flag = True
+			#self.stop_flag = True
 			self.status = cons.STATUS_PEND
 
 	def get_speed(self):

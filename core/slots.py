@@ -37,27 +37,29 @@ class Slots:
 
 	def get_slot(self):
 		""""""
-		if self.max < 0:
-			if self.wait_finished():
+		if self.wait_finished():
+			if self.max < 0:
 				return True
-		elif self.slots > 0:
-			if self.wait_finished():
+			elif self.slots > 0:
 				self.slots -= 1
 				return True
 				
 	def return_slot(self):
 		""""""
-		print "mierda"
 		if self.slots < self.max:
 			self.slots += 1
 			return True
 			
 	def wait_finished(self):
 		""""""
-		if time.time() > self.end_wait:
-			events.trigger_limit_off(self.__module__)
-			self.limit = False
+		if self.end_wait == 0:
 			return True
+		else:
+			if time.time() > self.end_wait:
+				self.end_wait = 0
+				events.trigger_limit_off(self.__module__)
+				self.limit = False
+				return True
 
 	def set_limit_exceeded(self, wait=0):
 		""""""

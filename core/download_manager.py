@@ -126,7 +126,7 @@ class DownloadManager:
 		""""""
 		for download in self.pending_downloads:
 			if name == download.name:
-				download.status = cons.STATUS_WAIT
+				#download.status = cons.STATUS_WAIT
 				for link in download.links:
 					link.plugin, link.type = self.get_plugin(link.service)
 					if link.plugin.add(download.path, link.url, download.name):
@@ -205,7 +205,7 @@ class DownloadManager:
 					if status in [cons.STATUS_PEND, cons.STATUS_ERROR]:
 						if status == cons.STATUS_ERROR:
 							logger.error("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
-							plugin.return_slot()
+						plugin.delete(download_name)
 						link.active = False
 						self.pending_downloads.append(download)
 						self.active_downloads.remove(download)
