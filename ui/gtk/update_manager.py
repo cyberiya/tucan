@@ -123,7 +123,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		elif self.remote_version.split(" ")[0] <= cons.TUCAN_VERSION.split(" ")[0]:
 			self.check_updates()
 		else:
-			message = "Version %s released!\nPlease update and enjoy new services." % self.server_version
+			message = "Version %s released!\nPlease update and enjoy new services." % self.remote_version
 			Message(self, cons.SEVERITY_ERROR, "Outdated!", message)
 			gobject.idle_add(self.close)
 

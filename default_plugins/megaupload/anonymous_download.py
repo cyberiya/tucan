@@ -57,26 +57,33 @@ class AnonymousDownload(DownloadPlugin):
 					elif "gencap.php" in line:
 						captcha_img = line.split('src="')[1].split('"')[0]
 				if captcha_img:
+					if not wait_func(0):
+						return
 					handle = URLOpen().open(captcha_img)
 					if handle.info()["Content-Type"] == "image/gif":
 						tess = Tesseract(handle.read())
 						captcha = tess.get_captcha()
 						logger.info("Captcha %s: %s" % (captcha_img, captcha))
 						if len(captcha) == 4:
-							handle = URLOpen().open(url, urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)]))
+							if not wait_func(0):
+								return
+							data = urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)])
+							handle = URLOpen().open(url, data)
 							for line in handle.readlines():
 								if 'id="downloadlink"' in line:
 									link = line.split('<a href="')[1].split('"')[0]
 									break
-			wait_func(WAIT)
+			if not wait_func(WAIT):
+				return
 		except Exception, e:
 			logger.error(e)
-		try:
-			handle = URLOpen().open(link)
-		except Exception, e:
-			self.set_limit_exceeded()
 		else:
-			return handle
+			try:
+				handle = URLOpen().open(link)
+			except Exception, e:
+				self.set_limit_exceeded()
+			else:
+				return handle
 
 	def check_links(self, url):
 		""""""
