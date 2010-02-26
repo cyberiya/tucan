@@ -19,6 +19,7 @@
 ###############################################################################
 
 import time
+import os.path
 import __builtin__
 import unittest
 
@@ -60,12 +61,15 @@ class TestAnonymous(unittest.TestCase):
 		while ((status != cons.STATUS_ERROR) and (status != cons.STATUS_CORRECT)):
 			status, progress, actual_size, unit, speed, time_ = self.plugin.get_status(TEST_NAME)
 			time.sleep(1)
+		name = "%s%s" % (TEST_DIR, TEST_NAME)
+		self.assertTrue(os.path.exists(name), "Not Found: %s" % name)
 		f1 = file(TEST_NAME, "r")
-		f2 = file(TEST_DIR + TEST_NAME, "r")
+		f2 = file(name, "r")
 		local = f1.read()
 		remote = f2.read()
 		f1.close()
 		f2.close()
+		os.remove(name)
 		self.assertEqual(local, remote, "%i != %i" % (len(local), len(remote)))
 
 	def tearDown(self):
@@ -74,6 +78,6 @@ class TestAnonymous(unittest.TestCase):
 
 if __name__ == '__main__':
 	import logging
-	logging.basicConfig(level=logging.DEBUG)
+	logging.basicConfig(level=logging.ERROR)
 	unittest.TextTestRunner(verbosity=2).run(unittest.TestLoader().loadTestsFromTestCase(TestAnonymous))
 
