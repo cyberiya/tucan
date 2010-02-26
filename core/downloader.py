@@ -56,22 +56,34 @@ class Downloader(threading.Thread):
 		""""""
 		name = os.path.join(self.path, self.file)
 		try:
+			
 			#check files
 			if not os.path.exists(self.path):
 				os.makedirs(self.path)
-			elif os.path.exists(name):
-				if os.path.getsize(name) == self.total_size:
-					self.actual_size = self.total_size
-					self.status = cons.STATUS_CORRECT
-				else:
-					os.remove(name)
-					self.download(name)
-			#elif os.path.exists("%s.part" % name):
+			#if os.path.exists("%s.part" % name):
 			#	tmp_size = os.path.getsize("%s.part" % name)
 			#	if tmp_size > 0:
 			#		self.range = tmp_size
+			handle = self.link_parser(self.url, self.wait)
+			if handle:
+				size = handle.info().getheader("Content-Length")
+				if size:
+					self.status = cons.STATUS_ACTIVE
+					logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
+					self.total_size = int(size)
+					if os.path.exists(name):
+						if os.path.getsize(name) == self.total_size:
+							logger.info("%s already on disk" % name)
+							self.actual_size = self.total_size
+							self.status = cons.STATUS_CORRECT
+						else:
+							os.remove(name)
+							self.download(name, handle)
+					else:
+						self.download(name, handle)
 			else:
-				self.download(name)
+				#self.stop_flag = True
+				self.status = cons.STATUS_PEND
 		except Exception, e:
 			self.stop_flag = True
 			logger.exception("%s: %s" % (self.file, e))
@@ -79,51 +91,42 @@ class Downloader(threading.Thread):
 			#	os.remove("%s.part" % name)
 			self.status = cons.STATUS_ERROR
 			
-	def download(self, name):
+	def download(self, name, handle):
 		""""""
-		handle = self.link_parser(self.url, self.wait)
-		size = handle.info().getheader("Content-Length")
-		if handle and size:
-			self.status = cons.STATUS_ACTIVE
-			logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
-			self.total_size = int(size)
-			f = open("%s.part" % name, "wb")
-			self.start_time = time.time()
-			data = "None"
-			while ((len(data) > 0) and not self.stop_flag):
-				tmp_size = 0
-				if self.max_speed > 0:
-					max_size = self.max_speed/BASE_SIZE
-				else:
-					max_size = 0
-				start_seconds = time.time()
-				while (time.time() - start_seconds) < 1:
-					if max_size == 0 or tmp_size < max_size:
-						data = handle.read(BUFFER_SIZE)
-						#print data
-						f.write(data)
-						self.actual_size += len(data)
-						tmp_size += 1
-					else:
-						time.sleep(0.1)
-				self.speed = BASE_SIZE * tmp_size
-			self.time_remaining = time.time() - self.start_time
-			f.flush()
-			os.fsync(f.fileno())
-			f.close()
-			if self.stop_flag:
-				#os.remove("%s.part" % name)
-				self.status = cons.STATUS_PEND
+		f = open("%s.part" % name, "wb")
+		self.start_time = time.time()
+		data = "None"
+		while ((len(data) > 0) and not self.stop_flag):
+			tmp_size = 0
+			if self.max_speed > 0:
+				max_size = self.max_speed/BASE_SIZE
 			else:
-				#self.stop_flag = True
-				if self.actual_size == self.total_size:
-					os.rename("%s.part" % name, name)
-					self.status = cons.STATUS_CORRECT
+				max_size = 0
+			start_seconds = time.time()
+			while (time.time() - start_seconds) < 1:
+				if max_size == 0 or tmp_size < max_size:
+					data = handle.read(BUFFER_SIZE)
+					#print data
+					f.write(data)
+					self.actual_size += len(data)
+					tmp_size += 1
 				else:
-					self.status = cons.STATUS_ERROR
+					time.sleep(0.1)
+			self.speed = BASE_SIZE * tmp_size
+		self.time_remaining = time.time() - self.start_time
+		f.flush()
+		os.fsync(f.fileno())
+		f.close()
+		if self.stop_flag:
+			#os.remove("%s.part" % name)
+			self.status = cons.STATUS_PEND
 		else:
 			#self.stop_flag = True
-			self.status = cons.STATUS_PEND
+			if self.actual_size == self.total_size:
+				os.rename("%s.part" % name, name)
+				self.status = cons.STATUS_CORRECT
+			else:
+				self.status = cons.STATUS_ERROR
 
 	def get_speed(self):
 		"""return int speed KB/s"""

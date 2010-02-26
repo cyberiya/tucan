@@ -228,7 +228,7 @@ class DownloadManager:
 					self.schedules += 1
 				else:
 					self.schedules = 0
-					logger.debug("scheduled 12 times.")
+					logger.debug("scheduled.")
 				try:
 					for download in self.pending_downloads:
 						if len(self.active_downloads) < max_downloads:
