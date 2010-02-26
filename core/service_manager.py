@@ -44,7 +44,7 @@ class Service:
 		#upload plugins
 		for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
 			logger.info("Loading: %s.%s, %i" % (package, plugin_module, config.get_update()))
-			module = __import__(package + "." + plugin_module, None, None, [''])
+			module = __import__("%s.%s" % (package, plugin_module), None, None, [''])
 			self.upload_plugins[plugin_type] = eval("module.%s(config, '%s')" % (plugin_name, plugin_module))
 
 	def get_plugin(self, upload=False):
