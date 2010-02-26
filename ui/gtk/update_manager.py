@@ -120,7 +120,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 			message = "Update Manager can't connect to server.\nTry again later."
 			Message(self, cons.SEVERITY_ERROR, "Not available!", message)
 			gobject.idle_add(self.close)
-		elif self.remote_version.split(" ")[0] <= cons.TUCAN_VERSION.split(" ")[0]:
+		elif self.remote_version == cons.TUCAN_VERSION:
 			self.check_updates()
 		else:
 			message = "Version %s released!\nPlease update and enjoy new services." % self.remote_version
