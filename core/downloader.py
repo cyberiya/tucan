@@ -19,13 +19,10 @@
 ###############################################################################
 
 import os
-import urllib2
-import threading
 import time
+import threading
 import logging
 logger = logging.getLogger(__name__)
-
-from url_open import URLOpen
 
 import cons
 
@@ -34,18 +31,17 @@ BUFFER_SIZE = BASE_SIZE * 1024
 
 class Downloader(threading.Thread):
 	""""""
-	def __init__(self, path, url, file_name, wait, cookie, post_wait):
+	def __init__(self, path, url, file_name, parser):
 		""""""
 		threading.Thread.__init__(self)
 
 		self.max_speed = 0
 
-		self.post_wait = post_wait
+		self.link_parser = parser
 		self.status = cons.STATUS_WAIT
 		self.path = path
 		self.url = url
 		self.file = file_name
-		self.wait = wait
 		self.stop_flag = False
 		self.start_time = time.time()
 		self.time_remaining = 0
@@ -54,85 +50,74 @@ class Downloader(threading.Thread):
 		self.speed = 0
 		self.tmp_time = 0
 		self.tmp_size = 0
-		self.range = None
-		#build opener
-		self.opener = URLOpen(cookie)
+		#self.range = None
 
 	def run(self):
 		""""""
 		name = os.path.join(self.path, self.file)
-		if self.wait:
-			while ((self.wait > 0) and not self.stop_flag):
-				time.sleep(1)
-				self.wait -= 1
-				self.time_remaining = self.wait
-		if not self.stop_flag:
-			try:
-				#check files
-				if not os.path.exists(self.path):
-					os.makedirs(self.path)
-				elif os.path.exists(name):
-					if os.path.getsize(name) == self.total_size:
-						self.actual_size = self.total_size
-						self.status = cons.STATUS_CORRECT
-						return
-					else:
-						os.remove(name)
-				#elif os.path.exists("%s.part" % name):
-				#	tmp_size = os.path.getsize("%s.part" % name)
-				#	if tmp_size > 0:
-				#		self.range = tmp_size
-				if self.post_wait:
-					handle = self.post_wait(self.url)
+		try:
+			#check files
+			if not os.path.exists(self.path):
+				os.makedirs(self.path)
+			elif os.path.exists(name):
+				if os.path.getsize(name) == self.total_size:
+					self.actual_size = self.total_size
+					self.status = cons.STATUS_CORRECT
+					return
 				else:
-					handle = self.opener.open(self.url, None, self.range)
-				if handle:
-					self.status = cons.STATUS_ACTIVE
-					logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
-					self.total_size = int(handle.info().getheader("Content-Length"))
-					f = open("%s.part" % name, "wb")
-					self.start_time = time.time()
-					data = "None"
-					while ((len(data) > 0) and not self.stop_flag):
-						tmp_size = 0
-						if self.max_speed > 0:
-							max_size = self.max_speed/BASE_SIZE
-						else:
-							max_size = 0
-						start_seconds = time.time()
-						while (time.time() - start_seconds) < 1:
-							if max_size == 0 or tmp_size < max_size:
-								data = handle.read(BUFFER_SIZE)
-								#print data
-								f.write(data)
-								self.actual_size += len(data)
-								tmp_size += 1
-							else:
-								time.sleep(0.1)
-						self.speed = BASE_SIZE * tmp_size
-					self.time_remaining = time.time() - self.start_time
-					f.flush()
-					os.fsync(f.fileno())
-					f.close()
-					if self.stop_flag:
-						#os.remove("%s.part" % name)
-						self.status = cons.STATUS_PEND
+					os.remove(name)
+			#elif os.path.exists("%s.part" % name):
+			#	tmp_size = os.path.getsize("%s.part" % name)
+			#	if tmp_size > 0:
+			#		self.range = tmp_size
+			handle = self.link_parser(self.url, self.wait)
+			if handle:
+				self.status = cons.STATUS_ACTIVE
+				logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
+				self.total_size = int(handle.info().getheader("Content-Length"))
+				f = open("%s.part" % name, "wb")
+				self.start_time = time.time()
+				data = "None"
+				while ((len(data) > 0) and not self.stop_flag):
+					tmp_size = 0
+					if self.max_speed > 0:
+						max_size = self.max_speed/BASE_SIZE
 					else:
-						self.stop_flag = True
-						if self.actual_size == self.total_size:
-							os.rename("%s.part" % name, name)
-							self.status = cons.STATUS_CORRECT
+						max_size = 0
+					start_seconds = time.time()
+					while (time.time() - start_seconds) < 1:
+						if max_size == 0 or tmp_size < max_size:
+							data = handle.read(BUFFER_SIZE)
+							#print data
+							f.write(data)
+							self.actual_size += len(data)
+							tmp_size += 1
 						else:
-							self.status = cons.STATUS_ERROR
+							time.sleep(0.1)
+					self.speed = BASE_SIZE * tmp_size
+				self.time_remaining = time.time() - self.start_time
+				f.flush()
+				os.fsync(f.fileno())
+				f.close()
+				if self.stop_flag:
+					#os.remove("%s.part" % name)
+					self.status = cons.STATUS_PEND
 				else:
 					self.stop_flag = True
-					self.status = cons.STATUS_PEND
-			except Exception, e:
+					if self.actual_size == self.total_size:
+						os.rename("%s.part" % name, name)
+						self.status = cons.STATUS_CORRECT
+					else:
+						self.status = cons.STATUS_ERROR
+			else:
 				self.stop_flag = True
-				logger.exception("%s: %s" % (self.file, e))
-				#if os.path.exists("%s.part" % name):
-				#	os.remove("%s.part" % name)
-				self.status = cons.STATUS_ERROR
+				self.status = cons.STATUS_PEND
+		except Exception, e:
+			self.stop_flag = True
+			logger.exception("%s: %s" % (self.file, e))
+			#if os.path.exists("%s.part" % name):
+			#	os.remove("%s.part" % name)
+			self.status = cons.STATUS_ERROR
 
 	def get_speed(self):
 		"""return int speed KB/s"""
@@ -143,3 +128,10 @@ class Downloader(threading.Thread):
 			self.tmp_time = time.time()
 			self.tmp_size = self.actual_size
 		return self.speed
+		
+	def wait(self, wait):
+		""""""
+		while ((wait > 0) and not self.stop_flag):
+			time.sleep(1)
+			wait -= 1
+			self.time_remaining = self.wait
