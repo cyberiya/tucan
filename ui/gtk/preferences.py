@@ -51,6 +51,7 @@ LANGUAGES = [	("Czech", "cs"),
 		("Portuguese", "pt"),
 		("Russian", "ru"),
 		("Slovak", "sk"),
+		("Slovenian", "sl"),
 		("Spanish", "es"),
 		("Swedish","se"),
 		("Turkish", "tr")]
