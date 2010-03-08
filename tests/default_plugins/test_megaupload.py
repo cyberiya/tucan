@@ -24,12 +24,10 @@ import __builtin__
 import unittest
 
 import sys
-sys.path.append("/home/crak/tucan/0.3.10/")
-sys.path.append("/home/crak/tucan/0.3.10/default_plugins/")
+sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../"))
+sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../default_plugins/"))
 
 from core.events import Events
-import core.url_open
-
 import core.cons as cons
 
 from megaupload.anonymous_download import AnonymousDownload
