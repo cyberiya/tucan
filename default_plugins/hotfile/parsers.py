@@ -32,7 +32,7 @@ from core.url_open import URLOpen
 BASE_URL = "http://hotfile.com"
 
 class CaptchaParser(HTMLParser):
-	def __init__(self, url,  form):
+	def __init__(self, url, form):
 		""""""
 		HTMLParser.__init__(self)
 		self.link = None
@@ -102,45 +102,33 @@ class CaptchaParser(HTMLParser):
 class Parser(HTMLParser):
 	def __init__(self, url):
 		""""""
-		HTMLParser.__init__(self)
 		self.link = None
-		self.form = None
-		self.tm = None
-		self.tmhash = None
-		self.waithash = None
 		self.wait = None
+		found = False
+		form = []
 		try:
 			opener = URLOpen()
-			self.feed(opener.open(url).read())
-			self.close()
-			self.form = urllib.urlencode([("action", "capt"), ("tm", self.tm), ("tmhash", self.tmhash), ("wait", self.wait), ("waithash", self.waithash)])
+			for line in opener.open(url).readlines():
+				if "download_file" in line:
+					found = True
+				elif found:
+					if "method=post " in line:
+						self.link = "%s%s" % (BASE_URL, line.split('action="')[1].split('" ')[0])
+					elif "name=action " in line:
+						form.append(("action", line.split("value=")[1].split(">")[0]))
+					elif "name=tm " in line:
+						form.append(("tm", line.split("value=")[1].split(">")[0]))
+					elif "name=tmhash " in line:
+						form.append(("tmhash", line.split("value=")[1].split(">")[0]))
+					elif "name=wait " in line:
+						self.wait = int(line.split("value=")[1].split(">")[0])
+						form.append(("wait", self.wait))
+					elif "name=waithash " in line:
+						form.append(("waithash", line.split("value=")[1].split(">")[0]))
+						found = False
+			self.form = urllib.urlencode(form)
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
-
-	def handle_starttag(self, tag, attrs):
-		""""""
-		if self.link:
-			if tag == "input":
-				if ("name", "tm") in attrs:
-					for ref, value in attrs:
-						if ref == "value":
-							self.tm = value
-				elif ("name", "tmhash") in attrs:
-					for ref, value in attrs:
-						if ref == "value":
-							self.tmhash = value
-				elif ("name", "wait") in attrs:
-					for ref, value in attrs:
-						if ref == "value":
-							self.wait = int(value)
-				elif ("name", "waithash") in attrs:
-					for ref, value in attrs:
-						if ref == "value":
-							self.waithash = value
-		else:
-			if tag == "form":
-				if len(attrs) > 3:
-					self.link = "%s%s" % (BASE_URL, attrs[1][1])
 
 class CheckLinks:
 	""""""
@@ -151,14 +139,11 @@ class CheckLinks:
 		unit = None
 		try:
 			for line in URLOpen().open(url).readlines():
-				if '<table class="downloading">' in line:
-					name = line.split('Downloading <b>')[1].split('</b>')[0]
-					tmp = line.split('<span class="size">|')[1].strip().split('</span>')[0]
-					unit = tmp[-2:].upper()
-					size = int(round(float(tmp[:-2])))
-			if not unit:
-				name = url
-				size = -1
+				if "<strong>Downloading:</strong>" in line:
+					name = line.split("<strong>Downloading:</strong>")[1].split("<span>|</span>")[0]
+					tmp = line.split("<span>|</span> <strong>")[1].strip().split("</strong>")[0].split(" ")
+					size = int(round(float(tmp[0])))
+					unit = tmp[1].upper()
 		except Exception, e:
 			name = url
 			size = -1
@@ -166,13 +151,20 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	c = Parser("http://hotfile.com/dl/7174149/00fbb47/Sander_Van_Doorn-Live_at_Sensation_White_Saint-Petersburg-12062009.mp3.html")
+	#print CheckLinks().check("http://hotfile.com/dl/7174149/00fbb47/Sander_Van_Doorn-Live_at_Sensation_White_Saint-Petersburg-12062009.mp3.html")
+	c = Parser("http://hotfile.com/dl/37208850/d185f13/_Tomoetenbu_-_Wise_Ass.part1.rar.html")
 	print c.link
-	print c.form
+	print c.form, c.wait
 	import time
 	for i in range(c.wait):
 		print i
 		time.sleep(1)
-	m = CaptchaParser(c.link, c.form)
-	print m.link
-	#print CheckLinks().check("http://hotfile.com/dl/10804393/9f439e8/Bruno_-_www.crostuff.net.part1.rar.html")
+	for line in URLOpen().open(c.link, c.form).readlines():
+		if "click_download" in line:
+			print line.split('href="')[1].split('"')[0]
+			break
+		elif "checkcaptcha" in line:
+			print line
+			break
+	#m = CaptchaParser(c.link, c.form)
+	#print m.link

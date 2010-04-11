@@ -21,7 +21,8 @@
 import unittest
 
 import sys
-sys.path.append("/Users/Crak/Desktop/tucan/trunk")
+#sys.path.append("/Users/Crak/Desktop/tucan/trunk")
+sys.path.append("/home/crak/tucan/trunk")
 
 import test_base_types
 import test_download_types
