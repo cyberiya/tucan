@@ -21,7 +21,7 @@ msgstr "Geavanceerde pakketten"
 
 #: ./advanced_packages.py:96
 msgid "Choose new path for selected Package."
-msgstr "Kies een nieuwe locatie voor get geselecteerde Pakket."
+msgstr "Kies een nieuwe locatie voor het geselecteerde Pakket."
 
 #: ./file_chooser.py:33
 msgid "Select a Folder"
@@ -33,7 +33,7 @@ msgstr "Laat verborgen bestanden zien."
 
 #: ./gui.py:84
 msgid "Load Session"
-msgstr "Laas sessie"
+msgstr "Laad sessie"
 
 #: ./gui.py:85
 msgid "Save Session"
@@ -93,7 +93,7 @@ msgstr "Plak hier de links:"
 
 #: ./input_links.py:88
 msgid "Check Links"
-msgstr "Controlees links"
+msgstr "Controleer links"
 
 #: ./input_links.py:131
 msgid "Show advanced Package configuration."
@@ -105,7 +105,7 @@ msgstr "Links controleren, even geduld."
 
 #: ./input_links.py:260
 msgid "Check Canceled!"
-msgstr "Controleed geannuleerden!"
+msgstr "Selecteer geannuleerden!"
 
 #: ./preferences.py:54
 msgid "General Configuration"
