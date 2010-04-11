@@ -25,6 +25,11 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
+import sys
+sys.path.append("/home/crak/tucan/trunk")
+import __builtin__
+__builtin__.PROXY = None
+
 from core.tesseract import Tesseract
 from core.url_open import URLOpen
 
@@ -46,21 +51,22 @@ class FormParser:
 			elif "download.php" in url:
 				url = "".join(url.split("download.php"))
 			for line in opener.open(url).readlines():
-				if "cu(" in line:
+				if "(qk,pk,r)" in line:
 					if "GetCaptcha" in line:
-						print line
 						logger.warning("Unable to solve Recaptcha")
 					else:
+						print line
 						tmp = line.split("cu('")[1].split("');")[0].split("','")
 						handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % (urllib.urlencode([("qk", tmp[0]), ("pk", tmp[1]), ("r", tmp[2])])))
 						tmp = handle.readlines()
+						print tmp
 						vars = {}
 
 						sum = tmp[1].split("+mL+'/' ")[1].split(" 'g/'")[0]
 						server = tmp[1].split("mL='")[1].split("';")[0]
 						link = tmp[1].split("mH='")[1].split("';")[0]
 						name = tmp[1].split("mY='")[1].split("';")[0]
-						
+						print tmp, sum, server, link, name
 						for var in tmp[1].split(";"):
 							var = var.split("var")
 							if len(var) > 1:
@@ -74,6 +80,7 @@ class FormParser:
 								else:
 									error = True
 		except Exception, e:
+			print e
 			error = True
 			logger.exception("%s: %s" % (url, e))
 		if server and random and link and name and not error:
@@ -112,7 +119,7 @@ class CheckLinks(HTMLParser):
 				self.unit = tmp[1]
 
 if __name__ == "__main__":
-	f = FormParser("http://www.mediafire.com/?ja1mn1gz1ji", cookielib.CookieJar())
+	f = FormParser("http://www.mediafire.com/?5gbmmdds5bd", cookielib.CookieJar())
 	print f.url
 	#print CheckLinks().check("http://www.mediafire.com/download.php?z0gjmnwk1d0")
 	#print CheckLinks().check("http://www.mediafire.com/?0ojmelsgdn4")
