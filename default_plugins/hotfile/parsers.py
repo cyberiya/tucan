@@ -140,7 +140,7 @@ class CheckLinks:
 		try:
 			for line in URLOpen().open(url).readlines():
 				if "<strong>Downloading:</strong>" in line:
-					name = line.split("<strong>Downloading:</strong>")[1].split("<span>|</span>")[0]
+					name = line.split("<strong>Downloading:</strong>")[1].split("<span>|</span>")[0].strip()
 					tmp = line.split("<span>|</span> <strong>")[1].strip().split("</strong>")[0].split(" ")
 					size = int(round(float(tmp[0])))
 					unit = tmp[1].upper()
