@@ -82,7 +82,7 @@ class Downloader(threading.Thread):
 					else:
 						self.download(name, handle)
 			else:
-				#self.stop_flag = True
+				self.stop_flag = True
 				self.status = cons.STATUS_PEND
 		except Exception, e:
 			self.stop_flag = True

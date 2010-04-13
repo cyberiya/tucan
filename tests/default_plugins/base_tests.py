@@ -36,24 +36,31 @@ class TestBaseDownload(unittest.TestCase):
 	def setUp(self):
 		""""""
 		self.plugin = None
+		self.invalid_link = None
 		self.link = None
 		self.size = None
 		self.unit = None
 
-	def test_check_link(self):
+	def check_link(self, link, name, size, unit):
 		""""""
-		name, size, unit = self.plugin.check_links(self.link)
-		self.assertEqual(name, TEST_NAME, "%s != %s" % (name, TEST_NAME))
-		self.assertEqual(size, self.size, "%s != %i" % (size, self.size))
-		self.assertEqual(unit, self.unit, "%s != %s" % (unit, self.unit))
+		n, s, u = self.plugin.check_links(link)
+		self.assertEqual(n, name, "%s != %s" % (n, name))
+		self.assertEqual(s, size, "%s != %i" % (s, size))
+		self.assertEqual(u, unit, "%s != %s" % (u, unit))
+		
+	def test_check_invalid_link(self):
+		""""""
+		self.check_link(self.invalid_link, self.invalid_link, -1, None)
 
 	def test_download(self):
 		""""""
+		self.check_link(self.link, TEST_NAME, self.size, self.unit)
 		self.assertTrue(self.plugin.add(TEST_DIR, self.link, TEST_NAME), "check slots or limits")
 		status = cons.STATUS_WAIT
 		while ((status != cons.STATUS_ERROR) and (status != cons.STATUS_CORRECT)):
 			status, progress, actual_size, unit, speed, time_ = self.plugin.get_status(TEST_NAME)
 			time.sleep(1)
+		self.assertEqual(status, cons.STATUS_CORRECT, "s%: Error downloading")
 		name = "%s%s" % (TEST_DIR, TEST_NAME)
 		self.assertTrue(os.path.exists(name), "Not Found: %s" % name)
 		f1 = file(TEST_NAME, "r")

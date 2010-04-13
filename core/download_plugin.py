@@ -81,8 +81,8 @@ class DownloadPlugin(Slots):
 		th = None
 		if file_name in self.active_downloads:
 			th = self.active_downloads[file_name]
-			#if self.active_downloads[file_name].stop_flag:
-			#	del self.active_downloads[file_name]
+			if th.stop_flag:
+				del self.active_downloads[file_name]
 		if th:
 			actual_size, unit = self.get_size(th.actual_size)
 			if th.status == cons.STATUS_ACTIVE:

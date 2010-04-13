@@ -40,6 +40,7 @@ class AnonymousDownload(DownloadPlugin):
 	def link_parser(self, url, wait_func):
 		""""""
 		link = None
+		remaining_tries = 5
 		captcha_img = None
 		captchacode = ""
 		megavar = ""
@@ -48,7 +49,8 @@ class AnonymousDownload(DownloadPlugin):
 			if len(tmp) > 4:
 				del tmp[3]
 				url = "/".join(tmp)
-			while not link:
+			while remaining_tries > 0 and not link:
+				remaining_tries -= 1
 				for line in URLOpen().open(url).readlines():
 					if "captchacode" in line:
 						captchacode = line.split('value="')[1].split('">')[0]
@@ -73,7 +75,9 @@ class AnonymousDownload(DownloadPlugin):
 								if 'id="downloadlink"' in line:
 									link = line.split('<a href="')[1].split('"')[0]
 									break
-			if not wait_func(WAIT):
+			if not link:
+				return
+			elif not wait_func(WAIT):
 				return
 		except Exception, e:
 			logger.error(e)
