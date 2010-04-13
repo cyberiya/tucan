@@ -22,6 +22,7 @@ from base_tests import TestBaseDownload
 
 from megaupload.anonymous_download import AnonymousDownload
 
+TEST_INVALID_LINK = "http://www.megaupload.com/?d=0"
 TEST_LINK = "http://www.megaupload.com/?d=3VCUBE3Y"
 TEST_SIZE = 113
 TEST_UNIT = "KB"
@@ -31,6 +32,7 @@ class TestAnonymous(TestBaseDownload):
 	def setUp(self):
 		""""""
 		self.plugin = AnonymousDownload("mierda", "")
+		self.invalid_link = TEST_INVALID_LINK
 		self.link = TEST_LINK
 		self.size = TEST_SIZE
 		self.unit = TEST_UNIT
