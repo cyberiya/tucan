@@ -78,7 +78,9 @@ class DownloadPlugin(object):
 				else:
 					time = 0
 			else:
-				if not th.status == cons.STATUS_CORRECT:
+				if th.status == cons.STATUS_CORRECT:
+					th.stop_flag = True
+				else:
 					actual_size = 0
 				progress = 0
 				speed = 0
