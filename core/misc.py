@@ -90,5 +90,6 @@ def substitute_entity(match):
 
 def decode_htmlentities(string):
 	""""""
-	entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
-	return entity_re.subn(substitute_entity, string)[0]
+	#entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
+	#return entity_re.subn(substitute_entity, string)[0]
+	return string
