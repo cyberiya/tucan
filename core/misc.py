@@ -18,10 +18,13 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import re
 import sys
 import urllib
 import logging
 logger = logging.getLogger(__name__)
+
+from htmlentitydefs import name2codepoint
 
 import url_open
 import cons
@@ -67,8 +70,25 @@ def get_exception_info(type, value, trace):
 
 def url_quote(url):
 	"""Replace special characters in string using the %xx escape. """
-	return urllib.quote(url, "/:")
+	return urllib.quote(url, "/:=?")
 	
 def url_unquote(url):
 	"""Replace %xx escapes by their single-character equivalent."""
 	return urllib.unquote(urllib.unquote(url))
+
+def substitute_entity(match):
+	""""""
+	ent = match.group(2)
+	if match.group(1) == "#":
+		return unichr(int(ent))
+	else:
+		cp = name2codepoint.get(ent)
+	if cp:
+		return unichr(cp)
+	else:
+		return match.group()
+
+def decode_htmlentities(string):
+	""""""
+	entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
+	return entity_re.subn(substitute_entity, string)[0]

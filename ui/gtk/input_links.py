@@ -242,12 +242,14 @@ class InputLinks(gtk.Dialog):
 					else:
 						service_iter = store.append(None, [service_icon, service, service, 0, None, None, False, False])
 						for link in links:
+							link = misc.url_unquote(link)
 							if self.cancel_check:
 								self.cancel_check = False
 								raise Exception("Check Links cancelled")
 							check, plugin_type = self.check_links(service) 
 							file_name, size, size_unit = check(link)
 							if file_name:
+								file_name = misc.decode_htmlentities(file_name)
 								if size > 0:
 									icon = active_icon
 									marked = True
@@ -259,7 +261,7 @@ class InputLinks(gtk.Dialog):
 								marked = False
 								file_name = link
 							logger.info("Checked: %s %s %s" % (file_name, size, size_unit))
-							store.append(service_iter, [icon, misc.url_unquote(link), file_name, size, size_unit, plugin_type, marked, marked])
+							store.append(service_iter, [icon, link, file_name, size, size_unit, plugin_type, marked, marked])
 							self.treeview.expand_row(store.get_path(service_iter), True)
 		except Exception:
 			gobject.idle_add(wait.destroy)
