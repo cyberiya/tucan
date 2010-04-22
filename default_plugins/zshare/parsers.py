@@ -66,13 +66,18 @@ class CheckLinks:
 				elif "Size:" in line:
 					tmp = line.strip().split('<font color="#666666">')[1].split('</font></td>')[0]
 					if "KB" in tmp:
-						size = int(float(tmp.split("KB")[0]))
+						size = int(round(float(tmp.split("KB")[0])))
 						unit = "KB"
 					elif "MB" in tmp:
-						size = int(float(tmp.split("MB")[0]))
-						unit = "MB"
+						size = float(tmp.split("MB")[0])
+						if int(round(size)) > 0:
+							size = int(round(size))
+							unit = "MB"
+						else:
+							size = int(round(1024 * size))
+							unit = "KB"
 					elif "GB" in tmp:
-						size = int(float(tmp.split("GB")[0]))
+						size = int(round(float(tmp.split("GB")[0])))
 						unit = "GB"
 			if not name:
 				name = url
