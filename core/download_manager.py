@@ -24,6 +24,7 @@ import threading
 import logging
 logger = logging.getLogger(__name__)
 
+import misc
 import cons
 
 class Link:
@@ -129,7 +130,7 @@ class DownloadManager:
 				download.status = cons.STATUS_WAIT
 				for link in download.links:
 					link.plugin, link.type = self.get_plugin(link.service)
-					if link.plugin.add(download.path, link.url, download.name):
+					if link.plugin.add(download.path, misc.url_quote(link.url), download.name):
 						try:
 							self.pending_downloads.remove(download)
 						except:

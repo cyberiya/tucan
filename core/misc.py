@@ -64,3 +64,11 @@ def get_exception_info(type, value, trace):
 		return "Unhandled Error! No info available"
 	else:
 		return "File %s line %i - %s: %s" % (file_name, line_no, exception, value)
+
+def url_quote(url):
+	"""Replace special characters in string using the %xx escape. """
+	return urllib.quote(url, "/:")
+	
+def url_unquote(url):
+	"""Replace %xx escapes by their single-character equivalent."""
+	return urllib.unquote(urllib.unquote(url))

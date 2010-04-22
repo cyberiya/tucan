@@ -32,6 +32,7 @@ from clipboard import check_contents
 from advanced_packages import AdvancedPackages
 
 import media
+import core.misc as misc
 import core.cons as cons
 
 class InputLinks(gtk.Dialog):
@@ -194,14 +195,11 @@ class InputLinks(gtk.Dialog):
 			packages = self.create_packages(tmp)
 			packages_info = None
 			if self.advanced_button.get_active():
-				#self.hide()
 				w = AdvancedPackages(self, self.default_path, packages)
 				packages_info = w.packages_info
 				if packages_info:
 					self.packages(w.packages, packages_info)
 					self.close()
-				#else:
-				#	self.show()
 			else:
 				self.packages(packages, [])
 				self.close()
@@ -261,7 +259,7 @@ class InputLinks(gtk.Dialog):
 								marked = False
 								file_name = link
 							logger.info("Checked: %s %s %s" % (file_name, size, size_unit))
-							store.append(service_iter, [icon, link, file_name, size, size_unit, plugin_type, marked, marked])
+							store.append(service_iter, [icon, misc.url_unquote(link), file_name, size, size_unit, plugin_type, marked, marked])
 							self.treeview.expand_row(store.get_path(service_iter), True)
 		except Exception:
 			gobject.idle_add(wait.destroy)
