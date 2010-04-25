@@ -54,7 +54,6 @@ class Events:
 				try:
 					callback(*(kargs+kargs2))
 				except Exception, e:
-					print e
 					logger.exception(e)
 
 	def trigger_limit_off(self, module):
@@ -81,3 +80,18 @@ class Events:
 		""""""
 		logger.debug("triggered: %s" % cons.EVENT_ALL_COMPLETE)
 		self.trigger(cons.EVENT_ALL_COMPLETE)
+
+	def trigger_link_checked(self, service, link, name, size, unit, plugin_type):
+		""""""
+		logger.debug("triggered: %s %s" % (cons.EVENT_LINK_CHECKED, link))
+		self.trigger(cons.EVENT_LINK_CHECKED, service, link, name, size, unit, plugin_type)
+
+	def trigger_check_completed(self, service):
+		""""""
+		logger.debug("triggered: %s %s" % (cons.EVENT_CHECK_COMPLETED, service))
+		self.trigger(cons.EVENT_CHECK_COMPLETED, service)
+
+	def trigger_check_cancel(self):
+		""""""
+		logger.debug("triggered: %s" % cons.EVENT_CHECK_CANCEL)
+		self.trigger(cons.EVENT_CHECK_CANCEL)
