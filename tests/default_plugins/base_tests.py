@@ -52,9 +52,13 @@ class TestBaseDownload(unittest.TestCase):
 		""""""
 		self.check_link(self.invalid_link, self.invalid_link, -1, None)
 
-	def test_download(self):
+	def test_check_valid_link(self):
 		""""""
 		self.check_link(self.link, TEST_NAME, self.size, self.unit)
+
+	def test_download(self):
+		""""""
+		self.test_check_valid_link()
 		self.assertTrue(self.plugin.add(TEST_DIR, self.link, TEST_NAME), "check slots or limits")
 		status = cons.STATUS_WAIT
 		while ((status != cons.STATUS_ERROR) and (status != cons.STATUS_CORRECT)):
