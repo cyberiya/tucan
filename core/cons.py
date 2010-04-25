@@ -77,10 +77,14 @@ TYPE_USER = "User"
 TYPE_PREMIUM = "Premium"
 TYPE_UNSUPPORTED = "unsupported"
 
+#default locale constant
+LOCALE_NAME = locale.getdefaultlocale()[0]
+LOCALE_CODEC = locale.getdefaultlocale()[1]
+
 #path constants
 if OS_WINDOWS:
 	PATH = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "")
-	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "").decode(locale.getdefaultlocale()[1])
+	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "").decode(LOCALE_CODEC)
 	if PATH not in sys.path:
 		sys.path.insert(0, PATH)
 else:
