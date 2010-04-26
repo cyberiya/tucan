@@ -41,8 +41,11 @@ class LinkDispatcher:
 	def threaded_check(self, service, links, get_check_links):
 		""""""
 		check_links, plugin_type, max_single_check = get_check_links(service)
+		#mover la funcionalidad de cancelar y del limite a download_plugin
 		for max_links in [links[i:max_single_check+i] for i in range(0, len(links), max_single_check)]:
-			if not self.cancel_flag:
+			if self.cancel_flag:
+				return
+			else:
 				for link, (name, size, unit) in check_links(max_links).items():
 					events.trigger_link_checked(service, link, name, size, unit, plugin_type)
 		events.trigger_check_completed(service)
