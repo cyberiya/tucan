@@ -40,8 +40,8 @@ class LinkDispatcher:
 
 	def threaded_check(self, service, links, get_check_links):
 		""""""
-		check_links, plugin_type = get_check_links(service)
-		for max_links in [links[i:MAX_SINGLE_CHECK+i] for i in range(0, len(links), MAX_SINGLE_CHECK)]:
+		check_links, plugin_type, max_single_check = get_check_links(service)
+		for max_links in [links[i:max_single_check+i] for i in range(0, len(links), max_single_check)]:
 			if not self.cancel_flag:
 				for link, (name, size, unit) in check_links(max_links).items():
 					events.trigger_link_checked(service, link, name, size, unit, plugin_type)
@@ -68,6 +68,6 @@ if __name__ == "__main__":
 			result[link] = (link, m, "KB")
 		return result
 
-	l = LinkDispatcher(LINKS, lambda x: (check_links, "PREMIUM"))
+	l = LinkDispatcher(LINKS, lambda x: (check_links, "PREMIUM", MAX_SINGLE_CHECK))
 	time.sleep(10)
 	events.trigger_check_cancel()
