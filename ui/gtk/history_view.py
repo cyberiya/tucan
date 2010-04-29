@@ -54,7 +54,7 @@ class HistoryView(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		store = gtk.ListStore(str, bool, gtk.gdk.Pixbuf, str, str, str, str)
+		store = gtk.ListStore(str, bool, str, gtk.gdk.Pixbuf, str, str, str)
 		self.treeview = gtk.TreeView(store)
 		scroll.add(self.treeview)
 
@@ -68,18 +68,18 @@ class HistoryView(gtk.Dialog):
 		tree_played.add_attribute(played_cell, 'active', 1)
 		self.treeview.append_column(tree_played)
 
-		tree_icon = gtk.TreeViewColumn('Icon') 
-		icon_cell = gtk.CellRendererPixbuf()
-		tree_icon.pack_start(icon_cell, True)
-		tree_icon.add_attribute(icon_cell, 'pixbuf', 2)
-		tree_icon.set_property('min-width', 32)
-		self.treeview.append_column(tree_icon)
-
 		tree_date = gtk.TreeViewColumn('Date') 
 		date_cell = gtk.CellRendererText()
 		tree_date.pack_start(date_cell, True)
-		tree_date.add_attribute(date_cell, 'text', 3)
+		tree_date.add_attribute(date_cell, 'text', 2)
 		self.treeview.append_column(tree_date)
+
+		tree_icon = gtk.TreeViewColumn('Icon') 
+		icon_cell = gtk.CellRendererPixbuf()
+		tree_icon.pack_start(icon_cell, True)
+		tree_icon.add_attribute(icon_cell, 'pixbuf', 3)
+		tree_icon.set_property('min-width', 32)
+		self.treeview.append_column(tree_icon)
 
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
@@ -100,7 +100,7 @@ class HistoryView(gtk.Dialog):
 		#fill store
 		total_size, num_files, history = self.history.get_all()
 		for id, played, link, date, name, size in history:
-			store.append((id, played, self.get_icon(link), date, name, link, size))
+			store.append((id, played, date, self.get_icon(link), name, link, size))
 
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 10)
