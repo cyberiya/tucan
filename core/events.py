@@ -27,30 +27,30 @@ class Events:
 	""""""
 	def __init__(self):
 		""""""
+		self.event_id = 0
 		self.registered = {}
 
 	def connect(self, event, callback, *kargs):
 		""""""
-		if event in self.registered:
-			result = len(self.registered[event])
-			self.registered[event].append((callback, kargs))
-			return result
-		else:
-			self.registered[event] = [(callback, kargs)]
-			return 0
+		self.event_id += 1
+		event_queue = self.registered.get(event, {})
+		event_queue[self.event_id] = (callback, kargs)
+		self.registered[event] = event_queue
+		return self.event_id
 
 	def disconnect(self, event, id):
 		""""""
 		try:
 			if event in self.registered:
-				del self.registered[event][id]
+				self.registered[event].pop(id)
+				return True
 		except Exception, e:
-			logger.Error("Could not disconnect: %s %i" % (event, id))
+			logger.warning("Could not disconnect: %s %i" % (event, id))
 
 	def trigger(self, event, *kargs):
 		""""""
 		if event in self.registered:
-			for callback, kargs2 in self.registered[event]:
+			for callback, kargs2 in self.registered[event].values():
 				try:
 					callback(*(kargs+kargs2))
 				except Exception, e:
