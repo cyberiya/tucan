@@ -18,7 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-from base_tests import TestBaseDownload
+import base_tests
 
 from megaupload.anonymous_download import AnonymousDownload
 
@@ -27,7 +27,7 @@ TEST_LINK = "http://www.megaupload.com/?d=3VCUBE3Y"
 TEST_SIZE = 113
 TEST_UNIT = "KB"
 
-class TestAnonymous(TestBaseDownload):
+class TestAnonymous(base_tests.TestBaseDownload):
 	""""""
 	def setUp(self):
 		""""""
@@ -40,14 +40,3 @@ class TestAnonymous(TestBaseDownload):
 	def tearDown(self):
 		""""""
 		del self.plugin
-
-if __name__ == '__main__':
-	import logging
-	logging.basicConfig(level=logging.ERROR)
-
-	import __builtin__
-	from core.events import Events
-	__builtin__.events = Events()
-	
-	import unittest
-	unittest.TextTestRunner(verbosity=2).run(unittest.TestLoader().loadTestsFromTestCase(TestAnonymous))

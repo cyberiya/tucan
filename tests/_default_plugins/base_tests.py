@@ -22,9 +22,9 @@ import time
 import os.path
 import unittest
 
-import sys
-#sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../"))
-#sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../default_plugins/"))
+import __builtin__
+from core.events import Events
+__builtin__.events = Events()
 
 import core.cons as cons
 
@@ -67,7 +67,7 @@ class TestBaseDownload(unittest.TestCase):
 		self.assertEqual(status, cons.STATUS_CORRECT, "s%: Error downloading")
 		name = "%s%s" % (TEST_DIR, TEST_NAME)
 		self.assertTrue(os.path.exists(name), "Not Found: %s" % name)
-		f1 = file(TEST_NAME, "r")
+		f1 = file(os.path.join("_default_plugins", TEST_NAME), "r")
 		f2 = file(name, "r")
 		local = f1.read()
 		remote = f2.read()

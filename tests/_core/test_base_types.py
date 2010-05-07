@@ -29,13 +29,6 @@ NAME2 = "another"
 PATH = ""
 SIZE = 0
 
-def get_suite():
-	suite = []
-	suite.append(unittest.TestLoader().loadTestsFromTestCase(TestBase))
-	suite.append(unittest.TestLoader().loadTestsFromTestCase(TestContainer))
-	suite.append(unittest.TestLoader().loadTestsFromTestCase(TestItem))
-	return unittest.TestSuite(suite)
-
 class TestBase(unittest.TestCase):
 	def setUp(self):
 		self.base = Base(NAME)

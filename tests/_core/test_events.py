@@ -22,9 +22,6 @@ import time
 import os.path
 import unittest
 
-#import sys
-#sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../"))
-
 from core.events import *
 
 TEST_1 = "test-1"
@@ -50,9 +47,3 @@ class TestEvents(unittest.TestCase):
 		self.events.trigger(TEST_1, ARG_1)
 		self.assertFalse(self.events.disconnect(TEST_1, id), "")
 		self.assertTrue(self.events.disconnect(TEST_1, id2), "")
-
-if __name__ == '__main__':
-	import logging
-	logging.basicConfig(level=logging.ERROR)
-
-	unittest.TextTestRunner(verbosity=2).run(unittest.TestLoader().loadTestsFromTestCase(TestEvents))

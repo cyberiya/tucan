@@ -25,11 +25,6 @@ from core.download_types import Link
 LINK = "http://megaupload.com/?d=9CE8MEPF"
 SERVICE = "megaupload.com"
 
-def get_suite():
-	suite = []
-	suite.append(unittest.TestLoader().loadTestsFromTestCase(TestLink))
-	return unittest.TestSuite(suite)
-
 class TestLink(unittest.TestCase):
 	def setUp(self):
 		self.link = Link(LINK, SERVICE)
