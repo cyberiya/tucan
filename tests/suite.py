@@ -42,7 +42,7 @@ class Suite:
 		
 	def get_suite(self, path):
 		""""""
-		if len(path) == 0:
+		if path:
 			path = os.listdir(".")
 		self.recursive_walk_suites(path)
 		return self.loader.loadTestsFromNames(self.tmp_suite)
