@@ -22,8 +22,8 @@ import time
 import os.path
 import unittest
 
-import sys
-sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../"))
+#import sys
+#sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../"))
 
 from core.events import *
 
