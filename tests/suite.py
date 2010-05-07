@@ -20,20 +20,18 @@
 
 import os
 import sys
+import optparse
 import unittest
+import logging
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "../")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(sys.argv[0]), "../default_plugins/")))
+
+LEVEL = {"DEBUG": logging.DEBUG, "INFO": logging.INFO, "WARNING": logging.WARNING, "ERROR": logging.ERROR, "CRITICAL": logging.CRITICAL}
 
 TEST_PREFIX = "test_"
 TEST_SUFIX = ".py"
 PATH_SEPARATOR = "/"
-
-def get_suite():
-	suite = []
-	suite.append(unittest.TestLoader().loadTestsFromTestCase(TestBase))
-	suite.append(unittest.TestLoader().loadTestsFromTestCase(TestContainer))
-	suite.append(unittest.TestLoader().loadTestsFromTestCase(TestItem))
-	return unittest.TestSuite(suite)
 
 class Suite:
 	""""""
@@ -47,19 +45,14 @@ class Suite:
 		if len(path) == 0:
 			path = os.listdir(".")
 		self.recursive_walk_suites(path)
-		return unittest.TestSuite(self.tmp_suite)
-
-	def add_tests(self, name):
-		""""""
-		module_name = ".".join(name.split(TEST_SUFIX)[0].split(PATH_SEPARATOR))
-		print module_name
-		self.tmp_suite.append(self.loader.loadTestsFromName(module_name))
+		return self.loader.loadTestsFromNames(self.tmp_suite)
 
 	def recursive_walk_suites(self, names, parent=""):
 		""""""
 		if not isinstance(names, list):
 			if os.path.basename(names).startswith(TEST_PREFIX) and names.endswith(TEST_SUFIX):
-				self.add_tests(names)
+				module_name = ".".join(names.split(TEST_SUFIX)[0].split(PATH_SEPARATOR))
+				self.tmp_suite.append(module_name)
 		elif len(names) > 0:
 			for path in names:
 				path = os.path.join(parent, path)
@@ -69,17 +62,12 @@ class Suite:
 					self.recursive_walk_suites(path)
 
 if __name__ == '__main__':	
-	import optparse
 	parser = optparse.OptionParser()
-	parser.add_option("-l", "--logging", dest="level", help="set logger LEVEL (default=ERROR)", metavar="LEVEL")
-	parser.add_option("-v", "--verbosity", dest="verbosity", help="set verbosity LEVEL (default=1)", metavar="LEVEL")
+	parser.add_option("-l", "--logging", dest="level", default="", help="set logger LEVEL (default=ERROR)", metavar="LEVEL")
+	parser.add_option("-v", "--verbosity", dest="verbosity", default=2, help="set verbosity LEVEL (default=2)", metavar="LEVEL")
 	options, args = parser.parse_args()
 
-	import logging
-	logging.basicConfig(level=logging.ERROR)
+	logging.basicConfig(level=LEVEL.get(options.level.upper(), logging.ERROR))
 	
 	s = Suite()
-	print s.get_suite(args)
-		
-	#unittest.TextTestRunner(verbosity=2).run(get_all())
-	#unittest.TextTestRunner(verbosity=2).run(unittest.TestLoader().loadTestsFromTestCase(TestEvents))
+	unittest.TextTestRunner(verbosity=int(options.verbosity)).run(s.get_suite(args))
