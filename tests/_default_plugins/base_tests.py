@@ -23,8 +23,8 @@ import os.path
 import unittest
 
 import sys
-sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../"))
-sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../default_plugins/"))
+#sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../"))
+#sys.path.append(os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "../../default_plugins/"))
 
 import core.cons as cons
 

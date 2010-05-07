@@ -40,13 +40,20 @@ class Suite:
 	def __init__(self):
 		""""""
 		self.loader = unittest.TestLoader()
-		self.suite = []
+		self.tmp_suite = []
+		
+	def get_suite(self, path):
+		""""""
+		if len(path) == 0:
+			path = os.listdir(".")
+		self.recursive_walk_suites(path)
+		return unittest.TestSuite(self.tmp_suite)
 
 	def add_tests(self, name):
 		""""""
 		module_name = ".".join(name.split(TEST_SUFIX)[0].split(PATH_SEPARATOR))
 		print module_name
-		self.suite.append(self.loader.loadTestsFromName(module_name))
+		self.tmp_suite.append(self.loader.loadTestsFromName(module_name))
 
 	def recursive_walk_suites(self, names, parent=""):
 		""""""
@@ -60,8 +67,6 @@ class Suite:
 					self.recursive_walk_suites(os.listdir(path), path)
 				else:
 					self.recursive_walk_suites(path)
-		else:
-			self.recursive_walk_suites(os.listdir("."))
 
 if __name__ == '__main__':	
 	import optparse
@@ -74,8 +79,7 @@ if __name__ == '__main__':
 	logging.basicConfig(level=logging.ERROR)
 	
 	s = Suite()
-	s.recursive_walk_suites(args)
-	print s.suite
+	print s.get_suite(args)
 		
 	#unittest.TextTestRunner(verbosity=2).run(get_all())
 	#unittest.TextTestRunner(verbosity=2).run(unittest.TestLoader().loadTestsFromTestCase(TestEvents))
