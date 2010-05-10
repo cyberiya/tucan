@@ -18,38 +18,17 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import urllib2
-import logging
-logger = logging.getLogger(__name__)
+import urllib
+import cookielib
 
-from premium_cookie import PremiumCookie
-from premium_parser import PremiumParser
-from check_links import CheckLinks
+from core.url_open import URLOpen
 
-from core.accounts import Accounts
-from core.service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
-from core.download_plugin import DownloadPlugin
-
-class PremiumDownload(DownloadPlugin, Accounts):
+class PremiumCookie:
 	""""""
-	def __init__(self, config, section):
+	def get_cookie(self, user, password, url=None):
 		""""""
-		Accounts.__init__(self, config, SECTION_PREMIUM_DOWNLOAD, PremiumCookie())
-		DownloadPlugin.__init__(self)
-
-	def add(self, path, link, file_name):
-		""""""
-		cookie = self.get_cookie()
-		if cookie:
-			parser = PremiumParser(link, cookie)
-			link = parser.get_url()
-			if link:
-				return self.start(path, link, file_name, None, cookie)
-
-	def delete(self, file_name):
-		""""""
-		logger.warning("Stopped %s: %s" % (file_name, self.stop(file_name)))
-
-	def check_links(self, url):
-		""""""
-		return CheckLinks().check(url)
+		cookie = cookielib.CookieJar()
+		opener = URLOpen(cookie)
+		opener.open("http://www.megaupload.com/?c=login", urllib.urlencode({"login": "1", "redir": "1", "username": user, "password": password}))
+		if len(cookie) > 0:
+			return cookie
