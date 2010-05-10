@@ -18,9 +18,14 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import sys
+import os.path
 import base_tests
 
+from core.service_config import ServiceConfig, SECTION_ANONYMOUS_DOWNLOAD
 from megaupload.anonymous_download import AnonymousDownload
+
+CONF_PATH = "../default_plugins/megaupload"
 
 TEST_INVALID_LINK = "http://www.megaupload.com/?d=0"
 TEST_LINK = "http://www.megaupload.com/?d=3VCUBE3Y"
@@ -31,7 +36,8 @@ class TestAnonymous(base_tests.TestBaseDownload):
 	""""""
 	def setUp(self):
 		""""""
-		self.plugin = AnonymousDownload("mierda", "")
+		config = ServiceConfig(os.path.join(os.path.dirname(sys.argv[0]), CONF_PATH))
+		self.plugin = AnonymousDownload(config, SECTION_ANONYMOUS_DOWNLOAD)
 		self.invalid_link = TEST_INVALID_LINK
 		self.link = TEST_LINK
 		self.size = TEST_SIZE
