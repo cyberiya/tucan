@@ -32,7 +32,7 @@ class DownloadPlugin(Slots):
 	""""""
 	def __init__(self, config, section):
 		""""""
-		Slots.__init__(self, 1, 300)
+		Slots.__init__(self, config.get_slots(section), config.get_wait(section))
 		self.active_downloads = {}
 		
 	def link_parser(self, link, wait_func):

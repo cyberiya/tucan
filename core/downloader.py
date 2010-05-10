@@ -138,7 +138,7 @@ class Downloader(threading.Thread):
 			self.tmp_size = self.actual_size
 		return self.speed
 		
-	def wait(self, wait):
+	def wait(self, wait=0):
 		"""non-blocking wait"""
 		while ((wait > 0) and not self.stop_flag):
 			time.sleep(1)

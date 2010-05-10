@@ -32,6 +32,7 @@ import core.cons as cons
 
 WAIT = 45
 
+RETRY = 5
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
@@ -40,7 +41,7 @@ class AnonymousDownload(DownloadPlugin):
 	def link_parser(self, url, wait_func):
 		""""""
 		link = None
-		remaining_tries = 5
+		remaining_tries = RETRY
 		captcha_img = None
 		captchacode = ""
 		megavar = ""
@@ -59,7 +60,7 @@ class AnonymousDownload(DownloadPlugin):
 					elif "gencap.php" in line:
 						captcha_img = line.split('src="')[1].split('"')[0]
 				if captcha_img:
-					if not wait_func(0):
+					if not wait_func():
 						return
 					handle = URLOpen().open(captcha_img)
 					if handle.info()["Content-Type"] == "image/gif":
@@ -67,7 +68,7 @@ class AnonymousDownload(DownloadPlugin):
 						captcha = tess.get_captcha()
 						logger.info("Captcha %s: %s" % (captcha_img, captcha))
 						if len(captcha) == 4:
-							if not wait_func(0):
+							if not wait_func():
 								return
 							data = urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)])
 							handle = URLOpen().open(url, data)
