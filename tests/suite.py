@@ -35,24 +35,31 @@ PATH_SEPARATOR = "/"
 
 class Suite:
 	""""""
-	def __init__(self):
+	def __init__(self, path, method=None):
 		""""""
 		self.loader = unittest.TestLoader()
-		self.tmp_suite = []
+		self.test_files = []
+		self.loaded_suite = unittest.TestSuite([])
 		
-	def get_suite(self, path):
-		""""""
 		if not path:
 			path = os.listdir(".")
+			
 		self.recursive_walk_suites(path)
-		return self.loader.loadTestsFromNames(self.tmp_suite)
+		
+		if method:
+			suite = []
+			for tmp_suite in self.test_files:
+				suite.append("%s.%s" %(tmp_suite, method))
+		else:
+			suite = self.test_files
+		self.loaded_suite = self.loader.loadTestsFromNames(suite)
 
 	def recursive_walk_suites(self, names, parent=""):
 		""""""
 		if not isinstance(names, list):
 			if os.path.basename(names).startswith(TEST_PREFIX) and names.endswith(TEST_SUFIX):
 				module_name = ".".join(names.split(TEST_SUFIX)[0].split(PATH_SEPARATOR))
-				self.tmp_suite.append(module_name)
+				self.test_files.append(module_name)
 		elif len(names) > 0:
 			for path in names:
 				path = os.path.join(parent, path)
@@ -64,10 +71,15 @@ class Suite:
 if __name__ == '__main__':	
 	parser = optparse.OptionParser()
 	parser.add_option("-l", "--logging", dest="level", default="", help="set logger LEVEL (default=ERROR)", metavar="LEVEL")
+	parser.add_option("-m", "--test-method", dest="method", default="", help="only test METHOD", metavar="METHOD")
 	parser.add_option("-v", "--verbosity", dest="verbosity", default=2, help="set verbosity LEVEL (default=2)", metavar="LEVEL")
 	options, args = parser.parse_args()
 
 	logging.basicConfig(level=LEVEL.get(options.level.upper(), logging.ERROR))
 	
-	s = Suite()
-	unittest.TextTestRunner(verbosity=int(options.verbosity)).run(s.get_suite(args))
+	try:
+		s = Suite(args, options.method)
+	except Exception, e:
+		print "Failed to load suite: %s" % e
+	else:
+		unittest.TextTestRunner(verbosity=int(options.verbosity)).run(s.loaded_suite)
