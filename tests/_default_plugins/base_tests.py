@@ -54,11 +54,11 @@ class TestBaseDownload(unittest.TestCase):
 		self.assertEqual(s, size, "%s != %i" % (s, size))
 		self.assertEqual(u, unit, "%s != %s" % (u, unit))
 		
-	def _test_check_invalid_link(self):
+	def test_check_invalid_link(self):
 		""""""
 		self.check_link(self.invalid_link, self.invalid_link, -1, None)
 
-	def _test_check_valid_link(self):
+	def test_check_valid_link(self):
 		""""""
 		self.check_link(self.link, TEST_NAME, self.size, self.unit)
 
