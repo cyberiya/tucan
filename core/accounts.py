@@ -36,17 +36,13 @@ class Accounts:
 
 	def get_cookie(self, url=None):
 		""""""
-		result = None
 		for user, data in self.accounts.items():
 			if data[1]:
 				cookie = self.cookie.get_cookie(user, data[0], url)
 				if cookie:
-					result = cookie
+					return cookie
 				else:
 					self.accounts[user] = (data[0], False, False)
 					self.config.set_accounts(self.section, self.accounts)
 					logger.warning("Account %s disabled." % user)
-		if result:
-			return result
-		else:
-			self.active = False
+					self.active = False

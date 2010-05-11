@@ -22,8 +22,9 @@ import sys
 import os.path
 import base_tests
 
-from core.service_config import ServiceConfig, SECTION_ANONYMOUS_DOWNLOAD
+from core.service_config import ServiceConfig, SECTION_ANONYMOUS_DOWNLOAD, SECTION_PREMIUM_DOWNLOAD
 from megaupload.anonymous_download import AnonymousDownload
+from megaupload.premium_download import PremiumDownload
 from megaupload.premium_cookie import PremiumCookie
 
 CONF_PATH = "../default_plugins/megaupload"
@@ -34,7 +35,7 @@ TEST_INVALID_LINK = "http://www.megaupload.com/?d=0"
 TEST_LINK = "http://www.megaupload.com/?d=3VCUBE3Y"
 TEST_SIZE = 113
 TEST_UNIT = "KB"
-
+"""
 class TestAnonymous(base_tests.TestBaseDownload):
 	""""""
 	def setUp(self):
@@ -49,13 +50,20 @@ class TestAnonymous(base_tests.TestBaseDownload):
 	def tearDown(self):
 		""""""
 		del self.plugin
-
-class TestPremium(base_tests.TestBaseCookie):
+"""
+class TestPremium(base_tests.TestBaseCookie, base_tests.TestBaseDownload):
 	""""""
 	def setUp(self):
 		""""""
 		self.cookie = PremiumCookie()
 		self.service_name = SERVICE_NAME
+		
+		config = ServiceConfig(os.path.join(os.path.dirname(sys.argv[0]), CONF_PATH))
+		self.plugin = PremiumDownload(self.get_mocked_config(config), SECTION_PREMIUM_DOWNLOAD)
+		self.invalid_link = TEST_INVALID_LINK
+		self.link = TEST_LINK
+		self.size = TEST_SIZE
+		self.unit = TEST_UNIT
 
 	def tearDown(self):
 		""""""

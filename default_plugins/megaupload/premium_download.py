@@ -23,32 +23,32 @@ import logging
 logger = logging.getLogger(__name__)
 
 from premium_cookie import PremiumCookie
-from premium_parser import PremiumParser
 from check_links import CheckLinks
 
 from core.accounts import Accounts
-from core.service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
 from core.download_plugin import DownloadPlugin
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
 	def __init__(self, config, section):
 		""""""
-		Accounts.__init__(self, config, SECTION_PREMIUM_DOWNLOAD, PremiumCookie())
-		DownloadPlugin.__init__(self)
+		Accounts.__init__(self, config, section, PremiumCookie())
+		DownloadPlugin.__init__(self, config, section)
 
-	def add(self, path, link, file_name):
+	def link_parser(self, url, wait_func):
 		""""""
+		found = False
 		cookie = self.get_cookie()
-		if cookie:
-			parser = PremiumParser(link, cookie)
-			link = parser.get_url()
-			if link:
-				return self.start(path, link, file_name, None, cookie)
-
-	def delete(self, file_name):
-		""""""
-		logger.warning("Stopped %s: %s" % (file_name, self.stop(file_name)))
+		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+		handler = opener.open(urllib2.Request(url))
+		if "text/html" in handler.info()["Content-Type"]:
+			for line in handler.readlines():
+				if "downloadlink" in line:
+					found = True
+				elif found:
+					return opener.open(urllib2.Request(line.split('href="')[1].split('"')[0]))
+		else:
+			return handler
 
 	def check_links(self, url):
 		""""""
