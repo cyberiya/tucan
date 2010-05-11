@@ -39,8 +39,12 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		""""""
 		found = False
 		cookie = self.get_cookie()
+		if not wait_func():
+			return
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 		handler = opener.open(urllib2.Request(url))
+		if not wait_func():
+			return
 		if "text/html" in handler.info()["Content-Type"]:
 			for line in handler.readlines():
 				if "downloadlink" in line:

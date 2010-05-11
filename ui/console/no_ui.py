@@ -71,7 +71,7 @@ class NoUi(Core):
 				f.close()
 			self.manage_packages(self.create_packages(self.check_links(links)), [])
 		except Exception, e:
-			logger.error(e)
+			logger.exception(e)
 
 	def comment_link(self, name, size, unit, links):
 		""""""

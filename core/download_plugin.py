@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 from downloader import Downloader
 from slots import Slots
+from misc import get_size
 
 import cons
 
@@ -84,7 +85,7 @@ class DownloadPlugin(Slots):
 			if th.stop_flag:
 				del self.active_downloads[file_name]
 		if th:
-			actual_size, unit = self.get_size(th.actual_size)
+			actual_size, unit = get_size(th.actual_size)
 			if th.status == cons.STATUS_ACTIVE:
 				progress = int((float(th.actual_size)/float(th.total_size))*100)
 				th.max_speed = speed
@@ -100,15 +101,4 @@ class DownloadPlugin(Slots):
 				speed = 0
 				time = int(th.time_remaining)
 			result = th.status, progress, actual_size, unit, speed, time
-		return result
-
-	def get_size(self, num):
-		""""""
-		result = 0, cons.UNIT_KB
-		tmp = int(num/1024)
-		if  tmp > 0:
-			result = tmp, cons.UNIT_KB
-			tmp = int(tmp/1024)
-			if tmp > 0:
-				result = tmp, cons.UNIT_MB
 		return result
