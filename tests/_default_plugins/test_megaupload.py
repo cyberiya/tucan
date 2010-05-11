@@ -35,7 +35,7 @@ TEST_INVALID_LINK = "http://www.megaupload.com/?d=0"
 TEST_LINK = "http://www.megaupload.com/?d=3VCUBE3Y"
 TEST_SIZE = 113
 TEST_UNIT = "KB"
-"""
+
 class TestAnonymous(base_tests.TestBaseDownload):
 	""""""
 	def setUp(self):
@@ -50,7 +50,7 @@ class TestAnonymous(base_tests.TestBaseDownload):
 	def tearDown(self):
 		""""""
 		del self.plugin
-"""
+
 class TestPremium(base_tests.TestBaseCookie, base_tests.TestBaseDownload):
 	""""""
 	def setUp(self):
