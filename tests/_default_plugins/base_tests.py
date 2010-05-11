@@ -47,7 +47,7 @@ class TestBaseDownload(unittest.TestCase):
 		self.size = None
 		self.unit = None
 
-	def _check_link(self, link, name, size, unit):
+	def check_link(self, link, name, size, unit):
 		""""""
 		n, s, u = self.plugin.check_links(link)
 		self.assertEqual(n, name, "%s != %s" % (n, name))
@@ -62,9 +62,9 @@ class TestBaseDownload(unittest.TestCase):
 		""""""
 		self.check_link(self.link, TEST_NAME, self.size, self.unit)
 
-	def _test_download(self):
+	def test_download(self):
 		""""""
-		self.test_check_valid_link()
+		self.check_link(self.link, TEST_NAME, self.size, self.unit)
 		self.assertTrue(self.plugin.add(TEST_DIR, self.link, TEST_NAME), "check slots or limits")
 		status = cons.STATUS_WAIT
 		while ((status != cons.STATUS_ERROR) and (status != cons.STATUS_CORRECT)):
@@ -88,10 +88,17 @@ class TestBaseCookie(unittest.TestCase):
 		""""""
 		self.cookie = None
 		self.service_name = ""
-		
+
+	def get_mocked_config(self, config):
+		""""""
+		account_name, account_password = self.get_account_data()
+		if account_name and account_password:
+			config.get_accounts = lambda x: {account_name: (account_password, True, True)}
+		return config
+	
 	def get_account_data(self):
 		"""
-		ACCOUNTS_FILE should be populated in this way:
+		ACCOUNTS_FILE should be populated like this:
 		
 		[service_name]
 		name = something
