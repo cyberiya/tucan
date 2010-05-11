@@ -64,3 +64,14 @@ def get_exception_info(type, value, trace):
 		return "Unhandled Error! No info available"
 	else:
 		return "File %s line %i - %s: %s" % (file_name, line_no, exception, value)
+
+def get_size(num):
+	""""""
+	result = 0, cons.UNIT_KB
+	tmp = int(num/1024)
+	if  tmp > 0:
+		result = tmp, cons.UNIT_KB
+		tmp = int(tmp/1024)
+		if tmp > 0:
+			result = tmp, cons.UNIT_MB
+	return result

@@ -161,6 +161,8 @@ class ServiceConfig(SafeConfigParser):
 		if self.has_option(section, OPTION_SLOTS):
 			#-1 should be unlimited
 			return self.getint(section, OPTION_SLOTS)
+		else:
+			return -1
 
 	def get_wait(self, section):
 		""""""

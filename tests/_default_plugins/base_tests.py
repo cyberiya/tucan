@@ -56,7 +56,7 @@ class TestBaseDownload(unittest.TestCase):
 		
 	def test_check_invalid_link(self):
 		""""""
-		self.check_link(self.invalid_link, self.invalid_link, -1, None)
+		self.check_link(self.invalid_link, None, -1, None)
 
 	def test_check_valid_link(self):
 		""""""
