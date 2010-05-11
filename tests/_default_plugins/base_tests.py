@@ -118,7 +118,7 @@ class TestBaseCookie(unittest.TestCase):
 			account_name = config.get(self.service_name, OPTION_NAME)
 			account_password = config.get(self.service_name, OPTION_PASSWORD)
 		except Exception, e:
-			logger.error(e)
+			self.fail(e)
 		else:
 			self.assertTrue(account_name, "Name shouldn't be empty")
 			self.assertTrue(account_password, "Password shouldn't be empty")
