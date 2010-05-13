@@ -36,7 +36,7 @@ class DownloadPlugin(Slots):
 		Slots.__init__(self, config.get_slots(section), config.get_wait(section))
 		self.active_downloads = {}
 		
-	def link_parser(self, link, wait_func):
+	def link_parser(self, link, wait_func, range=None):
 		""""""
 		pass
 
@@ -86,8 +86,8 @@ class DownloadPlugin(Slots):
 				del self.active_downloads[file_name]
 		if th:
 			actual_size, unit = get_size(th.actual_size)
+			progress = int((float(th.actual_size)/float(th.total_size))*100)
 			if th.status == cons.STATUS_ACTIVE:
-				progress = int((float(th.actual_size)/float(th.total_size))*100)
 				th.max_speed = speed
 				speed = th.speed
 				if speed > 0:
@@ -97,7 +97,6 @@ class DownloadPlugin(Slots):
 			else:
 				if not th.status == cons.STATUS_CORRECT:
 					actual_size = 0
-				progress = 0
 				speed = 0
 				time = int(th.time_remaining)
 			result = th.status, progress, actual_size, unit, speed, time

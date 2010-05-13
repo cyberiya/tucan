@@ -27,6 +27,7 @@ from check_links import CheckLinks
 
 from core.accounts import Accounts
 from core.download_plugin import DownloadPlugin
+from core.url_open import URLOpen
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
@@ -35,14 +36,14 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		Accounts.__init__(self, config, section, PremiumCookie())
 		DownloadPlugin.__init__(self, config, section)
 
-	def link_parser(self, url, wait_func):
+	def link_parser(self, url, wait_func, range):
 		""""""
 		found = False
 		cookie = self.get_cookie()
 		if not wait_func():
 			return
-		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
-		handler = opener.open(urllib2.Request(url))
+		opener = URLOpen(cookie)
+		handler = opener.open(url, None, range)
 		if not wait_func():
 			return
 		if "text/html" in handler.info()["Content-Type"]:
@@ -50,7 +51,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 				if "downloadlink" in line:
 					found = True
 				elif found:
-					return opener.open(urllib2.Request(line.split('href="')[1].split('"')[0]))
+					return opener.open(line.split('href="')[1].split('"')[0], None, range)
 		else:
 			return handler
 
