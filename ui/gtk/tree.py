@@ -180,16 +180,17 @@ class Tree(gtk.VBox):
 								active_downloads += 1
 							elif file.status == cons.STATUS_CORRECT:
 								complete_downloads += 1
-							model.set_value(file_iter, 4, file.progress)
+							if file.progress:
+								model.set_value(file_iter, 4, file.progress)
 							package_progress += file.progress
-							if file.actual_size > 0:
+							if file.actual_size:
 								model.set_value(file_iter, 6, str(file.actual_size)+file.actual_size_unit)
 								tmp_actual_size.append((file.actual_size, file.actual_size_unit))
 							tmp_total_size.append((file.total_size, file.total_size_unit))
-							if file.speed > 1:
+							if file.speed:
 								model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
 								package_speed += file.speed
-							elif file.speed == 0:
+							else:
 								model.set_value(file_iter, 8, None)
 							if file.status == cons.STATUS_CORRECT:
 								if not file.time > 0:

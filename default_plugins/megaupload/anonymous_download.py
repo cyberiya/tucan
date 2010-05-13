@@ -38,7 +38,7 @@ MEGAVAR = "megavar"
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
-	def link_parser(self, url, wait_func):
+	def link_parser(self, url, wait_func, range):
 		""""""
 		link = None
 		remaining_tries = RETRY
@@ -84,7 +84,7 @@ class AnonymousDownload(DownloadPlugin):
 			logger.error(e)
 		else:
 			try:
-				handle = URLOpen().open(link)
+				handle = URLOpen().open(link, None, range)
 			except Exception, e:
 				self.set_limit_exceeded()
 			else:

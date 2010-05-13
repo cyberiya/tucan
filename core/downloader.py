@@ -50,23 +50,25 @@ class Downloader(threading.Thread):
 		self.speed = 0
 		self.tmp_time = 0
 		self.tmp_size = 0
-		#self.range = None
+		self.range = None
 
 	def run(self):
 		""""""
 		name = os.path.join(self.path, self.file)
 		try:
-			
 			#check files
 			if not os.path.exists(self.path):
 				os.makedirs(self.path)
-			#if os.path.exists("%s.part" % name):
-			#	tmp_size = os.path.getsize("%s.part" % name)
-			#	if tmp_size > 0:
-			#		self.range = tmp_size
-			handle = self.link_parser(self.url, self.wait)
+			elif os.path.exists("%s.part" % name):
+				tmp_size = os.path.getsize("%s.part" % name)
+				if tmp_size > 0:
+					self.range = tmp_size
+			handle = self.link_parser(self.url, self.wait, self.range)
 			if handle:
-				size = handle.info().getheader("Content-Length")
+				info = handle.info()
+				size = info.getheader("Content-Length", None)
+				if info.getheader("Content-Range", None):
+					size = info.getheader("Content-Range").split("/")[1]
 				if size:
 					self.status = cons.STATUS_ACTIVE
 					logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
@@ -78,7 +80,13 @@ class Downloader(threading.Thread):
 							self.status = cons.STATUS_CORRECT
 						else:
 							os.remove(name)
+							logger.warning("%s already on disk but different size" % name)
 							self.download(name, handle)
+					elif os.path.exists("%s.part" % name):
+						#puede fallar el range!!!
+						logger.info("Resuming %s.part (%i)" % (name, self.range))
+						self.actual_size = self.range
+						self.download(name, handle, True)
 					else:
 						self.download(name, handle)
 			else:
@@ -87,15 +95,17 @@ class Downloader(threading.Thread):
 		except Exception, e:
 			self.stop_flag = True
 			logger.exception("%s: %s" % (self.file, e))
-			#if os.path.exists("%s.part" % name):
-			#	os.remove("%s.part" % name)
 			self.status = cons.STATUS_ERROR
 			
-	def download(self, name, handle):
+	def download(self, name, handle, resume=False):
 		""""""
-		f = open("%s.part" % name, "wb")
-		self.start_time = time.time()
 		data = "None"
+		if resume:
+			mode = "ab"
+		else:
+			mode = "wb"
+		f = open("%s.part" % name, mode)
+		self.start_time = time.time()
 		while ((len(data) > 0) and not self.stop_flag):
 			tmp_size = 0
 			if self.max_speed > 0:
@@ -106,7 +116,6 @@ class Downloader(threading.Thread):
 			while (time.time() - start_seconds) < 1:
 				if max_size == 0 or tmp_size < max_size:
 					data = handle.read(BUFFER_SIZE)
-					#print data
 					f.write(data)
 					self.actual_size += len(data)
 					tmp_size += 1
