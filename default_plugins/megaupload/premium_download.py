@@ -36,7 +36,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		Accounts.__init__(self, config, section, PremiumCookie())
 		DownloadPlugin.__init__(self, config, section)
 
-	def link_parser(self, url, wait_func, range):
+	def link_parser(self, url, wait_func, range=None):
 		""""""
 		found = False
 		cookie = self.get_cookie()
