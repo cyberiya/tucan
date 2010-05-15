@@ -51,7 +51,7 @@ class Tree(gtk.VBox):
 		self.treeview.connect("button-press-event", self.mouse_menu)
 
 		self.get_files = manager.get_files
-
+		
 		self.treeview.set_rules_hint(True)
 		self.treeview.set_headers_visible(False)
 
@@ -124,6 +124,13 @@ class Tree(gtk.VBox):
 		self.pack_start(self.status_bar, False)
 		self.status_bar.push(self.status_bar.get_context_id("Downloads"), " No Downloads Active.")
 		self.updating = False
+		
+		self.all_complete = True
+		events.connect(cons.EVENT_ALL_COMPLETE, self.stop_update)
+		
+	def stop_update(self):
+		""""""
+		self.all_complete = True
 
 	def mouse_menu(self, widget, event):
 		"""right button"""
@@ -150,84 +157,89 @@ class Tree(gtk.VBox):
 		if not self.updating:
 			self.updating = True
 			gobject.timeout_add_seconds(1, self.update)
+		self.all_complete = False
 		return package_iter
 
 	def update(self):
 		"""(icon, status, None, name, progress, progress_visible, current_size, total_size, speed, time, services)"""
-		files = self.get_files()
-		if len(files) > 0:
-			model = self.treeview.get_model()
-			package_iter = model.get_iter_root()
-			active_downloads = 0
-			complete_downloads = 0
-			total_downloads = 0
-			total_speed = 0
-			while package_iter:
-				file_iter = model.iter_children(package_iter)
-				#package_status = model.set_value(package_iter, 0)
-				package_progress = 0
-				package_speed = 0
-				tmp_actual_size = []
-				tmp_total_size = []
-				while file_iter:
-					total_downloads += 1
-					name = model.get_value(file_iter, 3)
-					for file in files:
-						if file.name == name:
-							model.set_value(file_iter, 0, self.icons[file.status])
-							model.set_value(file_iter, 1, file.status)
-							if file.status in [cons.STATUS_ACTIVE, cons.STATUS_WAIT]:
-								active_downloads += 1
-							elif file.status == cons.STATUS_CORRECT:
-								complete_downloads += 1
-							if file.progress:
-								model.set_value(file_iter, 4, file.progress)
-							package_progress += file.progress
-							if file.actual_size:
-								model.set_value(file_iter, 6, str(file.actual_size)+file.actual_size_unit)
-								tmp_actual_size.append((file.actual_size, file.actual_size_unit))
-							tmp_total_size.append((file.total_size, file.total_size_unit))
-							if file.speed:
-								model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
-								package_speed += file.speed
-							else:
-								model.set_value(file_iter, 8, None)
-							if file.status == cons.STATUS_CORRECT:
-								if not file.time > 0:
-									file.time = 1
-								file.actual_size = file.total_size
-								file.actual_size_unit = file.total_size_unit
-							model.set_value(file_iter, 9, self.calculate_time(file.time))
-							link_iter = model.iter_children(file_iter)
-							while link_iter:
-								for tmp_link in file.links:
-									if tmp_link.url == model.get_value(link_iter, 3):
-										service_icon = self.unactive_service_icon
-										link_status = cons.STATUS_STOP
-										if tmp_link.active:
-											service_icon = self.active_service_icon
-											link_status = cons.STATUS_ACTIVE
-										model.set_value(link_iter, 0, service_icon)
-										model.set_value(link_iter, 1, link_status)
-								link_iter = model.iter_next(link_iter)
-					file_iter = model.iter_next(file_iter)
-				package_actual_size, package_actual_unit = self.normalize(tmp_actual_size)
-				package_total_size, package_total_unit = self.normalize(tmp_total_size)
-				if package_actual_size > 0:
-					if int(package_progress/model.iter_n_children(package_iter)) == 100:
+		if not self.all_complete:
+			files = self.get_files()
+			if files:
+				model = self.treeview.get_model()
+				package_iter = model.get_iter_root()
+				active_downloads = 0
+				complete_downloads = 0
+				total_downloads = 0
+				total_speed = 0
+				while package_iter:
+					file_iter = model.iter_children(package_iter)
+					package_status = model.get_value(package_iter, 1)
+					package_progress = 0
+					package_speed = 0
+					tmp_actual_size = []
+					tmp_total_size = []
+					children_names = []
+					while file_iter:
+						total_downloads += 1
+						name = model.get_value(file_iter, 3)
+						children_names.append(name)
+						for file in files:
+							if file.name == name:
+								model.set_value(file_iter, 0, self.icons[file.status])
+								model.set_value(file_iter, 1, file.status)
+								if file.status in [cons.STATUS_ACTIVE, cons.STATUS_WAIT]:
+									active_downloads += 1
+								if file.progress:
+									model.set_value(file_iter, 4, file.progress)
+								package_progress += file.progress
+								if file.actual_size:
+									model.set_value(file_iter, 6, str(file.actual_size)+file.actual_size_unit)
+									tmp_actual_size.append((file.actual_size, file.actual_size_unit))
+								tmp_total_size.append((file.total_size, file.total_size_unit))
+								if file.speed:
+									model.set_value(file_iter, 8, str(file.speed)+cons.UNIT_SPEED)
+									package_speed += file.speed
+								else:
+									model.set_value(file_iter, 8, None)
+								if file.status == cons.STATUS_CORRECT:
+									complete_downloads += 1
+									if not file.time > 0:
+										file.time = 1
+									file.actual_size = file.total_size
+									file.actual_size_unit = file.total_size_unit
+								model.set_value(file_iter, 9, self.calculate_time(file.time))
+								link_iter = model.iter_children(file_iter)
+								while link_iter:
+									for tmp_link in file.links:
+										if tmp_link.url == model.get_value(link_iter, 3):
+											service_icon = self.unactive_service_icon
+											link_status = cons.STATUS_STOP
+											if tmp_link.active:
+												service_icon = self.active_service_icon
+												link_status = cons.STATUS_ACTIVE
+											model.set_value(link_iter, 0, service_icon)
+											model.set_value(link_iter, 1, link_status)
+									link_iter = model.iter_next(link_iter)
+						file_iter = model.iter_next(file_iter)
+					package_actual_size, package_actual_unit = self.normalize(tmp_actual_size)
+					package_total_size, package_total_unit = self.normalize(tmp_total_size)
+					if len(children_names) == complete_downloads:
 						model.set_value(package_iter, 4, 100)
-					else:
+						if package_status != cons.STATUS_CORRECT:
+							model.set_value(package_iter, 1, cons.STATUS_CORRECT)
+							events.trigger_package_complete(model.get_value(package_iter, 10), children_names)
+					elif package_actual_size > 0:
 						model.set_value(package_iter, 4, int((float(self.get_size(package_actual_size, package_actual_unit))/float(self.get_size(package_total_size, package_total_unit)))*100))
-					model.set_value(package_iter, 6, str(package_actual_size)+package_actual_unit)
-				if package_speed > 0:
-					model.set_value(package_iter, 8, str(package_speed)+cons.UNIT_SPEED)
-				else:
-					model.set_value(package_iter, 8, None)
-				total_speed += package_speed
-				package_iter = model.iter_next(package_iter)
-			self.status_bar.pop(self.status_bar.get_context_id("Downloads"))
-			self.status_bar.push(self.status_bar.get_context_id("Downloads"), " Downstream %dKB/s \tTotal %d \t Complete %d \t Active %d" %	(total_speed, total_downloads, complete_downloads, active_downloads))
-		return True
+						model.set_value(package_iter, 6, str(package_actual_size)+package_actual_unit)
+					if package_speed > 0:
+						model.set_value(package_iter, 8, str(package_speed)+cons.UNIT_SPEED)
+					else:
+						model.set_value(package_iter, 8, None)
+					total_speed += package_speed
+					package_iter = model.iter_next(package_iter)
+				self.status_bar.pop(self.status_bar.get_context_id("Downloads"))
+				self.status_bar.push(self.status_bar.get_context_id("Downloads"), " Downstream %dKB/s \tTotal %d \t Complete %d \t Active %d" %	(total_speed, total_downloads, complete_downloads, active_downloads))
+			return True
 
 	def normalize(self, sizes):
 		""""""

@@ -72,7 +72,7 @@ if __name__ == '__main__':
 	parser = optparse.OptionParser()
 	parser.add_option("-l", "--logging", dest="level", default="", help="set logger LEVEL (default=ERROR)", metavar="LEVEL")
 	parser.add_option("-m", "--test-method", dest="method", default="", help="only test METHOD", metavar="METHOD")
-	parser.add_option("-v", "--verbosity", dest="verbosity", default=2, help="set verbosity LEVEL (default=2)", metavar="LEVEL")
+	parser.add_option("-v", "--verbosity", dest="verbosity", default=1, help="set verbosity LEVEL (default=1)", metavar="LEVEL")
 	options, args = parser.parse_args()
 
 	logging.basicConfig(level=LEVEL.get(options.level.upper(), logging.ERROR))
