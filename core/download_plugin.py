@@ -95,8 +95,8 @@ class DownloadPlugin(Slots):
 				else:
 					time = 0
 			else:
-				if not th.status == cons.STATUS_CORRECT:
-					actual_size = 0
+				#if not th.status == cons.STATUS_CORRECT:
+				#	actual_size = 0
 				speed = 0
 				time = int(th.time_remaining)
 			result = th.status, progress, actual_size, unit, speed, time

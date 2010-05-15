@@ -72,9 +72,11 @@ class DownloadManager:
 		self.services = services
 		self.get_plugin = get_plugin
 		self.limits = []
+		
 		self.pending_downloads = []
 		self.active_downloads = []
 		self.complete_downloads = []
+		
 		self.timer = None
 		self.schedules = 0
 		self.scheduling = False
@@ -90,12 +92,8 @@ class DownloadManager:
 
 	def get_files(self):
 		""""""
-		result = []
-		for downloads in [self.pending_downloads, self.active_downloads, self.complete_downloads]:
-			for download in downloads:
-				result.append(download)
 		self.update()
-		return result
+		return self.pending_downloads + self.active_downloads + self.complete_downloads
 
 	def clear(self, files):
 		""""""
@@ -126,7 +124,6 @@ class DownloadManager:
 		""""""
 		for download in self.pending_downloads:
 			if name == download.name:
-				#download.status = cons.STATUS_WAIT
 				for link in download.links:
 					link.plugin, link.type = self.get_plugin(link.service)
 					if link.plugin.add(download.path, link.url, download.name):
@@ -139,7 +136,6 @@ class DownloadManager:
 						link.active = True
 						return True
 					else:
-						#link.active = False
 						if download.status != cons.STATUS_ERROR:
 							download.status = cons.STATUS_PEND
 
@@ -165,12 +161,9 @@ class DownloadManager:
 		permanent = True
 		speeds = [download.speed for download in self.active_downloads if download.status == cons.STATUS_ACTIVE]
 		current_active = len(speeds)
-		#print max_downloads, max_download_speed
-		#print current_active, speeds
 		remain_speed = max_download_speed
 		for speed in speeds:
 			remain_speed -= speed
-		#print remain_speed
 		if current_active > 0:
 			if remain_speed < 0:
 				new_speed = max_download_speed/current_active
@@ -223,7 +216,7 @@ class DownloadManager:
 		""""""
 		if not self.scheduling:
 			self.scheduling = True
-			if len(self.pending_downloads + self.active_downloads) > 0:
+			if self.pending_downloads + self.active_downloads:
 				if self.schedules < 11:
 					self.schedules += 1
 				else:
@@ -234,7 +227,7 @@ class DownloadManager:
 						if len(self.active_downloads) < max_downloads:
 							if download.status not in [cons.STATUS_STOP]:
 								if self.start(download.name):
-									#logger.info("Started: %s" % download.name)
+									logger.info("Started: %s" % download.name)
 									logger.debug("Active: %s" % [tmp.name for tmp in self.active_downloads])
 									logger.debug("Pending: %s" % [tmp.name for tmp in self.pending_downloads])
 									logger.debug("Complete: %s" % [tmp.name for tmp in self.complete_downloads])

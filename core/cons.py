@@ -111,6 +111,7 @@ PATH_LOCALES = os.path.join(PATH, "i18n")
 
 #events constants
 EVENT_FILE_COMPLETE = "file-complete"
+EVENT_PACKAGE_COMPLETE = "package-complete"
 EVENT_ALL_COMPLETE = "all-complete"
 EVENT_LIMIT_ON = "limit-exceeded-on"
 EVENT_LIMIT_OFF = "limit-exceeded-off"

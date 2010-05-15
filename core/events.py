@@ -76,6 +76,11 @@ class Events:
 		logger.debug("triggered: %s" % cons.EVENT_FILE_COMPLETE)
 		self.trigger(cons.EVENT_FILE_COMPLETE, name, size, unit, links)
 
+	def trigger_package_complete(self, path, names):
+		""""""
+		logger.debug("triggered: %s %s %s" % (cons.EVENT_PACKAGE_COMPLETE, path, str(names)))
+		self.trigger(cons.EVENT_PACKAGE_COMPLETE, path, names)
+
 	def trigger_all_complete(self):
 		""""""
 		logger.debug("triggered: %s" % cons.EVENT_ALL_COMPLETE)
