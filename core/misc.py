@@ -67,7 +67,7 @@ def get_exception_info(type, value, trace):
 
 def get_size(num):
 	""""""
-	result = 0, cons.UNIT_KB
+	result = 1, cons.UNIT_KB
 	tmp = int(num/1024)
 	if  tmp > 0:
 		result = tmp, cons.UNIT_KB
