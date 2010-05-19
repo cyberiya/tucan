@@ -75,10 +75,13 @@ class AnonymousDownload(DownloadPlugin):
 							for line in handle.readlines():
 								if 'id="downloadlink"' in line:
 									link = line.split('<a href="')[1].split('"')[0]
+									print link
 									break
 			if not link:
+				print "FALLO"
 				return
 			elif not wait_func(WAIT):
+				print "CANCEL"
 				return
 		except Exception, e:
 			logger.error(e)
@@ -86,6 +89,7 @@ class AnonymousDownload(DownloadPlugin):
 			try:
 				handle = URLOpen().open(link, None, range)
 			except Exception, e:
+				print e
 				self.set_limit_exceeded()
 			else:
 				return handle

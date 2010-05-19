@@ -38,9 +38,7 @@ class Suite:
 	def __init__(self, path, method=None):
 		""""""
 		self.loader = unittest.TestLoader()
-		self.test_files = []
-		self.loaded_suite = unittest.TestSuite([])
-		
+		self.test_files = []		
 		if not path:
 			path = os.listdir(".")
 			
@@ -60,7 +58,7 @@ class Suite:
 			if os.path.basename(names).startswith(TEST_PREFIX) and names.endswith(TEST_SUFIX):
 				module_name = ".".join(names.split(TEST_SUFIX)[0].split(PATH_SEPARATOR))
 				self.test_files.append(module_name)
-		elif len(names) > 0:
+		elif names:
 			for path in names:
 				path = os.path.join(parent, path)
 				if os.path.isdir(path) and not os.path.basename(path).startswith("."):

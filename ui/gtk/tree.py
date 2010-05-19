@@ -224,9 +224,10 @@ class Tree(gtk.VBox):
 					package_actual_size, package_actual_unit = self.normalize(tmp_actual_size)
 					package_total_size, package_total_unit = self.normalize(tmp_total_size)
 					if len(children_names) == complete_downloads:
-						model.set_value(package_iter, 4, 100)
 						if package_status != cons.STATUS_CORRECT:
 							model.set_value(package_iter, 1, cons.STATUS_CORRECT)
+							model.set_value(package_iter, 4, 100)
+							model.set_value(package_iter, 6, str(package_total_size)+package_total_unit)
 							events.trigger_package_complete(model.get_value(package_iter, 10), children_names)
 					elif package_actual_size > 0:
 						model.set_value(package_iter, 4, int((float(self.get_size(package_actual_size, package_actual_unit))/float(self.get_size(package_total_size, package_total_unit)))*100))
