@@ -67,11 +67,13 @@ def get_exception_info(type, value, trace):
 
 def get_size(num):
 	""""""
-	result = 1, cons.UNIT_KB
-	tmp = int(num/1024)
-	if  tmp > 0:
-		result = tmp, cons.UNIT_KB
-		tmp = int(tmp/1024)
-		if tmp > 0:
-			result = tmp, cons.UNIT_MB
+	result = 0, cons.UNIT_KB
+	if num:
+		result = 1, cons.UNIT_KB
+		tmp = int(num/1024)
+		if  tmp > 0:
+			result = tmp, cons.UNIT_KB
+			tmp = int(tmp/1024)
+			if tmp > 0:
+				result = tmp, cons.UNIT_MB
 	return result
