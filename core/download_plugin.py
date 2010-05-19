@@ -46,8 +46,8 @@ class DownloadPlugin(Slots):
 			if self.get_slot():
 				logger.info("Started %s" % (file_name))
 				th = Downloader(path, url, file_name, self.link_parser)
-				th.start()
 				self.active_downloads[file_name] = th
+				th.start()
 				return True
 
 	def delete(self, file_name):
@@ -82,8 +82,8 @@ class DownloadPlugin(Slots):
 		th = None
 		if file_name in self.active_downloads:
 			th = self.active_downloads[file_name]
-			if th.stop_flag:
-				del self.active_downloads[file_name]
+			#if th.stop_flag:
+			#	del self.active_downloads[file_name]
 		if th:
 			actual_size, unit = get_size(th.actual_size)
 			progress = int((float(th.actual_size)/float(th.total_size))*100)

@@ -91,7 +91,7 @@ class Downloader(threading.Thread):
 						self.download(name, handle)
 			else:
 				self.stop_flag = True
-				self.status = cons.STATUS_PEND
+				self.status = cons.STATUS_ERROR
 		except Exception, e:
 			self.stop_flag = True
 			logger.exception("%s: %s" % (self.file, e))

@@ -32,7 +32,6 @@ import core.cons as cons
 
 WAIT = 45
 
-RETRY = 5
 CAPTCHACODE = "captchacode"
 MEGAVAR = "megavar"
 
@@ -41,7 +40,6 @@ class AnonymousDownload(DownloadPlugin):
 	def link_parser(self, url, wait_func, range=None):
 		""""""
 		link = None
-		remaining_tries = RETRY
 		captcha_img = None
 		captchacode = ""
 		megavar = ""
@@ -50,8 +48,7 @@ class AnonymousDownload(DownloadPlugin):
 			if len(tmp) > 4:
 				del tmp[3]
 				url = "/".join(tmp)
-			while remaining_tries > 0 and not link:
-				remaining_tries -= 1
+			while not link:
 				for line in URLOpen().open(url).readlines():
 					if "captchacode" in line:
 						captchacode = line.split('value="')[1].split('">')[0]
@@ -75,21 +72,17 @@ class AnonymousDownload(DownloadPlugin):
 							for line in handle.readlines():
 								if 'id="downloadlink"' in line:
 									link = line.split('<a href="')[1].split('"')[0]
-									print link
 									break
 			if not link:
-				print "FALLO"
 				return
 			elif not wait_func(WAIT):
-				print "CANCEL"
 				return
 		except Exception, e:
 			logger.error(e)
 		else:
 			try:
 				handle = URLOpen().open(link, None, range)
-			except Exception, e:
-				print e
+			except:
 				self.set_limit_exceeded()
 			else:
 				return handle
