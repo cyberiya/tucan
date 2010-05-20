@@ -176,6 +176,7 @@ class Tree(gtk.VBox):
 					package_status = model.get_value(package_iter, 1)
 					package_progress = 0
 					package_speed = 0
+					package_complete_downloads = 0
 					tmp_actual_size = []
 					tmp_total_size = []
 					children_names = []
@@ -203,6 +204,7 @@ class Tree(gtk.VBox):
 									model.set_value(file_iter, 8, None)
 								if file.status == cons.STATUS_CORRECT:
 									complete_downloads += 1
+									package_complete_downloads += 1
 									if not file.time > 0:
 										file.time = 1
 									file.actual_size = file.total_size
@@ -223,7 +225,7 @@ class Tree(gtk.VBox):
 						file_iter = model.iter_next(file_iter)
 					package_actual_size, package_actual_unit = self.normalize(tmp_actual_size)
 					package_total_size, package_total_unit = self.normalize(tmp_total_size)
-					if len(children_names) == complete_downloads:
+					if len(children_names) == package_complete_downloads:
 						if package_status != cons.STATUS_CORRECT:
 							model.set_value(package_iter, 1, cons.STATUS_CORRECT)
 							model.set_value(package_iter, 4, 100)
