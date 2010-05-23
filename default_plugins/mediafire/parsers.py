@@ -25,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 from HTMLParser import HTMLParser
 
-from core.tesseract import Tesseract
 from core.url_open import URLOpen
 
 class FormParser:
@@ -55,6 +54,7 @@ class FormParser:
 							if tmp_link:
 								tmp = tmp_link.split("(")[1].split(")")[0].split(",")
 								data = urllib.urlencode([("qk", tmp[0].split("'")[1]), ("pk", tmp[1].split("'")[1]), ("r", tmp[2].split("'")[1])])
+								print data
 								while not self.url:
 									handle = opener.open("http://www.mediafire.com/dynamic/download.php?%s" % data)
 									tmp = handle.readlines()
@@ -128,9 +128,9 @@ class CheckLinks(HTMLParser):
 				self.unit = tmp[1]
 
 if __name__ == "__main__":
-	#f = FormParser("http://www.mediafire.com/?w4nzxzm0zg3", cookielib.CookieJar())
+	f = FormParser("http://www.mediafire.com/?w4nzxzm0zg3", cookielib.CookieJar())
 	#f = FormParser("http://www.mediafire.com/?5gbmmdds5bd", cookielib.CookieJar())
-	#print f.url
-	print CheckLinks().check("http://www.mediafire.com/download.php?z0gjmnwk1d0")
-	print CheckLinks().check("http://www.mediafire.com/?5gbmmdds5bd")
-	print CheckLinks().check("http://www.mediafire.com/?w4nzxzm0zg3")
+	print f.url
+	#print CheckLinks().check("http://www.mediafire.com/download.php?z0gjmnwk1d0")
+	#print CheckLinks().check("http://www.mediafire.com/?5gbmmdds5bd")
+	#print CheckLinks().check("http://www.mediafire.com/?w4nzxzm0zg3")

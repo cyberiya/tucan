@@ -127,22 +127,26 @@ class DownloadManager:
 		""""""
 		for download in self.pending_downloads:
 			if name == download.name:
-				download.status = cons.STATUS_WAIT
-				for link in download.links:
-					link.plugin, link.type = self.get_plugin(link.service)
-					if link.plugin.add(download.path, misc.url_quote(link.url), download.name):
-						try:
-							self.pending_downloads.remove(download)
-						except:
-							pass
+				if len(self.active_downloads) < max_downloads:
+					download.status = cons.STATUS_WAIT
+					for link in download.links:
+						link.plugin, link.type = self.get_plugin(link.service)
+						if link.plugin.add(download.path, misc.url_quote(link.url), download.name):
+							try:
+								self.pending_downloads.remove(download)
+							except:
+								pass
+							else:
+								self.active_downloads.append(download)
+							link.active = True
+							return True
 						else:
-							self.active_downloads.append(download)
-						link.active = True
-						return True
-					else:
-						#link.active = False
-						if download.status != cons.STATUS_ERROR:
-							download.status = cons.STATUS_PEND
+							#link.active = False
+							if download.status != cons.STATUS_ERROR:
+								download.status = cons.STATUS_PEND
+				else:
+					download.status = cons.STATUS_PEND
+
 
 	def stop(self, name):
 		""""""
