@@ -18,6 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib
 import logging
 logger = logging.getLogger(__name__)
 
@@ -37,7 +38,6 @@ class PremiumDownload(DownloadPlugin, Accounts):
 
 	def link_parser(self, url, wait_func, range=None):
 		""""""
-		found = False
 		try:
 			cookie = self.get_cookie()
 			if not wait_func():
@@ -48,10 +48,12 @@ class PremiumDownload(DownloadPlugin, Accounts):
 				return
 			if "text/html" in handler.info()["Content-Type"]:
 				for line in handler.readlines():
-					if "downloadlink" in line:
-						found = True
-					elif found:
-						return opener.open(line.split('href="')[1].split('"')[0], None, range)
+					if '<form id="ff"' in line:
+						form_action = line.split('action="')[1].split('" method="post">')[0]
+						for line in opener.open(form_action, urllib.urlencode({"dl.start": "PREMIUM", "":"Premium user"})).readlines():
+							if '<form name="dlf"' in line:
+								return opener.open(line.split('name="dlf" action="')[1].split('" method="post"')[0], None, range)
+						break
 			else:
 				return handler
 		except Exception, e:

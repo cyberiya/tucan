@@ -21,42 +21,29 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from premium_cookie import PremiumCookie
-from check_links import CheckLinks
-
-from core.accounts import Accounts
-from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
 
-class PremiumDownload(DownloadPlugin, Accounts):
+import core.cons as cons
+
+class CheckLinks:
 	""""""
-	def __init__(self, config, section):
+	def check(self, url):
 		""""""
-		Accounts.__init__(self, config, section, PremiumCookie())
-		DownloadPlugin.__init__(self, config, section)
-
-	def link_parser(self, url, wait_func, range=None):
-		""""""
-		found = False
+		name = None
+		size = -1
+		unit = None
 		try:
-			cookie = self.get_cookie()
-			if not wait_func():
-				return
-			opener = URLOpen(cookie)
-			handler = opener.open(url, None, range)
-			if not wait_func():
-				return
-			if "text/html" in handler.info()["Content-Type"]:
-				for line in handler.readlines():
-					if "downloadlink" in line:
-						found = True
-					elif found:
-						return opener.open(line.split('href="')[1].split('"')[0], None, range)
-			else:
-				return handler
+			for line in URLOpen().open(url).readlines():
+				if "downloadlink" in line:
+					tmp = line.split(">")
+					name = tmp[1].split("<")[0].strip().split("/").pop()
+					size = int(tmp[2].split("<")[0].split(" ")[1])
+					unit = tmp[2].split("<")[0].split(" ")[2]
+					if unit == cons.UNIT_KB:
+						tmp = int(size/1024)
+						if tmp > 0:
+							size = tmp
+							unit = cons.UNIT_MB
 		except Exception, e:
-			logger.exception("%s: %s" % (url, e))
-
-	def check_links(self, url):
-		""""""
-		return CheckLinks().check(url)
+			logger.exception(e)
+		return name, size, unit
