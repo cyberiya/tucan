@@ -26,56 +26,28 @@ from check_links import CheckLinks
 
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
-from core.tesseract import Tesseract
+from core.slots import Slots
 
-import core.cons as cons
-
-WAIT = 45
-
-CAPTCHACODE = "captchacode"
-MEGAVAR = "megavar"
-
-class AnonymousDownload(DownloadPlugin):
+class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def link_parser(self, url, wait_func, range=None):
 		""""""
 		link = None
-		captcha_img = None
-		captchacode = ""
-		megavar = ""
+		wait = 0
 		try:
-			tmp = url.split("/")
-			if len(tmp) > 4:
-				del tmp[3]
-				url = "/".join(tmp)
-			while not link:
-				for line in URLOpen().open(url).readlines():
-					if "captchacode" in line:
-						captchacode = line.split('value="')[1].split('">')[0]
-					elif "megavar" in line:
-						megavar = line.split('value="')[1].split('">')[0]
-					elif "gencap.php" in line:
-						captcha_img = line.split('src="')[1].split('"')[0]
-				if captcha_img:
-					if not wait_func():
-						return
-					handle = URLOpen().open(captcha_img)
-					if handle.info()["Content-Type"] == "image/gif":
-						tess = Tesseract(handle.read())
-						captcha = tess.get_captcha()
-						logger.info("Captcha %s: %s" % (captcha_img, captcha))
-						if len(captcha) == 4:
-							if not wait_func():
-								return
-							data = urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)])
-							handle = URLOpen().open(url, data)
-							for line in handle.readlines():
-								if 'id="downloadlink"' in line:
-									link = line.split('<a href="')[1].split('"')[0]
-									break
+			for line in URLOpen().open(url).readlines():
+				if '<form id="ff"' in line:
+					form_action = line.split('action="')[1].split('" method="post">')[0]
+					data = urllib.urlencode({"dl.start": "Free", "":"Free user"})
+					for line in URLOpen().open(form_action, data).readlines():
+						if "var tt =" in line:
+							link = line.split('name="dlf" action="')[1].split('" method="post"')[0]
+						elif "var c=" in line:
+							wait = int(line.split("var c=")[1].split(";")[0])
+					break
 			if not link:
 				return
-			elif not wait_func(WAIT):
+			elif not wait_func(wait):
 				return
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
