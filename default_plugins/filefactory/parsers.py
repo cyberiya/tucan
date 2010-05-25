@@ -44,7 +44,7 @@ class Parser:
 		""""""
 		result = None
 		for line in URLOpen().open(url).readlines():
-			if '/file/getLink.js' in line:
+			if '/getLink.js' in line:
 				result = "%s/file/getLink.js%s" % (BASE_URL, line.split(",")[1].split('"')[1])
 			elif "startWait" in line:
 				self.wait = int(line.split('value="')[1].split('"')[0])
@@ -54,11 +54,11 @@ class Parser:
 		""""""
 		tmp = URLOpen().open(url).readlines()[1].split("{")
 		vars = {}
-		for var in tmp[1].split(";"):
+		for var in tmp[0].split(";"):
 			if not "function()" in var:
 				var = var.split("=")
 				vars[var[0].split("var")[1].strip()] = var[1].split("'")[1].strip()
-		tmp = tmp[2].split(";")[0].split("'")
+		tmp = tmp[1].split(";")[0].split("'")
 		tmp_link = ""
 		if tmp[1]:
 			base = tmp[1]
