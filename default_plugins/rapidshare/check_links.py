@@ -18,32 +18,63 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib
 import logging
 logger = logging.getLogger(__name__)
 
 from core.url_open import URLOpen
 
+import core.misc as misc
 import core.cons as cons
+
+API_URL = "http://api.rapidshare.com/cgi-bin/rsapi.cgi"
 
 class CheckLinks:
 	""""""
-	def check(self, url):
+	def check(self, url, max_size=None):
 		""""""
 		name = None
 		size = -1
 		unit = None
 		try:
-			for line in URLOpen().open(url).readlines():
-				if "downloadlink" in line:
-					tmp = line.split(">")
-					name = tmp[1].split("<")[0].strip().split("/").pop()
-					size = int(tmp[2].split("<")[0].split(" ")[1])
-					unit = tmp[2].split("<")[0].split(" ")[2]
-					if unit == cons.UNIT_KB:
-						tmp = int(size/1024)
-						if tmp > 0:
-							size = tmp
-							unit = cons.UNIT_MB
+			tmp = URLOpen().open(API_URL, self.prepare_data([url])).readlines()
+			link_list = self.extract_link_info(tmp, max_size)
+			if link_list:
+				name = link_list[0][0]
+				size = link_list[0][1]
+				unit = link_list[0][2]
 		except Exception, e:
 			logger.exception(e)
 		return name, size, unit
+
+	def prepare_data(self, urls):
+		""""""
+		files = []
+		filenames = []
+		for url in urls:
+			tmp_url = url.split("/")
+			filenames.append(tmp_url.pop())
+			files.append(tmp_url.pop())
+		data = urllib.urlencode([("sub", "checkfiles_v1"), ("files", ",".join(files)), ("filenames", ",".join(filenames))])
+		return data
+		
+	def extract_link_info(self, lines, max_size):
+		""""""
+		result = []
+		for line in lines:
+			name = None
+			size = -1
+			unit = None
+			if "ERROR" not in line:
+				info = line.split(",")
+				status = int(info[4])
+				if status == 1 or status == 2 or status == 6:
+					name = info[1]
+					if max_size:
+						if int(info[2]) <= max_size:
+							size, unit = misc.get_size(int(info[2]))
+					else:
+							size, unit = misc.get_size(int(info[2]))
+						
+				result.append((name, size, unit))
+		return result
