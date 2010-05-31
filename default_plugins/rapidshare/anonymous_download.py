@@ -28,6 +28,8 @@ from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
 from core.slots import Slots
 
+MAX_SIZE = 209796096
+
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def link_parser(self, url, wait_func, range=None):
@@ -61,4 +63,4 @@ class AnonymousDownload(DownloadPlugin, Slots):
 
 	def check_links(self, url):
 		""""""
-		return CheckLinks().check(url)
+		return CheckLinks().check(url, MAX_SIZE)

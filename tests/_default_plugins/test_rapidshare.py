@@ -33,7 +33,7 @@ SERVICE_NAME = "rapidshare"
 
 TEST_INVALID_LINK = "http://rapidshare.com/files/0"
 TEST_LINK = "http://rapidshare.com/files/391174483/prueba.bin"
-TEST_SIZE = 116
+TEST_SIZE = 113
 TEST_UNIT = "KB"
 
 class TestAnonymous(base_tests.TestBaseDownload):
