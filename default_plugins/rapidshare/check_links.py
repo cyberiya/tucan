@@ -68,7 +68,7 @@ class CheckLinks:
 			if "ERROR" not in line:
 				info = line.split(",")
 				status = int(info[4])
-				if status == 1 or status == 2 or status == 6:
+				if status in (1, 2, 6):
 					name = info[1]
 					if max_size:
 						if int(info[2]) <= max_size:
