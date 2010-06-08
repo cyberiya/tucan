@@ -24,6 +24,11 @@ logger = logging.getLogger(__name__)
 
 import HTMLParser
 
+import sys
+sys.path.append("/home/crak/tucan/trunk")
+import __builtin__
+__builtin__.PROXY = None
+
 from core.url_open import URLOpen
 
 B64S = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"';
@@ -131,12 +136,13 @@ class CheckLinks:
 					tmpunit = []
 					for char in line.split("<br><b>Size:</b>")[1].split("<br>")[0].strip():
 						try:
-							int(char)
+							if char != ".":
+								int(char)
 						except:
 							tmpunit.append(char)
 						else:
 							tmpsize.append(char)
-					size = int("".join(tmpsize))
+					size = int(float("".join(tmpsize)))
 					unit = "".join(tmpunit)
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
@@ -146,6 +152,6 @@ class CheckLinks:
 		return name, size, unit
 
 if __name__ == "__main__":
-	c = Parser("http://www.sendspace.com/file/x1itz8")
+	c = Parser("http://www.sendspace.com/file/ipvo94")
 	print c.link
-	#print CheckLinks().check("http://www.sendspace.com/file/x1itz8")
+	print CheckLinks().check("http://www.sendspace.com/file/ipvo94")
