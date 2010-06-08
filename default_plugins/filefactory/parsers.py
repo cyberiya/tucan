@@ -44,8 +44,8 @@ class Parser:
 		""""""
 		result = None
 		for line in URLOpen().open(url).readlines():
-			if '/getLink.js' in line:
-				result = "%s/file/getLink.js%s" % (BASE_URL, line.split(",")[1].split('"')[1])
+			if '?key=' in line:
+				result = "%s/file/getLink.js?key=%s" % (BASE_URL, line.split("+")[2].split('"')[1])
 			elif "startWait" in line:
 				self.wait = int(line.split('value="')[1].split('"')[0])
 		return result
@@ -102,5 +102,5 @@ if __name__ == "__main__":
 	c = Parser("http://www.filefactory.com/file/ah324b7/n/06_Massive_Attack_amp_Portishead_-_Improvisation_amp_Glory_Box.mp3")
 	#c = Parser("http://www.filefactory.com/file/a0h9c7a/n/Just_M_-_Njene_sanje_Hocem_sosedo_-_karaoke.mp3")
 	print c.link, c.wait
-	#print CheckLinks().check("http://www.filefactory.com/file/cc646e/n/Music_Within_2007_Sample_avi")
+	print CheckLinks().check("http://www.filefactory.com/file/ah324b7/n/06_Massive_Attack_amp_Portishead_-_Improvisation_amp_Glory_Box.mp3")
 	#print CheckLinks().check("http://www.filefactory.com/file/4460d3/n/Intelligent_Sounds_Music_BazzISM_VSTi_v2_0d_MAC_OSX_UB_Incl_Keygen-ArCADE_rar")
