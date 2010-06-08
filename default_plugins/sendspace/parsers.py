@@ -24,11 +24,6 @@ logger = logging.getLogger(__name__)
 
 import HTMLParser
 
-import sys
-sys.path.append("/home/crak/tucan/trunk")
-import __builtin__
-__builtin__.PROXY = None
-
 from core.url_open import URLOpen
 
 B64S = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_"';
