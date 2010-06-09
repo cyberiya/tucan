@@ -3,13 +3,14 @@
 -- CORE
 - UpdateManager multiple versions support.
 - New concurrent checklinks.
+- Use only bytes as internal unit.
 
 -- GUI
 - Captcha popup dialog.
 
 -- PLUGINS
 - disable plugins if broken or dependency not found.
-- repair Hotfile, Mediafire and Sendspace.
+- repair Hotfile, Mediafire.
 
 -- CLI
 - solve bug +20 links.
