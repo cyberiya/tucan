@@ -4,16 +4,17 @@
 - UpdateManager multiple versions support.
 - New concurrent checklinks.
 - Use only bytes as internal unit.
+- UNICODE support.
 
 -- GUI
 - Captcha popup dialog.
 
 -- PLUGINS
-- disable plugins if broken or dependency not found.
-- repair Hotfile, Mediafire.
+- Disable plugins if broken or dependency not found.
+- Repair Hotfile, Mediafire.
 
 -- CLI
-- solve bug +20 links.
+- Solve bug +20 links.
 
 	Tucan Manager 0.4 beta
 ---------------------------------------
