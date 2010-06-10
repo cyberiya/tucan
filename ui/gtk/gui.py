@@ -48,6 +48,7 @@ from input_links import InputLinks
 from file_chooser import FileChooser
 from clipboard import Clipboard
 from recover import halt
+from captcha_dialog import CaptchaSolve
 
 from core.core import Core
 from core.sessions import Sessions
@@ -240,6 +241,9 @@ class Gui(gtk.Window, Core):
 		services = [service.name for service in self.services]
 		self.clipboard_monitor = Clipboard(self, self.add_downloads, self.set_urgency_hint, services)
 		self.enable_clipboard()
+		
+		#captcha dialog
+		self.captcha_dialog_id = events.connect(cons.EVENT_CAPTCHA_DIALOG, CaptchaSolve, self)
 
 		#ugly polling
 		gobject.timeout_add_seconds(60, self.save_default_session)

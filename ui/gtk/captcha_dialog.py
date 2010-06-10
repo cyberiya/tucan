@@ -25,9 +25,10 @@ import gobject
 
 class CaptchaSolve(gtk.Dialog):
 	""""""
-	def __init__(self, service_name, get_captcha, return_solution):
+	def __init__(self, service_name, get_captcha, return_solution, parent):
 		""""""
 		gtk.Dialog.__init__(self)
+		self.set_transient_for(parent)
 		self.set_icon(self.render_icon(gtk.STOCK_DIALOG_QUESTION, gtk.ICON_SIZE_MENU))
 		self.set_title("%s captcha" % service_name)
 		self.set_size_request(300,200)
@@ -117,4 +118,4 @@ if __name__ == "__main__":
 		return content_type, result
 	def return_solution(solution):
 		print solution
-	c = CaptchaSolve("Recaptcha!", get_captcha, return_solution)
+	c = CaptchaSolve("Recaptcha!", get_captcha, return_solution, None)
