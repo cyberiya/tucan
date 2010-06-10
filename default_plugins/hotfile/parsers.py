@@ -99,7 +99,7 @@ class CaptchaParser(HTMLParser):
 		else:
 			return 1
 
-class Parser(HTMLParser):
+class Parser:
 	def __init__(self, url):
 		""""""
 		self.link = None
@@ -125,6 +125,8 @@ class Parser(HTMLParser):
 						form.append(("wait", self.wait))
 					elif "name=waithash " in line:
 						form.append(("waithash", line.split("value=")[1].split(">")[0]))
+					elif "name=upidhash " in line:
+						form.append(("upidhash", line.split("value=")[1].split(">")[0]))
 						found = False
 			self.form = urllib.urlencode(form)
 		except Exception, e:
@@ -135,24 +137,23 @@ class CheckLinks:
 	def check(self, url):
 		""""""
 		name = None
-		size = 0
+		size = -1
 		unit = None
 		try:
 			for line in URLOpen().open(url).readlines():
-				if "<strong>Downloading:</strong>" in line:
-					name = line.split("<strong>Downloading:</strong>")[1].split("<span>|</span>")[0].strip()
-					tmp = line.split("<span>|</span> <strong>")[1].strip().split("</strong>")[0].split(" ")
+				if 'class="arrow_down"' in line:
+					tmp = line.split("</strong>")
+					name = tmp[1].split("<span>")[0].strip()
+					tmp = tmp[1].split("<strong>")[1].split(" ")
 					size = int(round(float(tmp[0])))
 					unit = tmp[1].upper()
 		except Exception, e:
-			name = url
-			size = -1
 			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
 
 if __name__ == "__main__":
 	#print CheckLinks().check("http://hotfile.com/dl/7174149/00fbb47/Sander_Van_Doorn-Live_at_Sensation_White_Saint-Petersburg-12062009.mp3.html")
-	c = Parser("http://hotfile.com/dl/37208850/d185f13/_Tomoetenbu_-_Wise_Ass.part1.rar.html")
+	c = Parser("http://hotfile.com/dl/7174149/00fbb47/Sander_Van_Doorn-Live_at_Sensation_White_Saint-Petersburg-12062009.mp3.html")
 	print c.link
 	print c.form, c.wait
 	import time
