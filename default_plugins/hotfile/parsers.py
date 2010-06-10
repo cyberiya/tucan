@@ -108,6 +108,8 @@ class Parser:
 		form = []
 		try:
 			opener = URLOpen()
+			if "?" in url:
+				url = url.split("?")[0]
 			for line in opener.open(url).readlines():
 				if "download_file" in line:
 					found = True
