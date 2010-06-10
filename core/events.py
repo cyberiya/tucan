@@ -100,3 +100,8 @@ class Events:
 		""""""
 		logger.debug("triggered: %s" % cons.EVENT_CHECK_CANCEL)
 		self.trigger(cons.EVENT_CHECK_CANCEL)
+
+	def trigger_captcha_dialog(self, service, get_captcha_img, return_solution):
+		""""""
+		logger.debug("triggered: %s" % cons.EVENT_CAPTCHA_DIALOG)
+		self.trigger(cons.EVENT_CAPTCHA_DIALOG, service, get_captcha_img, return_solution)
