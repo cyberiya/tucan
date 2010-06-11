@@ -246,4 +246,6 @@ class DownloadManager:
 		""""""
 		if self.timer:
 			self.scheduling = True
-			self.timer.cancel()
+			while self.timer.isAlive():
+				self.timer.cancel()
+				self.timer.join(0.5)
