@@ -23,9 +23,9 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-class CaptchaSolve(gtk.Dialog):
+class CaptchaDialog(gtk.Dialog):
 	""""""
-	def __init__(self, service_name, get_captcha, return_solution, parent):
+	def __init__(self, service_name, get_captcha, return_solution, parent=None):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_transient_for(parent)
@@ -62,12 +62,10 @@ class CaptchaSolve(gtk.Dialog):
 
 		self.connect("response", self.close)
 		
-		if not self.new_captcha():
-			gobject.timeout_add(1000, self.check_timeout)
-			self.show_all()
-			self.run()
-		else:
-			self.close()
+		self.new_captcha()
+		gobject.timeout_add(1000, self.check_timeout)
+		self.show_all()
+		self.run()
 			
 	def check_timeout(self):
 		""""""
@@ -82,7 +80,7 @@ class CaptchaSolve(gtk.Dialog):
 		""""""
 		tmp = self.entry.get_text()
 		if tmp:
-			self.solution = tmp
+			self.solution = tmp.strip()
 		self.close()
 
 	def new_captcha(self, widget=None):
@@ -118,4 +116,4 @@ if __name__ == "__main__":
 		return content_type, result
 	def return_solution(solution):
 		print solution
-	c = CaptchaSolve("Recaptcha!", get_captcha, return_solution, None)
+	c = CaptchaDialog("Recaptcha!", get_captcha, return_solution)
