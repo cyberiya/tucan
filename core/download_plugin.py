@@ -18,7 +18,6 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import time
 import threading
 import logging
 logger = logging.getLogger(__name__)
@@ -63,18 +62,18 @@ class DownloadPlugin(Slots):
 		""""""
 		while thread.isAlive():
 			thread.stop_flag = True
-			time.sleep(1)
+			thread.join(0.5)
 
 	def stop_all(self):
 		""""""
 		active_downloads = self.active_downloads.values()
-		while active_downloads:
+		while active_downloads[:]:
 			for th in active_downloads:
 				if th.isAlive():
 					th.stop_flag = True
+					th.join(0.1)
 				else:
 					active_downloads.remove(th)
-			time.sleep(0.1)
 
 	def get_status(self, file_name, speed=0):
 		"""return (status, progress, actual_size, unit, speed, time)"""

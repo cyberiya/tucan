@@ -6,12 +6,9 @@
 - Use only bytes as internal unit.
 - UNICODE support.
 
--- GUI
-- Captcha popup dialog.
-
 -- PLUGINS
 - Disable plugins if broken or dependency not found.
-- Repair Hotfile, Mediafire.
+- Repair Mediafire.
 
 -- CLI
 - Solve bug +20 links.
