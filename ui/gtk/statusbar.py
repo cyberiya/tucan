@@ -113,7 +113,7 @@ class Statusbar(gtk.Statusbar):
 
 	def remove_limit(self, module):
 		""""""
-		if module in self.limits:
+		if module in self.limits[:]:
 			del self.limits[module]
 
 	def show_stack(self, widget):

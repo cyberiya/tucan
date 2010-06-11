@@ -117,12 +117,13 @@ class DownloadManager:
 		""""""
 		if name not in [tmp.name for tmp in (self.active_downloads + self.pending_downloads)]:
 			self.pending_downloads.append(DownloadItem(path, name, links, total_size, size_unit))
-			threading.Timer(1, self.scheduler).start()
+			self.timer = threading.Timer(1, self.scheduler)
+			self.timer.start()
 			return True
 
 	def start(self, name):
 		""""""
-		for download in self.pending_downloads:
+		for download in self.pending_downloads[:]:
 			if name == download.name:
 				for link in download.links:
 					link.plugin, link.type = self.get_plugin(link.service)
@@ -144,7 +145,7 @@ class DownloadManager:
 		for download in self.pending_downloads:
 			if name == download.name:
 				download.status = cons.STATUS_STOP
-		for download in self.active_downloads:
+		for download in self.active_downloads[:]:
 			if name == download.name:
 				for link in download.links:
 					if link.active:
@@ -168,7 +169,7 @@ class DownloadManager:
 			if remain_speed < 0:
 				new_speed = max_download_speed/current_active
 				permanent = False
-		for download in self.active_downloads:
+		for download in self.active_downloads[:]:
 			plugin = None
 			for link in download.links:
 				if link.active:
