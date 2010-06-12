@@ -24,7 +24,9 @@ logger = logging.getLogger(__name__)
 
 from url_open import URLOpen
 
-TIMEOUT = 45
+import cons
+
+TIMEOUT = 5
 
 class Recaptcha:
 	""""""
@@ -44,15 +46,17 @@ class Recaptcha:
 			for line in URLOpen().open(self.url).readlines():
 				if "_recaptcha.src" in line:
 					self.captcha_link = "http://%s" % line.split("+ '://")[1].split("'")[0]
-					events.trigger_captcha_dialog(self.service_name, self.get_captcha, self.set_response)
-					while self.wait_for_response:
-						if self.timeout:
-							self.timeout -= 1
-							time.sleep(1)
-						else:
-							logger.error("No response from CaptchaDialog!")
-							break
-					break
+				elif "challenge : " in line:
+					self.captcha_challenge = line.split("'")[1]
+			if self.captcha_link and self.captcha_challenge:
+				events.trigger_captcha_dialog(self.service_name, self.get_captcha, self.set_response)
+				while self.wait_for_response:
+					if self.timeout:
+						self.timeout -= 1
+						time.sleep(1)
+					else:
+						logger.warning("No response for %s event" % cons.EVENT_CAPTCHA_DIALOG)
+						break
 		except Exception, e:
 			logger.exception("%s :%s" % (self.captcha_link, e))
 		return self.captcha_challenge, self.captcha_response
@@ -66,9 +70,7 @@ class Recaptcha:
 			if self.captcha_link:
 				for line in URLOpen().open(self.captcha_link).readlines():
 					if "Image().src" in line:
-						captcha_url = line.split("'")[1]
-						self.captcha_challenge = captcha_url.split("c=")[1]
-						handle = URLOpen().open(captcha_url)
+						handle = URLOpen().open(line.split("'")[1])
 						image_data = handle.read()
 						image_type = handle.info()["Content-Type"].split("/")[1]
 						break
