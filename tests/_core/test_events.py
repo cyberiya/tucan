@@ -19,7 +19,6 @@
 ###############################################################################
 
 import time
-import os.path
 import unittest
 
 from core.events import *
