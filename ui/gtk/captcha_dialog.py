@@ -100,8 +100,10 @@ class CaptchaDialog(gtk.Dialog):
 
 	def close(self, widget=None, other=None):
 		""""""
-		self.return_solution(self.solution)
 		self.destroy()
+		while gtk.events_pending():
+			gtk.main_iteration()
+		self.return_solution(self.solution)
 
 if __name__ == "__main__":
 	import urllib2

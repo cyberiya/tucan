@@ -133,11 +133,3 @@ class AnonymousDownload(DownloadPlugin):
 	def check_links(self, url):
 		""""""
 		return CheckLinks().check(url)
-
-#if __name__ == "__main__":	
-	#print CheckLinks().check("http://hotfile.com/dl/7174149/00fbb47/Sander_Van_Doorn-Live_at_Sensation_White_Saint-Petersburg-12062009.mp3.html")
-	#import time
-	#import core.cons as cons
-	#from ui.gtk.captcha_dialog import CaptchaDialog
-	#id = events.connect(cons.EVENT_CAPTCHA_DIALOG, CaptchaDialog)
-	#"http://hotfile.com/dl/47547628/30419b3/prueba.bin.html"
