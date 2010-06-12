@@ -26,7 +26,7 @@ from url_open import URLOpen
 
 import cons
 
-TIMEOUT = 5
+TIMEOUT = 45
 
 class Recaptcha:
 	""""""
@@ -45,10 +45,9 @@ class Recaptcha:
 		try:
 			for line in URLOpen().open(self.url).readlines():
 				if "_recaptcha.src" in line:
-					self.captcha_link = "http://%s" % line.split("+ '://")[1].split("'")[0]
-				elif "challenge : " in line:
-					self.captcha_challenge = line.split("'")[1]
-			if self.captcha_link and self.captcha_challenge:
+					self.captcha_link = "http://%s" % line.split("+ '://")[1].split("&darklaunch=1")[0]
+					break
+			if self.captcha_link:
 				events.trigger_captcha_dialog(self.service_name, self.get_captcha, self.set_response)
 				while self.wait_for_response:
 					if self.timeout:
@@ -67,13 +66,13 @@ class Recaptcha:
 		image_data = None
 		self.timeout = TIMEOUT
 		try:
-			if self.captcha_link:
-				for line in URLOpen().open(self.captcha_link).readlines():
-					if "Image().src" in line:
-						handle = URLOpen().open(line.split("'")[1])
-						image_data = handle.read()
-						image_type = handle.info()["Content-Type"].split("/")[1]
-						break
+			for line in URLOpen().open(self.captcha_link).readlines():
+				if "challenge : " in line:
+					self.captcha_challenge = line.split("'")[1]
+					handle = URLOpen().open("http://www.google.com/recaptcha/api/image?c=%s" % self.captcha_challenge)
+					image_data = handle.read()
+					image_type = handle.info()["Content-Type"].split("/")[1]
+					break
 		except Exception, e:
 			logger.exception("%s :%s" % (self.captcha_link, e))
 		return image_type, image_data
