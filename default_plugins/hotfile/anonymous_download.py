@@ -65,14 +65,14 @@ class AnonymousDownload(DownloadPlugin):
 			elif not wait_func(wait):
 				return
 			else:
-				if not wait_func():
-					return
 				for line in URLOpen().open(tmp_link, tmp_form).readlines():
 					if "click_download" in line:
 						link = line.split('href="')[1].split('"')[0]
 						break
 					elif "http://api.recaptcha.net/challenge" in line:
 						recaptcha_link = line.split('src="')[1].split('"')[0]
+						if not wait_func():
+							return
 						c = Recaptcha("hotfile.com", recaptcha_link)
 						while not link and retry:
 							challenge, response = c.solve_captcha()
@@ -86,6 +86,8 @@ class AnonymousDownload(DownloadPlugin):
 										break
 							retry -= 1
 						break
+			if not link:
+				return
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 		else:
