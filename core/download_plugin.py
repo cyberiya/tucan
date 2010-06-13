@@ -67,7 +67,7 @@ class DownloadPlugin(Slots):
 	def stop_all(self):
 		""""""
 		active_downloads = self.active_downloads.values()
-		while active_downloads[:]:
+		while active_downloads:
 			for th in active_downloads:
 				if th.isAlive():
 					th.stop_flag = True
