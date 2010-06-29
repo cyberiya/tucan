@@ -2,10 +2,11 @@
 ---------------------------------------
 -- CORE
 - UpdateManager multiple versions support.
-- New concurrent checklinks.
+- New concurrent checklinks and remove autopaste.
 - Use only bytes as internal unit.
 - UNICODE support.
 - No CM when copying from treeview.
+- Multiple adddownloads doesnt start.
 
 -- PLUGINS
 - Disable plugins if broken or dependency not found.
