@@ -23,6 +23,8 @@ import cookielib
 
 from core.url_open import URLOpen
 
+API_URL = "http://api.rapidshare.com/cgi-bin/rsapi.cgi"
+
 class PremiumCookie:
 	""""""
 	def get_cookie(self, user, password, url=None):
