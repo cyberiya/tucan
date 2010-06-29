@@ -23,17 +23,19 @@ import cookielib
 
 from core.url_open import URLOpen
 
+API_URL = "http://api.rapidshare.com/cgi-bin/rsapi.cgi"
+
 class PremiumCookie:
 	""""""
 	def get_cookie(self, user, password, url=None):
 		""""""
-		result = None
-		cookie = cookielib.CookieJar()
-		opener = URLOpen(cookie)
-		opener.open("https://ssl.rapidshare.com/cgi-bin/premiumzone.cgi", urllib.urlencode({"uselandingpage": "1", "login": user, "password": password}))
-		if len(cookie) > 0:
-			result = cookie
-		if url:
-			if "text/html" in opener.open(url).info().getheader("Content-Type"):
-				result = None
-		return result
+		opener = URLOpen()
+		data = urllib.urlencode([("sub", "getaccountdetails_v1"), ("type", "prem"), ("login", user), ("password", password), ("withcookie", 1)])
+		for line in opener.open(API_URL, data).readlines():
+			if "ERROR" in line:
+				return
+			elif "cookie" in line:
+				tmp_cookie = cookielib.Cookie(version=0, name='enc', value=line.split("=")[1].strip(), port=None, port_specified=False, domain='.rapidshare.com', domain_specified=False, domain_initial_dot=True, path='/', path_specified=True, secure=False, expires=None, discard=True, comment=None, comment_url=None, rest={'HttpOnly': None}, rfc2109=False)
+				cookie = cookielib.CookieJar()
+				cookie.set_cookie(tmp_cookie)
+				return cookie
