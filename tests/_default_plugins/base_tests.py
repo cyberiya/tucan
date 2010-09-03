@@ -126,7 +126,7 @@ class TestBaseCookie(unittest.TestCase):
 
 	def test_invalid_cookie(self):
 		""""""
-		self.assertFalse(self.cookie.get_cookie("", ""), "Cookie should be None")
+		self.assertFalse(self.cookie.get_cookie(None, None), "Cookie should be None")
 
 	def test_valid_cookie(self):
 		""""""
