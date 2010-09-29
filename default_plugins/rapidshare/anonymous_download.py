@@ -22,11 +22,6 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-import sys
-sys.path.append("/home/crak/tucan/trunk")
-import __builtin__
-__builtin__.PROXY = None
-
 from check_links import CheckLinks
 
 from core.download_plugin import DownloadPlugin
