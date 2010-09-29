@@ -32,24 +32,29 @@ from core.url_open import URLOpen
 
 import core.cons as cons
 
+API_URL = "/cgi-bin/rsapi.cgi"
+
 class FormParser:
 	""""""
-	def __init__(self, url, cookie):
+	def __init__(self, cookie):
 		""""""
-		self.url = None
+		self.cookie = cookie
+		
+	def parse(self, url):
+		""""""
 		try:
-			opener = URLOpen(cookie)
+			opener = URLOpen()
 			handler = opener.open(url)
 			if "text/html" in handler.info()["Content-Type"]:
-				for line in handler.readlines():
-					if '<form id="ff"' in line:
-						form_action = line.split('action="')[1].split('" method="post">')[0]
-						for line in opener.open(form_action, urllib.urlencode({"dl.start": "PREMIUM", "":"Premium user"})).readlines():
-							if '<form name="dlf"' in line:
-								self.url = line.split('name="dlf" action="')[1].split('" method="post"')[0]
-						break
+				cookie_value = self.cookie._cookies[".rapidshare.com"]["/"]["enc"].value
+				tmp = url.split("/")
+				form =  urllib.urlencode([("sub", "download_v1"), ("cookie", cookie_value), ("fileid", tmp[4]), ("filename", tmp[5])])
+				for line in opener.open("http://api.rapidshare.com%s" % API_URL, form).readlines():
+					if "DL:" in line:
+						url = "http://%s%s" % (line.split("DL:")[1].split(",")[0], API_URL)
+						return opener.open(url, form)
 			else:
-				self.url = url
+				return opener.open(url)
 		except Exception, e:
 			logger.error("%s: %s" % (url, e))
 
@@ -68,15 +73,15 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		""""""
 		cookie = self.get_cookie()
 		if cookie:
-			f = FormParser(link, cookie)
-			if f.url:
-				return self.start(path, f.url, file_name, None, cookie)
-
+			parser = FormParser(cookie)
+			return self.start(path, link, file_name, None, None, parser.parse)
+			
 	def delete(self, file_name):
 		""""""
 		logger.warning("Stopped %s: %s" % (file_name, self.stop(file_name)))
 
 if __name__ == "__main__":
 	c = PremiumCookie()
-	p = FormParser("http://rapidshare.com/files/28374629/30_-_Buscate_la_Vida_-_Novia_2000_by_shagazz.part2.rar", c.get_cookie("",""))
-	print p.url
+	p = FormParser(c.get_cookie("",""))
+	p.parse("http://rapidshare.com/files/391174483/prueba.bin")
+	print URLOpen().open(p.url, p.form).info()
