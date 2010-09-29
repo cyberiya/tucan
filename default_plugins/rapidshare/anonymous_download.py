@@ -30,6 +30,8 @@ from core.slots import Slots
 
 MAX_SIZE = 209796096
 
+API_URL = "/cgi-bin/rsapi.cgi"
+
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def link_parser(self, url, wait_func, range=None):
@@ -37,16 +39,15 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		link = None
 		wait = 0
 		try:
-			for line in URLOpen().open(url).readlines():
-				if '<form id="ff"' in line:
-					form_action = line.split('action="')[1].split('" method="post">')[0]
-					data = urllib.urlencode({"dl.start": "Free", "":"Free user"})
-					for line in URLOpen().open(form_action, data).readlines():
-						if "var tt =" in line:
-							link = line.split('name="dlf" action="')[1].split('" method="post"')[0]
-						elif "var c=" in line:
-							wait = int(line.split("var c=")[1].split(";")[0])
-					break
+			tmp = url.split("/")
+			opener = URLOpen()
+			form =  urllib.urlencode([("sub", "download_v1"), ("fileid", tmp[4]), ("filename", tmp[5])])
+			for line in opener.open("http://api.rapidshare.com%s" % API_URL, form, range).readlines():
+				if "DL:" in line:
+					tmp = line.split("DL:")[1].split(",")
+					link = "http://%s%s" % (tmp[0], API_URL)
+					form =  "%s&%s" % (form, urllib.urlencode([("dlauth", tmp[1])]))
+					wait = int(tmp[2])
 			if not link:
 				return
 			elif not wait_func(wait):
@@ -55,7 +56,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			logger.exception("%s: %s" % (url, e))
 		else:
 			try:
-				handle = URLOpen().open(link, None, range)
+				handle = URLOpen().open(link, form, range)
 			except:
 				self.set_limit_exceeded()
 			else:

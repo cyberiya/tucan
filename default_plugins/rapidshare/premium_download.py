@@ -29,6 +29,8 @@ from core.accounts import Accounts
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
 
+API_URL = "/cgi-bin/rsapi.cgi"
+
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
 	def __init__(self, config, section):
@@ -47,13 +49,13 @@ class PremiumDownload(DownloadPlugin, Accounts):
 			if not wait_func():
 				return
 			if "text/html" in handler.info()["Content-Type"]:
-				for line in handler.readlines():
-					if '<form id="ff"' in line:
-						form_action = line.split('action="')[1].split('" method="post">')[0]
-						for line in opener.open(form_action, urllib.urlencode({"dl.start": "PREMIUM", "":"Premium user"})).readlines():
-							if '<form name="dlf"' in line:
-								return opener.open(line.split('name="dlf" action="')[1].split('" method="post"')[0], None, range)
-						break
+				cookie_value = cookie._cookies[".rapidshare.com"]["/"]["enc"].value
+				tmp = url.split("/")
+				form =  urllib.urlencode([("sub", "download_v1"), ("cookie", cookie_value), ("fileid", tmp[4]), ("filename", tmp[5])])
+				for line in opener.open("http://api.rapidshare.com%s" % API_URL, form, range).readlines():
+					if "DL:" in line:
+						tmp_url = "http://%s%s" % (line.split("DL:")[1].split(",")[0], API_URL)
+						return opener.open(tmp_url, form, range)
 			else:
 				return handler
 		except Exception, e:
