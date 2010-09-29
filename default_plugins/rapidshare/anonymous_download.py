@@ -48,19 +48,14 @@ class AnonymousDownload(DownloadPlugin, Slots):
 					link = "http://%s%s" % (tmp[0], API_URL)
 					form =  "%s&%s" % (form, urllib.urlencode([("dlauth", tmp[1])]))
 					wait = int(tmp[2])
-			if not link:
+			if not wait_func(wait):
 				return
-			elif not wait_func(wait):
-				return
+			elif link:
+				return URLOpen().open(link, form, range)
+			else:
+				self.set_limit_exceeded()
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
-		else:
-			try:
-				handle = URLOpen().open(link, form, range)
-			except:
-				self.set_limit_exceeded()
-			else:
-				return handle
 
 	def check_links(self, url):
 		""""""
