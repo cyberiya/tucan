@@ -22,6 +22,11 @@ import urllib
 import logging
 logger = logging.getLogger(__name__)
 
+import sys
+sys.path.append("/home/crak/tucan/trunk")
+import __builtin__
+__builtin__.PROXY = None
+
 from check_links import CheckLinks
 
 from core.download_plugin import DownloadPlugin
@@ -29,6 +34,7 @@ from core.url_open import URLOpen
 from core.slots import Slots
 
 MAX_SIZE = 209796096
+API_URL = "/cgi-bin/rsapi.cgi"
 
 class FormParser:
 	""""""
@@ -36,20 +42,24 @@ class FormParser:
 		""""""
 		self.url = None
 		self.wait = None
+		self.form = None
 		try:
-			for line in URLOpen().open(url).readlines():
-				if '<form id="ff"' in line:
-					form_action = line.split('action="')[1].split('" method="post">')[0]
-					self.data = urllib.urlencode({"dl.start": "Free", "":"Free user"})
-					for line in URLOpen().open(form_action, self.data).readlines():
-						if "var tt =" in line:
-							self.url = line.split('name="dlf" action="')[1].split('" method="post"')[0]
-						elif "var c=" in line:
-							self.wait = int(line.split("var c=")[1].split(";")[0])
-					break
+			tmp = url.split("/")
+			opener = URLOpen()
+			form =  urllib.urlencode([("sub", "download_v1"), ("fileid", tmp[4]), ("filename", tmp[5])])
+			for line in opener.open("http://api.rapidshare.com%s" % API_URL, form).readlines():
+				if "DL:" in line:
+					tmp = line.split("DL:")[1].split(",")
+					self.url = "http://%s%s" % (tmp[0], API_URL)
+					self.form =  "%s&%s" % (form, urllib.urlencode([("dlauth", tmp[1])]))
+					self.wait = int(tmp[2])
 		except Exception, e:
-			print e
 			logger.exception("%s: %s" % (url, e))
+			
+	def get_handler(self, url):
+		""""""
+		if self.form:
+			return URLOpen().open(self.url, self.form)
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
@@ -67,7 +77,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		if self.get_slot():
 			parser = FormParser(link)
 			if parser.url:
-				return self.start(path, parser.url, file_name, parser.wait)
+				return self.start(path, parser.url, file_name, parser.wait, None, parser.get_handler)
 			else:
 				self.add_wait()
 				self.return_slot()
@@ -79,5 +89,5 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			logger.warning("Stopped %s: %s" % (file_name, self.return_slot()))
 
 if __name__ == "__main__":
-	p = FormParser("http://rapidshare.com/files/28374629/30_-_Buscate_la_Vida_-_Novia_2000_by_shagazz.part2.rar")
-	print p.url
+	p = FormParser("http://rapidshare.com/files/391174483/prueba.bin")
+	print p.url, p.form, p.wait
