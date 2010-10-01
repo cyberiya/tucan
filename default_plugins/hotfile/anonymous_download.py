@@ -44,7 +44,9 @@ class CheckLinks:
 					unit = tmp[1].upper()
 					size = float(tmp[0])
 					if unit == "MB" and not int(size):
-						size = int(size*1024)+1
+						size = int(size*1024)
+						if not size:
+							size = 1
 						unit = "KB"
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
