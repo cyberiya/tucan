@@ -44,7 +44,7 @@ class CheckLinks:
 					unit = tmp[1].upper()
 					size = float(tmp[0])
 					if unit == "MB" and not int(size):
-						size = int(size*1024)
+						size = int(size*1024)+1
 						unit = "KB"
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
@@ -60,7 +60,8 @@ class AnonymousDownload(DownloadPlugin):
 			if "?" in url:
 				url = url.split("?")[0]
 			tmp_link, tmp_form, wait = self.parse_wait(url)
-			if not tmp_link or not wait:
+			if not tmp_link or not tmp_form:
+				self.set_limit_exceeded()
 				return
 			elif not wait_func(wait):
 				return
@@ -86,17 +87,10 @@ class AnonymousDownload(DownloadPlugin):
 										break
 							retry -= 1
 						break
-			if not link:
-				return
+				if link:
+					return URLOpen().open(link, None, range)
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
-		else:
-			try:
-				handle = URLOpen().open(link, None, range)
-			except Exception, e:
-				self.set_limit_exceeded()
-			else:
-				return handle
 
 	def parse_wait(self, url):
 		""""""
