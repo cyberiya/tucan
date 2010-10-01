@@ -29,7 +29,8 @@ from core.recaptcha import Recaptcha
 import core.cons as cons
 
 NAME = "Recaptcha"
-LINK = "http://api.recaptcha.net/challenge?k=6LfRJwkAAAAAAGmA3mAiAcAsRsWvfkBijaZWEvkD"
+#LINK = "http://api.recaptcha.net/challenge?k=6LfRJwkAAAAAAGmA3mAiAcAsRsWvfkBijaZWEvkD"
+LINK = "http://www.google.com/recaptcha/api/challenge?k=6LfRJwkAAAAAAGmA3mAiAcAsRsWvfkBijaZWEvkD"
 
 class DialogMockup:
 	""""""

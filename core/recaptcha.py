@@ -33,29 +33,23 @@ class Recaptcha:
 	def __init__(self, service, url):
 		""""""
 		self.service_name = service
-		self.url = url
+		self.captcha_link = url
 		self.timeout = TIMEOUT
 
 	def solve_captcha(self):
 		""""""
-		self.captcha_link = None
 		self.captcha_challenge = None
 		self.captcha_response = None
 		self.wait_for_response = True
 		try:
-			for line in URLOpen().open(self.url).readlines():
-				if "_recaptcha.src" in line:
-					self.captcha_link = "http://%s" % line.split("+ '://")[1].split("&darklaunch=1")[0]
+			events.trigger_captcha_dialog(self.service_name, self.get_captcha, self.set_response)
+			while self.wait_for_response:
+				if self.timeout:
+					self.timeout -= 1
+					time.sleep(1)
+				else:
+					logger.warning("No response for %s event" % cons.EVENT_CAPTCHA_DIALOG)
 					break
-			if self.captcha_link:
-				events.trigger_captcha_dialog(self.service_name, self.get_captcha, self.set_response)
-				while self.wait_for_response:
-					if self.timeout:
-						self.timeout -= 1
-						time.sleep(1)
-					else:
-						logger.warning("No response for %s event" % cons.EVENT_CAPTCHA_DIALOG)
-						break
 		except Exception, e:
 			logger.exception("%s :%s" % (self.captcha_link, e))
 		return self.captcha_challenge, self.captcha_response
@@ -66,9 +60,11 @@ class Recaptcha:
 		image_data = None
 		self.timeout = TIMEOUT
 		try:
+			print self.captcha_link
 			for line in URLOpen().open(self.captcha_link).readlines():
 				if "challenge : " in line:
 					self.captcha_challenge = line.split("'")[1]
+					print self.captcha_challenge
 					handle = URLOpen().open("http://www.google.com/recaptcha/api/image?c=%s" % self.captcha_challenge)
 					image_data = handle.read()
 					image_type = handle.info()["Content-Type"].split("/")[1]
