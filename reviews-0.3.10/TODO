@@ -1,0 +1,31 @@
+	Tucan Manager 0.3.10
+---------------------------------------
+-- CORE
+- UpdateManager multiple versions support.
+- New concurrent checklinks and remove autopaste.
+- Use only bytes as internal unit.
+- UNICODE support.
+- No CM when copying from treeview.
+- Multiple adddownloads doesnt start.
+
+-- PLUGINS
+- Disable plugins if broken or dependency not found.
+- Repair Mediafire.
+
+-- CLI
+- Solve bug +20 links.
+
+	Tucan Manager 0.4 beta
+---------------------------------------
+-- CORE
+- Core API.
+- Upload System. 
+- Unit tests. QA needed.
+
+-- GUI
+- Cell data functions. TreeModel only contains IDs.
+- New TreeViews.
+
+-- DOC
+- Fill all docstrings.
+- Translate documentation.
