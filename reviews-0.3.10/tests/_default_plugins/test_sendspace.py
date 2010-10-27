@@ -2,7 +2,7 @@
 ## Tucan Project
 ##
 ## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
-##                         Elie Mélois eliemelois@gmail.com
+##                         Elie Melois eliemelois@gmail.com
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
@@ -24,14 +24,13 @@ import os.path
 import base_tests
 
 from core.service_config import ServiceConfig, SECTION_ANONYMOUS_DOWNLOAD
-#from 4shared.anonymous_download import AnonymousDownload
 module = __import__("sendspace.anonymous_download", None, None, [''])
 
 import core.cons as cons
 
 CONF_PATH = "../default_plugins/sendspace"
 
-TEST_INVALID_LINK = "http://www.sendspace.com/file/hbg"
+TEST_INVALID_LINK = "http://www.sendspace.com/file/000000"
 TEST_LINK = "http://www.sendspace.com/file/hbgjaf"
 TEST_SIZE = 114
 TEST_UNIT = "KB"
