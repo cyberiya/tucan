@@ -55,25 +55,26 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		name = None
 		size = -1
 		unit = None
-		size_found = 0
+		size_found = False
 		try:
 			for line in URLOpen().open(url).readlines():
 				if '<span id="fileNameTextSpan">' in line:
 					name = line.split('<span id="fileNameTextSpan">')[1].split('</span>')[0].strip()
-				elif '<td class="finforight' in line:
-					size_found += 1
-					if size_found == 2:
-						tmp = line.split(">")[1].split("<")[0].split()
-						unit = tmp[1]
-						if "," in tmp[0]:
-							size = int(tmp[0].replace(",", ""))
-						else:
-							size = int(tmp[0])
-						if size > 1024:
-							if unit == "KB":
-								size = size / 1024
-								unit = "MB"
-						break
+					break
+				elif '<div class="small lgrey" style="margin-bottom:5px">' in line:
+					size_found = True
+				elif size_found:
+					size_found = False
+					tmp = line.split("<b>")[1].split("</b>")[0].split()
+					unit = tmp[1]
+					if "," in tmp[0]:
+						size = int(tmp[0].replace(",", ""))
+					else:
+						size = int(tmp[0])
+					if size > 1024:
+						if unit == "KB":
+							size = size / 1024
+							unit = "MB"
 		except Exception, e:
 			name = None
 			size = -1
