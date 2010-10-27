@@ -82,8 +82,8 @@ class Downloader(threading.Thread):
 							os.remove(name)
 							logger.warning("%s already on disk but different size" % name)
 							self.download(name, handle)
-					elif os.path.exists("%s.part" % name):
-						#puede fallar el range!!!
+					elif os.path.exists("%s.part" % name) and self.range:
+						#this should be tested  exhaustively
 						logger.info("Resuming %s.part (%i)" % (name, self.range))
 						self.actual_size = self.range
 						self.download(name, handle, True)

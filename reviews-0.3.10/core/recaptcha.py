@@ -60,7 +60,6 @@ class Recaptcha:
 		image_data = None
 		self.timeout = TIMEOUT
 		try:
-			print self.captcha_link
 			for line in URLOpen().open(self.captcha_link).readlines():
 				if "challenge : " in line:
 					self.captcha_challenge = line.split("'")[1]
