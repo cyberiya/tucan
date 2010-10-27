@@ -40,6 +40,12 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			self.link = None
 			self.cookie = cookielib.CookieJar()
 			self.opener = URLOpen(self.cookie)
+			if "/video/" in url:
+				url = url.replace("/video/", "/download/")
+			elif "/audio/" in url:
+				url = url.replace("/audio/", "/download/")
+			elif "/image/" in url:
+				url = url.replace("/image/", "/download/")
 			try:
 				form = urllib.urlencode([("referer2", ""), ("download", 1), ("imageField.x", 81), ("imageField.y", 29)])
 				for line in self.opener.open(url,form).readlines():
