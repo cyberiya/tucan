@@ -19,6 +19,7 @@
 ###############################################################################
 
 import urllib
+import cookielib
 import logging
 logger = logging.getLogger(__name__)
 
@@ -27,30 +28,6 @@ from core.recaptcha import Recaptcha
 from core.url_open import URLOpen
 
 BASE_URL = "http://hotfile.com"
-
-class CheckLinks:
-	""""""
-	def check(self, url):
-		""""""
-		name = None
-		size = -1
-		unit = None
-		try:
-			for line in URLOpen().open(url).readlines():
-				if 'class="arrow_down"' in line:
-					tmp = line.split("</strong>")
-					name = tmp[1].split("<span>")[0].strip()
-					tmp = tmp[1].split("<strong>")[1].split(" ")
-					unit = tmp[1].upper()
-					size = float(tmp[0])
-					if unit == "MB" and not int(size):
-						size = int(size*1024)
-						if not size:
-							size = 1
-						unit = "KB"
-		except Exception, e:
-			logger.exception("%s :%s" % (url, e))
-		return name, size, unit
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
@@ -68,7 +45,8 @@ class AnonymousDownload(DownloadPlugin):
 			elif not wait_func(wait):
 				return
 			else:
-				for line in URLOpen().open(tmp_link, tmp_form).readlines():
+				opener = URLOpen(cookielib.CookieJar())
+				for line in opener.open(tmp_link, tmp_form).readlines():
 					if "click_download" in line:
 						link = line.split('href="')[1].split('"')[0]
 						break
@@ -76,21 +54,21 @@ class AnonymousDownload(DownloadPlugin):
 						recaptcha_link = line.split('src="')[1].split('"')[0]
 						if not wait_func():
 							return
-						c = Recaptcha("hotfile.com", recaptcha_link)
+						c = Recaptcha(BASE_URL, recaptcha_link)
 						while not link and retry:
 							challenge, response = c.solve_captcha()
 							if response:
 								if not wait_func():
 									return
 								form = urllib.urlencode([("action", "checkcaptcha"), ("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response)])
-								for line in URLOpen().open(tmp_link, form).readlines():
+								for line in opener.open(tmp_link, form).readlines():
 									if "click_download" in line:
 										link = line.split('href="')[1].split('"')[0]
 										break
 							retry -= 1
 						break
 				if link:
-					return URLOpen().open(link, None, range)
+					return opener.open(link, None, range, True)
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
@@ -130,4 +108,22 @@ class AnonymousDownload(DownloadPlugin):
 
 	def check_links(self, url):
 		""""""
-		return CheckLinks().check(url)
+		name = None
+		size = -1
+		unit = None
+		try:
+			for line in URLOpen().open(url).readlines():
+				if 'class="arrow_down"' in line:
+					tmp = line.split("</strong>")
+					name = tmp[1].split("<span>")[0].strip()
+					tmp = tmp[1].split("<strong>")[1].split(" ")
+					unit = tmp[1].upper()
+					size = float(tmp[0])
+					if unit == "MB" and not int(size):
+						size = int(size*1024)
+						if not size:
+							size = 1
+						unit = "KB"
+		except Exception, e:
+			logger.exception("%s :%s" % (url, e))
+		return name, size, unit
