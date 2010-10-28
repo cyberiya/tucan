@@ -30,16 +30,16 @@ from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
 from core.slots import Slots
 
-WAIT = 50
+WAIT = 50 #Default, also parsed in the page if possible
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
 	def link_parser(self, url, wait_func, range=None):
 		""""""
 		try:
-			self.link = None
-			self.cookie = cookielib.CookieJar()
-			self.opener = URLOpen(self.cookie)
+			link = None
+			cookie = cookielib.CookieJar()
+			opener = URLOpen(cookie)
 			if "/video/" in url:
 				url = url.replace("/video/", "/download/")
 			elif "/audio/" in url:
@@ -47,17 +47,26 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			elif "/image/" in url:
 				url = url.replace("/image/", "/download/")
 			try:
-				form = urllib.urlencode([("referer2", ""), ("download", 1), ("imageField.x", 81), ("imageField.y", 29)])
-				for line in self.opener.open(url,form).readlines():
+				form = urllib.urlencode([("download", 1)])
+				for line in opener.open(url,form).readlines():
 					if 'link_enc=new Array' in line:
 						tmp = line.strip().split("var link_enc=new Array(")[1].split(");")[0]
-						tmp = eval("[%s]" % tmp)
-						self.link = "".join(tmp)
+						link = tmp.replace("','","").replace("'","")
+					#Try to get WAIT from the page
+					if 'document|important' in line:
+						try:
+							tmp = line.split("here|")[1].split("|class")[0]
+							tmp = int(tmp)
+						except ValueError:
+							pass
+						else:
+							if tmp > 0:
+								WAIT = tmp
 						break
 			except Exception, e:
 				logger.exception("%s :%s" % (url, e))
 				
-			if not self.link:
+			if not link:
 				return
 			if not wait_func(WAIT):
 				return
@@ -65,7 +74,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			logger.exception("%s: %s" % (url, e))
 		else:
 			try:
-				handle = self.opener.open(self.link, None, range)
+				handle = opener.open(link, None, range)
 			except Exception, e:
 				self.set_limit_exceeded()
 			else:
