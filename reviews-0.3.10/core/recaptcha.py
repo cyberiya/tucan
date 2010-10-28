@@ -63,7 +63,6 @@ class Recaptcha:
 			for line in URLOpen().open(self.captcha_link).readlines():
 				if "challenge : " in line:
 					self.captcha_challenge = line.split("'")[1]
-					print self.captcha_challenge
 					handle = URLOpen().open("http://www.google.com/recaptcha/api/image?c=%s" % self.captcha_challenge)
 					image_data = handle.read()
 					image_type = handle.info()["Content-Type"].split("/")[1]

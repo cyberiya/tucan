@@ -50,11 +50,13 @@ class URLOpen:
 		else:
 			self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 
-	def open(self, url, form=None, range=None):
+	def open(self, url, form=None, range=None, keep_alive=False):
 		""""""
 		headers = {"User-Agent": cons.USER_AGENT}
 		if range:
 			headers["Range"] = "bytes=%s-" % range
+		if keep_alive:
+			headers["Connection"] = "Keep-alive"
 		if form:
 			return self.opener.open(urllib2.Request(url, None, headers), form)
 		else:
