@@ -57,7 +57,7 @@ class AnonymousDownload(DownloadPlugin):
 							#Filefactory perfoms as check on its server by doing an
 							#Ajax request sending the following data
 							form = urllib.urlencode([("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response), ("recaptcha_shortencode_field", "undefined"),("check", check)])
-							url = BASE_URL + "/file/checkCaptcha.php"
+							url = "%s/file/checkCaptcha.php" % BASE_URL
 
 							#Getting the result back, status:{"ok"|"fail"}
 							for line in opener.open(url, form).readlines():
