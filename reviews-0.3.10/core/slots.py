@@ -63,10 +63,10 @@ class Slots:
 
 	def set_limit_exceeded(self, wait=0):
 		""""""
-		if wait == 0:
+		if not wait:
 			wait = self.time_limit
 		events.trigger_limit_on(self.__module__)
-		logger.warning("Wait %i seconds." % self.time_limit)
+		logger.warning("Wait %i seconds." % wait)
 		self.return_slot()
 		self.limit = True
 		self.end_wait = time.time() + wait
