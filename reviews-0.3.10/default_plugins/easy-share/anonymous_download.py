@@ -32,7 +32,8 @@ BASE_URL = "http://easy-share.com"
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
-	def link_parser(self, url, wait_func, range=None):
+	#FIXME : change range which is a keyword
+	def link_parser(self, url, wait_func, xrange=None):
 		""""""
 		try:
 			data = urllib.urlencode([("free", "Regular Download")])

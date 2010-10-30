@@ -63,7 +63,7 @@ class AnonymousDownload(DownloadPlugin):
 							for line in opener.open(url, form).readlines():
 								if 'status:"ok"' in line:
 									tmp = line.split('path:"')[1].strip('"')
-									tmp_link = BASE_URL + tmp
+									tmp_link = "%s%s" %(BASE_URL,tmp)
 									for line in opener.open(tmp_link).readlines():
 										if '<span class="countdown">' in line:
 											#Try to get WAIT from the page
