@@ -7,6 +7,7 @@
 - UNICODE support.
 - No CM when copying from treeview.
 - Multiple adddownloads doesnt start.
+- Display a timer in the GUI when set_limit_exceeded is called
 
 -- PLUGINS
 - Disable plugins if broken or dependency not found.
