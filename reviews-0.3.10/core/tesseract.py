@@ -35,6 +35,16 @@ import cons
 IMAGE_SUFFIX = ".tif"
 TEXT_SUFFIX = ".txt"
 
+def get_path():
+	""""""
+	if cons.OS_WINDOWS:
+		return os.path.join(sys.path[0], "tesseract", "tesseract.exe")
+	else:
+		if cons.OS_OSX:
+			return os.path.join(sys.path[0], "tesseract", "tesseract")
+		else:
+			return "tesseract"
+
 class Tesseract:
 	""""""
 	def __init__(self, data, filter=None):
@@ -42,13 +52,9 @@ class Tesseract:
 		if cons.OS_WINDOWS:
 			self.image_name = os.path.join(sys.path[0], "tmp.tif")
 			self.text_name = os.path.join(sys.path[0], "tmp")
-			self.tesseract = os.path.join(sys.path[0], "tesseract", "tesseract.exe")
 		else:
 			if cons.OS_OSX:
 				os.environ["TESSDATA_PREFIX"] = os.path.join(sys.path[0], "tesseract", "")
-				self.tesseract = os.path.join(sys.path[0], "tesseract", "tesseract")
-			else:
-				self.tesseract = "tesseract"
 			self.text = tempfile.NamedTemporaryFile(suffix=TEXT_SUFFIX)
 			self.image = tempfile.NamedTemporaryFile(suffix=IMAGE_SUFFIX)
 			self.image_name = self.image.name
@@ -66,12 +72,12 @@ class Tesseract:
 		captcha = ""
 		try:
 			if cons.OS_WINDOWS:
-				if subprocess.call([self.tesseract, self.image_name, self.text_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=134217728) == 0:
+				if subprocess.call([get_path(), self.image_name, self.text_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=134217728) == 0:
 					f = file(self.text_name + TEXT_SUFFIX, "r")
 					captcha = f.readline().strip()
 					f.close()
 			else:
-				if subprocess.call([self.tesseract, self.image_name, self.text_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
+				if subprocess.call([get_path(), self.image_name, self.text_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE) == 0:
 					captcha = self.text.file.readline().strip()
 				self.text.file.close()
 				self.image.file.close()

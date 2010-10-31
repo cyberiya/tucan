@@ -109,6 +109,10 @@ SESSION_FILE = os.path.join(CONFIG_PATH, "last.session")
 NAME_LOCALES = "tucan"
 PATH_LOCALES = os.path.join(PATH, "i18n")
 
+#dependency constants
+DEPENDENCY_RECAPTCHA = "recaptcha"
+DEPENDENCY_TESSERACT = "tesseract"
+
 #events constants
 EVENT_FILE_COMPLETE = "file-complete"
 EVENT_PACKAGE_COMPLETE = "package-complete"
