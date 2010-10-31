@@ -25,6 +25,7 @@ import sys
 import logging
 import optparse
 
+import core.dependencies as dependencies
 import core.pid_file as pid_file
 import core.url_open as url_open
 import core.config as config
@@ -147,23 +148,26 @@ class Tucan:
 
 	def start_gui(self, unique=True):
 		""""""
+		message = "Use 'tucan --cli' for curses interface." 
 		try:
 			import pygtk
 			pygtk.require('2.0')
 			import gtk
 			import gobject
 		except:
-			sys.exit("No GTK support. Use 'tucan --cli' for curses interface.")
+			self.exit("No GTK support. %s" % message)
 		try:
 			gtk.init_check()
 		except:
-			sys.exit("Could not connect to X server. Use 'tucan --cli' for curses interface.")
+			self.exit("Could not connect to X server. %s" % message)
 		try:
 			from ui.gtk.gui import Gui, already_running, exception_hook
 			from ui.gtk.recover import halt
 		except:
-			sys.exit("Tucan installed without GUI support. Use 'tucan --cli' for curses interface.")
-
+			self.exit("Tucan installed without GUI support. %s" % message)
+			
+		__builtin__.dependencies.set_recaptcha()
+		
 		if unique:
 			#recovery help
 			sys.excepthook = exception_hook
@@ -187,7 +191,8 @@ class Tucan:
 			url_open.set_proxy(proxy_url, proxy_port)
 		else:
 			url_open.set_proxy(None)
-
+			
+		__builtin__.dependencies = dependencies.Dependencies()
 		__builtin__.max_downloads = configuration.get_max_downloads()
 		__builtin__.max_download_speed = configuration.get_max_download_speed()
 
@@ -204,7 +209,6 @@ if __name__ == "__main__":
 	except KeyboardInterrupt:
 		tucan.exit("KeyboardInterrupt")
 	except Exception, e:
-		print e
 		tucan.logger.exception(e)
 		tucan.exit("Unhandled Error! Check the log file for details.")
 	else:

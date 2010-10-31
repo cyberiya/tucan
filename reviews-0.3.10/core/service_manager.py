@@ -20,6 +20,7 @@
 
 import re
 import sys
+import __builtin__
 import logging
 logger = logging.getLogger(__name__)
 
@@ -36,16 +37,28 @@ class Service:
 		
 	def add_plugins(self, package, config):
 		""""""
+		plugins = 0
 		#download plugins
 		for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
 			logger.info("Loading: %s.%s, %i" % (package, plugin_module, config.get_update()))
-			module = __import__("%s.%s" % (package, plugin_module), None, None, [''])
-			self.download_plugins[plugin_type] = eval("module.%s(config, '%s')" % (plugin_name, plugin_module))
+			try:
+				__builtin__.dependencies.check(config.get_captcha(plugin_module))
+				module = __import__("%s.%s" % (package, plugin_module), None, None, [''])
+				self.download_plugins[plugin_type] = eval("module.%s(config, '%s')" % (plugin_name, plugin_module))
+			except Exception, e:
+				logger.error("%s.%s: %s" % (package, plugin_module, e))
+			else:
+				if plugin_type in [cons.TYPE_PREMIUM, cons.TYPE_USER]:
+					if self.download_plugins[plugin_type].active:
+						plugins += 1
+				else:
+					plugins += 1
 		#upload plugins
-		for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
-			logger.info("Loading: %s.%s, %i" % (package, plugin_module, config.get_update()))
-			module = __import__("%s.%s" % (package, plugin_module), None, None, [''])
-			self.upload_plugins[plugin_type] = eval("module.%s(config, '%s')" % (plugin_name, plugin_module))
+		#for plugin_module, plugin_name, plugin_type in config.get_upload_plugins():
+			#logger.info("Loading: %s.%s, %i" % (package, plugin_module, config.get_update()))
+			#module = __import__("%s.%s" % (package, plugin_module), None, None, [''])
+			#self.upload_plugins[plugin_type] = eval("module.%s(config, '%s')" % (plugin_name, plugin_module))
+		return plugins
 
 	def get_plugin(self, upload=False):
 		""""""
@@ -56,10 +69,10 @@ class Service:
 		if cons.TYPE_PREMIUM in plugins:
 			if plugins[cons.TYPE_PREMIUM].active:
 				return plugins[cons.TYPE_PREMIUM], cons.TYPE_PREMIUM
-		if cons.TYPE_USER in plugins:
+		elif cons.TYPE_USER in plugins:
 			if plugins[cons.TYPE_USER].active:
 				return plugins[cons.TYPE_USER], cons.TYPE_USER
-		if cons.TYPE_ANONYMOUS in plugins:
+		elif cons.TYPE_ANONYMOUS in plugins:
 			return plugins[cons.TYPE_ANONYMOUS], cons.TYPE_ANONYMOUS
 			
 	def clean(self):
@@ -79,11 +92,7 @@ class ServiceManager:
 		for package, icon, service, enabled, config in configuration.get_services():
 			s = Service(service, icon)
 			if enabled:
-				try:
-					s.add_plugins(package, config)
-				except Exception, e:
-					logger.error("Unable to load %s: %s" % (service, e))
-				else:
+				if s.add_plugins(package, config):
 					self.services.append(s)
 		if len(self.services) == 0:
 			logger.warning("No services loaded!")

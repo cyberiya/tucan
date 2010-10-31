@@ -156,6 +156,11 @@ class ServiceConfig(SafeConfigParser):
 			f.write(base64.b64encode(pickle.dumps(accounts)))
 			f.close()
 			
+	def get_captcha(self, section):
+		""""""
+		if self.has_option(section, OPTION_CAPTCHA):
+			return self.get(section, OPTION_CAPTCHA)
+
 	def get_slots(self, section):
 		""""""
 		if self.has_option(section, OPTION_SLOTS):
