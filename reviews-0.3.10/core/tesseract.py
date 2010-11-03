@@ -45,6 +45,13 @@ def get_path():
 		else:
 			return "tesseract"
 
+def check_installed():
+	""""""
+	if cons.OS_WINDOWS:
+		subprocess.call([get_path()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=134217728)
+	else:
+		subprocess.call([get_path()], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
 class Tesseract:
 	""""""
 	def __init__(self, data, filter=None):

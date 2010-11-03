@@ -62,10 +62,7 @@ class Dependencies:
 			raise Exception(message)
 		try:
 			import tesseract
-			if cons.OS_WINDOWS:
-				subprocess.call([tesseract.get_path()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=134217728)
-			else:
-				subprocess.call([tesseract.get_path()], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+			tesseract.check_installed()
 		except:
 			message = "tesseract not found."
 			self.checked[cons.DEPENDENCY_TESSERACT] = message
