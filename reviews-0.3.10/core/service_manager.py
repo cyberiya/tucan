@@ -69,10 +69,10 @@ class Service:
 		if cons.TYPE_PREMIUM in plugins:
 			if plugins[cons.TYPE_PREMIUM].active:
 				return plugins[cons.TYPE_PREMIUM], cons.TYPE_PREMIUM
-		elif cons.TYPE_USER in plugins:
+		if cons.TYPE_USER in plugins:
 			if plugins[cons.TYPE_USER].active:
 				return plugins[cons.TYPE_USER], cons.TYPE_USER
-		elif cons.TYPE_ANONYMOUS in plugins:
+		if cons.TYPE_ANONYMOUS in plugins:
 			return plugins[cons.TYPE_ANONYMOUS], cons.TYPE_ANONYMOUS
 			
 	def clean(self):
