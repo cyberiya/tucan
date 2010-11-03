@@ -36,9 +36,20 @@ class AnonymousDownload(DownloadPlugin):
 	def link_parser(self, url, wait_func, xrange=None):
 		""""""
 		try:
+			#Remove the filename from the url
+			tmp = url.split("/file/")[1].split("/")[0]
+			url = "%s/file/%s" % (BASE_URL,tmp)
+			
 			file_id = url.split("/")[-1].strip("/")
 			cookie = cookielib.CookieJar()
 			opener = URLOpen(cookie)
+			
+			form = urllib.urlencode([("checkTimeLimit", "check")])
+			#If the limit is exceeded
+			if opener.open(url,form).read() == '1':
+				self.set_limit_exceeded()
+				return
+				
 			it = iter(opener.open(url).readlines())
 			for line in it:
 				if 'reCAPTCHA_publickey=' in line:
@@ -55,12 +66,11 @@ class AnonymousDownload(DownloadPlugin):
 							
 							#Submit the input to the recaptcha system
 							form = urllib.urlencode([("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response), ("recaptcha_shortencode_field",file_id)])
-							url = "%s/checkReCaptcha.php" % BASE_URL
+							recaptcha_url = "%s/checkReCaptcha.php" % BASE_URL
 							
 							#Captcha is good
-							if "success" in opener.open(url,form).read():
+							if "success" in opener.open(recaptcha_url,form).read():
 								form = urllib.urlencode([("downloadLink", "wait")])
-								url = "%s/file/%s" % (BASE_URL,file_id)
 								wait = int(opener.open(url,form).read())
 								if not wait_func(wait):
 									return
@@ -72,7 +82,7 @@ class AnonymousDownload(DownloadPlugin):
 									#Allowed to download
 									return handle
 								else:
-									set_limit_exceeded()
+									self.set_limit_exceeded()
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
