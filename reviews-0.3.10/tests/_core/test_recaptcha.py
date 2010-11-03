@@ -34,10 +34,11 @@ LINK = "http://www.google.com/recaptcha/api/challenge?k=6LfRJwkAAAAAAGmA3mAiAcAs
 
 class DialogMockup:
 	""""""
-	def __init__(self, name, get_captcha, return_solution):
+	def __init__(self, name, get_captcha, return_solution, timeout=False):
 		""""""
 		image_type, image_data = get_captcha()
-		return_solution(image_type)
+		if not timeout:
+			return_solution(image_type)
 
 class TestRecaptcha(unittest.TestCase):
 	""""""
@@ -53,9 +54,11 @@ class TestRecaptcha(unittest.TestCase):
 		self.assertTrue(challenge, "challenge should be a string: %s" % challenge)
 		self.assertTrue(solution, "solution should be a string: %s" % solution)
 
-	def mtest_timeout(self):
+	def test_timeout(self):
 		""""""
+		id = events.connect(cons.EVENT_CAPTCHA_DIALOG, DialogMockup, True)
 		challenge, solution = self.recaptcha.solve_captcha()
+		events.disconnect(cons.EVENT_CAPTCHA_DIALOG, id)
 		self.assertTrue(challenge, "challenge should be a string: %s" % challenge)
 		self.assertFalse(solution, "solution should be None: %s" % solution)
 
