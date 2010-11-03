@@ -155,16 +155,16 @@ class Tucan:
 			import gtk
 			import gobject
 		except:
-			self.exit("No GTK support. %s" % message)
+			sys.exit("No GTK support. %s" % message)
 		try:
 			gtk.init_check()
 		except:
-			self.exit("Could not connect to X server. %s" % message)
+			sys.exit("Could not connect to X server. %s" % message)
 		try:
 			from ui.gtk.gui import Gui, already_running, exception_hook
 			from ui.gtk.recover import halt
 		except:
-			self.exit("Tucan installed without GUI support. %s" % message)
+			sys.exit("Tucan installed without GUI support. %s" % message)
 			
 		__builtin__.dependencies.set_recaptcha()
 		
