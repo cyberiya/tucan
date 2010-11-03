@@ -77,12 +77,7 @@ class AnonymousDownload(DownloadPlugin):
 								form = urllib.urlencode([("downloadLink", "show")])
 								opener.open(url,form).read()
 								form = urllib.urlencode([("download", "normal")])
-								handle = opener.open(url,form)
-								if not handle.info().getheader("Content-Type") == "text/html":
-									#Allowed to download
-									return handle
-								else:
-									self.set_limit_exceeded()
+								return opener.open(url,form)
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
