@@ -23,6 +23,8 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
+TIMEOUT = 55
+
 class CaptchaDialog(gtk.Dialog):
 	""""""
 	def __init__(self, service_name, get_captcha, return_solution, parent=None):
@@ -36,7 +38,7 @@ class CaptchaDialog(gtk.Dialog):
 		self.get_captcha = get_captcha
 		self.return_solution = return_solution
 		self.solution = None
-		self.timeout = 30
+		self.timeout = TIMEOUT
 
 		self.image = gtk.Image()
 		self.vbox.pack_start(self.image)
@@ -85,7 +87,7 @@ class CaptchaDialog(gtk.Dialog):
 
 	def new_captcha(self, widget=None):
 		""""""
-		self.timeout = 30
+		self.timeout = TIMEOUT
 		self.solution = None
 		img_type, img_data = self.get_captcha()
 		if img_data:
@@ -104,18 +106,3 @@ class CaptchaDialog(gtk.Dialog):
 		while gtk.events_pending():
 			gtk.main_iteration()
 		self.return_solution(self.solution)
-
-if __name__ == "__main__":
-	import urllib2
-	def get_captcha():
-		content_type = None
-		result = None
-		f = urllib2.urlopen("http://www.google.com/recaptcha/api/image?c=03AHJ_VuvESiRn8fNqOo1fxuAsK6NRHewDeJ6BWSrX5rD6QpzyL0xOZk9mPlUgkgRDuSx3RjvA81j5gOL8HtZbyUyXAmuyztmWYloQMtJ0azGLs5eAN-8UQdVWg1V3IfXlcwbvKWFb3Rgmfu0A-PuSIcWeVHJLG7lu9Q")
-		if "image" in f.info()["Content-Type"]:
-			content_type = f.info()["Content-Type"].split("/")[1]
-			result = f.read()
-		f.close()
-		return content_type, result
-	def return_solution(solution):
-		print solution
-	c = CaptchaDialog("Recaptcha!", get_captcha, return_solution)

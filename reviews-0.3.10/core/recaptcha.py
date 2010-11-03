@@ -26,7 +26,7 @@ from url_open import URLOpen
 
 import cons
 
-TIMEOUT = 45
+TIMEOUT = 60
 
 class Recaptcha:
 	""""""
