@@ -29,10 +29,13 @@ import cons
 
 REPORT_URL = "http://crak.appspot.com/add"
 
-def remove_conf_dir(ignore_errors=False):
+def remove_conf_dir():
 	""""""
-	logging.shutdown()
-	shutil.rmtree(cons.CONFIG_PATH, ignore_errors)
+	if ".tucan" in cons.CONFIG_PATH:
+		logging.shutdown()
+		shutil.rmtree(cons.CONFIG_PATH)
+	else:
+		raise Exception("Failed to remove: %s" % cons.CONFIG_PATH)
 
 def main_info(log=logger):
 	""""""
