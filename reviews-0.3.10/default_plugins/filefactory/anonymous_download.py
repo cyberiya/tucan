@@ -102,17 +102,13 @@ class AnonymousDownload(DownloadPlugin):
 				if '/img/manager/mime/' in line:
 					if ("generic" in line) or ("audio" in line):
 						tmp = line.split('/>')[1].split("</h1>")[0]
-						tmp = tmp.replace("&nbsp;","")
-						tmp = tmp.replace("&#8203;","")
-						name = tmp.replace("&#8203","")
-						#File with an extension
-						if ";" in tmp:
-							name = name + tmp.split(";")[1]
 					if "video" in line:
 						tmp = line.split('</a>')[1].split("<")[0]
-						tmp = tmp.replace("&nbsp;","")
-						name = tmp.replace("&#8203;","")
-						print name
+						
+					tmp = tmp.replace("&nbsp;","")
+					tmp = tmp.replace("&#8203;","")
+					name = tmp.replace("&#8203","")
+					
 				if '<div id="info" class="metadata">' in line:
 					tmp = it.next()
 					tmp = tmp.split("<span>")[1].split("file")[0].strip()
