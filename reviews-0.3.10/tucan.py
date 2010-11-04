@@ -25,6 +25,8 @@ import sys
 import logging
 import optparse
 
+from core.misc import remove_conf_dir
+
 import core.dependencies as dependencies
 import core.pid_file as pid_file
 import core.url_open as url_open
@@ -40,6 +42,7 @@ class Tucan:
 		parser.add_option("-w", "--wizard", dest="wizard", help="setup: accounts, services, updates", metavar="TYPE")
 		parser.add_option("-d", "--daemon", action="store_true", dest="daemon", default=False, help="no interaction interface (URL)")
 		parser.add_option("-c", "--cli", action="store_true", dest="cli", default=False, help="command line interface (URL)")
+		parser.add_option("-C", "--clean", action="store_true", dest="clean", default=False, help="remove ~/.tucan")
 		parser.add_option("-i", "--input-links", dest="links_file", help="import links from FILE", metavar="FILE")
 		parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="print log to stdout")
 		parser.add_option("-V", "--version", action="store_true", dest="version", default=False, help="print version and exit")
@@ -47,6 +50,9 @@ class Tucan:
 
 		if self.options.version:
 			sys.exit("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
+			
+		if self.options.clean:
+			remove_conf_dir(True)
 
 		if not os.path.exists(cons.CONFIG_PATH):
 			os.mkdir(cons.CONFIG_PATH)
@@ -166,14 +172,13 @@ class Tucan:
 		except:
 			sys.exit("Tucan installed without GUI support. %s" % message)
 			
-		__builtin__.dependencies.set_recaptcha()
-		
 		if unique:
 			#recovery help
 			sys.excepthook = exception_hook
 
 			gobject.threads_init()
 			try:
+				__builtin__.dependencies.set_recaptcha()
 				Gui(configuration)
 				gtk.main()
 			except Exception, e:

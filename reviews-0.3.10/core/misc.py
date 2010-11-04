@@ -19,6 +19,7 @@
 ###############################################################################
 
 import sys
+import shutil
 import urllib
 import logging
 logger = logging.getLogger(__name__)
@@ -27,6 +28,11 @@ import url_open
 import cons
 
 REPORT_URL = "http://crak.appspot.com/add"
+
+def remove_conf_dir(ignore_errors=False):
+	""""""
+	logging.shutdown()
+	shutil.rmtree(cons.CONFIG_PATH, ignore_errors)
 
 def main_info(log=logger):
 	""""""
