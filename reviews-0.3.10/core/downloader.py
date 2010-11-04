@@ -69,6 +69,8 @@ class Downloader(threading.Thread):
 				size = info.getheader("Content-Length", None)
 				if info.getheader("Content-Range", None):
 					size = info.getheader("Content-Range").split("/")[1]
+				else:
+					self.range = None
 				if size:
 					self.status = cons.STATUS_ACTIVE
 					logger.debug("%s :%s" % (self.file, handle.info().getheader("Content-Type")))
