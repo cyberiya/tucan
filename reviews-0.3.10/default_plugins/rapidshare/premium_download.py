@@ -38,24 +38,24 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		Accounts.__init__(self, config, section, PremiumCookie())
 		DownloadPlugin.__init__(self, config, section)
 
-	def link_parser(self, url, wait_func, range=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
 			cookie = self.get_cookie()
 			if not wait_func():
 				return
 			opener = URLOpen(cookie)
-			handler = opener.open(url, None, range)
+			handler = opener.open(url, None, content_range)
 			if not wait_func():
 				return
 			if "text/html" in handler.info()["Content-Type"]:
 				cookie_value = cookie._cookies[".rapidshare.com"]["/"]["enc"].value
 				tmp = url.split("/")
 				form =  urllib.urlencode([("sub", "download_v1"), ("cookie", cookie_value), ("fileid", tmp[4]), ("filename", tmp[5])])
-				for line in opener.open("http://api.rapidshare.com%s" % API_URL, form, range).readlines():
+				for line in opener.open("http://api.rapidshare.com%s" % API_URL, form, content_range).readlines():
 					if "DL:" in line:
 						tmp_url = "http://%s%s" % (line.split("DL:")[1].split(",")[0], API_URL)
-						return opener.open(tmp_url, form, range)
+						return opener.open(tmp_url, form, content_range)
 			else:
 				return handler
 		except Exception, e:

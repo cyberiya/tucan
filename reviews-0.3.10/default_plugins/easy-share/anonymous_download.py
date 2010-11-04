@@ -32,8 +32,7 @@ BASE_URL = "http://easy-share.com"
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
-	#FIXME : change range which is a keyword
-	def link_parser(self, url, wait_func, xrange=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
 			data = urllib.urlencode([("free", "Regular Download")])
@@ -43,7 +42,7 @@ class AnonymousDownload(DownloadPlugin):
 			for line in it:
 				if 'name="id"' in line:
 					file_id = line.split('value="')[1].split('"')[0]
-				if 'id="dwait"' in line:
+				elif 'id="dwait"' in line:
 					tmp = it.next()
 					#The download is possible
 					if "form" in tmp:
@@ -55,7 +54,7 @@ class AnonymousDownload(DownloadPlugin):
 						wait = it.next().split("'")[1].split("'")[0]
 						self.set_limit_exceeded(int(wait))
 						return
-				if 'Recaptcha.create("' in line:
+				elif 'Recaptcha.create("' in line:
 					tmp = line.split('"')[1].split('"')[0]
 					recaptcha_link = "http://www.google.com/recaptcha/api/challenge?k=%s" % tmp
 					if not wait_func():
@@ -69,7 +68,7 @@ class AnonymousDownload(DownloadPlugin):
 							
 							#Submit the input to the recaptcha system
 							form = urllib.urlencode([("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response), ("recaptcha_shortencode_field", "undefined")])
-							handle = opener.open(form_action, form)
+							handle = opener.open(form_action, form, content_range)
 							if not handle.info().getheader("Content-Type") == "text/html":
 								#Captcha is good
 								return handle

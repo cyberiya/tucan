@@ -33,7 +33,7 @@ WAIT = 30 #Default, also parsed in the page if possible
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
-	def link_parser(self, url, wait_func, range=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		#Remove the filename from the url
 		tmp = url.split("/file/")[1].split("/")[0]
@@ -87,7 +87,7 @@ class AnonymousDownload(DownloadPlugin):
 			if link:
 				if not wait_func(WAIT):
 					return
-				return opener.open(link, None, range, True)
+				return opener.open(link, None, content_range, True)
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
@@ -114,7 +114,6 @@ class AnonymousDownload(DownloadPlugin):
 					tmp = tmp.split("<span>")[1].split("file")[0].strip()
 					size = int(round(float(tmp.split(" ")[0])))
 					unit = tmp.split(" ")[1].upper()
-			print name
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 		return name, size, unit

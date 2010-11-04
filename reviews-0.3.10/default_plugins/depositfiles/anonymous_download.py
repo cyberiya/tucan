@@ -29,14 +29,18 @@ from core.url_open import URLOpen
 from core.slots import Slots
 
 WAIT = 60 #Default, also parsed in the page if possible
+BASE_URL = "http://depositfiles.com/en/files/"
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
-	def link_parser(self, url, wait_func, range=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
+			wait = WAIT
 			link = None
 			opener = URLOpen()
+			#Transform the url into an english one
+			url = "%s%s" % (BASE_URL, url.split("/files/")[1].split("/")[0])
 			form =  urllib.urlencode([('gateway_result','1')])
 			for line in opener.open(url,form).readlines():
 				#Try to get WAIT from the page
@@ -44,23 +48,24 @@ class AnonymousDownload(DownloadPlugin, Slots):
 					try:
 						tmp = line.split(">")[2].split("<")[0]
 						tmp = int(tmp)
-					except ValueError:
+					except Exception, e:
 						pass
 					else:
 						if tmp > 0:
-							WAIT = tmp
+							wait = tmp
 				if 'download_started();' in line:
 					link = line.split('action="')[1].split('"')[0]
 					break
 			if not link:
 				return
-			if not wait_func(WAIT):
+			if not wait_func(wait):
 				return
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 		else:
 			try:
-				handle = URLOpen().open(link, None, range)
+				#No content-range support
+				handle = URLOpen().open(link)
 			except Exception, e:
 				self.set_limit_exceeded()
 			else:

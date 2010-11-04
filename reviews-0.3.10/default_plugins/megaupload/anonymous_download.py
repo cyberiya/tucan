@@ -37,7 +37,7 @@ MEGAVAR = "megavar"
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
-	def link_parser(self, url, wait_func, range=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		link = None
 		captcha_img = None
@@ -81,7 +81,7 @@ class AnonymousDownload(DownloadPlugin):
 			logger.exception("%s: %s" % (url, e))
 		else:
 			try:
-				handle = URLOpen().open(link, None, range)
+				handle = URLOpen().open(link, None, content_range)
 			except:
 				self.set_limit_exceeded()
 			else:

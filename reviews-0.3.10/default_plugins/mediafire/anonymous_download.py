@@ -31,7 +31,7 @@ from core.slots import Slots
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
-	def link_parser(self, url, wait_func, range=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
 			pkr = None
@@ -104,7 +104,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		
 					url = "http://download%s.mediafire.com/%sg/%s/%s" % (serv,dl,qk,name)
 					try:
-						handle = opener.open(url)
+						handle = opener.open(url, None, content_range)
 					except Exception, e:
 						self.set_limit_exceeded()
 					else:

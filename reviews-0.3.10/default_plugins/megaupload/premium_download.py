@@ -35,7 +35,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		Accounts.__init__(self, config, section, PremiumCookie())
 		DownloadPlugin.__init__(self, config, section)
 
-	def link_parser(self, url, wait_func, range=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		found = False
 		try:
@@ -43,7 +43,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 			if not wait_func():
 				return
 			opener = URLOpen(cookie)
-			handler = opener.open(url, None, range)
+			handler = opener.open(url, None, content_range)
 			if not wait_func():
 				return
 			if "text/html" in handler.info()["Content-Type"]:

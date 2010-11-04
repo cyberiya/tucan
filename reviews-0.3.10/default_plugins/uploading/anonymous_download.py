@@ -33,7 +33,7 @@ WAIT = 60
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
-	def link_parser(self, url, wait_func, range=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
 			opener = URLOpen(cookielib.CookieJar())
@@ -64,7 +64,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			if 'link' in tmp:
 				link = tmp.split('"link":"')[1].split('"')[0]
 				link = urllib.unquote(link).replace("\\", "")
-				return opener.open(link)
+				return opener.open(link, None, content_range)
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 

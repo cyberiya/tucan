@@ -33,7 +33,7 @@ BASE_URL = "http://fileserve.com"
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
-	def link_parser(self, url, wait_func, xrange=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
 			#Remove the filename from the url
@@ -77,7 +77,7 @@ class AnonymousDownload(DownloadPlugin):
 								form = urllib.urlencode([("downloadLink", "show")])
 								opener.open(url,form).read()
 								form = urllib.urlencode([("download", "normal")])
-								return opener.open(url,form)
+								return opener.open(url,form,content_range)
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 

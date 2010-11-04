@@ -34,7 +34,7 @@ API_URL = "/cgi-bin/rsapi.cgi"
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
-	def link_parser(self, url, wait_func, range=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		link = None
 		wait = 0
@@ -51,7 +51,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			if not wait_func(wait):
 				return
 			elif link:
-				return URLOpen().open(link, form, range)
+				return URLOpen().open(link, form, content_range)
 			else:
 				self.set_limit_exceeded()
 		except Exception, e:

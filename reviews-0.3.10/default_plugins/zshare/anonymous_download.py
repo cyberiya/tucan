@@ -34,7 +34,7 @@ WAIT = 50 #Default, also parsed in the page if possible
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
-	def link_parser(self, url, wait_func, range=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
 			link = None
@@ -74,7 +74,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			logger.exception("%s: %s" % (url, e))
 		else:
 			try:
-				handle = opener.open(link, None, range)
+				handle = opener.open(link, None, content_range)
 			except Exception, e:
 				self.set_limit_exceeded()
 			else:
