@@ -31,7 +31,7 @@ BASE_URL = "http://hotfile.com"
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
-	def link_parser(self, url, wait_func, range=None):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		link = None
 		retry = 3
@@ -68,7 +68,7 @@ class AnonymousDownload(DownloadPlugin):
 							retry -= 1
 						break
 				if link:
-					return opener.open(link, None, range, True)
+					return opener.open(link, None, content_range, True)
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
