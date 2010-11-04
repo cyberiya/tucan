@@ -35,6 +35,10 @@ class AnonymousDownload(DownloadPlugin):
 	""""""
 	def link_parser(self, url, wait_func, range=None):
 		""""""
+		#Remove the filename from the url
+		tmp = url.split("/file/")[1].split("/")[0]
+		url = "%s/file/%s" % (BASE_URL,tmp)
+
 		link = None
 		retry = 3
 		try:
@@ -95,18 +99,26 @@ class AnonymousDownload(DownloadPlugin):
 		try:
 			it = iter(URLOpen().open(url).readlines())
 			for line in it:
-				if '/img/manager/mime/generic.png' in line:
-					tmp = line.split('/>')[1].split("</h1>")[0]
-					tmp = tmp.replace("&nbsp;","")
-					name = tmp.split("&")[0]
-					#File with an extension
-					if ";" in tmp:
-						name = name + tmp.split(";")[1]
+				if '/img/manager/mime/' in line:
+					if ("generic" in line) or ("audio" in line):
+						tmp = line.split('/>')[1].split("</h1>")[0]
+						tmp = tmp.replace("&nbsp;","")
+						tmp = tmp.replace("&#8203;","")
+						name = tmp.replace("&#8203","")
+						#File with an extension
+						if ";" in tmp:
+							name = name + tmp.split(";")[1]
+					if "video" in line:
+						tmp = line.split('</a>')[1].split("<")[0]
+						tmp = tmp.replace("&nbsp;","")
+						name = tmp.replace("&#8203;","")
+						print name
 				if '<div id="info" class="metadata">' in line:
 					tmp = it.next()
 					tmp = tmp.split("<span>")[1].split("file")[0].strip()
 					size = int(round(float(tmp.split(" ")[0])))
 					unit = tmp.split(" ")[1].upper()
+			print name
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
