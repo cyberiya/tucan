@@ -137,6 +137,8 @@ class DownloadManager:
 						link.active = True
 						return True
 					else:
+						#Display time before the next attempt
+						download.time = int(link.plugin.end_wait - time.time())
 						if download.status != cons.STATUS_ERROR:
 							download.status = cons.STATUS_PEND
 
