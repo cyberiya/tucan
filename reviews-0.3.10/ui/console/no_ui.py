@@ -21,7 +21,6 @@
 import os
 import sys
 import time
-import HTMLParser
 import __builtin__
 import gettext
 import logging
@@ -99,8 +98,6 @@ class NoUi(Core):
 				for link in links:
 					file_name, size, size_unit = check(link)
 					if file_name:
-						html = HTMLParser.HTMLParser()
-						file_name = html.unescape(file_name)
 						if size > 0:
 							tmp.append((link, file_name, size, size_unit, plugin_type))
 					else:
