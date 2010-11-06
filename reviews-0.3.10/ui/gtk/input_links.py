@@ -18,6 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import HTMLParser
 import threading
 import logging
 logger = logging.getLogger(__name__)
@@ -250,6 +251,8 @@ class InputLinks(gtk.Dialog):
 								raise Exception("Check Links cancelled")
 							file_name, size, size_unit = check(link)
 							if file_name:
+								html = HTMLParser.HTMLParser()
+								file_name = html.unescape(file_name)
 								if size > 0:
 									icon = active_icon
 									marked = True
