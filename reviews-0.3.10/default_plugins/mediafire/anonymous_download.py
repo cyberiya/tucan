@@ -77,21 +77,24 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			form_action = "http://www.mediafire.com/dynamic/download.php?%s" %data
 
 			#Parse the GET
-			for line in opener.open(form_action, data).readlines():
-				#Long line containing the js
-				if "var" in line:
-					#Decrypt the table containig the final dl var
-					tmp = line.split("function dz()")[0].split(";")[2:-1]
-					tmp = ";".join(tmp)
-					tmp = self.split_eval(tmp)
-					table = self.decrypt(tmp)
+			res = opener.open(form_action, data).readlines()
+			line = " ".join(res)
+			#Long line containing the js
+			if "var" in line:
+				#Decrypt the table containig the final dl var
+				tmp = line.split("function dz()")[0].split(";")[2:-1]
+				tmp = ";".join(tmp)
+				tmp = self.split_eval(tmp)
+				table = self.decrypt(tmp)
+				#Result is plain text
+				if "http://download" in line:
 					#Get all the dl links (even the fake ones)
 					var = line.split('mediafire.com/" +')
 					#Get the number of the server
 					serv = line.split("http://download")[1].split(".")[0]
 					#Get the name of the file
 					name = var[1].split('+')[1].split("/")[2].split('"')[0].strip("\\")
-
+					
 					it = iter(var)
 					#Find the real link among the fake ones
 					for tmp in it:
@@ -101,14 +104,29 @@ class AnonymousDownload(DownloadPlugin, Slots):
 							tmp = tmp.split('+')[0]
 							#Get the final dl var in the table
 							dl = table.split(tmp+"=")[1].split(";")[0].strip("'")
-		
-					url = "http://download%s.mediafire.com/%sg/%s/%s" % (serv,dl,qk,name)
-					try:
-						handle = opener.open(url, None, content_range)
-					except Exception, e:
-						self.set_limit_exceeded()
-					else:
-						return handle
+				#Result is encrypted
+				else:
+					tmp = line.split("case 15:")[1]
+					tmp = tmp.split("break;")[0]
+					tmp = tmp.split("eval(")
+					#Decrypt until the real link is found
+					for t in tmp:
+						if "unescape" in t:
+							t = self.split_eval(t)
+							res = self.decrypt(t,div_id)
+							if len(res) == 3:
+								serv = res[0]
+								var = res[1]
+								name = res[2]
+								break
+					dl = table.split(var+"=")[1].split(";")[0].strip("'")
+			url = "http://download%s.mediafire.com/%sg/%s/%s" % (serv,dl,qk,name)
+			try:
+				handle = opener.open(url, None, content_range)
+			except Exception, e:
+				self.set_limit_exceeded()
+			else:
+				return handle
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
@@ -148,10 +166,14 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			res = res.replace("\\","")
 		return res
 
-	def decrypt(self,tmp):
+	def decrypt(self,tmp,div=None):
 		for j in range(10):
 			res = ""
-			bond = tmp.split("');")[1].split(";")[0].split("=")[1]
+			try:
+				bond = tmp.split("');")[1].split(";")[0].split("=")[1]
+			#Happens sometimes, unecessary to continue at this point
+			except:
+				return []
 			coef = tmp.split("At(i)^")[1]
 			coef = coef.split(")")[0]
 			coef = coef.split("^")
@@ -161,7 +183,16 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				for a in coef:
 					ordt = ordt^int(a)
 				res = "%s%s" %(res,chr(ordt))
-	
+			
+			#When the second request is encrypted
+			if "http://download" in res:
+				if div:
+					if div in res:
+						serv = res.split("http://download")[1].split(".")[0]
+						var = res.split('" +')[1].split("+")[0]
+						name = res.split('g/')[1].split("\\")[0].split("/")[1]
+						return [serv, var, name]
+
 			#Plain text
 			if "unescape" not in res:
 				return res
