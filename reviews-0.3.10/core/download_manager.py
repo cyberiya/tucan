@@ -171,7 +171,7 @@ class DownloadManager:
 			if remain_speed < 0:
 				new_speed = max_download_speed/current_active
 				permanent = False
-		for download in self.active_downloads[:]:
+		for download in self.active_downloads:
 			plugin = None
 			for link in download.links:
 				if link.active:
