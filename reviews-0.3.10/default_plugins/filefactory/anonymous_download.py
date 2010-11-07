@@ -100,7 +100,7 @@ class AnonymousDownload(DownloadPlugin):
 			it = iter(URLOpen().open(url).readlines())
 			for line in it:
 				if '/img/manager/mime/' in line:
-					if ("generic" in line) or ("audio" in line):
+					if ("generic" in line) or ("audio" in line) or ("archive" in line):
 						tmp = line.split('/>')[1].split("</h1>")[0]
 					if "video" in line:
 						tmp = line.split('</a>')[1].split("<")[0]
