@@ -21,21 +21,23 @@
 import logging
 logger = logging.getLogger(__name__)
 
-import HTMLParser
 import urllib
 
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
-from core.slots import Slots
 
-
-class AnonymousDownload(DownloadPlugin, Slots):
+class AnonymousDownload(DownloadPlugin):
 	""""""
 	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
-			parser = Parser(url)
-			if not parser.link:
+			link = None
+			opener = URLOpen()
+			form =  urllib.urlencode([('download','&nbsp;REGULAR DOWNLOAD&nbsp;')])
+			for line in opener.open(url,form).readlines():
+				if '<span id="spn_download_link">' in line:
+					link = line.split('href="')[1].split('"')[0]
+			if not link:
 				return
 			if not wait_func():
 				return
@@ -43,7 +45,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			logger.exception("%s: %s" % (url, e))
 		else:
 			try:
-				handle = URLOpen().open(parser.link, None, content_range)
+				handle = URLOpen().open(link, None, content_range)
 			except Exception, e:
 				self.set_limit_exceeded()
 			else:
@@ -73,28 +75,3 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			size = -1
 			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
-
-class Parser(HTMLParser.HTMLParser):
-	""""""
-	def __init__(self, url):
-		""""""
-		HTMLParser.HTMLParser.__init__(self)
-		self.tmp_link = None
-		self.link = None
-		try:
-			opener = URLOpen()
-			form =  urllib.urlencode([('download','&nbsp;REGULAR DOWNLOAD&nbsp;')])
-			for line in opener.open(url,form).readlines():
-				if '<span id="spn_download_link">' in line:
-					try:
-						self.feed(line)
-					except HTMLParser.HTMLParseError, e:
-						logger.info("%s :%s %s" % (url, line.strip(), e))
-					break
-		except Exception, e:
-			logger.exception("%s :%s" % (url, e))
-
-	def handle_starttag(self, tag, attrs):
-		""""""
-		if tag == "a":
-			self.link = attrs[2][1]

@@ -26,12 +26,11 @@ import cookielib
 
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
-from core.slots import Slots
 
 JS_URL = "http://uploading.com/files/get/?JsHttpRequest=0-xml"
 WAIT = 60 
 
-class AnonymousDownload(DownloadPlugin, Slots):
+class AnonymousDownload(DownloadPlugin):
 	""""""
 	def link_parser(self, url, wait_func, content_range=None):
 		""""""

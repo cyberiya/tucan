@@ -21,17 +21,15 @@
 import logging
 logger = logging.getLogger(__name__)
 
-import HTMLParser
 import urllib
 
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
-from core.slots import Slots
 
 WAIT = 60 #Default, also parsed in the page if possible
 BASE_URL = "http://depositfiles.com/en/files/"
 
-class AnonymousDownload(DownloadPlugin, Slots):
+class AnonymousDownload(DownloadPlugin):
 	""""""
 	def link_parser(self, url, wait_func, content_range=None):
 		""""""
