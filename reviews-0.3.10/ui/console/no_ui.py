@@ -45,6 +45,7 @@ class NoUi(Core):
 		""""""
 		self.configuration = conf
 		self.links_file = links_file
+		self.stop_flag = False
 		self.buffer = []
 		self.url = url
 		Core.__init__(self, self.configuration)
@@ -56,6 +57,10 @@ class NoUi(Core):
 			self.download_manager.update()
 			time.sleep(1)
 		self.quit()
+		
+	def stop(self):
+		""""""
+		self.stop_flag = True
 
 	def load_links(self):
 		""""""
@@ -96,6 +101,9 @@ class NoUi(Core):
 				tmp = []
 				check, plugin_type = self.get_check_links(service)
 				for link in links:
+					if self.stop_flag:
+						self.stop_flag = False
+						return {}
 					file_name, size, size_unit = check(link)
 					if file_name:
 						if size > 0:
