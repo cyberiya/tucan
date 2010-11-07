@@ -125,12 +125,11 @@ class Tree(gtk.VBox):
 		self.status_bar.push(self.status_bar.get_context_id("Downloads"), " No Downloads Active.")
 		self.updating = False
 		
-		self.all_complete = True
 		events.connect(cons.EVENT_ALL_COMPLETE, self.stop_update)
 		
 	def stop_update(self):
 		""""""
-		self.all_complete = True
+		self.updating = False
 
 	def mouse_menu(self, widget, event):
 		"""right button"""
@@ -157,12 +156,11 @@ class Tree(gtk.VBox):
 		if not self.updating:
 			self.updating = True
 			gobject.timeout_add_seconds(1, self.update)
-		self.all_complete = False
 		return package_iter
 
 	def update(self):
 		"""(icon, status, None, name, progress, progress_visible, current_size, total_size, speed, time, services)"""
-		if not self.all_complete:
+		if self.updating:
 			files = self.get_files()
 			if files:
 				model = self.treeview.get_model()
