@@ -21,22 +21,31 @@
 import logging
 logger = logging.getLogger(__name__)
 
-import HTMLParser
-
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
-from core.slots import Slots
 
 WAIT = 40
 
-
-class AnonymousDownload(DownloadPlugin, Slots):
+class AnonymousDownload(DownloadPlugin):
 	""""""
 	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
-			parser = Parser(url)
-			if not parser.link:
+			tmp_link = None
+			link = None
+			opener = URLOpen()
+			for line in opener.open(url).readlines():
+				if "dbtn" in line:
+					tmp_link = line.split('href="')[1].split('"')[0]
+			if tmp_link:
+				next_line = 0
+				for line in opener.open(tmp_link).readlines():
+					if "id='divDLStart'" in line:
+						next_line = 1
+					elif next_line:
+						next_line = 0
+						link = line.split("<a href='")[1].split("'")[0]
+			if not link:
 				return
 			elif not wait_func(WAIT):
 				return
@@ -44,7 +53,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			logger.exception("%s: %s" % (url, e))
 		else:
 			try:
-				handle = URLOpen().open(parser.link, None, content_range)
+				handle = URLOpen().open(link, None, content_range)
 			except Exception, e:
 				self.set_limit_exceeded()
 			else:
@@ -80,35 +89,3 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			size = -1
 			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
-
-class Parser(HTMLParser.HTMLParser):
-	""""""
-	def __init__(self, url):
-		""""""
-		HTMLParser.HTMLParser.__init__(self)
-		self.tmp_link = None
-		self.link = None
-		try:
-			opener = URLOpen()
-			for line in opener.open(url).readlines():
-				if "get" in line:
-					try:
-						self.feed(line)
-					except HTMLParser.HTMLParseError, e:
-						logger.info("%s :%s %s" % (url, line.strip(), e))
-			if self.tmp_link:
-				next_line = 0
-				for line in opener.open(self.tmp_link).readlines():
-					if "id='divDLStart'" in line:
-						next_line = 1
-					elif next_line:
-						next_line = 0
-						self.link = line.split("<a href='")[1].split("'")[0]
-		except Exception, e:
-			logger.exception("%s :%s" % (url, e))
-
-	def handle_starttag(self, tag, attrs):
-		""""""
-		if tag == "a":
-			if ((len(attrs) == 3) and (attrs[1][1] == "dbtn")):
-				self.tmp_link = attrs[0][1]

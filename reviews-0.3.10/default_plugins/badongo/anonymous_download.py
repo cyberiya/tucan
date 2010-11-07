@@ -22,7 +22,6 @@ import logging
 import cookielib
 logger = logging.getLogger(__name__)
 
-import HTMLParser
 import urllib
 
 import ImageOps
@@ -30,7 +29,6 @@ import ImageOps
 from core.tesseract import Tesseract
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
-from core.slots import Slots
 
 import time
 
@@ -38,7 +36,7 @@ WAIT = 60 #Default, also parsed in the page if possible
 BASE_URL = "http://www.badongo.com"
 JS_URL = "/ajax/prototype/ajax_api_filetemplate.php"
 
-class AnonymousDownload(DownloadPlugin, Slots):
+class AnonymousDownload(DownloadPlugin):
 	""""""
 	def link_parser(self, url, wait_func, content_range=None):
 		""""""

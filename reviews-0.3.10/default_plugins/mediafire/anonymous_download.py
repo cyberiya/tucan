@@ -21,15 +21,13 @@
 import logging
 logger = logging.getLogger(__name__)
 
-import HTMLParser
 import urllib
 import cookielib
 
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
-from core.slots import Slots
 
-class AnonymousDownload(DownloadPlugin, Slots):
+class AnonymousDownload(DownloadPlugin):
 	""""""
 	def link_parser(self, url, wait_func, content_range=None):
 		""""""
