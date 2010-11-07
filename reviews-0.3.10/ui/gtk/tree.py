@@ -230,7 +230,7 @@ class Tree(gtk.VBox):
 							model.set_value(package_iter, 6, str(package_total_size)+package_total_unit)
 							events.trigger_package_complete(model.get_value(package_iter, 10), children_names)
 					elif package_actual_size > 0:
-						model.set_value(package_iter, 4, int((float(self.get_size(package_actual_size, package_actual_unit))/float(self.get_size(package_total_size, package_total_unit)))*100))
+						model.set_value(package_iter, 4, package_progress/len(children_names))
 						model.set_value(package_iter, 6, str(package_actual_size)+package_actual_unit)
 					if package_speed > 0:
 						model.set_value(package_iter, 8, str(package_speed)+cons.UNIT_SPEED)
