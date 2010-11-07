@@ -34,6 +34,8 @@ DOWNLOAD_LINES = 60
 LOG_LINES = 50
 WIDTH = 100
 
+LINES_PER_DOWNLOAD = 3
+
 class Cli(NoUi):
 	""""""
 	def __init__(self, *kwargs):
@@ -52,6 +54,7 @@ class Cli(NoUi):
 		self.win_chars = 0
 		self.last_length = 0
 		self.total_speed = 0
+		self.th = None
 
 	def run(self, screen):
 		""""""
@@ -68,8 +71,8 @@ class Cli(NoUi):
 		self.log_pad = curses.newpad(LOG_LINES, WIDTH)
 
 		#load links file
-		th = threading.Thread(group=None, target=self.load_links, name=None)
-		th.start()
+		self.th = threading.Thread(group=None, target=self.load_links, name=None)
+		self.th.start()
 
 		while self.running:
 			self.win_height, self.win_chars = self.screen.getmaxyx()
@@ -93,6 +96,7 @@ class Cli(NoUi):
 		else:
 			if self.quit_question:
 				if input.lower() == "y":
+					self.set_status("Shutting down, please wait...")
 					self.quit()
 				else:
 					self.quit_question = False
@@ -100,7 +104,7 @@ class Cli(NoUi):
 			else:
 				if input.lower() == "q":
 					self.quit_question = True
-					self.question()
+					self.set_status("Are you sure you want to quit? [y/N]")
 				else:
 					self.update_status()
 
@@ -110,7 +114,10 @@ class Cli(NoUi):
 			cont = 0
 			self.main_pad.erase()
 			self.total_speed = 0
-			for download in self.download_manager.complete_downloads + self.download_manager.active_downloads:
+			downloads = self.download_manager.complete_downloads + self.download_manager.active_downloads
+			while len(downloads)*LINES_PER_DOWNLOAD > DOWNLOAD_LINES:
+				del downloads[0]
+			for download in downloads:
 				service = "[]"
 				for link in download.links:
 					if link.active:
@@ -122,15 +129,15 @@ class Cli(NoUi):
 				time = str(self.calculate_time(download.time))
 				self.main_pad.addnstr(cont, 1, download.name, WIDTH)
 				self.main_pad.addnstr(cont+1, 5, "%s %s \t%s \t%s \t%s" % (percent, service, size, speed, time), WIDTH)
-				cont +=3
+				cont += LINES_PER_DOWNLOAD
 			self.download_manager.update()
-			#2 primeras lineas en blanco
+			#2 blank lines at top
 			cont +=2
 			remain = self.win_height-cont
 			start = 0
 			while remain <= 5:
-					remain += 3
-					start += 3
+					remain += LINES_PER_DOWNLOAD
+					start += LINES_PER_DOWNLOAD
 			self.main_pad.noutrefresh(start, 0, 2, 0, cont-start, self.win_chars-1)
 			return remain
 
@@ -150,15 +157,15 @@ class Cli(NoUi):
 		active = len(self.download_manager.active_downloads)
 		complete = len(self.download_manager.complete_downloads)
 		total = len(self.download_manager.pending_downloads + self.download_manager.active_downloads + self.download_manager.complete_downloads)
-		self.status_pad.erase()
-		self.status_pad.addnstr(0, 0, "Downstream: %s KB/s \tTotal %s \tActive %s \tComplete %s" % (self.total_speed, total, active, complete), WIDTH, curses.A_BOLD)
-		self.status_pad.noutrefresh(0, 0, 0, 0, 0, self.win_chars-1)
+		self.set_status("Downstream: %s KB/s \tTotal %s \tActive %s \tComplete %s" % (self.total_speed, total, active, complete), curses.A_BOLD)
 
-	def question(self):
+	def set_status(self, message, attr=curses.A_STANDOUT):
 		""""""
 		self.status_pad.erase()
-		self.status_pad.addnstr(0, 0, "Are you sure you want to quit? [y/N]", WIDTH, curses.A_STANDOUT)
+		self.status_pad.addnstr(0, 0, message, WIDTH, attr)
 		self.status_pad.noutrefresh(0, 0, 0, 0, 0, self.win_chars-1)
+		if attr == curses.A_STANDOUT:
+			curses.doupdate()
 
 	def calculate_time(self, time):
 		""""""
@@ -182,5 +189,8 @@ class Cli(NoUi):
 
 	def quit(self):
 		""""""
+		self.stop()
+		while self.th.isAlive():
+			self.th.join(0.5)
 		self.running = False
 		NoUi.quit(self)
