@@ -257,7 +257,7 @@ class Gui(gtk.Window, Core):
 		""""""
 		if enable:
 			if self.configuration.get_clipboard_monitor():
-				self.clipboard_monitor.enable()
+				gobject.idle_add(self.clipboard_monitor.enable)
 		else:
 			self.clipboard_monitor.disable()
 
@@ -323,10 +323,12 @@ class Gui(gtk.Window, Core):
 		""""""
 		model, iter = self.downloads.treeview.get_selection().get_selected()
 		if iter:
+			self.enable_clipboard(False)
 			link_list = self.downloads.get_links(iter)
 			clipboard = gtk.Clipboard()
 			clipboard.clear()
 			clipboard.set_text("\n".join(link_list))
+			self.enable_clipboard(True)
 
 	def load_session(self, path):
 		""""""
