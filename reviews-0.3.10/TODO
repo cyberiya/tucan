@@ -5,16 +5,10 @@
 - New concurrent checklinks and remove autopaste.
 - Use only bytes as internal unit.
 - UNICODE support.
-- No CM when copying from treeview.
-- Multiple adddownloads doesnt start.
 - Display a timer in the GUI when set_limit_exceeded is called
 
 -- PLUGINS
 - Disable plugins if broken or dependency not found.
-- Repair Mediafire.
-
--- CLI
-- Solve bug +20 links.
 
 	Tucan Manager 0.4 beta
 ---------------------------------------

@@ -123,7 +123,7 @@ class DownloadManager:
 
 	def start(self, name):
 		""""""
-		for download in self.pending_downloads[:]:
+		for download in self.pending_downloads:
 			if name == download.name:
 				for link in download.links:
 					link.plugin, link.type = self.get_plugin(link.service)
