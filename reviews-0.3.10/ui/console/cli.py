@@ -112,8 +112,8 @@ class Cli(NoUi):
 		""""""
 		if self.win_height > 5:
 			cont = 0
-			self.main_pad.erase()
 			self.total_speed = 0
+			self.main_pad.erase()
 			downloads = self.download_manager.complete_downloads + self.download_manager.active_downloads
 			while len(downloads)*LINES_PER_DOWNLOAD > DOWNLOAD_LINES:
 				del downloads[0]
@@ -138,6 +138,7 @@ class Cli(NoUi):
 			while remain <= 5:
 					remain += LINES_PER_DOWNLOAD
 					start += LINES_PER_DOWNLOAD
+			#pminrow, pmincol, sminrow, smincol, smaxrow, smaxcol
 			self.main_pad.noutrefresh(start, 0, 2, 0, cont-start, self.win_chars-1)
 			return remain
 
