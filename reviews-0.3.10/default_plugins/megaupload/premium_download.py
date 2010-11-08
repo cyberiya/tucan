@@ -51,7 +51,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 					if "downloadlink" in line:
 						found = True
 					elif found:
-						return opener.open(line.split('href="')[1].split('"')[0], None, range)
+						return opener.open(line.split('href="')[1].split('"')[0], None, content_range)
 			else:
 				return handler
 		except Exception, e:
