@@ -82,7 +82,6 @@ class NoUi(Core):
 		""""""
 		try:
 			for link in links:
-				print link.url
 				for line in self.buffer:
 					if link.url in line:
 						self.buffer[self.buffer.index(line)] = "#%s" % line
