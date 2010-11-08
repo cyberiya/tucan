@@ -38,7 +38,7 @@ class AnonymousDownload(DownloadPlugin):
 			data = urllib.urlencode([("free", "Regular Download")])
 			url = "%sbilling?%s" % (url,data)
 			opener = URLOpen()
-			it = iter(opener.open(url,data).readlines())
+			it = opener.open(url,data)
 			for line in it:
 				if 'name="id"' in line:
 					file_id = line.split('value="')[1].split('"')[0]
@@ -81,7 +81,7 @@ class AnonymousDownload(DownloadPlugin):
 		size = -1
 		unit = None
 		try:
-			it = iter(URLOpen().open(url).readlines())
+			it = URLOpen().open(url)
 			for line in it:
 				if '<span class="txtorange">' in line:
 					tmp = it.next()

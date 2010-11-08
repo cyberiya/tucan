@@ -43,7 +43,7 @@ class AnonymousDownload(DownloadPlugin):
 		retry = 3
 		try:
 			opener = URLOpen()
-			for line in opener.open(url).readlines():
+			for line in opener.open(url):
 				if 'check:' in line:
 					check = line.split("check:'")[1].replace("'","").strip()
 				elif "Recaptcha.create" in line:
@@ -64,11 +64,11 @@ class AnonymousDownload(DownloadPlugin):
 							url = "%s/file/checkCaptcha.php" % BASE_URL
 
 							#Getting the result back, status:{"ok"|"fail"}
-							for line in opener.open(url, form).readlines():
+							for line in opener.open(url, form):
 								if 'status:"ok"' in line:
 									tmp = line.split('path:"')[1].strip('"')
 									tmp_link = "%s%s" %(BASE_URL,tmp)
-									for line in opener.open(tmp_link).readlines():
+									for line in opener.open(tmp_link):
 										if '<span class="countdown">' in line:
 											#Try to get WAIT from the page
 											try:
@@ -97,7 +97,7 @@ class AnonymousDownload(DownloadPlugin):
 		size = -1
 		unit = None
 		try:
-			it = iter(URLOpen().open(url).readlines())
+			it = URLOpen().open(url)
 			for line in it:
 				if '/img/manager/mime/' in line:
 					if ("generic" in line) or ("audio" in line) or ("archive" in line):

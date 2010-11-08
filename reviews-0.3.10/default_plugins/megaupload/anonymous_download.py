@@ -49,7 +49,7 @@ class AnonymousDownload(DownloadPlugin):
 				del tmp[3]
 				url = "/".join(tmp)
 			while not link:
-				for line in URLOpen().open(url).readlines():
+				for line in URLOpen().open(url):
 					if "captchacode" in line:
 						captchacode = line.split('value="')[1].split('">')[0]
 					elif "megavar" in line:
@@ -68,8 +68,7 @@ class AnonymousDownload(DownloadPlugin):
 							if not wait_func():
 								return
 							data = urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)])
-							handle = URLOpen().open(url, data)
-							for line in handle.readlines():
+							for line in URLOpen().open(url, data):
 								if 'id="downloadlink"' in line:
 									link = line.split('<a href="')[1].split('"')[0]
 									break

@@ -37,11 +37,12 @@ class AnonymousDownload(DownloadPlugin):
 			link = None
 			wait = WAIT
 			opener = URLOpen(cookielib.CookieJar())
-			for line in opener.open(url).readlines():
+			it = opener.open(url)
+			for line in it:
 				if "dbtn" in line:
 					tmp_link = line.split('href="')[1].split('"')[0]
 			if tmp_link:
-				it = iter(opener.open(tmp_link).readlines())
+				it = opener.open(tmp_link)
 				for line in it:
 					if "id='divDLStart'" in line:
 						link = it.next().split("<a href='")[1].split("'")[0]
@@ -68,7 +69,8 @@ class AnonymousDownload(DownloadPlugin):
 		unit = None
 		size_found = False
 		try:
-			for line in URLOpen().open(url).readlines():
+			it = URLOpen().open(url)
+			for line in it:
 				if '<span id="fileNameTextSpan">' in line:
 					name = line.split('<span id="fileNameTextSpan">')[1].split('</span>')[0].strip()
 					break

@@ -34,7 +34,7 @@ class AnonymousDownload(DownloadPlugin):
 			link = None
 			opener = URLOpen()
 			form =  urllib.urlencode([('download','&nbsp;REGULAR DOWNLOAD&nbsp;')])
-			for line in opener.open(url,form).readlines():
+			for line in opener.open(url,form):
 				if '<span id="spn_download_link">' in line:
 					link = line.split('href="')[1].split('"')[0]
 			if not link:
@@ -58,7 +58,7 @@ class AnonymousDownload(DownloadPlugin):
 		unit = None
 		size_found = 0
 		try:
-			for line in URLOpen().open(url).readlines():
+			for line in URLOpen().open(url):
 				if '<b>Name:</b>' in line:
 					name = line.split('<b>Name:</b>')[1].split('<br>')[0].strip()
 					tmp = line.split('<b>Size:</b> ')[1].split('   ')[0].strip()

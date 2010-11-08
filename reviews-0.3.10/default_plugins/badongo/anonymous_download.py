@@ -77,9 +77,8 @@ class AnonymousDownload(DownloadPlugin):
 						logger.info("Captcha: %s" % captcha)
 						
 						data = urllib.urlencode([("user_code", captcha), ("cap_id",cap_id), ("cap_secret",cap_secret)])
-						handle = opener.open(form_action, data)
 						
-						it = iter(handle.readlines())
+						it = opener.open(form_action, data)
 						z = None
 						h = None
 						for line in it:
@@ -102,7 +101,7 @@ class AnonymousDownload(DownloadPlugin):
 							data = urllib.urlencode([("id",form_action.split("/")[-1]), ("type","file"), ("ext",""),("f","download:init"),("z","zvar"),("h","hvar")])
 							data = data.replace("zvar",z).replace("hvar",h)
 							#The referer needs to be specify
-							res = opener.open("%s%s" % (BASE_URL,JS_URL), data,None,True,form_action).readlines()
+							res = opener.open("%s%s" % (BASE_URL,JS_URL), data,None,True,form_action)
 							t = None
 							wait = None
 							z = None
@@ -126,7 +125,7 @@ class AnonymousDownload(DownloadPlugin):
 							data = urllib.urlencode([("id",form_action.split("/")[-1]), ("type","file"), ("ext",""),("f","download:check"),("z","zvar"),("h","hvar"),("t",t)])
 							data = data.replace("zvar",z).replace("hvar",h)
 						
-							res = opener.open("%s%s" % (BASE_URL,JS_URL), data,None,True,form_action).readlines()
+							res = opener.open("%s%s" % (BASE_URL,JS_URL), data,None,True,form_action)
 						
 							t = None
 							z = None
@@ -135,7 +134,7 @@ class AnonymousDownload(DownloadPlugin):
 							while True:
 								if not wait_func():
 									return
-								res = opener.open("%s%s" % (BASE_URL,JS_URL), data,None,True,form_action).readlines()
+								res = opener.open("%s%s" % (BASE_URL,JS_URL), data,None,True,form_action)
 								wait = None
 								for line in res:
 									if "check_n" in line:
@@ -171,7 +170,7 @@ class AnonymousDownload(DownloadPlugin):
 								return
 								
 							url = "%s%s?zenc=" %(link[1],link[0])
-							res = opener.open(url, data,None,True,form_action).readlines()
+							res = opener.open(url, data,None,True,form_action)
 						
 							for line in res:
 								if "window.location.href = '" in line:
@@ -188,7 +187,7 @@ class AnonymousDownload(DownloadPlugin):
 		unit = None
 		size_found = 0
 		try:
-			it = iter(URLOpen().open(url).readlines())
+			it = URLOpen().open(url)
 			for line in it:
 				if '<div class="finfo">' in line:
 					name = line.split('>')[1].split('<')[0].strip()
