@@ -29,6 +29,8 @@ import cons
 BASE_SIZE = 4
 BUFFER_SIZE = BASE_SIZE * 1024
 
+PART_EXTENSION = ".part"
+
 class Downloader(threading.Thread):
 	""""""
 	def __init__(self, path, url, file_name, parser):
@@ -59,8 +61,8 @@ class Downloader(threading.Thread):
 			#check files
 			if not os.path.exists(self.path):
 				os.makedirs(self.path)
-			elif os.path.exists("%s.part" % name):
-				tmp_size = os.path.getsize("%s.part" % name)
+			elif os.path.exists("%s%s" % (name, PART_EXTENSION)):
+				tmp_size = os.path.getsize("%s%s" % (name, PART_EXTENSION))
 				if tmp_size > 0:
 					self.range = tmp_size
 			handle = self.link_parser(self.url, self.wait, self.range)
@@ -84,9 +86,9 @@ class Downloader(threading.Thread):
 							os.remove(name)
 							logger.warning("%s already on disk but different size" % name)
 							self.download(name, handle)
-					elif os.path.exists("%s.part" % name) and self.range:
+					elif os.path.exists("%s%s" % (name, PART_EXTENSION)) and self.range:
 						#this should be tested  exhaustively
-						logger.info("Resuming %s.part (%i)" % (name, self.range))
+						logger.info("Resuming %s%s (%i)" % (name, PART_EXTENSION, self.range))
 						self.actual_size = self.range
 						self.download(name, handle, True)
 					else:
@@ -109,7 +111,7 @@ class Downloader(threading.Thread):
 			mode = "ab"
 		else:
 			mode = "wb"
-		f = open("%s.part" % name, mode)
+		f = open("%s%s" % (name, PART_EXTENSION), mode)
 		self.start_time = time.time()
 		while ((len(data) > 0) and not self.stop_flag):
 			tmp_size = 0
@@ -137,7 +139,7 @@ class Downloader(threading.Thread):
 		else:
 			#self.stop_flag = True
 			if self.actual_size == self.total_size:
-				os.rename("%s.part" % name, name)
+				os.rename("%s%s" % (name, PART_EXTENSION), name)
 				self.status = cons.STATUS_CORRECT
 			else:
 				self.status = cons.STATUS_ERROR
