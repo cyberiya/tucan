@@ -40,7 +40,7 @@ class AnonymousDownload(DownloadPlugin):
 			#Transform the url into an english one
 			url = "%s%s" % (BASE_URL, url.split("/files/")[1].split("/")[0])
 			form =  urllib.urlencode([('gateway_result','1')])
-			for line in opener.open(url,form).readlines():
+			for line in opener.open(url,form):
 				#Try to get WAIT from the page
 				if 'download_waiter_remain' in line:
 					try:
@@ -76,7 +76,7 @@ class AnonymousDownload(DownloadPlugin):
 		unit = None
 		size_found = 0
 		try:
-			it = iter(URLOpen().open(url).readlines())
+			it = URLOpen().open(url)
 			for line in it:
 				if '<div class="info">' in line:
 					name = it.next().split('>')[1].split('<')[0].strip()

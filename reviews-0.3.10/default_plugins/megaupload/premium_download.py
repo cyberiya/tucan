@@ -47,7 +47,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 			if not wait_func():
 				return
 			if "text/html" in handler.info()["Content-Type"]:
-				for line in handler.readlines():
+				for line in handler:
 					if "downloadlink" in line:
 						found = True
 					elif found:

@@ -46,7 +46,7 @@ class AnonymousDownload(DownloadPlugin):
 				return
 			else:
 				opener = URLOpen(cookielib.CookieJar())
-				for line in opener.open(tmp_link, tmp_form).readlines():
+				for line in opener.open(tmp_link, tmp_form):
 					if "click_download" in line:
 						link = line.split('href="')[1].split('"')[0]
 						break
@@ -61,7 +61,7 @@ class AnonymousDownload(DownloadPlugin):
 								if not wait_func():
 									return
 								form = urllib.urlencode([("action", "checkcaptcha"), ("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response)])
-								for line in opener.open(tmp_link, form).readlines():
+								for line in opener.open(tmp_link, form):
 									if "click_download" in line:
 										link = line.split('href="')[1].split('"')[0]
 										break
@@ -81,7 +81,7 @@ class AnonymousDownload(DownloadPlugin):
 		try:
 			tmp_form = []
 			opener = URLOpen()
-			for line in opener.open(url).readlines():
+			for line in opener.open(url):
 				if "download_file" in line:
 					found = True
 				elif found:
@@ -112,7 +112,7 @@ class AnonymousDownload(DownloadPlugin):
 		size = -1
 		unit = None
 		try:
-			for line in URLOpen().open(url).readlines():
+			for line in URLOpen().open(url):
 				if 'class="arrow_down"' in line:
 					tmp = line.split("</strong>")
 					name = tmp[1].split("<span>")[0].strip()

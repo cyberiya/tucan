@@ -52,7 +52,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 				cookie_value = cookie._cookies[".rapidshare.com"]["/"]["enc"].value
 				tmp = url.split("/")
 				form =  urllib.urlencode([("sub", "download_v1"), ("cookie", cookie_value), ("fileid", tmp[4]), ("filename", tmp[5])])
-				for line in opener.open("http://api.rapidshare.com%s" % API_URL, form, content_range).readlines():
+				for line in opener.open("http://api.rapidshare.com%s" % API_URL, form, content_range):
 					if "DL:" in line:
 						tmp_url = "http://%s%s" % (line.split("DL:")[1].split(",")[0], API_URL)
 						return opener.open(tmp_url, form, content_range)

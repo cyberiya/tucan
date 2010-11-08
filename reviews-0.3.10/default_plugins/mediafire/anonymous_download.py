@@ -75,7 +75,7 @@ class AnonymousDownload(DownloadPlugin):
 			form_action = "http://www.mediafire.com/dynamic/download.php?%s" %data
 
 			#Parse the GET
-			res = opener.open(form_action, data).readlines()
+			res = opener.open(form_action, data)
 			line = " ".join(res)
 			#Long line containing the js
 			if "var" in line:
@@ -135,7 +135,7 @@ class AnonymousDownload(DownloadPlugin):
 		unit = None
 		size_found = 0
 		try:
-			it = iter(URLOpen().open(url).readlines())
+			it = URLOpen().open(url)
 			for line in it:
 				if 'download_file_title" style="margin-bottom:20px;">' in line:
 					name = line.split('download_file_title" style="margin-bottom:20px;">')[1].split('<')[0].strip()

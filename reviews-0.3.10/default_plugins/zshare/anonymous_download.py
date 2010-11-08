@@ -46,7 +46,7 @@ class AnonymousDownload(DownloadPlugin):
 				url = url.replace("/image/", "/download/")
 			try:
 				form = urllib.urlencode([("download", 1)])
-				for line in opener.open(url,form).readlines():
+				for line in opener.open(url,form):
 					if 'link_enc=new Array' in line:
 						tmp = line.strip().split("var link_enc=new Array(")[1].split(");")[0]
 						link = tmp.replace("','","").replace("'","")
@@ -85,7 +85,7 @@ class AnonymousDownload(DownloadPlugin):
 		unit = None
 		size_found = 0
 		try:
-			it = iter(URLOpen().open(url).readlines())
+			it = URLOpen().open(url)
 			for line in it:
 				if 'File Name:' in line:
 					name = it.next().split('>')[1].split('<')[0]

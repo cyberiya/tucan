@@ -50,7 +50,7 @@ class AnonymousDownload(DownloadPlugin):
 				self.set_limit_exceeded()
 				return
 				
-			it = iter(opener.open(url).readlines())
+			it = opener.open(url)
 			for line in it:
 				if 'reCAPTCHA_publickey=' in line:
 					tmp = line.split("'")[1].split("'")[0]
@@ -87,7 +87,7 @@ class AnonymousDownload(DownloadPlugin):
 		size = -1
 		unit = None
 		try:
-			it = iter(URLOpen().open(url).readlines())
+			it = URLOpen().open(url)
 			for line in it:
 				if '"panel file_download"' in line:
 					it.next()

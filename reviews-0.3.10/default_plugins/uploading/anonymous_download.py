@@ -37,7 +37,7 @@ class AnonymousDownload(DownloadPlugin):
 		try:
 			opener = URLOpen(cookielib.CookieJar())
 			#First req to get to the timer
-			it = iter(opener.open(url).readlines())
+			it = opener.open(url)
 			for line in it:
 				if '"page pageDownloadAvm"' in line:
 					form_action = it.next().split('"')[1].split('"')[0]
@@ -47,7 +47,7 @@ class AnonymousDownload(DownloadPlugin):
 					break
 			form = urllib.urlencode([("action", action), ("file_id", file_id), ("code", code)])
 			#Second req to get to the timer
-			it = iter(opener.open(form_action, form).readlines())
+			it = opener.open(form_action, form)
 			for line in it:
 				if 'id="timeadform"' in line:
 					form_action = line.split('"')[1].split('"')[0]
@@ -74,7 +74,7 @@ class AnonymousDownload(DownloadPlugin):
 		unit = None
 		size_found = 0
 		try:
-			it = iter(URLOpen().open(url).readlines())
+			it = URLOpen().open(url)
 			for line in it:
 				if '#383737' in line:
 					name = it.next().split('>')[1].split('<')[0].strip()

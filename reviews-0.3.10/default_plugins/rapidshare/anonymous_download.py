@@ -42,7 +42,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			tmp = url.split("/")
 			opener = URLOpen()
 			form =  urllib.urlencode([("sub", "download_v1"), ("fileid", tmp[4]), ("filename", tmp[5])])
-			for line in opener.open("http://api.rapidshare.com%s" % API_URL, form, range).readlines():
+			for line in opener.open("http://api.rapidshare.com%s" % API_URL, form, content_range):
 				if "DL:" in line:
 					tmp = line.split("DL:")[1].split(",")
 					link = "http://%s%s" % (tmp[0], API_URL)
