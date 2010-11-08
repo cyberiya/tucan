@@ -21,10 +21,12 @@
 import logging
 logger = logging.getLogger(__name__)
 
+import cookielib
+
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
 
-WAIT = 40
+WAIT = 20
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
@@ -33,27 +35,27 @@ class AnonymousDownload(DownloadPlugin):
 		try:
 			tmp_link = None
 			link = None
-			opener = URLOpen()
+			wait = WAIT
+			opener = URLOpen(cookielib.CookieJar())
 			for line in opener.open(url).readlines():
 				if "dbtn" in line:
 					tmp_link = line.split('href="')[1].split('"')[0]
 			if tmp_link:
-				next_line = 0
-				for line in opener.open(tmp_link).readlines():
+				it = iter(opener.open(tmp_link).readlines())
+				for line in it:
 					if "id='divDLStart'" in line:
-						next_line = 1
-					elif next_line:
-						next_line = 0
-						link = line.split("<a href='")[1].split("'")[0]
+						link = it.next().split("<a href='")[1].split("'")[0]
+					elif '<div class="sec">' in line:
+						wait = int(line.split(">")[1].split("<")[0])
 			if not link:
 				return
-			elif not wait_func(WAIT):
+			elif not wait_func(wait):
 				return
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 		else:
 			try:
-				handle = URLOpen().open(link, None, content_range)
+				handle = opener.open(link)
 			except Exception, e:
 				self.set_limit_exceeded()
 			else:
