@@ -91,6 +91,9 @@ class Downloader(threading.Thread):
 						self.download(name, handle, True)
 					else:
 						self.download(name, handle)
+				else:
+					self.stop_flag = True
+					self.status = cons.STATUS_ERROR
 			else:
 				self.stop_flag = True
 				self.status = cons.STATUS_ERROR
