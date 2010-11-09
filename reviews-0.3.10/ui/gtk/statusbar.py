@@ -107,6 +107,7 @@ class Statusbar(gtk.Statusbar):
 		label = gtk.Label("Service limits:")
 		hbox.pack_start(label, False, False, 2)
 		self.button = gtk.Button()
+		self.button.set_tooltip_text("Click service to retry")
 		self.button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
 		hbox.pack_start(self.button, False, False, 2)
 		self.button.modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse("#fff"))
