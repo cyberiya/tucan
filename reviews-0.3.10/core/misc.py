@@ -86,3 +86,23 @@ def get_size(num):
 			if tmp > 0:
 				result = tmp, cons.UNIT_MB
 	return result
+
+def calculate_time(time):
+	""""""
+	result = None
+	hours = 0
+	minutes = 0
+	while time >= cons.HOUR:
+		time = time - cons.HOUR
+		hours += 1
+	while time >= cons.MINUTE:
+		time = time - cons.MINUTE
+		minutes += 1
+	seconds = time
+	if hours > 0:
+		result = str(hours) + "h" + str(minutes) + "m" + str(seconds) + "s"
+	elif minutes > 0:
+		result =  str(minutes) + "m" + str(seconds) + "s"
+	elif seconds > 0:
+		result = str(seconds) + "s"
+	return result

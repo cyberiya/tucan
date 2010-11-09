@@ -28,6 +28,7 @@ from no_ui import NoUi
 from core.log_stream import LogStream
 
 import core.cons as cons
+import core.misc as misc
 
 STATUS_LINES = 1
 DOWNLOAD_LINES = 60
@@ -126,7 +127,7 @@ class Cli(NoUi):
 				percent = "%i%s" % (int(download.progress), "%")
 				speed = "%s KB/s" % download.speed
 				size = "%i%s / %i%s" % (download.actual_size, download.actual_size_unit, download.total_size, download.total_size_unit)
-				time = str(self.calculate_time(download.time))
+				time = str(misc.calculate_time(download.time))
 				self.main_pad.addnstr(cont, 1, download.name, WIDTH)
 				self.main_pad.addnstr(cont+1, 5, "%s %s \t%s \t%s \t%s" % (percent, service, size, speed, time), WIDTH)
 				cont += LINES_PER_DOWNLOAD
@@ -167,26 +168,6 @@ class Cli(NoUi):
 		self.status_pad.noutrefresh(0, 0, 0, 0, 0, self.win_chars-1)
 		if attr == curses.A_STANDOUT:
 			curses.doupdate()
-
-	def calculate_time(self, time):
-		""""""
-		result = None
-		hours = 0
-		minutes = 0
-		while time >= cons.HOUR:
-			time = time - cons.HOUR
-			hours += 1
-		while time >= cons.MINUTE:
-			time = time - cons.MINUTE
-			minutes += 1
-		seconds = time
-		if hours > 0:
-			result = str(hours) + "h" + str(minutes) + "m" + str(seconds) + "s"
-		elif minutes > 0:
-			result =  str(minutes) + "m" + str(seconds) + "s"
-		elif seconds > 0:
-			result = str(seconds) + "s"
-		return result
 
 	def quit(self):
 		""""""

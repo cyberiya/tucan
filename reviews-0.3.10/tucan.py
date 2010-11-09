@@ -52,7 +52,10 @@ class Tucan:
 			sys.exit("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
 			
 		if self.options.clean:
-			remove_conf_dir()
+			try:
+				remove_conf_dir()
+			except Exception, e:
+				sys.exit(e)
 
 		if not os.path.exists(cons.CONFIG_PATH):
 			os.mkdir(cons.CONFIG_PATH)
