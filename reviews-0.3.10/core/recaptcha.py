@@ -26,23 +26,30 @@ from url_open import URLOpen
 
 import cons
 
+TIMEOUT = 60
+
 class Recaptcha:
 	""""""
 	def __init__(self, service, url):
 		""""""
 		self.service_name = service
 		self.captcha_link = url
-		self.captcha_challenge = None
-		self.captcha_response = None
+		self.timeout = TIMEOUT
 
 	def solve_captcha(self):
 		""""""
 		self.captcha_challenge = None
 		self.captcha_response = None
+		self.wait_for_response = True
 		try:
 			events.trigger_captcha_dialog(self.service_name, self.get_captcha, self.set_response)
-			if not self.captcha_response:
-				logger.warning("No response for %s event" % cons.EVENT_CAPTCHA_DIALOG)
+			while self.wait_for_response:
+				if self.timeout:
+					self.timeout -= 1
+					time.sleep(1)
+				else:
+					logger.warning("No response for %s event" % cons.EVENT_CAPTCHA_DIALOG)
+					break
 		except Exception, e:
 			logger.exception("%s :%s" % (self.captcha_link, e))
 		return self.captcha_challenge, self.captcha_response
@@ -51,6 +58,7 @@ class Recaptcha:
 		""""""
 		image_type = None
 		image_data = None
+		self.timeout = TIMEOUT
 		try:
 			for line in URLOpen().open(self.captcha_link).readlines():
 				if "challenge : " in line:
@@ -66,3 +74,4 @@ class Recaptcha:
 	def set_response(self, solution):
 		""""""
 		self.captcha_response = solution
+		self.wait_for_response = False
