@@ -53,7 +53,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 			elif link:
 				return URLOpen().open(link, form, content_range)
 			else:
-				self.set_limit_exceeded()
+				return self.set_limit_exceeded()
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 

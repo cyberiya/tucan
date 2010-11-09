@@ -40,8 +40,7 @@ class AnonymousDownload(DownloadPlugin):
 				url = url.split("?")[0]
 			tmp_link, tmp_form, wait = self.parse_wait(url)
 			if not tmp_link or not tmp_form:
-				self.set_limit_exceeded()
-				return
+				return self.set_limit_exceeded()
 			elif not wait_func(wait):
 				return
 			else:
@@ -52,8 +51,7 @@ class AnonymousDownload(DownloadPlugin):
 						it.next()
 						try:
 							tmp = int(it.next().split("+")[1].split(";")[0])
-							self.set_limit_exceeded(int(tmp/1000))
-							return
+							return self.set_limit_exceeded(int(tmp/1000))
 						except Exception, e:
 							logger.exception("%s: %s" % (url, e))
 							return
@@ -81,8 +79,7 @@ class AnonymousDownload(DownloadPlugin):
 					return opener.open(link, None, content_range, True)
 				else:
 					#Hotfile bug
-					self.set_limit_exceeded()
-					return
+					return self.set_limit_exceeded()
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 

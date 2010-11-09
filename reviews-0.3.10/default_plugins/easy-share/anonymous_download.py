@@ -52,8 +52,7 @@ class AnonymousDownload(DownloadPlugin):
 						it.next()
 						it.next()
 						wait = it.next().split("'")[1].split("'")[0]
-						self.set_limit_exceeded(int(wait))
-						return
+						return self.set_limit_exceeded(int(wait))
 				elif 'Recaptcha.create("' in line:
 					tmp = line.split('"')[1].split('"')[0]
 					recaptcha_link = "http://www.google.com/recaptcha/api/challenge?k=%s" % tmp
