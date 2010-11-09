@@ -70,6 +70,7 @@ class Slots:
 		logger.warning("Wait %i seconds." % wait)
 		self.return_slot()
 		self.limit = True
+		return cons.EVENT_LIMIT_ON
 
 	def cancel_limit(self, module):
 		""""""
