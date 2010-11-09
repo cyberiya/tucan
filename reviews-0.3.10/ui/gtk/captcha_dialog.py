@@ -23,7 +23,7 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-TIMEOUT = 55
+TIMEOUT = 45
 
 class CaptchaDialog(gtk.Dialog):
 	""""""
@@ -54,6 +54,7 @@ class CaptchaDialog(gtk.Dialog):
 		self.entry.set_max_length(40)
 		self.entry.set_activates_default(True)
 		self.entry.connect("activate", self.solve_captcha)
+		self.entry.connect("key-press-event", self.restart_timeout)
 
 		button = gtk.Button(None, gtk.STOCK_REFRESH)
 		self.action_area.pack_start(button)
@@ -77,6 +78,10 @@ class CaptchaDialog(gtk.Dialog):
 			return True
 		else:
 			self.close()
+			
+	def restart_timeout(self, widget, event):
+		""""""
+		self.timeout = TIMEOUT
 
 	def solve_captcha(self, widget=None):
 		""""""
