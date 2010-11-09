@@ -74,7 +74,7 @@ class AnonymousDownload(DownloadPlugin):
 			try:
 				handle = opener.open(link, None, content_range)
 			except Exception, e:
-				self.set_limit_exceeded()
+				return self.set_limit_exceeded()
 			else:
 				return handle
 

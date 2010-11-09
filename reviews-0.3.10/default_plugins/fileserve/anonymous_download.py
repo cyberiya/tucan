@@ -47,8 +47,7 @@ class AnonymousDownload(DownloadPlugin):
 			form = urllib.urlencode([("checkTimeLimit", "check")])
 			#If the limit is exceeded
 			if opener.open(url,form).read() == '1':
-				self.set_limit_exceeded()
-				return
+				return self.set_limit_exceeded()
 				
 			it = opener.open(url)
 			for line in it:
