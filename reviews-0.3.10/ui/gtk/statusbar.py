@@ -32,6 +32,37 @@ import media
 import core.cons as cons
 import core.misc as misc
 
+class LimitItem(gtk.MenuItem):
+	""""""
+	def __init__(self, service, service_type, icon_path, end_wait, callback):
+		""""""
+		gtk.MenuItem.__init__(self)
+		self.connect("activate", callback)
+		vbox = gtk.VBox()
+		hbox = gtk.HBox()
+		vbox.pack_start(hbox)
+		if icon_path == "stock":
+			icon = self.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_DND)
+		elif icon_path:
+			icon = gtk.gdk.pixbuf_new_from_file_at_size(icon_path, 32, 32)
+		else:
+			icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 32, 32)
+		hbox.pack_start(gtk.image_new_from_pixbuf(icon))
+		hbox.pack_start(gtk.Label(service))
+		self.end_wait = end_wait
+		self.time_label = gtk.Label()
+		vbox.pack_start(self.time_label)
+		vbox.pack_start(gtk.Label(service_type))
+		self.add(vbox)
+		
+	def update_time(self):
+		""""""
+		remaining_time = misc.calculate_time(int(self.end_wait - time.time()))
+		if remaining_time:
+			self.time_label.set_text(remaining_time)
+		else:
+			self.time_label.set_text("")
+		
 class Statusbar(gtk.Statusbar):
 	""""""
 	def __init__(self):
@@ -41,6 +72,7 @@ class Statusbar(gtk.Statusbar):
 
 		self.services = configuration.get_services()
 		self.blinks = 0
+		self.updating = False
 
 		#download speed limit
 		frame = gtk.Frame()
@@ -61,6 +93,7 @@ class Statusbar(gtk.Statusbar):
 		self.max_speed.connect("value-changed", self.change_speed)
 
 		self.menu = gtk.Menu()
+		self.menu.connect("unmap", self.stop_updating)
 
 		self.limits = {}
 		events.connect(cons.EVENT_LIMIT_ON, self.add_limit)
@@ -88,6 +121,17 @@ class Statusbar(gtk.Statusbar):
 	def change_speed(self, spinbutton):
 		""""""
 		__builtin__.max_download_speed = spinbutton.get_value_as_int()
+		
+	def update_times(self):
+		""""""
+		if self.updating:
+			for module, item in self.limits.items():
+				item.update_time()
+			return True
+		
+	def stop_updating(self, widget):
+		""""""
+		self.updating = False
 
 	def blink(self):
 		""""""
@@ -101,14 +145,14 @@ class Statusbar(gtk.Statusbar):
 		else:
 			self.blinks = 0
 
-	def add_limit(self, module):
+	def add_limit(self, module, end_wait):
 		""""""
 		tmp = module.split(".")
 		callback = lambda x: events.trigger_limit_cancel(module)
 		if not module in self.limits:
 			for name, icon_path, url, enabled, config in self.services:
 				if tmp[0] == name:
-					self.limits[module] = self.new_item(url, tmp[1], icon_path, callback)
+					self.limits[module] = LimitItem(url, tmp[1], icon_path, end_wait, callback)
 					gobject.timeout_add(500, self.blink)
 					break
 
@@ -122,35 +166,17 @@ class Statusbar(gtk.Statusbar):
 		for limit in self.menu:
 			self.menu.remove(limit)
 		if len(self.limits) == 0:
-			self.menu.append(self.new_item("", "None", "stock", lambda x: x))
-			self.menu.append(gtk.SeparatorMenuItem())
-			self.menu.append(self.new_item("rapidshare.com", "anonymous_download", None, lambda x: x))
+			self.menu.append(LimitItem("", "None", "stock", 0, lambda x: x))
 			self.menu.append(gtk.SeparatorMenuItem())
 		else:
 			for module, item in self.limits.items():
+				item.update_time()
 				self.menu.append(item)
 				self.menu.append(gtk.SeparatorMenuItem())
+			self.updating = True
+			gobject.timeout_add(1000, self.update_times)
 		self.menu.show_all()
 		self.menu.popup(None, None, self.menu_position, 1, 0, widget.get_allocation())
-
-	def new_item(self, service, service_type, icon_path, callback):
-		""""""
-		limit = gtk.MenuItem()
-		limit.connect("activate", callback)
-		vbox = gtk.VBox()
-		hbox = gtk.HBox()
-		vbox.pack_start(hbox)
-		if icon_path == "stock":
-			icon = self.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_DND)
-		elif icon_path:
-			icon = gtk.gdk.pixbuf_new_from_file_at_size(icon_path, 32, 32)
-		else:
-			icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 32, 32)
-		hbox.pack_start(gtk.image_new_from_pixbuf(icon))
-		hbox.pack_start(gtk.Label(service))
-		vbox.pack_start(gtk.Label(service_type))
-		limit.add(vbox)
-		return limit
 
 	def menu_position(self, menu, rect):
 		""""""
