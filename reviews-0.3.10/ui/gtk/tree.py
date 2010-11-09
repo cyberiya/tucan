@@ -27,6 +27,7 @@ import pango
 from statusbar import Statusbar
 
 import core.cons as cons
+import core.misc as misc
 
 class Tree(gtk.VBox):
 	""""""
@@ -207,7 +208,7 @@ class Tree(gtk.VBox):
 										file.time = 1
 									file.actual_size = file.total_size
 									file.actual_size_unit = file.total_size_unit
-								model.set_value(file_iter, 9, self.calculate_time(file.time))
+								model.set_value(file_iter, 9, misc.calculate_time(file.time))
 								link_iter = model.iter_children(file_iter)
 								while link_iter:
 									for tmp_link in file.links:
@@ -402,23 +403,3 @@ class Tree(gtk.VBox):
 		if next_iter:
 			model.move_after(iter, next_iter)
 			return True
-
-	def calculate_time(self, time):
-		""""""
-		result = None
-		hours = 0
-		minutes = 0
-		while time >= cons.HOUR:
-			time = time - cons.HOUR
-			hours += 1
-		while time >= cons.MINUTE:
-			time = time - cons.MINUTE
-			minutes += 1
-		seconds = time
-		if hours > 0:
-			result = str(hours) + "h" + str(minutes) + "m" + str(seconds) + "s"
-		elif minutes > 0:
-			result =  str(minutes) + "m" + str(seconds) + "s"
-		elif seconds > 0:
-			result = str(seconds) + "s"
-		return result

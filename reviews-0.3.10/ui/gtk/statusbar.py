@@ -30,6 +30,7 @@ import gobject
 
 import media
 import core.cons as cons
+import core.misc as misc
 
 class Statusbar(gtk.Statusbar):
 	""""""
@@ -70,7 +71,7 @@ class Statusbar(gtk.Statusbar):
 		self.pack_start(frame, False, False)
 		hbox = gtk.HBox()
 		frame.add(hbox)
-		label = gtk.Label("Limits:")
+		label = gtk.Label("Service limits:")
 		hbox.pack_start(label, False, False, 2)
 		self.button = gtk.Button()
 		self.button.set_image(gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_NONE))
@@ -121,7 +122,10 @@ class Statusbar(gtk.Statusbar):
 		for limit in self.menu:
 			self.menu.remove(limit)
 		if len(self.limits) == 0:
-			self.menu.append(self.new_item("None", "", None, lambda x: x))
+			self.menu.append(self.new_item("", "None", "stock", lambda x: x))
+			self.menu.append(gtk.SeparatorMenuItem())
+			self.menu.append(self.new_item("rapidshare.com", "anonymous_download", None, lambda x: x))
+			self.menu.append(gtk.SeparatorMenuItem())
 		else:
 			for module, item in self.limits.items():
 				self.menu.append(item)
@@ -136,7 +140,9 @@ class Statusbar(gtk.Statusbar):
 		vbox = gtk.VBox()
 		hbox = gtk.HBox()
 		vbox.pack_start(hbox)
-		if icon_path:
+		if icon_path == "stock":
+			icon = self.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_DND)
+		elif icon_path:
 			icon = gtk.gdk.pixbuf_new_from_file_at_size(icon_path, 32, 32)
 		else:
 			icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 32, 32)
