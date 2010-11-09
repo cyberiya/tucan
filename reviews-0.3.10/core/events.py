@@ -61,10 +61,10 @@ class Events:
 		logger.debug("triggered: %s from %s" % (cons.EVENT_LIMIT_OFF, module))
 		self.trigger(cons.EVENT_LIMIT_OFF, module)
 
-	def trigger_limit_on(self, module):
+	def trigger_limit_on(self, module, end_wait):
 		""""""
 		logger.debug("triggered: %s from %s" % (cons.EVENT_LIMIT_ON, module))
-		self.trigger(cons.EVENT_LIMIT_ON, module)
+		self.trigger(cons.EVENT_LIMIT_ON, module, end_wait)
 
 	def trigger_limit_cancel(self, module):
 		""""""

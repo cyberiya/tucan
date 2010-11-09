@@ -65,11 +65,11 @@ class Slots:
 		""""""
 		if not wait:
 			wait = self.time_limit
-		events.trigger_limit_on(self.__module__)
+		self.end_wait = time.time() + wait
+		events.trigger_limit_on(self.__module__, self.end_wait)
 		logger.warning("Wait %i seconds." % wait)
 		self.return_slot()
 		self.limit = True
-		self.end_wait = time.time() + wait
 
 	def cancel_limit(self, module):
 		""""""

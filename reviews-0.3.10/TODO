@@ -5,7 +5,6 @@
 - New concurrent checklinks and remove autopaste.
 - Use only bytes as internal unit.
 - UNICODE support.
-- Display a timer in the GUI when set_limit_exceeded is called
 
 -- PLUGINS
 - Disable plugins if broken or dependency not found.
