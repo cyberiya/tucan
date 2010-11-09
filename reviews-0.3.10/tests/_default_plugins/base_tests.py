@@ -37,6 +37,8 @@ OPTION_PASSWORD = "password"
 TEST_DIR = "/tmp/"
 TEST_NAME = "prueba.bin"
 
+TIMEOUT = 500
+
 class TestBaseDownload(unittest.TestCase):
 	""""""
 	def setUp(self):
@@ -67,8 +69,10 @@ class TestBaseDownload(unittest.TestCase):
 		self.check_link(self.link, TEST_NAME, self.size, self.unit)
 		self.assertTrue(self.plugin.add(TEST_DIR, self.link, TEST_NAME), "check slots or limits")
 		status = cons.STATUS_WAIT
+		start_time = time.time()
 		while ((status != cons.STATUS_ERROR) and (status != cons.STATUS_CORRECT)):
 			status, progress, actual_size, unit, speed, time_ = self.plugin.get_status(TEST_NAME)
+			self.assertTrue(start_time + TIMEOUT > time.time(), "Force timeout")
 			time.sleep(1)
 		self.assertEqual(status, cons.STATUS_CORRECT, "s%: Error downloading")
 		name = "%s%s" % (TEST_DIR, TEST_NAME)
