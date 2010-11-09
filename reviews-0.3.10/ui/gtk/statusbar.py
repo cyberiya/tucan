@@ -38,9 +38,8 @@ class LimitItem(gtk.MenuItem):
 		""""""
 		gtk.MenuItem.__init__(self)
 		self.connect("activate", callback)
-		vbox = gtk.VBox()
 		hbox = gtk.HBox()
-		vbox.pack_start(hbox)
+		self.add(hbox)
 		if icon_path == "stock":
 			icon = self.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_DND)
 		elif icon_path:
@@ -48,12 +47,13 @@ class LimitItem(gtk.MenuItem):
 		else:
 			icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 32, 32)
 		hbox.pack_start(gtk.image_new_from_pixbuf(icon))
-		hbox.pack_start(gtk.Label(service))
+		vbox = gtk.VBox()
+		hbox.pack_start(vbox)
+		vbox.pack_start(gtk.Label(service))
+		vbox.pack_start(gtk.Label(service_type))
 		self.end_wait = end_wait
 		self.time_label = gtk.Label()
 		vbox.pack_start(self.time_label)
-		vbox.pack_start(gtk.Label(service_type))
-		self.add(vbox)
 		
 	def update_time(self):
 		""""""
