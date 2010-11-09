@@ -46,8 +46,18 @@ class AnonymousDownload(DownloadPlugin):
 				return
 			else:
 				opener = URLOpen(cookielib.CookieJar())
-				for line in opener.open(tmp_link, tmp_form):
-					if "click_download" in line:
+				it = opener.open(tmp_link, tmp_form)
+				for line in it:
+					if "function starthtimer(){" in line:
+						it.next()
+						try:
+							tmp = int(it.next().split("+")[1].split(";")[0])
+							self.set_limit_exceeded(int(tmp/1000))
+							return
+						except Exception, e:
+							logger.exception("%s: %s" % (url, e))
+							return
+					elif "click_download" in line:
 						link = line.split('href="')[1].split('"')[0]
 						break
 					elif "http://api.recaptcha.net/challenge" in line:
@@ -69,6 +79,10 @@ class AnonymousDownload(DownloadPlugin):
 						break
 				if link:
 					return opener.open(link, None, content_range, True)
+				else:
+					#Hotfile bug
+					self.set_limit_exceeded()
+					return
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
