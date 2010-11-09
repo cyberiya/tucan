@@ -66,7 +66,10 @@ class Downloader(threading.Thread):
 				if tmp_size > 0:
 					self.range = tmp_size
 			handle = self.link_parser(self.url, self.wait, self.range)
-			if handle:
+			if handle == cons.EVENT_LIMIT_ON:
+				self.stop_flag = True
+				self.status = cons.STATUS_PEND
+			elif handle:
 				info = handle.info()
 				size = info.getheader("Content-Length", None)
 				if info.getheader("Content-Range", None):
