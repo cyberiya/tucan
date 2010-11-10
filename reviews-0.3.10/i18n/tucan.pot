@@ -179,7 +179,3 @@ msgstr ""
 msgid "Captcha"
 msgstr ""
 
-#: ./tray_icon.py:128
-msgid "Show Tucan"
-msgstr ""
-
