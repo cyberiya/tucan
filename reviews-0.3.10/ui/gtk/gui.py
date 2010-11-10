@@ -210,8 +210,11 @@ class Gui(gtk.Window, Core):
 			#trayicon
 			tray_menu = [menu_preferences, menu_about, None, menu_quit]
 			self.tray_icon = tray_icon.TrayIcon(self.show, self.hide, tray_menu)
-			self.connect("hide", self.tray_icon.activate)
-			self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)		
+			try:
+				import appindicator
+			except Exception:
+				self.connect("hide", self.tray_icon.activate)
+				self.downloads.status_bar.connect("text-pushed", self.tray_icon.change_tooltip)		
 
 		#sessions
 		self.session = Sessions()
