@@ -60,6 +60,7 @@ class ServiceUpdate:
 	def __init__(self, config, info=None):
 		"""urllib2 does not support proxy and https"""
 		self.config = config
+		self.remote_outdated = False
 		self.remote_version = None
 		self.updates = None
 		self.remote_info = info
@@ -100,13 +101,19 @@ class ServiceUpdate:
 					
 	def check_version(self):
 		"""remote version should not be smaller than local version"""
-		remote = self.remote_version.split(" ")[0].split(".")
-		local = cons.TUCAN_VERSION.split(" ")[0].split(".")
-		for i in range(len(remote)):
-			if int(local[i]) > int(remote[i]):
-				logger.info("No updates available")
-				return
-		return True
+		try:
+			remote = self.remote_version.split(" ")[0].split(".")
+			local = cons.TUCAN_VERSION.split(" ")[0].split(".")
+			for i in range(len(remote)):
+				if int(local[i]) > int(remote[i]):
+					logger.info("Remote version older than local.")
+					self.remote_outdated = True
+					return
+		except:
+			logger.info("RC releases have no updates.")
+			self.remote_outdated = True
+		else:
+			return True
 
 	def install_service(self, service_name, service_dir, archive):
 		""""""
@@ -125,11 +132,3 @@ class ServiceUpdate:
 			logger.exception(e)
 		else:
 			return True
-
-if __name__ == "__main__":
-	from config import Config
-	from url_open import set_proxy
-	set_proxy(None)
-	s = ServiceUpdate(Config())
-	s.get_updates()
-	print s.updates

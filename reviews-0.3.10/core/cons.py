@@ -25,7 +25,7 @@ import platform
 
 #project constants
 TUCAN_NAME = "Tucan Manager"
-TUCAN_VERSION = "0.3.10 alpha"
+TUCAN_VERSION = "0.3.10-RC alpha"
 WEBPAGE = "http://www.tucaneando.com"
 DOC = "http://doc.tucaneando.com"
 
