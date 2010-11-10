@@ -29,15 +29,28 @@ from core.recaptcha import Recaptcha
 from core.url_open import URLOpen
 
 BASE_URL = "http://easy-share.com"
+WAIT = 20
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
 	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
+			wait = WAIT
+			opener = URLOpen()
+			it = opener.open(url)
+			for line in it:
+				if 'var wf =' in line:
+					try:
+						wait = int(line.split("=")[1].split(";")[0].strip())
+					except Exception, e:
+						logger.exception("%s: %s" % (url, e))
+						return
+				break
+			if not wait_func(wait):
+				return
 			data = urllib.urlencode([("free", "Regular Download")])
 			url = "%sbilling?%s" % (url,data)
-			opener = URLOpen()
 			it = opener.open(url,data)
 			for line in it:
 				if 'name="id"' in line:
@@ -51,8 +64,12 @@ class AnonymousDownload(DownloadPlugin):
 					else:
 						it.next()
 						it.next()
-						wait = it.next().split("'")[1].split("'")[0]
-						return self.set_limit_exceeded(int(wait))
+						wait = int(it.next().split("'")[1].split("'")[0])
+						if wait < 60:
+							if not wait_func(wait):
+								return
+						else:
+							return self.set_limit_exceeded(wait)
 				elif 'Recaptcha.create("' in line:
 					tmp = line.split('"')[1].split('"')[0]
 					recaptcha_link = "http://www.google.com/recaptcha/api/challenge?k=%s" % tmp
