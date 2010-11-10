@@ -178,3 +178,7 @@ msgstr "Emplacements"
 #: ./service_preferences.py:71
 msgid "Captcha"
 msgstr "Visuel protégé"
+
+#: ./tray_icon.py:128
+msgid "Show Tucan"
+msgstr "Afficher Tucan"
