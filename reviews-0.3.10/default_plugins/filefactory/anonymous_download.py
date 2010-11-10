@@ -109,11 +109,13 @@ class AnonymousDownload(DownloadPlugin):
 					tmp = tmp.replace("&#8203;","")
 					name = tmp.replace("&#8203","")
 					
-				if '<div id="info" class="metadata">' in line:
+				elif '<div id="info" class="metadata">' in line:
 					tmp = it.next()
 					tmp = tmp.split("<span>")[1].split("file")[0].strip()
 					size = int(round(float(tmp.split(" ")[0])))
 					unit = tmp.split(" ")[1].upper()
+				elif 'Retry Download' in line:
+					name = line.split('href="')[1].split('"')[0].split("/").pop()
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
