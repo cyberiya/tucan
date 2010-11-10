@@ -116,9 +116,16 @@ else:
 			""""""
 			def __init__(self, show, hide, menu):
 				""""""
-				appindicator.Indicator.__init__(self,'Tucan',media.ICON_TUCAN,appindicator.CATEGORY_APPLICATION_STATUS);
+				appindicator.Indicator.__init__(self,'tucan',media.ICON_TUCAN,appindicator.CATEGORY_APPLICATION_STATUS)
 				self.set_status(appindicator.STATUS_ACTIVE)
-
+				icon_theme = gtk.icon_theme_get_default()
+				#Try to get the icon from theme
+				try:
+					pixbuf = icon_theme.load_icon("tucan")
+				except:
+					pass
+				else:
+					self.set_icon("tucan")
 				self.window_visible = True
 				self.show_window = show
 				self.hide_window = hide
