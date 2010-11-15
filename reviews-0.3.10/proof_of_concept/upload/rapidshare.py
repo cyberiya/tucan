@@ -37,52 +37,37 @@ class UploadParser():
 		up_done_action = None
 		file_id = None
 		url = None
+		
+		#The following code might allow Premium and Registered upload : to be tested
+#		 if type == "prem":
+#            contentheader += boundary + "\r\nContent-Disposition: form-data; name=\"login\"\r\n\r\n" + username + "\r\n"
+#            contentheader += boundary + "\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\n" + password + "\r\n"
+
+#        if type == "col":
+#            contentheader += boundary + "\r\nContent-Disposition: form-data; name=\"freeaccountid\"\r\n\r\n" + username + "\r\n"
+#            contentheader += boundary + "\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\n" + password + "\r\n"
 
 		opener = register_openers()
 		cookie = cookielib.CookieJar()
 		opener.add_handler(urllib2.HTTPCookieProcessor(cookie))
 
 		result = opener.open(urllib2.Request("http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=nextuploadserver_v1&cbf=RSAPIDispatcher&cbid=1",None,HEADER))
-#		print result.readlines()[0]
 		server = result.readlines()[0].split('"')[1].split('"')[0]
 		print server
 		uploadid = str(int(time.time()))[-5:] + str(int(round(random.random()*1000000)))
-#		action = "http://rs%sl3.rapidshare.com/cgi-bin/uploadprogress.cgi?uploadid=%s&r=%s&cbf=RSAPIDispatcher&cbid=2" % (server,uploadid,str(int(time.time()))[-5:])
-#		
-#		print action
-#		
-#		result = opener.open(urllib2.Request(action,None, HEADER))
-#		print result.readlines()
 		
 		up_done_action = "http://rs%sl3.rapidshare.com/cgi-bin/upload.cgi?rsuploadid=%s" % (server,uploadid)
 		form = {"rsapi_v1" : "1", "realfolder" : "0" , "filecontent": open(file_name, "rb")}
 		print up_done_action
-		print form
 		datagen, headers = multipart_encode(form,None,self.progress)
 		headers = dict(headers.items() + HEADER.items())
-		print headers
 		result = opener.open(urllib2.Request(up_done_action, datagen, headers))
 		
-#		print result.readlines()
 		for line in result:
 			if 'File1.1=' in line:
 				url = line.split('File1.1=')[1].split("\\")[0]
 				print url
 		
-#		action = "http://rs%sl3.rapidshare.com/cgi-bin/uploadprogress.cgi?uploadid=%s&r=%s&cbf=RSAPIDispatcher&cbid=3" % (server,uploadid,str(int(time.time()))[-5:])
-#		
-#		result = opener.open(urllib2.Request(action,None, HEADER))
-#		print result.readlines()
-#		action = "http://rs%sl3.rapidshare.com/cgi-bin/uploadprogress.cgi?uploadid=%s&r=%s&cbf=RSAPIDispatcher&cbid=4" % (server,uploadid,str(int(time.time()))[-5:])
-#		
-#		result = opener.open(urllib2.Request(action,None, HEADER))
-#		print result.readlines()
-		
-#		for line in result:
-#			if 'name="url"' in line:
-#				url = line.split('value="')[1].split('"')[0]
-#				print url
-				
 	def progress(self,se,current,total):
 		print "%d : %d" % (current,total)
 
