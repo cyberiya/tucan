@@ -28,7 +28,8 @@ from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
 from core.slots import Slots
 
-MAX_SIZE = 209796096
+#MAX_SIZE = 209796096
+MAX_SIZE = None
 
 API_URL = "/cgi-bin/rsapi.cgi"
 
