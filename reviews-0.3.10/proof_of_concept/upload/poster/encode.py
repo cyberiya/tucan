@@ -97,6 +97,11 @@ class MultipartParam(object):
         self.fileobj = fileobj
         self.cb = cb
 
+        #FIXME - Elie - : Keep only the filename and not the all path
+        if self.filename:
+            if "/" in self.filename:
+                self.filename = self.filename.split("/").pop()
+
         if self.value is not None and self.fileobj is not None:
             raise ValueError("Only one of value or fileobj may be specified")
 
@@ -193,10 +198,11 @@ class MultipartParam(object):
 
         if self.filetype:
             filetype = self.filetype
+            headers.append("Content-Type: %s" % filetype)
         else:
             filetype = "text/plain; charset=utf-8"
 
-        headers.append("Content-Type: %s" % filetype)
+        
 
         if self.filesize is not None:
             headers.append("Content-Length: %i" % self.filesize)
@@ -310,7 +316,8 @@ def get_headers(params, boundary):
     for the multipart/form-data encoding of ``params``."""
     headers = {}
     boundary = urllib.quote_plus(boundary)
-    headers['Content-Type'] = "multipart/form-data; boundary=%s" % boundary
+    #FIXME - Elie - : Added "--" before the boundary for Rapidshare
+    headers['Content-Type'] = "multipart/form-data; boundary=--%s" % boundary
     headers['Content-Length'] = str(get_body_size(params, boundary))
     return headers
 
