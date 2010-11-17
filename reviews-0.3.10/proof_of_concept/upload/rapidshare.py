@@ -37,6 +37,7 @@ class UploadParser():
 		up_done_action = None
 		file_id = None
 		url = None
+		self.progress = 0
 		
 		#The following code might allow Premium and Registered upload : to be tested
 #		 if type == "prem":
@@ -59,7 +60,7 @@ class UploadParser():
 		up_done_action = "http://rs%sl3.rapidshare.com/cgi-bin/upload.cgi?rsuploadid=%s" % (server,uploadid)
 		form = {"rsapi_v1" : "1", "realfolder" : "0" , "filecontent": open(file_name, "rb")}
 		print up_done_action
-		datagen, headers = multipart_encode(form,None,self.progress)
+		datagen, headers = multipart_encode(form,None,self.progress_update)
 		headers = dict(headers.items() + HEADER.items())
 		result = opener.open(urllib2.Request(up_done_action, datagen, headers))
 		
@@ -68,8 +69,9 @@ class UploadParser():
 				url = line.split('File1.1=')[1].split("\\")[0]
 				print url
 		
-	def progress(self,se,current,total):
+	def progress_update(self,se,current,total):
 		print "%d : %d" % (current,total)
+		self.progress = int(current/total*100)
 
 if __name__ == "__main__":
 	c = UploadParser("/home/elie/upload.png", "mierda")
