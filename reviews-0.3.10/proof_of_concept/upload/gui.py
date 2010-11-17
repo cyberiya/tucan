@@ -87,5 +87,6 @@ class Gui(gtk.Window):
 
 		
 if __name__ == "__main__":
+	gobject.threads_init()
 	gui = Gui()
 	gtk.main()

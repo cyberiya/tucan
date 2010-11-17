@@ -116,28 +116,28 @@ class Tree(gtk.VBox):
 
 		self.progress = 0
 		self.upload = None
-		th = threading.Thread(group=None, target=self.add_upload, name=None, args=())
+		th = threading.Thread(target=self.add_upload)
 		th.start()
-		
-		gobject.timeout_add(1000, self.update)
+		gobject.timeout_add(200, self.update)
 
 	def add_upload(self):
 		print "add"
-		self.upload = UploadParser("/home/elie/cli.png", "mierda")
+		self.upload = UploadParser("/home/crak/2010-09-23-015255_1024x600_scrot.png", "mierda")
+
 	def update(self):
 		print "update"
 		model = self.treeview.get_model()
 		package_iter = model.get_iter_root()
 
-		while package_iter:
-			file_iter = model.iter_children(package_iter)
-			while file_iter:
-				if self.upload:
-					model.set_value(file_iter, 4, self.upload.progress)
-					file_iter = model.iter_next(file_iter)
-			package_iter = model.iter_next(package_iter)
-#		if self.progress < 100:
-#			self.progress = self.progress + 10
-		return True
+		#while package_iter:
+		#	file_iter = model.iter_children(package_iter)
+		#	while file_iter:
+		#		if self.upload:
+		#			model.set_value(file_iter, 4, self.upload.progress)
+		#			file_iter = model.iter_next(file_iter)
+		#	package_iter = model.iter_next(package_iter)
+		if self.progress < 100:
+			self.progress = self.progress + 10
+			return True
 		
 		
