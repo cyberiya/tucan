@@ -32,12 +32,12 @@ HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/
 
 class UploadParser():
 	""""""
-	def __init__(self, file_name, description):
+	def __init__(self, file_name, description, update):
 		""""""
 		up_done_action = None
 		file_id = None
 		url = None
-		self.progress = 0
+		self.update = update
 		
 		#The following code might allow Premium and Registered upload : to be tested
 #		 if type == "prem":
@@ -70,8 +70,8 @@ class UploadParser():
 				print url
 		
 	def progress_update(self,se,current,total):
-		print "%d : %d" % (current,total)
-		self.progress = int(current/total*100)
+#		print "%d : %d" % (current,total)
+		self.update(int(current/float(total)*100))
 
 if __name__ == "__main__":
 	c = UploadParser("/home/elie/upload.png", "mierda")

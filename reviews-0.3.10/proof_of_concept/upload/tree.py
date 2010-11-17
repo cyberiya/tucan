@@ -25,7 +25,7 @@ import gobject
 import pango
 
 import cons
-from rapidshare import UploadParser
+
 import threading
 
 class Tree(gtk.VBox):
@@ -114,30 +114,20 @@ class Tree(gtk.VBox):
 		item_iter = model.append(package_iter, [self.pending_icon, cons.STATUS_PEND, None,"you", 0, True, None, "ohoh", None, None, "tucan"])
 		self.treeview.expand_to_path(model.get_path(item_iter))
 
-		self.progress = 0
-		self.upload = None
-		th = threading.Thread(target=self.add_upload)
-		th.start()
-		gobject.timeout_add(200, self.update)
 
-	def add_upload(self):
-		print "add"
-		self.upload = UploadParser("/home/crak/2010-09-23-015255_1024x600_scrot.png", "mierda")
-
-	def update(self):
-		print "update"
+	def update(self,progress=0):
+		print "update", progress
 		model = self.treeview.get_model()
 		package_iter = model.get_iter_root()
 
-		#while package_iter:
-		#	file_iter = model.iter_children(package_iter)
-		#	while file_iter:
-		#		if self.upload:
-		#			model.set_value(file_iter, 4, self.upload.progress)
-		#			file_iter = model.iter_next(file_iter)
-		#	package_iter = model.iter_next(package_iter)
-		if self.progress < 100:
-			self.progress = self.progress + 10
-			return True
+		while package_iter:
+			file_iter = model.iter_children(package_iter)
+			while file_iter:
+				model.set_value(file_iter, 4, progress)
+				file_iter = model.iter_next(file_iter)
+			package_iter = model.iter_next(package_iter)
+#		if self.progress < 100:
+#			self.progress = self.progress + 10
+#			return True
 		
 		

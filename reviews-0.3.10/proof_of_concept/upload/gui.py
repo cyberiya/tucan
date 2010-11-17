@@ -36,6 +36,8 @@ from tree import Tree
 
 import cons
 from input_files import InputFiles
+import threading
+from rapidshare import UploadParser
 
 MIN_WIDTH = 250
 MIN_HEIGHT = 200
@@ -73,6 +75,12 @@ class Gui(gtk.Window):
 		self.connect("delete_event", self.quit)
 		self.show_all()
 		
+		self.upload = None
+		
+
+	def add_upload(self):
+		self.upload = UploadParser("/home/elie/cli.png", "mierda", self.uploads.update)
+		
 	def input_files(self,one,two):
 		InputFiles(self,self.uploads)
 
@@ -89,4 +97,6 @@ class Gui(gtk.Window):
 if __name__ == "__main__":
 	gobject.threads_init()
 	gui = Gui()
+	th = threading.Thread(target=gui.add_upload)
+	th.start()
 	gtk.main()
