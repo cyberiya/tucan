@@ -24,6 +24,7 @@ import urllib2
 import cookielib
 import time
 import random
+import __builtin__
 
 from poster.encode import multipart_encode
 from poster.streaminghttp import register_openers
@@ -32,12 +33,13 @@ HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/
 
 class UploadParser():
 	""""""
-	def __init__(self, file_name, description, update):
+	def __init__(self, file_name, description, update=None):
 		""""""
 		up_done_action = None
 		file_id = None
 		url = None
 		self.update = update
+		__builtin__.max_speed = 8
 		
 		#The following code might allow Premium and Registered upload : to be tested
 #		 if type == "prem":
@@ -62,7 +64,11 @@ class UploadParser():
 		print up_done_action
 		datagen, headers = multipart_encode(form,None,self.progress_update)
 		headers = dict(headers.items() + HEADER.items())
-		result = opener.open(urllib2.Request(up_done_action, datagen, headers))
+		print "la"
+		req = urllib2.Request(up_done_action, datagen, headers)
+		print "middle"
+		result = opener.open(req)
+		print "ici"
 		
 		for line in result:
 			if 'File1.1=' in line:
@@ -70,8 +76,9 @@ class UploadParser():
 				print url
 		
 	def progress_update(self,se,current,total):
-#		print "%d : %d" % (current,total)
-		self.update(int(current/float(total)*100))
+		print "%d : %d" % (current,total)
+		if self.update:
+			self.update(int(current/float(total)*100))
 
 if __name__ == "__main__":
 	c = UploadParser("/home/elie/upload.png", "mierda")
