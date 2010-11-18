@@ -39,8 +39,10 @@ class UploadParser():
 		file_id = None
 		url = None
 		self.update = update
-		__builtin__.max_speed = 8
-		
+		self.file_name = file_name
+		__builtin__.max_speed = 20
+		__builtin__.stop_flag = False
+	
 		#The following code might allow Premium and Registered upload : to be tested
 #		 if type == "prem":
 #            contentheader += boundary + "\r\nContent-Disposition: form-data; name=\"login\"\r\n\r\n" + username + "\r\n"
@@ -56,7 +58,6 @@ class UploadParser():
 
 		result = opener.open(urllib2.Request("http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=nextuploadserver_v1&cbf=RSAPIDispatcher&cbid=1",None,HEADER))
 		server = result.readlines()[0].split('"')[1].split('"')[0]
-		print server
 		uploadid = str(int(time.time()))[-5:] + str(int(round(random.random()*1000000)))
 		
 		up_done_action = "http://rs%sl3.rapidshare.com/cgi-bin/upload.cgi?rsuploadid=%s" % (server,uploadid)
@@ -64,11 +65,7 @@ class UploadParser():
 		print up_done_action
 		datagen, headers = multipart_encode(form,None,self.progress_update)
 		headers = dict(headers.items() + HEADER.items())
-		print "la"
-		req = urllib2.Request(up_done_action, datagen, headers)
-		print "middle"
-		result = opener.open(req)
-		print "ici"
+		result = opener.open(urllib2.Request(up_done_action, datagen, headers))
 		
 		for line in result:
 			if 'File1.1=' in line:
@@ -76,9 +73,9 @@ class UploadParser():
 				print url
 		
 	def progress_update(self,se,current,total):
-		print "%d : %d" % (current,total)
+#		print "%d : %d" % (current,total)
 		if self.update:
-			self.update(int(current/float(total)*100))
+			self.update(int(current/float(total)*100),self.file_name)
 
 if __name__ == "__main__":
 	c = UploadParser("/home/elie/upload.png", "mierda")

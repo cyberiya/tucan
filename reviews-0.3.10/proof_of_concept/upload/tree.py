@@ -115,15 +115,16 @@ class Tree(gtk.VBox):
 		self.treeview.expand_to_path(model.get_path(item_iter))
 
 
-	def update(self,progress=0):
-		print "update", progress
+	def update(self,progress,file_name):
 		model = self.treeview.get_model()
 		package_iter = model.get_iter_root()
 
 		while package_iter:
 			file_iter = model.iter_children(package_iter)
 			while file_iter:
-				model.set_value(file_iter, 4, progress)
+				if model.get_value(file_iter,3) == file_name:
+					model.set_value(file_iter, 4, progress)
+					break
 				file_iter = model.iter_next(file_iter)
 			package_iter = model.iter_next(package_iter)
 #		if self.progress < 100:
