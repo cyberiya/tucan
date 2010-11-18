@@ -63,6 +63,8 @@ class Gui(gtk.Window):
 #		self.uploads = gtk.VBox()
 		self.add_button = gtk.Button("Add upload")
 		self.add_button.connect("clicked", self.input_files, None)
+		self.stop_button = gtk.Button("Stop upload")
+		self.stop_button.connect("clicked", self.stop_upload, None)
 
 		#pane
 		self.pane = gtk.VPaned()
@@ -70,19 +72,35 @@ class Gui(gtk.Window):
 		self.pane.pack2(self.downloads, True)
 		self.pane.pack1(self.uploads, True)
 		self.vbox.pack_end(self.add_button, True)
+		self.vbox.pack_end(self.stop_button, True)
 		self.pane.set_position(self.get_size()[1])
 		
 		self.connect("delete_event", self.quit)
 		self.show_all()
 		
 		self.upload = None
+		self.pending_uploads = None
+		self.th = []
 		
 
-	def add_upload(self):
-		self.upload = UploadParser("/home/elie/cli.png", "mierda", self.uploads.update)
+	def add_upload(self, file_name):
+		self.upload = UploadParser(file_name, "mierda", self.uploads.update)
+		
+	def stop_upload(self):
+		pass
 		
 	def input_files(self,one,two):
-		InputFiles(self,self.uploads)
+		InputFiles(self)
+
+		print self.pending_uploads
+		#Append the results in the upload tree
+		model = self.uploads.treeview.get_model()
+		package_iter = model.append(None, [None, cons.STATUS_PEND,"shit","Upload package", 0, True, None, None, None, None, "/home/elie/you"])
+		for res in self.pending_uploads:
+			item_iter = model.append(package_iter, [None, cons.STATUS_PEND, None,res[0], 0, True, None,"%d %s" % (res[1],res[2]), None, None,res[3][0]])			
+			self.uploads.treeview.expand_to_path(model.get_path(item_iter))
+			self.th.append(threading.Thread(target=gui.add_upload, args = (res[0],)))
+			self.th[-1].start()
 
 	def quit(self,one,two):
 		""""""
@@ -97,6 +115,4 @@ class Gui(gtk.Window):
 if __name__ == "__main__":
 	gobject.threads_init()
 	gui = Gui()
-	th = threading.Thread(target=gui.add_upload)
-	th.start()
 	gtk.main()

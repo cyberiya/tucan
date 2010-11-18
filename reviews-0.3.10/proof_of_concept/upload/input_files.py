@@ -34,11 +34,11 @@ SERVICES = [("Megaupload", 100, cons.UNIT_MB, ["Anonymous", "Premium"]), ("Rapid
 
 class InputFiles(gtk.Dialog):
 	""""""
-	def __init__(self, parent, uploads):#, upload_services):
+	def __init__(self, gui):#, upload_services):
 		""""""
 		gtk.Dialog.__init__(self)
-		self.uploads = uploads
-		self.set_transient_for(parent)
+		self.gui = gui
+		self.set_transient_for(gui)
 #		self.set_icon_from_file(media.ICON_UPLOAD)
 		self.set_title(("Input Files"))
 		self.set_position(gtk.WIN_POS_CENTER)
@@ -206,13 +206,8 @@ class InputFiles(gtk.Dialog):
 				size, unit = self.split_size(self.join_size(int(tmp[0]), tmp[1]))
 				result.append((package_model.get_value(file_iter, 3), int(size), unit, services))
 			file_iter = package_model.iter_next(file_iter)
-		
-		#Append the results in the upload tree
-		model = self.uploads.treeview.get_model()
-		package_iter = model.append(None, [None, cons.STATUS_PEND,"shit","Upload package", 0, True, None, None, None, None, "/home/elie/you"])
-		for res in result:
-			item_iter = model.append(package_iter, [None, cons.STATUS_PEND, None,res[0], 0, True, None,"%d %s" % (res[1],res[2]), None, None,res[3][0]])
-			self.uploads.treeview.expand_to_path(model.get_path(item_iter))
+
+		self.gui.pending_uploads = result
 		self.close()
 
 	def toggled(self, button, path):
