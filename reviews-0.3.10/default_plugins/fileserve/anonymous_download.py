@@ -70,13 +70,13 @@ class AnonymousDownload(DownloadPlugin):
 							#Captcha is good
 							if "success" in opener.open(recaptcha_url,form).read():
 								form = urllib.urlencode([("downloadLink", "wait")])
-								wait = int(opener.open(url,form).read())
+								wait = int(opener.open(url,form).read()[-2:])
 								if not wait_func(wait):
 									return
 								form = urllib.urlencode([("downloadLink", "show")])
 								opener.open(url,form).read()
 								form = urllib.urlencode([("download", "normal")])
-								return opener.open(url,form,content_range)
+								return opener.open(url,form)#,content_range)
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
