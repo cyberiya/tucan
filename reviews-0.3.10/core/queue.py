@@ -135,151 +135,109 @@ class Queue:
 			self.items.remove(link)
 		else:
 			self.delete(link.parent_id)
-			
-	
-	def move_up_link(self, id):
-		item = self.get_item(id)
-		if item:
-			ind = self.items.index(item)
-			try:
-				if isinstance(self.items[ind-1], Link):
-					self.items[ind-1], self.items[ind] = self.items[ind], self.items[ind-1]
-			except:
-				pass
-	
-	def move_down_link(self, id):
-		item = self.get_item(id)
-		if item:
-			ind = self.items.index(item)
-			try:
-				if isinstance(self.items[ind+1], Link):
-					self.items[ind+1], self.items[ind] = self.items[ind], self.items[ind+1]
-			except:
-				pass
-				
-	def move_up_file(self, id):
-		item = self.get_item(id)
-		if item:
-			ind = self.items.index(item)
-			files = self.get_children(item.parent_id)
-			if(files.index(item)-1 in range(0,len(files))):
-				if isinstance(files[files.index(item)-1], File):
-					ind2 = self.items.index(files[files.index(item)-1])
-					l = len(self.get_children(item.id)) + 1
-					d = ind - ind2
-					self.items[ind:ind+d],self.items[ind2:ind2+l] = self.items[ind2:ind2+d], self.items[ind:ind+l]
-	
-	def move_down_file(self, id):
-		item = self.get_item(id)
-		if item:
-			ind = self.items.index(item)
-			files = self.get_children(item.parent_id)
-			if(files.index(item)+1 in range(0,len(files))):
-				if isinstance(files[files.index(item)+1], File):
-					ind2 = self.items.index(files[files.index(item)+1])
-					l = len(self.get_children(item.id)) + 1
-					d = ind2 - ind
-					self.items[ind:ind+d],self.items[ind2:ind2+l] = self.items[ind2:ind2+d], self.items[ind:ind+l]
 
-				
-	def move_up_package(self, id):
-		item = self.get_item(id)
-		if item:
-			ind = self.items.index(item)
-			packages = self.get_children()
-			if(packages.index(item)-1 in range(0,len(packages))):
-				if isinstance(packages[packages.index(item)-1], Package):
-					ind2 = self.items.index(packages[packages.index(item)-1])
-					l = 1
-					for file in self.get_children(item.id):
-						l += 1
-						links = self.get_children(file.id)
-						for link in links:
-							l += 1
-					d = ind - ind2
-					self.items[ind:ind+d],self.items[ind2:ind2+l] = self.items[ind2:ind2+d], self.items[ind:ind+l]
-	
-	def move_down_package(self, id):
-		item = self.get_item(id)
-		if item:
-			ind = self.items.index(item)
-			packages = self.get_children()
-			if(packages.index(item)+1 in range(0,len(packages))):
-				if isinstance(packages[packages.index(item)+1], Package):
-					ind2 = self.items.index(packages[packages.index(item)+1])
-					l = 1
-					for file in self.get_children(item.id):
-						l += 1
-						links = self.get_children(file.id)
-						for link in links:
-							l += 1
-					d = ind2 - ind
-					self.items[ind:ind+d],self.items[ind2:ind2+l] = self.items[ind2:ind2+d], self.items[ind:ind+l]
-
-	def swap(self, id, up=True):
+	def swap(self, old, new, l):
 		""""""
-		item = self.get_item(id)
-		if item:
-			l = 0 #Number of items to move
-			items = self.get_children(id)
-			if items:
-				l += 1
-				for item in items:
-					l += 1
-					subitems = self.get_children(item.id)
-					for subitem in subitems:
-						l += 1
-			else:
-				l = 1 #Item is a link
-			
-			item = self.get_item(id)
-			
-			#Get all the items that are the same kind of the item to be moved
-			if isinstance(item, Link):
-				tmp = [it for it in enumerate(self.items) if isinstance(it[1], Link)]
-			if isinstance(item, File):
-				tmp = [it for it in enumerate(self.items) if isinstance(it[1], File)]
-			if isinstance(item, Package):
-				tmp = [it for it in enumerate(self.items) if isinstance(it[1], Package)]
+		d = abs(old - new)
+		self.items[old:old+d],self.items[new:new+l] = self.items[new:new+d], self.items[old:old+l]
 
-			old = self.items.index(item) #Old index of the item
-			new = None #New index of the item
-			
-			#Find the index of the item suitable for the swap
-			if up:
-				tmp = [ind[0] for ind in tmp if ind[1].parent_id == item.parent_id and ind[0] < old]
-				if tmp:
-					new = max(tmp)
-			else:
-				tmp = [ind[0] for ind in tmp if ind[1].parent_id == item.parent_id and ind[0] > old]
-				if tmp:
-					new = min(tmp)
-			if new:
-				#A swap is possible ?
-				if (up and new < old) or (not up and old < new):
-					d = old - new
-					i = old
-					j = new
-				
-					#Swap the two slices
-					self.items[i:i+d],self.items[j:j+l] = self.items[j:j+d],self.items[i:i+l]
+	def get_length(self, id):
+		""""""
+		l = 1
+		for item in self.get_children(id):
+			l += 1
+			subitems = self.get_children(item.id)
+			for subitem in subitems:
+				l += 1
+		return l
 
 	def move_up(self, id):
 		""""""
-		self.swap(id, True)
+		item = self.get_item(id)
+		if item:
+			if isinstance(item, Package):
+				self.move_up_package(item)
+			elif isinstance(item, File):
+				self.move_up_file(item)
+			elif isinstance(item, Link):
+				self.move_up_link(item)
 
+	def move_up_package(self, item):
+		""""""
+		ind = self.items.index(item)
+		packages = self.get_children()
+		tmp = packages.index(item)-1
+		if tmp >= 0 and tmp < len(packages):
+			if isinstance(packages[tmp], Package):
+				ind2 = self.items.index(packages[tmp])
+				self.swap(ind, ind2, self.get_length(item.id))
+
+	def move_up_file(self, item):
+		""""""
+		ind = self.items.index(item)
+		files = self.get_children(item.parent_id)
+		tmp = files.index(item)-1
+		if tmp >= 0 and tmp < len(files):
+			if isinstance(files[tmp], File):
+				ind2 = self.items.index(files[tmp])
+				self.swap(ind, ind2, self.get_length(item.id))
+
+	def move_up_link(self, item):
+		""""""
+		ind = self.items.index(item)
+		if ind-1 >= 0:
+			if isinstance(self.items[ind-1], Link):
+				self.swap(ind, ind-1, 1)
 
 	def move_down(self, id):
 		""""""
-		self.swap(id, False)
+		item = self.get_item(id)
+		if item:
+			if isinstance(item, Package):
+				self.move_down_package(item)
+			elif isinstance(item, File):
+				self.move_down_file(item)
+			elif isinstance(item, Link):
+				self.move_down_link(item)
+
+	def move_down_package(self, item):
+		""""""
+		ind = self.items.index(item)
+		packages = self.get_children()
+		tmp = packages.index(item)+1
+		if tmp >= 0 and tmp < len(packages):
+			if isinstance(packages[tmp], Package):
+				ind2 = self.items.index(packages[tmp])
+				self.swap(ind, ind2, self.get_length(item.id))
+
+	def move_down_file(self, item):
+		""""""
+		ind = self.items.index(item)
+		files = self.get_children(item.parent_id)
+		tmp = files.index(item)+1
+		if tmp >= 0 and tmp < len(files):
+			if isinstance(files[tmp], File):
+				ind2 = self.items.index(files[tmp])
+				self.swap(ind, ind2, self.get_length(item.id))
+
+	def move_down_link(self, item):
+		""""""
+		ind = self.items.index(item)
+		if ind+1 < len(self.items):
+			if isinstance(self.items[ind+1], Link):
+				self.swap(ind, ind+1, 1)
 
 	def get_value(self, id, key):
 		""""""
-		pass
+		item = self.queue.get_item(id)
+		if item:
+			return getattr(item, key)
 
 	def set_value(self, id, key, value):
 		""""""
-		pass
+		item = self.queue.get_item(id)
+		if item:
+			setattr(item, key, value)
 
 	def get_item(self, id):
 		""""""
@@ -294,14 +252,3 @@ class Queue:
 			if item.parent_id == id:
 				children.append(item)
 		return children
-		
-	def update_link(self, id, delete=False, status=None):
-		""""""
-		pass
-	def update_file(self, id):
-		""""""
-		pass
-	def update_package(self, id):
-		""""""
-		pass
-
