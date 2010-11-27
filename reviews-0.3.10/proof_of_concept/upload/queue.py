@@ -235,7 +235,7 @@ class Queue:
 
 	def set_value(self, id, key, value):
 		""""""
-		item = self.queue.get_item(id)
+		item = self.get_item(id)
 		if item:
 			setattr(item, key, value)
 
