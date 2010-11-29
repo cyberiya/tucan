@@ -247,8 +247,4 @@ class Queue:
 
 	def get_children(self, id=None):
 		""""""
-		children = []
-		for item in self.items:
-			if item.parent_id == id:
-				children.append(item)
-		return children
+		return [item for item in self.items if item.parent_id == id]
