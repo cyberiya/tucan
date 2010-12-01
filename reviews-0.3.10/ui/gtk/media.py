@@ -35,7 +35,7 @@ try:
 except Exception, e:
 	EXT = ".png"
 	PATH_MEDIA = os.path.join(PATH, "media")
-	logger.warning("Using PNG icons: %s" % e)
+	logger.debug("Using PNG icons: %s" % e)
 
 ICON_TUCAN = "%s/tucan%s" % (PATH_MEDIA, EXT)
 ICON_DOWNLOAD = "%s/document-save%s" % (PATH_MEDIA, EXT)
