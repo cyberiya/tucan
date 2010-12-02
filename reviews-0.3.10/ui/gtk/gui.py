@@ -48,7 +48,7 @@ from input_links import InputLinks
 from file_chooser import FileChooser
 from clipboard import Clipboard
 from recover import halt
-from captcha_dialog import CaptchaDialog
+from captcha_dialog import threaded_captcha_dialog
 
 from core.core import Core
 from core.sessions import Sessions
@@ -243,7 +243,7 @@ class Gui(gtk.Window, Core):
 		self.enable_clipboard()
 		
 		#captcha dialog
-		self.captcha_dialog_id = events.connect(cons.EVENT_CAPTCHA_DIALOG, CaptchaDialog, self)
+		self.captcha_dialog_id = events.connect(cons.EVENT_CAPTCHA_DIALOG, threaded_captcha_dialog, self)
 
 		#ugly polling
 		gobject.timeout_add_seconds(60, self.save_default_session)
@@ -478,3 +478,4 @@ class Gui(gtk.Window, Core):
 		self.configuration.set_window_settings(x, y, w, h)
 		self.configuration.save()
 		self.stop_all()
+
