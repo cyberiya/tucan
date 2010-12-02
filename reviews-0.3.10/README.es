@@ -87,7 +87,7 @@
  - PyGTK
  - Python Imaging Library
  - Tesseract OCR (con el paquete del idioma inglés)
- - SVG Rendering Library
+ - SVG Rendering Library (opcional)
 
  +=========================+===================+====================+
  | Paquete \ Distribución  |  Debian / Ubuntu  |       Gentoo       |
@@ -102,6 +102,7 @@
  | (english language pack) | tesseract-ocr-eng |    (linguas_en)    |
  +-------------------------+-------------------+--------------------+
  | SVG Rendering Library   | librsvg2-common   | gnome-base/librsvg |
+ | (opcional)              |                   |                    |
  +-------------------------+-------------------+--------------------+
 
  +===========+====================+================+================+
@@ -117,6 +118,7 @@
  |           | tesseract-langpack |                | tesseract-eng  |
  +-----------+--------------------+----------------+----------------+
  | librsvg   | librsvg2           | librsvg        | librsvg        |
+ |           |                    |                |                |
  +-----------+--------------------+----------------+----------------+
 
 
