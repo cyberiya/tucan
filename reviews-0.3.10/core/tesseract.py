@@ -39,16 +39,15 @@ def get_path():
 	""""""
 	if cons.OS_WINDOWS:
 		return os.path.join(sys.path[0], "tesseract", "tesseract.exe")
+	elif cons.OS_OSX:
+		return os.path.join(sys.path[0], "tesseract", "tesseract")
 	else:
-		if cons.OS_OSX:
-			return os.path.join(sys.path[0], "tesseract", "tesseract")
-		else:
-			return "tesseract"
+		return "tesseract"
 
 def check_installed():
 	""""""
-	if cons.OS_WINDOWS:
-		subprocess.call([get_path()], stdout=subprocess.PIPE, stderr=subprocess.PIPE, creationflags=134217728)
+	if cons.OS_WINDOWS or cons.OS_OSX:
+		assert os.path.exists(get_path())
 	else:
 		subprocess.call([get_path()], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
