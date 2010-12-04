@@ -151,85 +151,25 @@ class Queue:
 				l += 1
 		return l
 
-	def move_up(self, id):
-		""""""
+	def move(self, id, direction=-1):
+		"""
+		direction : -1 if the item goes up, 1 if it goes down.
+		"""
 		item = self.get_item(id)
 		if item:
-			if isinstance(item, Package):
-				self.move_up_package(item)
-			elif isinstance(item, File):
-				self.move_up_file(item)
-			elif isinstance(item, Link):
-				self.move_up_link(item)
-
-	def move_up_package(self, item):
-		""""""
-		ind = self.items.index(item)
-		packages = self.get_children()
-		tmp = packages.index(item)-1
-		if tmp >= 0 and tmp < len(packages):
-			if isinstance(packages[tmp], Package):
-				ind2 = self.items.index(packages[tmp])
-				self.swap(ind, ind2, self.get_length(item.id))
-
-	def move_up_file(self, item):
-		""""""
-		ind = self.items.index(item)
-		files = self.get_children(item.parent_id)
-		tmp = files.index(item)-1
-		if tmp >= 0 and tmp < len(files):
-			if isinstance(files[tmp], File):
-				ind2 = self.items.index(files[tmp])
-				self.swap(ind, ind2, self.get_length(item.id))
-
-	def move_up_link(self, item):
-		""""""
-		ind = self.items.index(item)
-		if ind-1 >= 0:
-			if isinstance(self.items[ind-1], Link):
-				self.swap(ind, ind-1, 1)
-
-	def move_down(self, id):
-		""""""
-		item = self.get_item(id)
-		if item:
-			if isinstance(item, Package):
-				self.move_down_package(item)
-			elif isinstance(item, File):
-				self.move_down_file(item)
-			elif isinstance(item, Link):
-				self.move_down_link(item)
-
-	def move_down_package(self, item):
-		""""""
-		ind = self.items.index(item)
-		packages = self.get_children()
-		tmp = packages.index(item)+1
-		if tmp >= 0 and tmp < len(packages):
-			if isinstance(packages[tmp], Package):
-				ind2 = self.items.index(packages[tmp])
-				self.swap(ind, ind2, self.get_length(item.id))
-
-	def move_down_file(self, item):
-		""""""
-		ind = self.items.index(item)
-		files = self.get_children(item.parent_id)
-		tmp = files.index(item)+1
-		if tmp >= 0 and tmp < len(files):
-			if isinstance(files[tmp], File):
-				ind2 = self.items.index(files[tmp])
-				self.swap(ind, ind2, self.get_length(item.id))
-
-	def move_down_link(self, item):
-		""""""
-		ind = self.items.index(item)
-		if ind+1 < len(self.items):
-			if isinstance(self.items[ind+1], Link):
-				self.swap(ind, ind+1, 1)
+			ind = self.items.index(item)
+			items = self.get_children(item.parent_id)
+			tmp = items.index(item) + direction
+			if tmp >= 0 and tmp < len(items):
+				ind2 = self.items.index(items[tmp])
+				for i in [Package, File, Link]:
+					if isinstance(item, i) and isinstance(items[tmp], i):
+						self.swap(ind, ind2, self.get_length(item.id))
+						break
 
 	def get_value(self, id, key):
 		""""""
-		item = self.queue.get_item(id)
+		item = self.get_item(id)
 		if item:
 			return getattr(item, key)
 
