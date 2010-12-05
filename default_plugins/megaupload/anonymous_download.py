@@ -43,12 +43,18 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		Slots.__init__(self, 1)
 		DownloadPlugin.__init__(self)
 
-	def add(self, path, link, file_name):
+	def add(self, path, url, file_name):
 		""""""
 		if self.get_slot():
-			parser = CaptchaForm(link)
-			if parser.link:
-				return self.start(path, parser.link, file_name, WAIT, None, self.post_wait)
+			link = None
+			wait = WAIT
+			for line in URLOpen().open(url).readlines():
+				if 'id="downloadlink"' in line:
+					link = line.split('href="')[1].split('"')[0]
+				if "count=" in line:
+					wait = line.split("=")[1].split(";")[0]
+			if link:
+				return self.start(path, link, file_name, wait, None, self.post_wait)
 
 	def post_wait(self, link):
 		"""Must return handle"""
