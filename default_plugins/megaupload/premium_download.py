@@ -23,12 +23,12 @@ import logging
 logger = logging.getLogger(__name__)
 
 from premium_cookie import PremiumCookie
-from premium_parser import PremiumParser
 from check_links import CheckLinks
 
 from core.accounts import Accounts
 from core.service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
 from core.download_plugin import DownloadPlugin
+from core.url_open import URLOpen
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
@@ -41,9 +41,13 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		""""""
 		cookie = self.get_cookie()
 		if cookie:
-			parser = PremiumParser(link, cookie)
-			link = parser.get_url()
-			if link:
+			opener = URLOpen(cookie)
+			handler = opener.open(link)
+			if "text/html" in handler.info()["Content-Type"]:
+				for line in handler.readlines():
+					if 'class="down_ad_butt1">' in line:
+						return self.start(path, line.split('href="')[1].split('"')[0], file_name, None, cookie)
+			else:
 				return self.start(path, link, file_name, None, cookie)
 
 	def delete(self, file_name):
@@ -53,7 +57,3 @@ class PremiumDownload(DownloadPlugin, Accounts):
 	def check_links(self, url):
 		""""""
 		return CheckLinks().check(url)
-
-if __name__ == "__main__":
-	p = PremiumDownload(ServiceConfig("/home/crak/.tucan/plugins/megaupload/"))
-	p.check_links("http://www.megaupload.com/es/?d=RDAJ2PYH")
