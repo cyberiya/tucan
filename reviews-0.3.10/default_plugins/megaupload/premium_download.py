@@ -48,9 +48,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 				return
 			if "text/html" in handler.info()["Content-Type"]:
 				for line in handler:
-					if "downloadlink" in line:
-						found = True
-					elif found:
+					if 'class="down_ad_butt1">' in line:
 						return opener.open(line.split('href="')[1].split('"')[0], None, content_range)
 			else:
 				return handler
