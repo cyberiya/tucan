@@ -52,7 +52,7 @@ class AnonymousDownload(DownloadPlugin, Slots):
 				if 'id="downloadlink"' in line:
 					link = line.split('href="')[1].split('"')[0]
 				if "count=" in line:
-					wait = line.split("=")[1].split(";")[0]
+					wait = int(line.split("=")[1].split(";")[0])
 			if link:
 				return self.start(path, link, file_name, wait, None, self.post_wait)
 
