@@ -40,38 +40,13 @@ class AnonymousDownload(DownloadPlugin):
 	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		link = None
-		captcha_img = None
-		captchacode = ""
-		megavar = ""
+		wait = WAIT
 		try:
-			tmp = url.split("/")
-			if len(tmp) > 4:
-				del tmp[3]
-				url = "/".join(tmp)
-			while not link:
-				for line in URLOpen().open(url):
-					if "captchacode" in line:
-						captchacode = line.split('value="')[1].split('">')[0]
-					elif "megavar" in line:
-						megavar = line.split('value="')[1].split('">')[0]
-					elif "gencap.php" in line:
-						captcha_img = line.split('src="')[1].split('"')[0]
-				if captcha_img:
-					if not wait_func():
-						return
-					handle = URLOpen().open(captcha_img)
-					if handle.info()["Content-Type"] == "image/gif":
-						tess = Tesseract(handle.read())
-						captcha = tess.get_captcha()
-						logger.info("Captcha %s: %s" % (captcha_img, captcha))
-						if len(captcha) == 4:
-							if not wait_func():
-								return
-							data = urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)])
-							for line in URLOpen().open(url, data):
-								if 'id="downloadlink"' in line:
-									link = line.split('<a href="')[1].split('"')[0]
-									break
+			for line in URLOpen().open(url).readlines():
+				if 'id="downloadlink"' in line:
+					link = line.split('href="')[1].split('"')[0]
+				if "count=" in line:
+					wait = int(line.split("=")[1].split(";")[0])
 			if not link:
 				return
 			elif not wait_func(WAIT):
