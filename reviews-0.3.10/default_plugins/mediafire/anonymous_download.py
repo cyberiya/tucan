@@ -188,7 +188,7 @@ class AnonymousDownload(DownloadPlugin):
 					if div in res:
 						serv = res.split("http://download")[1].split(".")[0]
 						var = res.split('" +')[1].split("+")[0]
-						name = res.split('g/')[1].split("\\")[0].split("/")[1]
+						name = "g/".join(res.split('g/')[1:]).split("\\")[0].split("/")[1]
 						return [serv, var, name]
 
 			#Plain text
