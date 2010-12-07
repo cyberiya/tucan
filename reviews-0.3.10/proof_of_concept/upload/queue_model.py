@@ -54,6 +54,13 @@ class Cache:
 		self.id_cache[path] = id
 		self.path_cache[id] = path
 		
+	def clear(self):
+		""""""
+		del self.id_cache
+		del self.path_cache
+		self.id_cache = {}
+		self.path_cache = {}
+		
 class QueueModel(gtk.GenericTreeModel, Queue):
 	""""""
 	def __init__(self):
@@ -90,7 +97,17 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 
 	def move(self, id, direction):
 		""""""
+		item = self.get_item(id)
+		path = self.on_get_path(item.parent_id)
+		if path:
+			iter = self.get_iter(path)
+		else:
+			iter = None
+		prev = self.get_children(item.parent_id)
+		self.cache.clear()
 		Queue.move(self, id, direction)
+		next = self.get_children(item.parent_id)
+		self.rows_reordered(path, iter, [next.index(item) for item in prev])
 
 	def on_get_flags(self):
 		""""""
@@ -261,11 +278,14 @@ class GenericTreeModelExample:
 		self.treeview = gtk.TreeView(self.listmodel)
 		#self.treeview.set_fixed_height_mode(True)
 
-		self.listmodel.add_package(FILE_LIST)
-		id = self.listmodel.add_package(FILE_LIST2)
-		self.listmodel.delete(id)
-		self.listmodel.add_package(FILE_LIST3)
+		id1 = self.listmodel.add_package(FILE_LIST)
+		id2 = self.listmodel.add_package(FILE_LIST2)
+		#self.listmodel.delete(id)
+		id3 = self.listmodel.add_package(FILE_LIST3)
+		self.listmodel.move(id1, -1)
+
 		self.treeview.expand_all()
+
 
 		# create the TreeViewColumns to display the data
 		column_names = ['Icon','Name','Progress','Current size','Total size','Speed']
