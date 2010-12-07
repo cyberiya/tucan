@@ -136,10 +136,12 @@ class Queue:
 		else:
 			self.delete(link.parent_id)
 
-	def swap(self, old, new, l):
+	def swap(self, old, new, l1, l2):
 		""""""
-		d = abs(old - new)
-		self.items[old:old+d],self.items[new:new+l] = self.items[new:new+d], self.items[old:old+l]
+		if old > new:
+			old,new,l1,l2 = new,old,l2,l1
+		self.items[old:old+l2],self.items[old+l2:old+l2+l1] = self.items[new:new+l2], self.items[old:old+l1]
+
 
 	def get_length(self, id):
 		""""""
@@ -164,7 +166,7 @@ class Queue:
 				ind2 = self.items.index(items[tmp])
 				for i in [Package, File, Link]:
 					if isinstance(item, i) and isinstance(items[tmp], i):
-						self.swap(ind, ind2, self.get_length(item.id))
+						self.swap(ind, ind2, self.get_length(item.id), self.get_length(items[tmp].id))
 						break
 
 	def get_value(self, id, key):
