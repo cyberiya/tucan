@@ -28,6 +28,8 @@ Example usage:
 
 import httplib, urllib2, socket
 from httplib import NotConnected
+import time
+import __builtin__
 
 __all__ = ['StreamingHTTPConnection', 'StreamingHTTPRedirectHandler',
         'StreamingHTTPHandler', 'register_openers']
@@ -76,7 +78,32 @@ class _StreamingHTTPMixin:
                 if self.debuglevel > 0:
                     print "sendIng an iterable"
                 for data in value:
-                    self.sock.sendall(data)
+                    first = True #Just got iterated
+                    tmp_size = 0
+                    BASE_SIZE = 4
+                    max_speed = __builtin__.max_speed
+                    if max_speed > 0:
+                        max_size = max_speed/BASE_SIZE
+                    else:
+                        max_size = 0
+                    start_seconds = time.time()
+                    while (time.time() - start_seconds) < 1:
+                        if max_size == 0 or tmp_size < max_size:
+                            #Just got iterated ?
+                            if first:
+                                first = False
+                            #If not, try to iterate
+                            else:
+                                try:
+                                    data = value.next()
+                                #The end is reached
+                                except StopIteration:
+                                    break
+                            self.sock.sendall(data)
+                            tmp_size += 1
+                        else:
+                            time.sleep(0.1)
+                    print "Speed : ", BASE_SIZE * tmp_size, " kb/s"
             else:
                 self.sock.sendall(value)
         except socket.error, v:
