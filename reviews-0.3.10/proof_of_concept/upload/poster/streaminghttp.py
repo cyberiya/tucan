@@ -29,7 +29,6 @@ Example usage:
 import httplib, urllib2, socket
 from httplib import NotConnected
 import time
-import __builtin__
 
 __all__ = ['StreamingHTTPConnection', 'StreamingHTTPRedirectHandler',
         'StreamingHTTPHandler', 'register_openers']
@@ -77,11 +76,12 @@ class _StreamingHTTPMixin:
                     value.reset()
                 if self.debuglevel > 0:
                     print "sendIng an iterable"
+                #---TUCAN (3) : Ability to limit speed and stop upload
                 for data in value:
                     first = True #Just got iterated
                     tmp_size = 0
                     BASE_SIZE = 4
-                    max_speed = __builtin__.max_speed
+                    max_speed = 20
                     if max_speed > 0:
                         max_size = max_speed/BASE_SIZE
                     else:
@@ -104,6 +104,7 @@ class _StreamingHTTPMixin:
                         else:
                             time.sleep(0.1)
                     print "Speed : ", BASE_SIZE * tmp_size, " kb/s"
+                #---TUCAN (3) END
             else:
                 self.sock.sendall(value)
         except socket.error, v:

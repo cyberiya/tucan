@@ -27,7 +27,7 @@ import random
 import __builtin__
 
 from poster.encode import multipart_encode
-from poster.streaminghttp import register_openers
+from upload import register_openers
 
 HEADER = {"User-Agent":"Mozilla/5.0 (X11; U; Linux i686) Gecko/20081114 Firefox/3.0.4", "Referer" : "http://rapidshare.com/", "Origin" : "http://rapidshare.com/"}
 
