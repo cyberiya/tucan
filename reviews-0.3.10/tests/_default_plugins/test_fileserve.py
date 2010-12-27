@@ -34,8 +34,7 @@ CONF_PATH = "../default_plugins/fileserve"
 SERVICE_NAME = "fileserve"
 
 TEST_INVALID_LINK = "http://www.fileserve.com/file/ywuKrv"
-TEST_LINK = "http://www.fileserve.com/file/ywuKrvz"
-#TEST_LINK = "http://www.fileserve.com/file/eMdS9zb"
+TEST_LINK = "http://www.fileserve.com/file/eMdS9zb"
 TEST_SIZE = 114
 TEST_UNIT = "KB"
 
