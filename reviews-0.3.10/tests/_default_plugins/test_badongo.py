@@ -34,7 +34,7 @@ CONF_PATH = "../default_plugins/badongo"
 SERVICE_NAME = "badongo"
 
 TEST_INVALID_LINK = "http://www.badongo.com/file/24466609099"
-TEST_LINK = "http://www.badongo.com/file/24466604"
+TEST_LINK = "http://www.badongo.com/file/24874783"
 TEST_SIZE = 114
 TEST_UNIT = "KB"
 
