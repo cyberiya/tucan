@@ -62,8 +62,8 @@ class AnonymousDownload(DownloadPlugin):
 						form_action = tmp.split('action="')[1].split('"')[0]
 					#Necessary to wait
 					else:
-						it.next()
-						it.next()
+						for i in range(4):
+							it.next()
 						wait = int(it.next().split("'")[1].split("'")[0])
 						if wait < 60:
 							if not wait_func(wait):
