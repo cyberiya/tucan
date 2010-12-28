@@ -163,7 +163,8 @@ class AnonymousDownload(DownloadPlugin):
 							cookie.set_cookie(gflcur)
 						
 							res = opener.open(form_action, data,None,True,form_action).readlines()
-							link.append(res[0].split('faaedbdeabd(')[2].split("')")[0].replace('\\','').strip("'"))
+							tmp = res[0].split('onclick')[2].split('(')[1].split("')")[0].replace('\\','').strip("'")
+							link.append(tmp)
 							
 							if not wait_func():
 								return
