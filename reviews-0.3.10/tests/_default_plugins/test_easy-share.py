@@ -34,7 +34,7 @@ CONF_PATH = "../default_plugins/easy-share"
 SERVICE_NAME = "easy-share"
 
 TEST_INVALID_LINK = "http://www.easy-share.com/0/"
-TEST_LINK = "http://www.easy-share.com/1912789094/"
+TEST_LINK = "http://www.easy-share.com/1913410668/"
 TEST_SIZE = 102
 TEST_UNIT = "KB"
 
