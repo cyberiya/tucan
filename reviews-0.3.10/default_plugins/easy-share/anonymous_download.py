@@ -20,6 +20,7 @@
 ###############################################################################
 
 import urllib
+import urllib2
 
 import logging
 logger = logging.getLogger(__name__)
@@ -117,6 +118,8 @@ class AnonymousDownload(DownloadPlugin):
 					elif "GB" in tmp:
 						size = int(round(float(tmp.split("GB")[0])))
 						unit = "GB"
+		except urllib2.HTTPError:
+			pass
 		except Exception, e:
 			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
