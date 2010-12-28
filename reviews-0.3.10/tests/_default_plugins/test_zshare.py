@@ -31,7 +31,7 @@ import core.cons as cons
 CONF_PATH = "../default_plugins/zshare"
 
 TEST_INVALID_LINK = "http://www.zshare.net/download/820150"
-TEST_LINK = "http://www.zshare.net/download/820150733046b016/"
+TEST_LINK = "http://www.zshare.net/download/8446701550168dba/"
 TEST_SIZE = 113
 TEST_UNIT = "KB"
 
