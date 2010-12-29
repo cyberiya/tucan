@@ -33,7 +33,7 @@ CONF_PATH = "../default_plugins/hotfile"
 SERVICE_NAME = "hotfile"
 
 TEST_INVALID_LINK = "http://hotfile.com/dl/73035169/57ac0fc/prueba.bin.html"
-TEST_LINK = "http://hotfile.com/dl/80466558/2c7b643/prueba.bin.html"
+TEST_LINK = "http://hotfile.com/dl/92777842/595f25b/prueba.bin.html"
 TEST_SIZE = 102
 TEST_UNIT = "KB"
 
