@@ -40,55 +40,71 @@ class AnonymousDownload(DownloadPlugin):
 			wait = WAIT
 			opener = URLOpen()
 			it = opener.open(url)
+			first_wait = False
+			#Check for first wait
 			for line in it:
 				if 'var wf =' in line:
 					try:
 						wait = int(line.split("=")[1].split(";")[0].strip())
+						first_wait = True
 					except Exception, e:
 						logger.exception("%s: %s" % (url, e))
 						return
 				break
-			if not wait_func(wait):
-				return
-			data = urllib.urlencode([("free", "Regular Download")])
-			url = "%sbilling?%s" % (url,data)
-			it = opener.open(url,data)
-			for line in it:
-				if 'name="id"' in line:
-					file_id = line.split('value="')[1].split('"')[0]
-				elif 'id="dwait"' in line:
-					tmp = it.next()
-					#The download is possible
-					if "form" in tmp:
-						form_action = tmp.split('action="')[1].split('"')[0]
-					#Necessary to wait
-					else:
-						for i in range(4):
-							it.next()
-						wait = int(it.next().split("'")[1].split("'")[0])
-						if wait < 60:
-							if not wait_func(wait):
-								return
-						else:
-							return self.set_limit_exceeded(wait)
-				elif 'Recaptcha.create("' in line:
-					tmp = line.split('"')[1].split('"')[0]
-					recaptcha_link = "http://www.google.com/recaptcha/api/challenge?k=%s" % tmp
-					if not wait_func():
+			#Necessary to loop to reload the page, due to the wait
+			for loop in range(3):
+				if not wait_func():
+					return
+				#First wait
+				if first_wait:
+					if not wait_func(wait):
 						return
-					c = Recaptcha(BASE_URL, recaptcha_link)
-					for retry in range(3):
-						challenge, response = c.solve_captcha()
-						if response:
-							if not wait_func():
-								return
+					data = urllib.urlencode([("free", "Regular Download")])
+					url = "%sbilling?%s" % (url,data)
+					it = opener.open(url,data)
+				#No first wait
+				else:
+					it = opener.open(url)
+				for line in it:
+					if 'name="id"' in line:
+						file_id = line.split('value="')[1].split('"')[0]
+					elif 'id="dwait"' in line:
+						it.next()
+						it.next()
+						tmp = it.next()
+						#The download is possible
+						if "form" in tmp:
+							form_action = tmp.split('action="')[1].split('"')[0]
+						#Necessary to wait
+						else:
+							it.next()
+							it.next()
+							wait = int(it.next().split("'")[1].split("'")[0])
+							if wait < 60:
+								if not wait_func(wait):
+									return
+								#Next loop, reload the page
+								break
+							else:
+								return self.set_limit_exceeded(wait)
+					elif 'Recaptcha.create("' in line:
+						tmp = line.split('"')[1].split('"')[0]
+						recaptcha_link = "http://www.google.com/recaptcha/api/challenge?k=%s" % tmp
+						if not wait_func():
+							return
+						c = Recaptcha(BASE_URL, recaptcha_link)
+						for retry in range(3):
+							challenge, response = c.solve_captcha()
+							if response:
+								if not wait_func():
+									return
 							
-							#Submit the input to the recaptcha system
-							form = urllib.urlencode([("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response), ("recaptcha_shortencode_field", "undefined")])
-							handle = opener.open(form_action, form, content_range)
-							if not handle.info().getheader("Content-Type") == "text/html":
-								#Captcha is good
-								return handle
+								#Submit the input to the recaptcha system
+								form = urllib.urlencode([("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response), ("recaptcha_shortencode_field", "undefined")])
+								handle = opener.open(form_action, form, content_range)
+								if not handle.info().getheader("Content-Type") == "text/html":
+									#Captcha is good
+									return handle
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
