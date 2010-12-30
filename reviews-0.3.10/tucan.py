@@ -25,7 +25,7 @@ import sys
 import logging
 import optparse
 
-from core.misc import remove_conf_dir
+from core.misc import remove_conf_dir, main_info
 
 import core.dependencies as dependencies
 import core.pid_file as pid_file
@@ -91,6 +91,7 @@ class Tucan:
 	def start_ui(self):
 		""""""
 		self.set_globals()
+		main_info(self.logger)
 		if self.options.wizard:
 			self.set_verbose()
 			self.start_wizard(self.options.wizard)
