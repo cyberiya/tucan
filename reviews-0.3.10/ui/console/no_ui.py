@@ -105,6 +105,7 @@ class NoUi(Core):
 						return {}
 					file_name, size, size_unit = check(link)
 					if file_name:
+						file_name = ''.join([c for c in file_name if c not in '\/:*?"<>|%'])
 						if size > 0:
 							tmp.append((link, file_name, size, size_unit, plugin_type))
 					else:
