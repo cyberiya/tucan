@@ -78,4 +78,4 @@ class UploadParser():
 			self.update(int(current/float(total)*100),self.file_name)
 
 if __name__ == "__main__":
-	c = UploadParser("/home/elie/upload.png", "mierda")
+	c = UploadParser("/home/crak/wallpaper.png", "mierda")
