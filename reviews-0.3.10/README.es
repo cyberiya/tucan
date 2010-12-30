@@ -7,7 +7,6 @@
 
    - http://rapidshare.com/
    - http://megaupload.com/
-   - http://gigasize.com/
    - http://mediafire.com/
    - http://4shared.com/
    - http://sendspace.com/
@@ -191,10 +190,6 @@
    aparece la ventana de Preferencias.
  - Antes de usar un servicio, éste debe estar activado en la pestaña
    "Configuración de Servicio" de la ventana Preferencias.
-
- - Acceso anónimo de http://gigasize.com/:
-   - gigasize.com no permite comprobar links si ya hay un link descargándose de
-     este servicio.
 
 
 ===================
