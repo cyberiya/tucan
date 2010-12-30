@@ -38,8 +38,8 @@ SECTION_MAIN = "main"
 SECTION_UPDATES = "updates"
 OPTION_VERSION = "version"
 
-FORJA = "https://forja.rediris.es/svn/cusl3-tucan/branches/update_manager/"
-BTD = "http://build-tucan-doc.googlecode.com/svn/branches/update_manager/"
+FORJA = "https://forja.rediris.es/svn/cusl3-tucan/branches/update_manager/0.3.10/"
+BTD = "http://build-tucan-doc.googlecode.com/svn/branches/update_manager/0.3.10/"
 
 SERVERS = [BTD, FORJA]
 UPDATE_FILE = "updates.conf"

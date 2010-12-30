@@ -282,7 +282,7 @@ class GenericTreeModelExample:
 		id2 = self.listmodel.add_package(FILE_LIST2)
 		#self.listmodel.delete(id)
 		id3 = self.listmodel.add_package(FILE_LIST3)
-		self.listmodel.move(id1, -1)
+		self.listmodel.move(id1, 1)
 
 		self.treeview.expand_all()
 

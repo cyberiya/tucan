@@ -46,6 +46,11 @@ class Item:
 		if self.status in [cons.STATUS_ACTIVE, cons.STATUS_WAIT]:
 			return True
 
+	def get_pending(self):
+		""""""
+		if self.status in [cons.STATUS_PEND, cons.STATUS_ERROR]:
+			return True
+
 class Link(Item):
 	""""""
 	def __init__(self, parent_id, plugin):

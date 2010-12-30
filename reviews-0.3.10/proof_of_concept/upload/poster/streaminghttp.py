@@ -72,6 +72,7 @@ class _StreamingHTTPMixin:
                     self.sock.sendall(data)
                     data = value.read(blocksize)
             elif hasattr(value, 'next'):
+            	print value.mierda
                 if hasattr(value, 'reset'):
                     value.reset()
                 if self.debuglevel > 0:
