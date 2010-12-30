@@ -250,7 +250,7 @@ class InputLinks(gtk.Dialog):
 								raise Exception("Check Links cancelled")
 							file_name, size, size_unit = check(link)
 							if file_name:
-								#To be fixed in the next version
+								#WindowsError: [Error 123], needs refactoring
 								file_name = ''.join([c for c in file_name if c not in '\/:*?"<>|%'])
 								if size > 0:
 									icon = active_icon
