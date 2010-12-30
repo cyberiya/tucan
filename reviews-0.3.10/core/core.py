@@ -28,15 +28,12 @@ from service_manager import ServiceManager
 from download_manager import DownloadManager
 from history import History
 
-import misc
 import cons
 
 class Core(ServiceManager):
 	""""""
 	def __init__(self, configuration):
 		""""""
-		misc.main_info(logger)
-
 		if not configuration.configured:
 			logger.warning("No configuration found!")
 
