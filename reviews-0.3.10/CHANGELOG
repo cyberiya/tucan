@@ -1,3 +1,22 @@
+Tucan 0.3.10 Alpha 2010-12-30.
+------------------------------
+- Download Resume support.
+- Captcha Dialog for Recaptcha.
+- Clipboard Monitor.
+- History View.
+- Recovery Dialog.
+- Save window position.
+- New Limit Exceeded menu.
+- Cli session support.
+- Solved Cli +20 links bug.
+- Solved many MS Windows bugs.
+- UpdateManager multiple versions support.
+- New anonymous Uploading plugin.
+- New anonymous storage.to plugin.
+- Replaced Gigasize plugin with Fileserve.
+- Danish Localization.
+- Turkish Localization.
+
 Tucan 0.3.9 Alpha 2009-10-07.
 ------------------------------
 - Command Line interface.
