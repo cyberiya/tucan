@@ -25,7 +25,7 @@ import platform
 
 #project constants
 TUCAN_NAME = "Tucan Manager"
-TUCAN_VERSION = "0.3.10-RC alpha"
+TUCAN_VERSION = "0.3.10 alpha"
 WEBPAGE = "http://www.tucaneando.com"
 DOC = "http://doc.tucaneando.com"
 
@@ -43,8 +43,7 @@ else:
 	OS_UNIX = True
 
 #user agent
-USER_AGENT = "Mozilla/5.0 (X11; U; Linux i686; en-US) Gecko/20090919 Firefox/3.5.3"
-
+USER_AGENT = "Mozilla/5.0 (X11; U; Linux i686; en-US) Gecko/20101223 Firefox/3.6.13"
 
 #status constants
 STATUS_PEND = "pending"
