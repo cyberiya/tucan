@@ -7,6 +7,7 @@
 
    - http://rapidshare.com/
    - http://megaupload.com/
+   - http://gigasize.com/
    - http://mediafire.com/
    - http://4shared.com/
    - http://sendspace.com/
@@ -188,6 +189,10 @@
    window appears.
  - Before running a service, it must be enabled in "Service Configuration" in
    the Preferences window.
+
+ - Anonymous access to http://gigasize.com/:
+   - gigasize.com disallows checking links if an active link is already
+     downloading from this service.
 
 
 ===================
