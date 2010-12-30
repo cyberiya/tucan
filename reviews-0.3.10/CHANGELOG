@@ -12,7 +12,6 @@ Tucan 0.3.10 Alpha 2010-12-30.
 - Solved many MS Windows bugs.
 - UpdateManager multiple versions support.
 - New anonymous Uploading plugin.
-- New anonymous storage.to plugin.
 - Replaced Gigasize plugin with Fileserve.
 - Danish Localization.
 - Turkish Localization.
