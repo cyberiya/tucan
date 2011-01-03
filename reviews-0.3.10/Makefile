@@ -27,13 +27,15 @@ DESKTOPDIR	=	$(DESTDIR)/share/applications/
 
 NAME		=	tucan
 EXECFILE	=	tucan.py
-ICONFILE	=	tucan.svg
+ICONFILE	=	tucan.png
+ICONFILESCALABLE	=	tucan.svg
 MANPAGE		=	tucan.1.gz
 DESKTOPFILE	=	tucan.desktop
 COREDIR		=	core/
 PLUGINDIR	=	default_plugins/
 I18NDIR		=	i18n/
 MEDIADIR	=	media/
+MEDIADIRSCALABLE	=	media/scalable/
 UIDIR		=	ui/
 
 compile:
@@ -53,6 +55,8 @@ basic-install:
 	cp -pR $(MEDIADIR) $(MAINDIR)
 	cp -pR $(UIDIR) $(MAINDIR)
 
+	install -p -m 0644 $(MEDIADIRSCALABLE)$(ICONFILESCALABLE) $(ICONDIR)
+
 	install -p -m 0644 $(MEDIADIR)$(ICONFILE) $(ICONDIR)
 
 	install -p -m 0644 $(MANPAGE) $(MANDIR)
@@ -62,6 +66,7 @@ basic-install:
 uninstall:
 	rm -rf $(MAINDIR)
 	rm -f $(BINDIR)$(NAME)
+	rm -f $(ICONDIR)$(ICONFILESCALABLE)
 	rm -f $(ICONDIR)$(ICONFILE)
 	rm -f $(MANDIR)$(MANPAGE)
 	rm -f $(DESKTOPDIR)$(DESKTOPFILE)
