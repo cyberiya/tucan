@@ -47,13 +47,14 @@ class Sessions(SafeConfigParser):
 			if self.has_section(SECTION_DOWNLOADS):
 				if ((self.has_option(SECTION_DOWNLOADS, OPTION_PACKAGES)) and (self.has_option(SECTION_DOWNLOADS, OPTION_PACKAGES_INFO))): 
 					result = pickle.loads(self.get(SECTION_DOWNLOADS, OPTION_PACKAGES)), pickle.loads(self.get(SECTION_DOWNLOADS, OPTION_PACKAGES_INFO))
+					print result
 		return result
 
 	def save_session(self, path, session_packages, session_info):
 		""""""
 		if not self.has_section(SECTION_DOWNLOADS):
 			self.add_section(SECTION_DOWNLOADS)
-		self.set(SECTION_DOWNLOADS, OPTION_PACKAGES, pickle.dumps(session_packages))
+		self.set(SECTION_DOWNLOADS, OPTION_PACKAGES, pickle.dumps(session_packages).replace("%","%%"))
 		self.set(SECTION_DOWNLOADS, OPTION_PACKAGES_INFO, pickle.dumps(session_info))
 		self.save(path)
 
