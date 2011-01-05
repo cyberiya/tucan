@@ -92,7 +92,7 @@ class History(SafeConfigParser):
 		self.set(id, OPTION_SIZE, "%i %s" % (size, unit))
 		for link in links:
 			if link.active:
-				self.set(id, OPTION_LINK, link.url)
+				self.set(id, OPTION_LINK, link.url.replace("%","%%"))
 				break
 		self.save()
 
