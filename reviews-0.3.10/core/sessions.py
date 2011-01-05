@@ -47,7 +47,6 @@ class Sessions(SafeConfigParser):
 			if self.has_section(SECTION_DOWNLOADS):
 				if ((self.has_option(SECTION_DOWNLOADS, OPTION_PACKAGES)) and (self.has_option(SECTION_DOWNLOADS, OPTION_PACKAGES_INFO))): 
 					result = pickle.loads(self.get(SECTION_DOWNLOADS, OPTION_PACKAGES)), pickle.loads(self.get(SECTION_DOWNLOADS, OPTION_PACKAGES_INFO))
-					print result
 		return result
 
 	def save_session(self, path, session_packages, session_info):
