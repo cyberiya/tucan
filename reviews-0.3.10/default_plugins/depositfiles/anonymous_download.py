@@ -68,7 +68,7 @@ class AnonymousDownload(DownloadPlugin):
 				#No content-range support
 				handle = URLOpen().open(link)
 			except Exception, e:
-				return self.set_limit_exceeded()
+				return self.set_limit_exceeded(300)
 			else:
 				return handle
 
