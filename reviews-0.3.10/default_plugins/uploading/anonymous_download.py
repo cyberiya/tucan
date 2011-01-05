@@ -48,7 +48,7 @@ class AnonymousDownload(DownloadPlugin):
 						code = it.next().split('value="')[1].split('"')[0]
 						break
 					except:
-						return self.set_limit_exceeded()
+						return self.set_limit_exceeded(300)
 			form = urllib.urlencode([("action", "second_page"), ("file_id", file_id), ("code", code)])
 			#Second req to get to the timer
 			it = opener.open(form_action, form)
