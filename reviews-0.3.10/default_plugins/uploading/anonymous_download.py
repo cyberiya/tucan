@@ -40,12 +40,15 @@ class AnonymousDownload(DownloadPlugin):
 			it = opener.open(url)
 			for line in it:
 				if '"page pageDownloadAvm"' in line:
-					form_action = it.next().split('"')[1].split('"')[0]
-					it.next()
-					#action = it.next().split('value="')[1].split('"')[0]
-					file_id = it.next().split('value="')[1].split('"')[0]
-					code = it.next().split('value="')[1].split('"')[0]
-					break
+					try:
+						form_action = it.next().split('"')[1].split('"')[0]
+						it.next()
+						#action = it.next().split('value="')[1].split('"')[0]
+						file_id = it.next().split('value="')[1].split('"')[0]
+						code = it.next().split('value="')[1].split('"')[0]
+						break
+					except:
+						return self.set_limit_exceeded()
 			form = urllib.urlencode([("action", "second_page"), ("file_id", file_id), ("code", code)])
 			#Second req to get to the timer
 			it = opener.open(form_action, form)
