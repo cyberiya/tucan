@@ -54,6 +54,9 @@ class AnonymousDownload(DownloadPlugin):
 				if 'download_started();' in line:
 					link = line.split('action="')[1].split('"')[0]
 					break
+				if 'html_download_api-limit_interval' in line:
+					tmp = int(line.split(">")[1].split("<")[0])
+					return self.set_limit_exceeded(tmp)
 			if not link:
 				return
 			if not wait_func(wait):
