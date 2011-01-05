@@ -41,17 +41,19 @@ class AnonymousDownload(DownloadPlugin):
 			for line in it:
 				if '"page pageDownloadAvm"' in line:
 					form_action = it.next().split('"')[1].split('"')[0]
-					action = it.next().split('value="')[1].split('"')[0]
+					it.next()
+					#action = it.next().split('value="')[1].split('"')[0]
 					file_id = it.next().split('value="')[1].split('"')[0]
 					code = it.next().split('value="')[1].split('"')[0]
 					break
-			form = urllib.urlencode([("action", action), ("file_id", file_id), ("code", code)])
+			form = urllib.urlencode([("action", "second_page"), ("file_id", file_id), ("code", code)])
 			#Second req to get to the timer
 			it = opener.open(form_action, form)
 			for line in it:
 				if 'id="timeadform"' in line:
 					form_action = line.split('"')[1].split('"')[0]
-					action = it.next().split('value="')[1].split('"')[0]
+					it.next()
+					#action = it.next().split('value="')[1].split('"')[0]
 					file_id = it.next().split('value="')[1].split('"')[0]
 					code = it.next().split('value="')[1].split('"')[0]
 					break
