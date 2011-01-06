@@ -20,6 +20,7 @@
 ###############################################################################
 
 import urllib
+import cookielib
 
 import logging
 logger = logging.getLogger(__name__)
@@ -35,7 +36,8 @@ class AnonymousDownload(DownloadPlugin):
 	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
-			opener = URLOpen()
+			cookie = cookielib.CookieJar()
+			opener = URLOpen(cookie)
 			file_id = url.split("/")[-2]
 			form_action = "%s/%s/%s?start=1" % (BASE_URL,file_id,file_id)
 			
@@ -45,14 +47,15 @@ class AnonymousDownload(DownloadPlugin):
 			it = opener.open(form_action)
 			it_tmp = None
 			for line in it:
+				#First wait
 				if "name='tm'" in line:
-					print "FIRST WAIT"
 					tm = line.split("value='")[1].split("'")[0];
 					tm_hash = it.next().split("value='")[1].split("'")[0];
 					form = urllib.urlencode([("tm", tm), ("tm_hash", tm_hash)])
 					it_tmp = opener.open(form_action, form)
 					break
 			
+			#Loop until we get the captcha
 			for loop in range(3):
 				if not wait_func():
 					return
@@ -62,7 +65,6 @@ class AnonymousDownload(DownloadPlugin):
 					it = opener.open(form_action)
 				for line in it:
 					if 'Recaptcha.create("' in line:
-						print "CAPTCHA"
 						tmp = line.split('"')[1].split('"')[0]
 						recaptcha_link = "http://www.google.com/recaptcha/api/challenge?k=%s" % tmp
 						if not wait_func():
@@ -85,14 +87,18 @@ class AnonymousDownload(DownloadPlugin):
 				
 					#Link already there
 					elif 'downloadLink' in line:
-						print "DOWNLOAD"
 						it.next()
 						return opener.open(it.next().split('href="')[1].split('"')[0])
+					
+					if "name='tm'" in line:
+						tm = line.split("value='")[1].split("'")[0];
+						tm_hash = it.next().split("value='")[1].split("'")[0];
+						form = urllib.urlencode([("tm", tm), ("tm_hash", tm_hash)])
+						it_tmp = opener.open(form_action, form)
 				
 					#Need to wait
 					elif 'countDownDelay =' in line:
 						wait = int(line.split("= ")[1].split(";")[0])
-						print "WAIT ", wait
 						if wait < 60:
 							if not wait_func(wait):
 								return
