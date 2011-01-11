@@ -41,6 +41,7 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 		self.parent_widget = parent
 
 		self.installing = False
+		self.checking_version = False
 		self.remote_info = info
 
 		self.set_icon_from_file(media.ICON_UPDATE)
@@ -109,23 +110,30 @@ class UpdateManager(gtk.Dialog, ServiceUpdate):
 
 		self.progress.hide()
 
-		gobject.timeout_add(200, self.check_version)
+		gobject.timeout_add(200, self.load_updates)
 
 		self.run()
 
-	def check_version(self):
+	def load_updates(self):
 		""""""
-		self.get_updates()
-		if self.remote_version == None:
-			message = "Update Manager can't connect to server.\nTry again later."
-			Message(self, cons.SEVERITY_ERROR, "Not available!", message)
-			gobject.idle_add(self.close)
-		elif self.remote_version.split(" ")[0] <= cons.TUCAN_VERSION.split(" ")[0]:
-			self.check_updates()
-		else:
-			message = "Version %s released!\nPlease update and enjoy new services." % self.server_version
-			Message(self, cons.SEVERITY_ERROR, "Outdated!", message)
-			gobject.idle_add(self.close)
+		if not self.checking_version:
+			self.checking_version = True
+			if self.get_updates():
+				self.check_updates()
+			else:
+				if self.remote_version == None:
+					title = "Not available!"
+					message = "Update Manager can't connect to server.\nTry again later."
+				elif self.remote_outdated:
+					title = "Brand new!"
+					#message = "Version %s\nHas no updates available yet." % cons.TUCAN_VERSION
+					message = "Version %s\nRC releases have no updates." % cons.TUCAN_VERSION
+				else:
+					title = "Outdated!"
+					message = "Version %s released!\nPlease update and enjoy new features." % self.remote_version
+				Message(self, cons.SEVERITY_ERROR, title, message)
+				gobject.idle_add(self.close)
+			self.checking_version = False
 
 	def toggled(self, button, path):
 		""""""

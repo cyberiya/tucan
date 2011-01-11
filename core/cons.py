@@ -25,7 +25,7 @@ import platform
 
 #project constants
 TUCAN_NAME = "Tucan Manager"
-TUCAN_VERSION = "0.3.9 alpha"
+TUCAN_VERSION = "0.3.10 alpha"
 WEBPAGE = "http://www.tucaneando.com"
 DOC = "http://doc.tucaneando.com"
 
@@ -43,8 +43,7 @@ else:
 	OS_UNIX = True
 
 #user agent
-USER_AGENT = "Mozilla/5.0 (X11; U; Linux i686; en-US) Gecko/20090919 Firefox/3.5.3"
-
+USER_AGENT = "Mozilla/5.0 (X11; U; Linux i686; en-US) Gecko/20101223 Firefox/3.6.13"
 
 #status constants
 STATUS_PEND = "pending"
@@ -77,14 +76,10 @@ TYPE_USER = "User"
 TYPE_PREMIUM = "Premium"
 TYPE_UNSUPPORTED = "unsupported"
 
-#default locale constant
-LOCALE_NAME = locale.getdefaultlocale()[0]
-LOCALE_CODEC = locale.getdefaultlocale()[1]
-
 #path constants
 if OS_WINDOWS:
 	PATH = os.path.join(os.path.abspath(os.path.dirname(sys.argv[0])), "")
-	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "").decode(LOCALE_CODEC)
+	DEFAULT_PATH = os.path.join(os.path.expanduser("~"), "").decode(locale.getdefaultlocale()[1])
 	if PATH not in sys.path:
 		sys.path.insert(0, PATH)
 else:
@@ -113,9 +108,18 @@ SESSION_FILE = os.path.join(CONFIG_PATH, "last.session")
 NAME_LOCALES = "tucan"
 PATH_LOCALES = os.path.join(PATH, "i18n")
 
+#dependency constants
+DEPENDENCY_RECAPTCHA = "recaptcha"
+DEPENDENCY_TESSERACT = "tesseract"
+
 #events constants
 EVENT_FILE_COMPLETE = "file-complete"
+EVENT_PACKAGE_COMPLETE = "package-complete"
 EVENT_ALL_COMPLETE = "all-complete"
 EVENT_LIMIT_ON = "limit-exceeded-on"
 EVENT_LIMIT_OFF = "limit-exceeded-off"
 EVENT_LIMIT_CANCEL = "limit-exceeded-cancel"
+EVENT_LINK_CHECKED = "link-checked"
+EVENT_CHECK_COMPLETED = "check-links-completed"
+EVENT_CHECK_CANCEL = "check-links-cancel"
+EVENT_CAPTCHA_DIALOG = "captcha-dialog"

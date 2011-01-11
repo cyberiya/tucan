@@ -21,38 +21,75 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from parsers import CheckLinks, Parser
+import cookielib
 
 from core.download_plugin import DownloadPlugin
-from core.slots import Slots
+from core.url_open import URLOpen
 
-WAIT = 40
+WAIT = 20
 
-class AnonymousDownload(DownloadPlugin, Slots):
+class AnonymousDownload(DownloadPlugin):
 	""""""
-	def __init__(self):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
-		Slots.__init__(self, 1)
-		DownloadPlugin.__init__(self)
+		try:
+			tmp_link = None
+			link = None
+			wait = WAIT
+			opener = URLOpen(cookielib.CookieJar())
+			it = opener.open(url)
+			for line in it:
+				if "dbtn" in line:
+					tmp_link = line.split('href="')[1].split('"')[0]
+			if tmp_link:
+				it = opener.open(tmp_link)
+				for line in it:
+					if "id='divDLStart'" in line:
+						link = it.next().split("<a href='")[1].split("'")[0]
+					elif '<div class="sec">' in line:
+						wait = int(line.split(">")[1].split("<")[0])
+			if not link:
+				return
+			elif not wait_func(wait):
+				return
+		except Exception, e:
+			logger.exception("%s: %s" % (url, e))
+		else:
+			try:
+				handle = opener.open(link)
+			except Exception, e:
+				return self.set_limit_exceeded()
+			else:
+				return handle
 
 	def check_links(self, url):
 		""""""
-		return CheckLinks().check(url)
-
-	def add(self, path, link, file_name):
-		""""""
-		if self.get_slot():
-			parser = Parser(link)
-			if parser.link:
-				if self.start(path, parser.link, file_name, WAIT):
-					return True
-				else:
-					logger.warning("Limit Exceeded.")
-					self.add_wait()
-					self.return_slot()
-
-
-	def delete(self, file_name):
-		""""""
-		if self.stop(file_name):
-			logger.warning("Stopped %s: %s" % (file_name, self.return_slot()))
+		name = None
+		size = -1
+		unit = None
+		size_found = False
+		try:
+			it = URLOpen().open(url)
+			for line in it:
+				if '<span id="fileNameTextSpan">' in line:
+					name = line.split('<span id="fileNameTextSpan">')[1].split('</span>')[0].strip()
+					break
+				elif '<div class="small lgrey" style="margin-bottom:5px">' in line:
+					size_found = True
+				elif size_found:
+					size_found = False
+					tmp = line.split("<b>")[1].split("</b>")[0].split()
+					unit = tmp[1]
+					if "," in tmp[0]:
+						size = int(tmp[0].replace(",", ""))
+					else:
+						size = int(tmp[0])
+					if size > 1024:
+						if unit == "KB":
+							size = size / 1024
+							unit = "MB"
+		except Exception, e:
+			name = None
+			size = -1
+			logger.exception("%s :%s" % (url, e))
+		return name, size, unit

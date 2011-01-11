@@ -48,6 +48,7 @@ from input_links import InputLinks
 from file_chooser import FileChooser
 from clipboard import Clipboard
 from recover import halt
+from captcha_dialog import threaded_captcha_dialog
 
 from core.core import Core
 from core.sessions import Sessions
@@ -240,6 +241,9 @@ class Gui(gtk.Window, Core):
 		services = [service.name for service in self.services]
 		self.clipboard_monitor = Clipboard(self, self.add_downloads, self.set_urgency_hint, services)
 		self.enable_clipboard()
+		
+		#captcha dialog
+		self.captcha_dialog_id = events.connect(cons.EVENT_CAPTCHA_DIALOG, threaded_captcha_dialog, self)
 
 		#ugly polling
 		gobject.timeout_add_seconds(60, self.save_default_session)
@@ -253,7 +257,7 @@ class Gui(gtk.Window, Core):
 		""""""
 		if enable:
 			if self.configuration.get_clipboard_monitor():
-				self.clipboard_monitor.enable()
+				gobject.idle_add(self.clipboard_monitor.enable)
 		else:
 			self.clipboard_monitor.disable()
 
@@ -319,10 +323,12 @@ class Gui(gtk.Window, Core):
 		""""""
 		model, iter = self.downloads.treeview.get_selection().get_selected()
 		if iter:
+			self.enable_clipboard(False)
 			link_list = self.downloads.get_links(iter)
 			clipboard = gtk.Clipboard()
 			clipboard.clear()
 			clipboard.set_text("\n".join(link_list))
+			self.enable_clipboard(True)
 
 	def load_session(self, path):
 		""""""
@@ -462,13 +468,14 @@ class Gui(gtk.Window, Core):
 		""""""
 		x, y = self.get_position()
 		w, h = self.get_size()
-		self.hide()
 		if self.tray_icon:
 			self.tray_icon.close()
+		self.save_default_session()
+		self.destroy()
 		gtk.main_quit()
 		#save ui configuration
 		self.configuration.set_show_uploads(self.show_uploads.get_active())
 		self.configuration.set_window_settings(x, y, w, h)
 		self.configuration.save()
-		self.save_default_session()
 		self.stop_all()
+

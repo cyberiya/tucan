@@ -18,25 +18,30 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import re
 import sys
+import shutil
 import urllib
 import logging
 logger = logging.getLogger(__name__)
-
-from htmlentitydefs import name2codepoint
 
 import url_open
 import cons
 
 REPORT_URL = "http://crak.appspot.com/add"
 
+def remove_conf_dir():
+	""""""
+	if ".tucan" in cons.CONFIG_PATH:
+		logging.shutdown()
+		shutil.rmtree(cons.CONFIG_PATH)
+	else:
+		raise Exception("Failed to remove: %s" % cons.CONFIG_PATH)
+
 def main_info(log=logger):
 	""""""
 	log.info("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
 	log.debug("OS: %s" %  cons.OS_VERSION)
 	log.debug("PYTHON: %s" % cons.OS_PYTHON)
-	log.debug("Locale settings: %s (%s)" % (cons.LOCALE_NAME, cons.LOCALE_CODEC))
 	log.debug("Main path: %s" % cons.PATH)
 	log.debug("Configuration path: %s" % cons.CONFIG_PATH)
 
@@ -69,28 +74,35 @@ def get_exception_info(type, value, trace):
 	else:
 		return "File %s line %i - %s: %s" % (file_name, line_no, exception, value)
 
-def url_quote(url):
-	"""Replace special characters in string using the %xx escape. """
-	return urllib.quote(url, "/:=?")
-	
-def url_unquote(url):
-	"""Replace %xx escapes by their single-character equivalent."""
-	return urllib.unquote(urllib.unquote(url))
-
-def substitute_entity(match):
+def get_size(num):
 	""""""
-	ent = match.group(2)
-	if match.group(1) == "#":
-		return unichr(int(ent))
-	else:
-		cp = name2codepoint.get(ent)
-	if cp:
-		return unichr(cp)
-	else:
-		return match.group()
+	result = 0, cons.UNIT_KB
+	if num:
+		result = 1, cons.UNIT_KB
+		tmp = int(num/1024)
+		if  tmp > 0:
+			result = tmp, cons.UNIT_KB
+			tmp = int(tmp/1024)
+			if tmp > 0:
+				result = tmp, cons.UNIT_MB
+	return result
 
-def decode_htmlentities(string):
+def calculate_time(time):
 	""""""
-	#entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
-	#return entity_re.subn(substitute_entity, string)[0]
-	return string
+	result = None
+	hours = 0
+	minutes = 0
+	while time >= cons.HOUR:
+		time = time - cons.HOUR
+		hours += 1
+	while time >= cons.MINUTE:
+		time = time - cons.MINUTE
+		minutes += 1
+	seconds = time
+	if hours > 0:
+		result = str(hours) + "h" + str(minutes) + "m" + str(seconds) + "s"
+	elif minutes > 0:
+		result =  str(minutes) + "m" + str(seconds) + "s"
+	elif seconds > 0:
+		result = str(seconds) + "s"
+	return result

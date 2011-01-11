@@ -2,7 +2,7 @@
 ## Tucan Project
 ##
 ## Copyright (C) 2008-2010 Fran Lupion crak@tucaneando.com
-##
+##                         Elie Melois eliemelois@gmail.com
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
 ## the Free Software Foundation; either version 3 of the License, or
@@ -21,42 +21,79 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from parsers import CheckLinks, Parser
+import urllib
+import cookielib
 
 from core.download_plugin import DownloadPlugin
-from core.slots import Slots
+from core.url_open import URLOpen
 
-class AnonymousDownload(DownloadPlugin, Slots):
+JS_URL = "http://uploading.com/files/get/?JsHttpRequest=0-xml"
+WAIT = 60 
+
+class AnonymousDownload(DownloadPlugin):
 	""""""
-	def __init__(self):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
-		Slots.__init__(self, 1, 300)
-		DownloadPlugin.__init__(self)
-		self.parser = None
+		try:
+			opener = URLOpen(cookielib.CookieJar())
+			#First req to get to the timer
+			it = opener.open(url)
+			for line in it:
+				if '"page pageDownloadAvm"' in line:
+					try:
+						form_action = it.next().split('"')[1].split('"')[0]
+						it.next()
+						#action = it.next().split('value="')[1].split('"')[0]
+						file_id = it.next().split('value="')[1].split('"')[0]
+						code = it.next().split('value="')[1].split('"')[0]
+						break
+					except:
+						return self.set_limit_exceeded()
+			form = urllib.urlencode([("action", "second_page"), ("file_id", file_id), ("code", code)])
+			#Second req to get to the timer
+			it = opener.open(form_action, form)
+			for line in it:
+				if 'id="timeadform"' in line:
+					form_action = line.split('"')[1].split('"')[0]
+					it.next()
+					#action = it.next().split('value="')[1].split('"')[0]
+					file_id = it.next().split('value="')[1].split('"')[0]
+					code = it.next().split('value="')[1].split('"')[0]
+					break
+			if not wait_func(WAIT):
+				return
+			#Ajax req to get the link
+			data = urllib.urlencode([("action", "get_link"), ("file_id", file_id), ("code", code), ("pass", "undefined")])
+			tmp = opener.open(JS_URL, data).read()
+			if 'link' in tmp:
+				link = tmp.split('"link":"')[1].split('"')[0]
+				link = urllib.unquote(link).replace("\\", "")
+				return opener.open(link, None, content_range)
+		except Exception, e:
+			logger.exception("%s: %s" % (url, e))
 
 	def check_links(self, url):
 		""""""
-		return CheckLinks().check(url)
-
-	def add(self, path, link, file_name):
-		""""""
-		if self.get_slot():
-			self.parser = Parser(link)
-			if self.start(path, link, file_name, self.parser.wait, None, self.post_wait):
-				return True
-
-	def post_wait(self, link):
-		"""Must return handle"""
-		if self.parser:
-			handler = self.parser.get_handler()
-			if handler:
-				return handler
-			else:
-				logger.warning("Limit Exceeded.")
-				self.add_wait()
-				self.return_slot()
-
-	def delete(self, file_name):
-		""""""
-		if self.stop(file_name):
-			logger.warning("Stopped %s: %s" % (file_name, self.return_slot()))
+		name = None
+		size = -1
+		unit = None
+		size_found = 0
+		try:
+			it = URLOpen().open(url)
+			for line in it:
+				if '#383737' in line:
+					name = it.next().split('>')[1].split('<')[0].strip()
+					tmp = it.next().split('>')[1].split('<')[0].strip()
+					unit = tmp[-2:]
+					size = int(round(float(tmp[:-2])))
+					
+					if size > 1024:
+						if unit == "KB":
+							size = size / 1024
+							unit = "MB"
+					break
+		except Exception, e:
+			name = None
+			size = -1
+			logger.exception("%s :%s" % (url, e))
+		return name, size, unit

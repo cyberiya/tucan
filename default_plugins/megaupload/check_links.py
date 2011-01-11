@@ -23,6 +23,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from core.url_open import URLOpen
+from core.misc import get_size
 
 import core.cons as cons
 
@@ -31,7 +32,7 @@ class CheckLinks:
 	def check(self, url):
 		""""""
 		name = None
-		size = 0
+		size = -1
 		unit = None
 		try:
 			id = [id for id in url.split("d=")][1].strip()
@@ -40,24 +41,7 @@ class CheckLinks:
 			tmp = URLOpen().open("http://www.megaupload.com/mgr_linkcheck.php", urllib.urlencode([("id0", id)])).read().split("&", 5)
 			if len(tmp) > 4:
 				name = tmp[5].split("n=")[1]
-				size, unit = self.get_size(int(tmp[3].split("s=")[1]))
-			else:
-				name = url
-				size = -1
+				size, unit = get_size(int(tmp[3].split("s=")[1]))
 		except Exception, e:
 			logger.exception(e)
 		return name, size, unit
-
-	def get_size(self, num):
-		""""""
-		result = 0, cons.UNIT_KB
-		tmp = int(num/1024)
-		if  tmp > 0:
-			result = tmp, cons.UNIT_KB
-			tmp = int(tmp/1024)
-			if tmp > 0:
-				result = tmp, cons.UNIT_MB
-		return result
-
-if __name__ == "__main__":
-	print CheckLinks().check("http://www.megaupload.com/?d=1UY9LV7O")

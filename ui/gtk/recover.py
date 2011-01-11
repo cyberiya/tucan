@@ -19,7 +19,6 @@
 ###############################################################################
 
 import sys
-import shutil
 import subprocess
 import logging
 logger = logging.getLogger(__name__)
@@ -30,6 +29,7 @@ import gtk
 import gobject
 
 from report import Report
+from core.misc import remove_conf_dir
 
 import core.cons as cons
 import media
@@ -72,17 +72,17 @@ class Recover(gtk.Dialog):
 		label.set_width_chars(35)
 		label.set_line_wrap(True)
 
-		expander = gtk.Expander("Show details")
-		self.vbox.pack_start(expander, True, True, 5)
+		self.expander = gtk.Expander("Show details")
+		self.vbox.pack_start(self.expander, True, True, 5)
 		frame = gtk.Frame()
-		expander.add(frame)
+		self.expander.add(frame)
 		frame.set_border_width(10)
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		buffer = gtk.TextBuffer()
-		buffer.set_text(message)
-		textview = gtk.TextView(buffer)
+		self.buffer = gtk.TextBuffer()
+		self.buffer.set_text(message)
+		textview = gtk.TextView(self.buffer)
 		scroll.add(textview)
 		textview.set_wrap_mode(gtk.WRAP_WORD)
 		textview.set_editable(False)
@@ -116,8 +116,11 @@ class Recover(gtk.Dialog):
 	def remove_conf(self, button):
 		""""""
 		button.set_sensitive(False)
-		logging.shutdown()
-		shutil.rmtree(cons.CONFIG_PATH, True)
+		try:
+			remove_conf_dir()
+		except Exception, e:
+			self.buffer.set_text(str(e))
+			self.expander.set_expanded(True)
 
 	def report_problem(self, button):
 		""""""

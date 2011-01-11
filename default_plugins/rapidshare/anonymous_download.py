@@ -28,61 +28,36 @@ from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
 from core.slots import Slots
 
-MAX_SIZE = 209796096
+#MAX_SIZE = 209796096
+MAX_SIZE = None
+
 API_URL = "/cgi-bin/rsapi.cgi"
 
-class FormParser:
+class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
-	def __init__(self, url):
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
-		self.url = None
-		self.wait = None
-		self.form = None
+		link = None
+		wait = 0
 		try:
 			tmp = url.split("/")
 			opener = URLOpen()
 			form =  urllib.urlencode([("sub", "download_v1"), ("fileid", tmp[4]), ("filename", tmp[5])])
-			for line in opener.open("http://api.rapidshare.com%s" % API_URL, form).readlines():
+			for line in opener.open("http://api.rapidshare.com%s" % API_URL, form, content_range):
 				if "DL:" in line:
 					tmp = line.split("DL:")[1].split(",")
-					self.url = "http://%s%s" % (tmp[0], API_URL)
-					self.form =  "%s&%s" % (form, urllib.urlencode([("dlauth", tmp[1])]))
-					self.wait = int(tmp[2])
+					link = "http://%s%s" % (tmp[0], API_URL)
+					form =  "%s&%s" % (form, urllib.urlencode([("dlauth", tmp[1])]))
+					wait = int(tmp[2])
+			if not wait_func(wait):
+				return
+			elif link:
+				return URLOpen().open(link, form, content_range)
+			else:
+				return self.set_limit_exceeded()
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
-			
-	def get_handler(self, url):
-		""""""
-		if self.form:
-			return URLOpen().open(self.url, self.form)
-
-class AnonymousDownload(DownloadPlugin, Slots):
-	""""""
-	def __init__(self):
-		""""""
-		Slots.__init__(self, 1)
-		DownloadPlugin.__init__(self)
 
 	def check_links(self, url):
 		""""""
 		return CheckLinks().check(url, MAX_SIZE)
-
-	def add(self, path, link, file_name):
-		""""""
-		if self.get_slot():
-			parser = FormParser(link)
-			if parser.url:
-				return self.start(path, parser.url, file_name, parser.wait, None, parser.get_handler)
-			else:
-				self.add_wait()
-				self.return_slot()
-				logger.warning("Limit Exceeded.")
-
-	def delete(self, file_name):
-		""""""
-		if self.stop(file_name):
-			logger.warning("Stopped %s: %s" % (file_name, self.return_slot()))
-
-if __name__ == "__main__":
-	p = FormParser("http://rapidshare.com/files/391174483/prueba.bin")
-	print p.url, p.form, p.wait

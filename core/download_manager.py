@@ -24,7 +24,6 @@ import threading
 import logging
 logger = logging.getLogger(__name__)
 
-import misc
 import cons
 
 class Link:
@@ -73,9 +72,11 @@ class DownloadManager:
 		self.services = services
 		self.get_plugin = get_plugin
 		self.limits = []
+		
 		self.pending_downloads = []
 		self.active_downloads = []
 		self.complete_downloads = []
+		
 		self.timer = None
 		self.schedules = 0
 		self.scheduling = False
@@ -91,12 +92,8 @@ class DownloadManager:
 
 	def get_files(self):
 		""""""
-		result = []
-		for downloads in [self.pending_downloads, self.active_downloads, self.complete_downloads]:
-			for download in downloads:
-				result.append(download)
 		self.update()
-		return result
+		return self.pending_downloads + self.active_downloads + self.complete_downloads
 
 	def clear(self, files):
 		""""""
@@ -120,46 +117,41 @@ class DownloadManager:
 		""""""
 		if name not in [tmp.name for tmp in (self.active_downloads + self.pending_downloads)]:
 			self.pending_downloads.append(DownloadItem(path, name, links, total_size, size_unit))
-			threading.Timer(1, self.scheduler).start()
+			self.timer = threading.Timer(1, self.scheduler)
+			self.timer.start()
 			return True
 
 	def start(self, name):
 		""""""
 		for download in self.pending_downloads:
 			if name == download.name:
-				if len(self.active_downloads) < max_downloads:
-					download.status = cons.STATUS_WAIT
-					for link in download.links:
-						link.plugin, link.type = self.get_plugin(link.service)
-						if link.plugin.add(download.path, misc.url_quote(link.url), download.name):
-							try:
-								self.pending_downloads.remove(download)
-							except:
-								pass
-							else:
-								self.active_downloads.append(download)
-							link.active = True
-							return True
+				for link in download.links:
+					link.plugin, link.type = self.get_plugin(link.service)
+					if link.plugin.add(download.path, link.url, download.name):
+						try:
+							self.pending_downloads.remove(download)
+						except:
+							pass
 						else:
-							#link.active = False
-							if download.status != cons.STATUS_ERROR:
-								download.status = cons.STATUS_PEND
-				else:
-					download.status = cons.STATUS_PEND
-
+							self.active_downloads.append(download)
+						link.active = True
+						return True
+					else:
+						#Display time before the next attempt
+						#download.time = int(link.plugin.end_wait - time.time())
+						if download.status != cons.STATUS_ERROR:
+							download.status = cons.STATUS_PEND
 
 	def stop(self, name):
 		""""""
 		for download in self.pending_downloads:
 			if name == download.name:
 				download.status = cons.STATUS_STOP
-		for download in self.active_downloads:
+		for download in self.active_downloads[:]:
 			if name == download.name:
 				for link in download.links:
 					if link.active:
-						if link.plugin.stop(download.name):
-							if "return_slot" in dir(link.plugin):
-								link.plugin.return_slot()
+						if link.plugin.delete(download.name):
 							link.active = False
 							self.pending_downloads.append(download)
 							self.active_downloads.remove(download)
@@ -172,12 +164,9 @@ class DownloadManager:
 		permanent = True
 		speeds = [download.speed for download in self.active_downloads if download.status == cons.STATUS_ACTIVE]
 		current_active = len(speeds)
-		#print max_downloads, max_download_speed
-		#print current_active, speeds
 		remain_speed = max_download_speed
 		for speed in speeds:
 			remain_speed -= speed
-		#print remain_speed
 		if current_active > 0:
 			if remain_speed < 0:
 				new_speed = max_download_speed/current_active
@@ -212,8 +201,7 @@ class DownloadManager:
 					if status in [cons.STATUS_PEND, cons.STATUS_ERROR]:
 						if status == cons.STATUS_ERROR:
 							logger.error("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
-						if "return_slot" in dir(link.plugin):
-							plugin.return_slot()
+						plugin.delete(download.name)
 						link.active = False
 						self.pending_downloads.append(download)
 						self.active_downloads.remove(download)
@@ -222,8 +210,7 @@ class DownloadManager:
 						logger.info("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						#history_trigger
 						events.trigger_file_complete(download.name, actual_size, unit, download.links)
-						if "return_slot" in dir(link.plugin):
-							plugin.return_slot()
+						plugin.return_slot()
 						download.progress = 100
 						self.complete_downloads.append(download)
 						self.active_downloads.remove(download)
@@ -232,18 +219,17 @@ class DownloadManager:
 		""""""
 		if not self.scheduling:
 			self.scheduling = True
-			if len(self.pending_downloads + self.active_downloads) > 0:
+			if self.pending_downloads + self.active_downloads:
 				if self.schedules < 11:
 					self.schedules += 1
 				else:
 					self.schedules = 0
-					logger.debug("scheduled 12 times.")
+					logger.debug("scheduled.")
 				try:
 					for download in self.pending_downloads:
 						if len(self.active_downloads) < max_downloads:
 							if download.status not in [cons.STATUS_STOP]:
 								if self.start(download.name):
-									logger.info("Started: %s" % download.name)
 									logger.debug("Active: %s" % [tmp.name for tmp in self.active_downloads])
 									logger.debug("Pending: %s" % [tmp.name for tmp in self.pending_downloads])
 									logger.debug("Complete: %s" % [tmp.name for tmp in self.complete_downloads])
@@ -262,4 +248,6 @@ class DownloadManager:
 		""""""
 		if self.timer:
 			self.scheduling = True
-			self.timer.cancel()
+			while self.timer.isAlive():
+				self.timer.cancel()
+				self.timer.join(0.5)

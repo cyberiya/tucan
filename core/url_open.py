@@ -27,6 +27,8 @@ import socket
 
 import cons
 
+__builtin__.PROXY = None
+
 def set_proxy(url, port=0):
 	""""""
 	if url:
@@ -48,12 +50,15 @@ class URLOpen:
 		else:
 			self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
 
-	def open(self, url, form=None, range=None):
+	def open(self, url, form=None, range=None, keep_alive=False, referer=False):
 		""""""
 		headers = {"User-Agent": cons.USER_AGENT}
 		if range:
 			headers["Range"] = "bytes=%s-" % range
-			print headers
+		if keep_alive:
+			headers["Connection"] = "Keep-alive"
+		if referer:
+			headers["Referer"] = referer
 		if form:
 			return self.opener.open(urllib2.Request(url, None, headers), form)
 		else:
