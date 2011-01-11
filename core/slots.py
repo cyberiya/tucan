@@ -37,30 +37,40 @@ class Slots:
 
 	def get_slot(self):
 		""""""
-		if self.slots > 0:
-			if self.wait_finished():
+		if self.wait_finished():
+			if self.max < 0:
+				return True
+			elif self.slots > 0:
 				self.slots -= 1
 				return True
 				
-	def wait_finished(self):
-		""""""
-		if time.time() > self.end_wait:
-			events.trigger_limit_off(self.__module__)
-			self.limit = False
-			return True
-
-	def add_wait(self):
-		""""""
-		logger.warning("Wait %i seconds." % self.time_limit)
-		self.limit = True
-		events.trigger_limit_on(self.__module__)
-		self.end_wait = time.time() + self.time_limit
-
 	def return_slot(self):
 		""""""
 		if self.slots < self.max:
 			self.slots += 1
 			return True
+			
+	def wait_finished(self):
+		""""""
+		if self.end_wait == 0:
+			return True
+		else:
+			if time.time() > self.end_wait:
+				self.end_wait = 0
+				events.trigger_limit_off(self.__module__)
+				self.limit = False
+				return True
+
+	def set_limit_exceeded(self, wait=0):
+		""""""
+		if not wait:
+			wait = self.time_limit
+		self.end_wait = time.time() + wait
+		events.trigger_limit_on(self.__module__, self.end_wait)
+		logger.warning("Wait %i seconds." % wait)
+		self.return_slot()
+		self.limit = True
+		return cons.EVENT_LIMIT_ON
 
 	def cancel_limit(self, module):
 		""""""

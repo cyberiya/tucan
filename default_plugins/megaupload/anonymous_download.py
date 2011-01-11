@@ -18,59 +18,48 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import sys
-import subprocess
-import os.path
-import pickle
+import urllib
 import logging
 logger = logging.getLogger(__name__)
 
-from captcha import CaptchaForm
 from check_links import CheckLinks
 
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
-from core.slots import Slots
+from core.tesseract import Tesseract
 
 import core.cons as cons
 
 WAIT = 45
 
-class AnonymousDownload(DownloadPlugin, Slots):
-	""""""
-	def __init__(self):
-		""""""
-		Slots.__init__(self, 1)
-		DownloadPlugin.__init__(self)
+CAPTCHACODE = "captchacode"
+MEGAVAR = "megavar"
 
-	def add(self, path, url, file_name):
+class AnonymousDownload(DownloadPlugin):
+	""""""
+	def link_parser(self, url, wait_func, content_range=None):
 		""""""
-		if self.get_slot():
-			link = None
-			wait = WAIT
+		link = None
+		wait = WAIT
+		try:
 			for line in URLOpen().open(url).readlines():
 				if 'id="downloadlink"' in line:
 					link = line.split('href="')[1].split('"')[0]
 				if "count=" in line:
 					wait = int(line.split("=")[1].split(";")[0])
-			if link:
-				return self.start(path, link, file_name, wait, None, self.post_wait)
-
-	def post_wait(self, link):
-		"""Must return handle"""
-		try:
-			handle = URLOpen().open(link)
+			if not link:
+				return
+			elif not wait_func(WAIT):
+				return
 		except Exception, e:
-			self.add_wait()
-			self.return_slot()
-			logger.warning("Limit Exceeded.")
+			logger.exception("%s: %s" % (url, e))
 		else:
-			return handle
-
-	def delete(self, file_name):
-		""""""
-		if self.stop(file_name):
-			logger.info("Stopped %s: %s" % (file_name, self.return_slot()))
+			try:
+				handle = URLOpen().open(link, None, content_range)
+			except:
+				return self.set_limit_exceeded()
+			else:
+				return handle
 
 	def check_links(self, url):
 		""""""

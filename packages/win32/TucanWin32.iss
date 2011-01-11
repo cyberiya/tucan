@@ -20,24 +20,24 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{9B49BFC8-D0C0-42E9-8460-40733DCE3648}
 AppName=Tucan Manager
-AppVerName=Tucan Manager 0.3.9
+AppVerName=Tucan Manager 0.3.10
 AppPublisher=Tucan Team
-AppPublisherURL=http://tucaneando.wordpress.com
-AppSupportURL=http://tucaneando.wordpress.com
-AppUpdatesURL=http://tucaneando.wordpress.com
+AppPublisherURL=http://www.tucaneando.com
+AppSupportURL=http://www.tucaneando.com
+AppUpdatesURL=http://www.tucaneando.com
 DefaultDirName=C:\Tucan
 DefaultGroupName=Tucan
-LicenseFile=C:\tucan-0.3.9\LICENSE
-InfoAfterFile=C:\tucan-0.3.9\README
-OutputDir=C:\Documents and Settings\Administrador\Escritorio\TucaneandoWin
-OutputBaseFilename=Tucan-0.3.9_Setup
-SetupIconFile=C:\tucan-0.3.9\tucan.ico
+LicenseFile=C:\tucan-build\LICENSE
+InfoAfterFile=C:\tucan-build\README
+OutputDir=C:\TucaneandoWin
+OutputBaseFilename=Tucan-0.3.10_Setup
+SetupIconFile=C:\tucan-build\tucan.ico
 Compression=lzma
 SolidCompression=yes
 
 [Languages]
 Name: english; MessagesFile: compiler:Default.isl
-Name: spanish; MessagesFile: compiler:Languages\Spanish.isl; InfoAfterFile: C:\tucan-0.3.9\README.es
+Name: spanish; MessagesFile: compiler:Languages\Spanish.isl; InfoAfterFile: C:\tucan-build\README.es
 Name: czech; MessagesFile: compiler:Languages\Czech.isl
 Name: french; MessagesFile: compiler:Languages\French.isl
 Name: german; MessagesFile: compiler:Languages\German.isl
@@ -51,8 +51,8 @@ Name: slovak; MessagesFile: compiler:Languages\Slovak.isl
 Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked
 
 [Files]
-Source: C:\tucan-0.3.9\dist\tucan.exe; DestDir: {app}; Flags: ignoreversion
-Source: C:\tucan-0.3.9\dist\*; DestDir: {app}; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: C:\tucan-build\dist\tucan.exe; DestDir: {app}; Flags: ignoreversion
+Source: C:\tucan-build\dist\*; DestDir: {app}; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
@@ -61,3 +61,4 @@ Name: {commondesktop}\Tucan Manager; Filename: {app}\tucan.exe; Tasks: desktopic
 
 [Run]
 Filename: {app}\tucan.exe; Description: {cm:LaunchProgram,Tucan Manager}; Flags: nowait postinstall skipifsilent
+

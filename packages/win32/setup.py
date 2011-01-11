@@ -17,7 +17,7 @@ setup(
     options = {
                   'py2exe': {
                       'packages':'encodings, core',
-                      'includes': 'cairo, pango, pangocairo, atk, gobject, urllib2, Image, ImageOps, core, PIL'
+                      'includes': 'gio,cairo, pango, pangocairo, atk, gobject, urllib2, Image, ImageOps, core, PIL'
                   }
               },
 			  

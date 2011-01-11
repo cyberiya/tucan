@@ -25,7 +25,6 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import gobject
-import pango
 
 import media
 import core.cons as cons
@@ -54,8 +53,8 @@ class HistoryView(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		store = gtk.ListStore(str, bool, str, gtk.gdk.Pixbuf, str, str, str)
-		self.treeview = gtk.TreeView(store)
+		self.store = gtk.ListStore(str, bool, gtk.gdk.Pixbuf, str, str, str, str)
+		self.treeview = gtk.TreeView(self.store)
 		scroll.add(self.treeview)
 
 		self.treeview.set_rules_hint(True)
@@ -68,31 +67,28 @@ class HistoryView(gtk.Dialog):
 		tree_played.add_attribute(played_cell, 'active', 1)
 		self.treeview.append_column(tree_played)
 
-		tree_date = gtk.TreeViewColumn('Date') 
-		date_cell = gtk.CellRendererText()
-		tree_date.pack_start(date_cell, True)
-		tree_date.add_attribute(date_cell, 'text', 2)
-		self.treeview.append_column(tree_date)
-
 		tree_icon = gtk.TreeViewColumn('Icon') 
 		icon_cell = gtk.CellRendererPixbuf()
 		tree_icon.pack_start(icon_cell, True)
-		tree_icon.add_attribute(icon_cell, 'pixbuf', 3)
+		tree_icon.add_attribute(icon_cell, 'pixbuf', 2)
 		tree_icon.set_property('min-width', 32)
 		self.treeview.append_column(tree_icon)
 
+		tree_date = gtk.TreeViewColumn('Date') 
+		date_cell = gtk.CellRendererText()
+		tree_date.pack_start(date_cell, True)
+		tree_date.add_attribute(date_cell, 'text', 3)
+		self.treeview.append_column(tree_date)
+
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
-		name_cell.set_property("width-chars", 45)
-		name_cell.set_property("ellipsize", pango.ELLIPSIZE_MIDDLE)
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 4)
+		tree_name.set_property('min-width', 180)
 		self.treeview.append_column(tree_name)
 
 		tree_size = gtk.TreeViewColumn('Size') 
 		size_cell = gtk.CellRendererText()
-		size_cell.set_property("xalign", 1)
-		size_cell.set_property("alignment", pango.ALIGN_RIGHT)
 		tree_size.pack_start(size_cell, True)
 		tree_size.add_attribute(size_cell, 'text', 6)
 		self.treeview.append_column(tree_size)
@@ -100,7 +96,7 @@ class HistoryView(gtk.Dialog):
 		#fill store
 		total_size, num_files, history = self.history.get_all()
 		for id, played, link, date, name, size in history:
-			store.append((id, played, date, self.get_icon(link), name, link, size))
+			self.store.append((id, played, self.get_icon(link), date, name, link, size))
 
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 10)
@@ -112,17 +108,10 @@ class HistoryView(gtk.Dialog):
 		close_button = gtk.Button(None, gtk.STOCK_CLOSE)
 		self.action_area.pack_start(close_button)
 		close_button.connect("clicked", self.close)
-		
+
 		self.treeview.connect("button-press-event", self.mouse_menu)
 		self.connect("response", self.close)
 		self.show_all()
-		
-		#scroll to end
-		vadjust = scroll.get_vadjustment()
-		vadjust.set_value(vadjust.upper-vadjust.page_size)
-		vadjust.need_scroll = True
-		scroll.set_vadjustment(vadjust)
-
 		self.run()
 
 	def mouse_menu(self, widget, event):

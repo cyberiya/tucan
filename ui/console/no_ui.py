@@ -30,7 +30,6 @@ from core.core import Core
 from core.misc import get_exception_info
 
 import core.config as config
-import core.misc as misc
 import core.cons as cons
 
 def exception_hook(self, type, value, trace):
@@ -46,6 +45,7 @@ class NoUi(Core):
 		""""""
 		self.configuration = conf
 		self.links_file = links_file
+		self.stop_flag = False
 		self.buffer = []
 		self.url = url
 		Core.__init__(self, self.configuration)
@@ -57,6 +57,10 @@ class NoUi(Core):
 			self.download_manager.update()
 			time.sleep(1)
 		self.quit()
+		
+	def stop(self):
+		""""""
+		self.stop_flag = True
 
 	def load_links(self):
 		""""""
@@ -72,13 +76,12 @@ class NoUi(Core):
 				f.close()
 			self.manage_packages(self.create_packages(self.check_links(links)), [])
 		except Exception, e:
-			logger.error(e)
+			logger.exception(e)
 
 	def comment_link(self, name, size, unit, links):
 		""""""
 		try:
 			for link in links:
-				print link.url
 				for line in self.buffer:
 					if link.url in line:
 						self.buffer[self.buffer.index(line)] = "#%s" % line
@@ -97,9 +100,13 @@ class NoUi(Core):
 				tmp = []
 				check, plugin_type = self.get_check_links(service)
 				for link in links:
+					if self.stop_flag:
+						self.stop_flag = False
+						return {}
 					file_name, size, size_unit = check(link)
 					if file_name:
-						file_name = misc.decode_htmlentities(file_name)
+						#WindowsError: [Error 123], needs refactoring
+						file_name = ''.join([c for c in file_name if c not in '\/:*?"<>|%'])
 						if size > 0:
 							tmp.append((link, file_name, size, size_unit, plugin_type))
 					else:

@@ -32,7 +32,3 @@ class PremiumCookie:
 		opener.open("http://www.megaupload.com/?c=login", urllib.urlencode({"login": "1", "redir": "1", "username": user, "password": password}))
 		if len(cookie) > 0:
 			return cookie
-
-if __name__ == "__main__":
-	c = PremiumCookie()
-	print c.get_cookie("","")

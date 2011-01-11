@@ -25,6 +25,9 @@ import sys
 import logging
 import optparse
 
+from core.misc import remove_conf_dir, main_info
+
+import core.dependencies as dependencies
 import core.pid_file as pid_file
 import core.url_open as url_open
 import core.config as config
@@ -39,6 +42,7 @@ class Tucan:
 		parser.add_option("-w", "--wizard", dest="wizard", help="setup: accounts, services, updates", metavar="TYPE")
 		parser.add_option("-d", "--daemon", action="store_true", dest="daemon", default=False, help="no interaction interface (URL)")
 		parser.add_option("-c", "--cli", action="store_true", dest="cli", default=False, help="command line interface (URL)")
+		parser.add_option("-C", "--clean", action="store_true", dest="clean", default=False, help="remove ~/.tucan")
 		parser.add_option("-i", "--input-links", dest="links_file", help="import links from FILE", metavar="FILE")
 		parser.add_option("-v", "--verbose", action="store_true", dest="verbose", default=False, help="print log to stdout")
 		parser.add_option("-V", "--version", action="store_true", dest="version", default=False, help="print version and exit")
@@ -46,6 +50,12 @@ class Tucan:
 
 		if self.options.version:
 			sys.exit("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
+			
+		if self.options.clean:
+			try:
+				remove_conf_dir()
+			except Exception, e:
+				sys.exit(e)
 
 		if not os.path.exists(cons.CONFIG_PATH):
 			os.mkdir(cons.CONFIG_PATH)
@@ -81,6 +91,7 @@ class Tucan:
 	def start_ui(self):
 		""""""
 		self.set_globals()
+		main_info(self.logger)
 		if self.options.wizard:
 			self.set_verbose()
 			self.start_wizard(self.options.wizard)
@@ -147,29 +158,31 @@ class Tucan:
 
 	def start_gui(self, unique=True):
 		""""""
+		message = "Use 'tucan --cli' for curses interface." 
 		try:
 			import pygtk
 			pygtk.require('2.0')
 			import gtk
 			import gobject
 		except:
-			sys.exit("No GTK support. Use 'tucan --cli' for curses interface.")
+			sys.exit("No GTK support. %s" % message)
 		try:
 			gtk.init_check()
 		except:
-			sys.exit("Could not connect to X server. Use 'tucan --cli' for curses interface.")
+			sys.exit("Could not connect to X server. %s" % message)
 		try:
 			from ui.gtk.gui import Gui, already_running, exception_hook
 			from ui.gtk.recover import halt
 		except:
-			sys.exit("Tucan installed without GUI support. Use 'tucan --cli' for curses interface.")
-
+			sys.exit("Tucan installed without GUI support. %s" % message)
+			
 		if unique:
 			#recovery help
 			sys.excepthook = exception_hook
 
 			gobject.threads_init()
 			try:
+				__builtin__.dependencies.set_recaptcha()
 				Gui(configuration)
 				gtk.main()
 			except Exception, e:
@@ -187,7 +200,8 @@ class Tucan:
 			url_open.set_proxy(proxy_url, proxy_port)
 		else:
 			url_open.set_proxy(None)
-
+			
+		__builtin__.dependencies = dependencies.Dependencies()
 		__builtin__.max_downloads = configuration.get_max_downloads()
 		__builtin__.max_download_speed = configuration.get_max_download_speed()
 
@@ -204,7 +218,6 @@ if __name__ == "__main__":
 	except KeyboardInterrupt:
 		tucan.exit("KeyboardInterrupt")
 	except Exception, e:
-		print e
 		tucan.logger.exception(e)
 		tucan.exit("Unhandled Error! Check the log file for details.")
 	else:
