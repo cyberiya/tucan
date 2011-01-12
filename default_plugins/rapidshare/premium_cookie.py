@@ -39,3 +39,6 @@ class PremiumCookie:
 				cookie = cookielib.CookieJar()
 				cookie.set_cookie(tmp_cookie)
 				return cookie
+
+if __name__ == "__main__":
+	c = PremiumCookie()

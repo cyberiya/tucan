@@ -41,7 +41,6 @@ import core.cons as cons
 
 LANGUAGES = [	("Czech", "cs"),
 		("Danish", "da"),
-		("Dutch", "nl"),
 		("English", "en"),
 		("French", "fr"),
 		("German", "de"),
@@ -51,7 +50,6 @@ LANGUAGES = [	("Czech", "cs"),
 		("Portuguese", "pt"),
 		("Russian", "ru"),
 		("Slovak", "sk"),
-		("Slovenian", "sl"),
 		("Spanish", "es"),
 		("Swedish","se"),
 		("Turkish", "tr")]

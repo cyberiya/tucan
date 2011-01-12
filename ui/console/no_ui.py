@@ -30,6 +30,7 @@ from core.core import Core
 from core.misc import get_exception_info
 
 import core.config as config
+import core.misc as misc
 import core.cons as cons
 
 def exception_hook(self, type, value, trace):
@@ -71,7 +72,7 @@ class NoUi(Core):
 				f.close()
 			self.manage_packages(self.create_packages(self.check_links(links)), [])
 		except Exception, e:
-			logger.exception(e)
+			logger.error(e)
 
 	def comment_link(self, name, size, unit, links):
 		""""""
@@ -98,6 +99,7 @@ class NoUi(Core):
 				for link in links:
 					file_name, size, size_unit = check(link)
 					if file_name:
+						file_name = misc.decode_htmlentities(file_name)
 						if size > 0:
 							tmp.append((link, file_name, size, size_unit, plugin_type))
 					else:

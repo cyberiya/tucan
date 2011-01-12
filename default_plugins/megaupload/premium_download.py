@@ -18,6 +18,7 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
@@ -25,37 +26,33 @@ from premium_cookie import PremiumCookie
 from check_links import CheckLinks
 
 from core.accounts import Accounts
+from core.service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
-	def __init__(self, config, section):
+	def __init__(self, config):
 		""""""
-		Accounts.__init__(self, config, section, PremiumCookie())
-		DownloadPlugin.__init__(self, config, section)
+		Accounts.__init__(self, config, SECTION_PREMIUM_DOWNLOAD, PremiumCookie())
+		DownloadPlugin.__init__(self)
 
-	def link_parser(self, url, wait_func, range=None):
+	def add(self, path, link, file_name):
 		""""""
-		found = False
-		try:
-			cookie = self.get_cookie()
-			if not wait_func():
-				return
+		cookie = self.get_cookie()
+		if cookie:
 			opener = URLOpen(cookie)
-			handler = opener.open(url, None, range)
-			if not wait_func():
-				return
+			handler = opener.open(link)
 			if "text/html" in handler.info()["Content-Type"]:
 				for line in handler.readlines():
-					if "downloadlink" in line:
-						found = True
-					elif found:
-						return opener.open(line.split('href="')[1].split('"')[0], None, range)
+					if 'class="down_ad_butt1">' in line:
+						return self.start(path, line.split('href="')[1].split('"')[0], file_name, None, cookie)
 			else:
-				return handler
-		except Exception, e:
-			logger.exception("%s: %s" % (url, e))
+				return self.start(path, link, file_name, None, cookie)
+
+	def delete(self, file_name):
+		""""""
+		logger.warning("Stopped %s: %s" % (file_name, self.stop(file_name)))
 
 	def check_links(self, url):
 		""""""

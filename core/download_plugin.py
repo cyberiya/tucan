@@ -18,41 +18,30 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import time
 import threading
-import logging
-logger = logging.getLogger(__name__)
 
 from downloader import Downloader
-from slots import Slots
-from misc import get_size
 
 import cons
 
-class DownloadPlugin(Slots):
+class DownloadPlugin(object):
 	""""""
-	def __init__(self, config, section):
+	def __init__(self):
 		""""""
-		Slots.__init__(self, config.get_slots(section), config.get_wait(section))
 		self.active_downloads = {}
-		
-	def link_parser(self, link, wait_func, range=None):
-		""""""
-		pass
 
-	def add(self, path, url, file_name):
+	def start(self, path, url, file_name, wait=None, cookie=None, post_wait=None):
 		""""""
 		if file_name not in self.active_downloads:
-			if self.get_slot():
-				logger.info("Started %s" % (file_name))
-				th = Downloader(path, url, file_name, self.link_parser)
-				self.active_downloads[file_name] = th
-				th.start()
-				return True
+			th = Downloader(path, url, file_name, wait, cookie, post_wait)
+			th.start()
+			self.active_downloads[file_name] = th
+			return True
 
-	def delete(self, file_name):
+	def stop(self, file_name):
 		""""""
 		if file_name in self.active_downloads:
-			logger.info("Stopped %s: %s" % (file_name, self.return_slot()))
 			th = threading.Thread(group=None, target=self.stop_thread, name=None, args=(self.active_downloads[file_name],))
 			th.start()
 			del self.active_downloads[file_name]
@@ -62,18 +51,13 @@ class DownloadPlugin(Slots):
 		""""""
 		while thread.isAlive():
 			thread.stop_flag = True
-			thread.join(0.5)
+			time.sleep(1)
 
 	def stop_all(self):
 		""""""
-		active_downloads = self.active_downloads.values()
-		while active_downloads:
-			for th in active_downloads:
-				if th.isAlive():
-					th.stop_flag = True
-					th.join(0.1)
-				else:
-					active_downloads.remove(th)
+		for th in self.active_downloads.values():
+			while th.isAlive():
+				th.stop_flag = True
 
 	def get_status(self, file_name, speed=0):
 		"""return (status, progress, actual_size, unit, speed, time)"""
@@ -81,12 +65,12 @@ class DownloadPlugin(Slots):
 		th = None
 		if file_name in self.active_downloads:
 			th = self.active_downloads[file_name]
-			#if th.stop_flag:
-			#	del self.active_downloads[file_name]
+			if self.active_downloads[file_name].stop_flag:
+				del self.active_downloads[file_name]
 		if th:
-			actual_size, unit = get_size(th.actual_size)
-			progress = int((float(th.actual_size)/float(th.total_size))*100)
+			actual_size, unit = self.get_size(th.actual_size)
 			if th.status == cons.STATUS_ACTIVE:
+				progress = int((float(th.actual_size)/float(th.total_size))*100)
 				th.max_speed = speed
 				speed = th.speed
 				if speed > 0:
@@ -94,9 +78,23 @@ class DownloadPlugin(Slots):
 				else:
 					time = 0
 			else:
-				#if not th.status == cons.STATUS_CORRECT:
-				#	actual_size = 0
+				if th.status == cons.STATUS_CORRECT:
+					th.stop_flag = True
+				else:
+					actual_size = 0
+				progress = 0
 				speed = 0
 				time = int(th.time_remaining)
 			result = th.status, progress, actual_size, unit, speed, time
+		return result
+
+	def get_size(self, num):
+		""""""
+		result = 0, cons.UNIT_KB
+		tmp = int(num/1024)
+		if  tmp > 0:
+			result = tmp, cons.UNIT_KB
+			tmp = int(tmp/1024)
+			if tmp > 0:
+				result = tmp, cons.UNIT_MB
 		return result
