@@ -32,6 +32,7 @@ from clipboard import check_contents
 from advanced_packages import AdvancedPackages
 
 import media
+import core.misc as misc
 import core.cons as cons
 
 class InputLinks(gtk.Dialog):
@@ -180,37 +181,37 @@ class InputLinks(gtk.Dialog):
 
 	def add_links(self, button=None):
 		""""""
-		tmp = {}
-		store = self.treeview.get_model()
-		for column in store:
-			if column[2] != cons.TYPE_UNSUPPORTED:
-				tmp[column[2]] = []
-				for value in column.iterchildren():
-					if value[1] != value[2]:
-						if value[6]:
-							logger.info("Added: %s %s %s %s %s" % (value[1], value[2], value[3], value[4], value[5]))
-							tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
-		if tmp != {}:
-			packages = self.create_packages(tmp)
-			packages_info = None
-			if self.advanced_button.get_active():
-				#self.hide()
-				w = AdvancedPackages(self, self.default_path, packages)
-				packages_info = w.packages_info
-				if packages_info:
-					self.packages(w.packages, packages_info)
+		try:
+			tmp = {}
+			store = self.treeview.get_model()
+			for column in store:
+				if column[2] != cons.TYPE_UNSUPPORTED:
+					tmp[column[2]] = []
+					for value in column.iterchildren():
+						if value[1] != value[2]:
+							if value[6]:
+								logger.info("Added: %s %s %s %s %s" % (value[1], value[2], value[3], value[4], value[5]))
+								tmp[column[2]].append((value[1], value[2], value[3], value[4], value[5]))
+			if tmp != {}:
+				packages = self.create_packages(tmp)
+				packages_info = None
+				if self.advanced_button.get_active():
+					w = AdvancedPackages(self, self.default_path, packages)
+					packages_info = w.packages_info
+					if packages_info:
+						self.packages(w.packages, packages_info)
+						self.close()
+				else:
+					self.packages(packages, [])
 					self.close()
-				#else:
-				#	self.show()
 			else:
-				self.packages(packages, [])
-				self.close()
-		else:
-			title = _("Nothing to add.")
-			message = _("There aren't links to add.\nPlease check the links before adding.")
-			m = Message(self, cons.SEVERITY_INFO, title, message, both=True)
-			if not m.accepted:
-				self.close()
+				title = _("Nothing to add.")
+				message = _("There aren't links to add.\nPlease check the links before adding.")
+				m = Message(self, cons.SEVERITY_INFO, title, message, both=True)
+				if not m.accepted:
+					self.close()
+		except Exception, e:
+			logger.exception(e)
 
 	def check(self, button=None):
 		""""""
@@ -244,12 +245,14 @@ class InputLinks(gtk.Dialog):
 					else:
 						service_iter = store.append(None, [service_icon, service, service, 0, None, None, False, False])
 						for link in links:
+							link = misc.url_unquote(link)
 							if self.cancel_check:
 								self.cancel_check = False
 								raise Exception("Check Links cancelled")
 							check, plugin_type = self.check_links(service) 
 							file_name, size, size_unit = check(link)
 							if file_name:
+								file_name = misc.decode_htmlentities(file_name)
 								if size > 0:
 									icon = active_icon
 									marked = True

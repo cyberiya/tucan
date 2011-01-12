@@ -18,10 +18,13 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import re
 import sys
 import urllib
 import logging
 logger = logging.getLogger(__name__)
+
+from htmlentitydefs import name2codepoint
 
 import url_open
 import cons
@@ -33,6 +36,7 @@ def main_info(log=logger):
 	log.info("%s %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION))
 	log.debug("OS: %s" %  cons.OS_VERSION)
 	log.debug("PYTHON: %s" % cons.OS_PYTHON)
+	log.debug("Locale settings: %s (%s)" % (cons.LOCALE_NAME, cons.LOCALE_CODEC))
 	log.debug("Main path: %s" % cons.PATH)
 	log.debug("Configuration path: %s" % cons.CONFIG_PATH)
 
@@ -65,15 +69,28 @@ def get_exception_info(type, value, trace):
 	else:
 		return "File %s line %i - %s: %s" % (file_name, line_no, exception, value)
 
-def get_size(num):
+def url_quote(url):
+	"""Replace special characters in string using the %xx escape. """
+	return urllib.quote(url, "/:=?")
+	
+def url_unquote(url):
+	"""Replace %xx escapes by their single-character equivalent."""
+	return urllib.unquote(urllib.unquote(url))
+
+def substitute_entity(match):
 	""""""
-	result = 0, cons.UNIT_KB
-	if num:
-		result = 1, cons.UNIT_KB
-		tmp = int(num/1024)
-		if  tmp > 0:
-			result = tmp, cons.UNIT_KB
-			tmp = int(tmp/1024)
-			if tmp > 0:
-				result = tmp, cons.UNIT_MB
-	return result
+	ent = match.group(2)
+	if match.group(1) == "#":
+		return unichr(int(ent))
+	else:
+		cp = name2codepoint.get(ent)
+	if cp:
+		return unichr(cp)
+	else:
+		return match.group()
+
+def decode_htmlentities(string):
+	""""""
+	#entity_re = re.compile("&(#?)(\d{1,5}|\w{1,8});")
+	#return entity_re.subn(substitute_entity, string)[0]
+	return string

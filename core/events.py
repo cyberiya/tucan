@@ -27,33 +27,34 @@ class Events:
 	""""""
 	def __init__(self):
 		""""""
-		self.event_id = 0
 		self.registered = {}
 
 	def connect(self, event, callback, *kargs):
 		""""""
-		self.event_id += 1
-		event_queue = self.registered.get(event, {})
-		event_queue[self.event_id] = (callback, kargs)
-		self.registered[event] = event_queue
-		return self.event_id
+		if event in self.registered:
+			result = len(self.registered[event])
+			self.registered[event].append((callback, kargs))
+			return result
+		else:
+			self.registered[event] = [(callback, kargs)]
+			return 0
 
 	def disconnect(self, event, id):
 		""""""
 		try:
 			if event in self.registered:
-				self.registered[event].pop(id)
-				return True
+				del self.registered[event][id]
 		except Exception, e:
-			logger.warning("Could not disconnect: %s %i" % (event, id))
+			logger.Error("Could not disconnect: %s %i" % (event, id))
 
 	def trigger(self, event, *kargs):
 		""""""
 		if event in self.registered:
-			for callback, kargs2 in self.registered[event].values():
+			for callback, kargs2 in self.registered[event]:
 				try:
 					callback(*(kargs+kargs2))
 				except Exception, e:
+					print e
 					logger.exception(e)
 
 	def trigger_limit_off(self, module):
@@ -73,35 +74,10 @@ class Events:
 
 	def trigger_file_complete(self, name, size, unit, links):
 		""""""
-		logger.debug("triggered: %s %s" % (cons.EVENT_FILE_COMPLETE, name))
+		logger.debug("triggered: %s" % cons.EVENT_FILE_COMPLETE)
 		self.trigger(cons.EVENT_FILE_COMPLETE, name, size, unit, links)
-
-	def trigger_package_complete(self, path, names):
-		""""""
-		logger.debug("triggered: %s %s %s" % (cons.EVENT_PACKAGE_COMPLETE, path, str(names)))
-		self.trigger(cons.EVENT_PACKAGE_COMPLETE, path, names)
 
 	def trigger_all_complete(self):
 		""""""
 		logger.debug("triggered: %s" % cons.EVENT_ALL_COMPLETE)
 		self.trigger(cons.EVENT_ALL_COMPLETE)
-
-	def trigger_link_checked(self, service, link, name, size, unit, plugin_type):
-		""""""
-		logger.debug("triggered: %s %s" % (cons.EVENT_LINK_CHECKED, link))
-		self.trigger(cons.EVENT_LINK_CHECKED, service, link, name, size, unit, plugin_type)
-
-	def trigger_check_completed(self, service):
-		""""""
-		logger.debug("triggered: %s %s" % (cons.EVENT_CHECK_COMPLETED, service))
-		self.trigger(cons.EVENT_CHECK_COMPLETED, service)
-
-	def trigger_check_cancel(self):
-		""""""
-		logger.debug("triggered: %s" % cons.EVENT_CHECK_CANCEL)
-		self.trigger(cons.EVENT_CHECK_CANCEL)
-
-	def trigger_captcha_dialog(self, service, get_captcha_img, return_solution):
-		""""""
-		logger.debug("triggered: %s" % cons.EVENT_CAPTCHA_DIALOG)
-		self.trigger(cons.EVENT_CAPTCHA_DIALOG, service, get_captcha_img, return_solution)

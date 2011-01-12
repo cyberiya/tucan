@@ -18,74 +18,59 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import urllib
+import sys
+import subprocess
+import os.path
+import pickle
 import logging
 logger = logging.getLogger(__name__)
 
+from captcha import CaptchaForm
 from check_links import CheckLinks
 
 from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
-from core.tesseract import Tesseract
+from core.slots import Slots
 
 import core.cons as cons
 
 WAIT = 45
 
-CAPTCHACODE = "captchacode"
-MEGAVAR = "megavar"
-
-class AnonymousDownload(DownloadPlugin):
+class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
-	def link_parser(self, url, wait_func, range=None):
+	def __init__(self):
 		""""""
-		link = None
-		captcha_img = None
-		captchacode = ""
-		megavar = ""
+		Slots.__init__(self, 1)
+		DownloadPlugin.__init__(self)
+
+	def add(self, path, url, file_name):
+		""""""
+		if self.get_slot():
+			link = None
+			wait = WAIT
+			for line in URLOpen().open(url).readlines():
+				if 'id="downloadlink"' in line:
+					link = line.split('href="')[1].split('"')[0]
+				if "count=" in line:
+					wait = int(line.split("=")[1].split(";")[0])
+			if link:
+				return self.start(path, link, file_name, wait, None, self.post_wait)
+
+	def post_wait(self, link):
+		"""Must return handle"""
 		try:
-			tmp = url.split("/")
-			if len(tmp) > 4:
-				del tmp[3]
-				url = "/".join(tmp)
-			while not link:
-				for line in URLOpen().open(url).readlines():
-					if "captchacode" in line:
-						captchacode = line.split('value="')[1].split('">')[0]
-					elif "megavar" in line:
-						megavar = line.split('value="')[1].split('">')[0]
-					elif "gencap.php" in line:
-						captcha_img = line.split('src="')[1].split('"')[0]
-				if captcha_img:
-					if not wait_func():
-						return
-					handle = URLOpen().open(captcha_img)
-					if handle.info()["Content-Type"] == "image/gif":
-						tess = Tesseract(handle.read())
-						captcha = tess.get_captcha()
-						logger.info("Captcha %s: %s" % (captcha_img, captcha))
-						if len(captcha) == 4:
-							if not wait_func():
-								return
-							data = urllib.urlencode([(CAPTCHACODE, captchacode), (MEGAVAR, megavar), ("captcha", captcha)])
-							handle = URLOpen().open(url, data)
-							for line in handle.readlines():
-								if 'id="downloadlink"' in line:
-									link = line.split('<a href="')[1].split('"')[0]
-									break
-			if not link:
-				return
-			elif not wait_func(WAIT):
-				return
+			handle = URLOpen().open(link)
 		except Exception, e:
-			logger.exception("%s: %s" % (url, e))
+			self.add_wait()
+			self.return_slot()
+			logger.warning("Limit Exceeded.")
 		else:
-			try:
-				handle = URLOpen().open(link, None, range)
-			except:
-				self.set_limit_exceeded()
-			else:
-				return handle
+			return handle
+
+	def delete(self, file_name):
+		""""""
+		if self.stop(file_name):
+			logger.info("Stopped %s: %s" % (file_name, self.return_slot()))
 
 	def check_links(self, url):
 		""""""

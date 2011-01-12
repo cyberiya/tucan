@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 
 from core.url_open import URLOpen
 
-import core.misc as misc
 import core.cons as cons
 
 API_URL = "http://api.rapidshare.com/cgi-bin/rsapi.cgi"
@@ -68,13 +67,34 @@ class CheckLinks:
 			if "ERROR" not in line:
 				info = line.split(",")
 				status = int(info[4])
-				if status in (1, 2, 6):
+				if status == 1 or status == 2 or status == 6:
 					name = info[1]
 					if max_size:
 						if int(info[2]) <= max_size:
-							size, unit = misc.get_size(int(info[2]))
+							size, unit = self.get_size(int(info[2]))
 					else:
-							size, unit = misc.get_size(int(info[2]))
+							size, unit = self.get_size(int(info[2]))
 						
 				result.append((name, size, unit))
 		return result
+		
+	def get_size(self, num):
+		"""on 0.3.10 will be part of misc.py"""
+		result = 0, cons.UNIT_KB
+		if num:
+			result = 1, cons.UNIT_KB
+			tmp = int(num/1024)
+			if  tmp > 0:
+				result = tmp, cons.UNIT_KB
+				tmp = int(tmp/1024)
+				if tmp > 0:
+					result = tmp, cons.UNIT_MB
+		return result
+
+if __name__ == "__main__":
+	urls = ["http://rapidshare.com/files/28369474/30_-_Buscate_la_Vida_-_Novia_2000_by_shagazz.part1.exe",
+		"http://rapidshare.com/files/279692839/The.Shield.S04E04.WS.DVDRip.XviD-SAiNTS.avi",
+		"http://rapidshare.com/files/389459308/The.Losers.DvdScr.2010.by.abel_21.part09.rar.html"]
+	for url in urls:
+		#print CheckLinks().check(url)
+		print CheckLinks().check(url, 209796096)

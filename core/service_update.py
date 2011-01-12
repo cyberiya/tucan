@@ -43,6 +43,7 @@ BTD = "http://build-tucan-doc.googlecode.com/svn/branches/update_manager/"
 
 SERVERS = [BTD, FORJA]
 UPDATE_FILE = "updates.conf"
+CONF_FILE = "service.conf"
 EXTENSION = ".tar.gz"
 
 class RemoteInfo(SafeConfigParser):
@@ -82,31 +83,20 @@ class ServiceUpdate:
 		if self.remote_info:
 			self.remote_version = self.remote_info.version
 			self.local_services = self.config.get_services()
-			if self.check_version():
-				for remote_service, remote_version in self.remote_info.services:
-					archive = "%s%s" % (self.remote_info.server, remote_service.split(".")[0] + EXTENSION)
-					#get local version
-					found = False
-					for local_service in self.local_services:
-						if local_service[2] == remote_service:
-							found = True
-							local_version = local_service[4].get_update()
-							if int(remote_version) > local_version:
-								self.updates[local_service[2]] = local_service[0], archive, local_service[1]
-					if not found:
-						self.updates[remote_service] = remote_service.split(".")[0], archive, None
-				if len(self.updates) > 0:
-					return True
-					
-	def check_version(self):
-		"""remote version should not be smaller than local version"""
-		remote = self.remote_version.split(" ")[0].split(".")
-		local = cons.TUCAN_VERSION.split(" ")[0].split(".")
-		for i in range(len(remote)):
-			if int(local[i]) > int(remote[i]):
-				logger.info("No updates available")
-				return
-		return True
+			for remote_service, remote_version in self.remote_info.services:
+				archive = "%s%s" % (self.remote_info.server, remote_service.split(".")[0] + EXTENSION)
+				#get local version
+				found = False
+				for local_service in self.local_services:
+					if local_service[2] == remote_service:
+						found = True
+						local_version = local_service[4].get_update()
+						if int(remote_version) > local_version:
+							self.updates[local_service[2]] = local_service[0], archive, local_service[1]
+				if not found:
+					self.updates[remote_service] = remote_service.split(".")[0], archive, None
+			if len(self.updates) > 0:
+				return True
 
 	def install_service(self, service_name, service_dir, archive):
 		""""""
