@@ -140,6 +140,5 @@ class AnonymousDownload(DownloadPlugin):
 		return link, form, wait
 
 	def check_links(self, url):
-		print("bongo")
 		return check_links(url)
 
