@@ -29,6 +29,28 @@ from core.url_open import URLOpen
 
 BASE_URL = "http://hotfile.com"
 
+def check_links(url):
+	""""""
+	name = None
+	size = -1
+	unit = None
+	try:
+		for line in URLOpen().open(url):
+			if 'class="arrow_down"' in line:
+				tmp = line.split("</strong>")
+				name = tmp[1].split("<span>")[0].strip()
+		tmp = tmp[1].split("<strong>")[1].split(" ")
+		unit = tmp[1].upper()
+		size = float(tmp[0])
+		if unit == "MB" and not int(size):
+		  size = int(size*1024)
+		  if not size:
+			  size = 1
+			  unit = "KB"
+	except Exception, e:
+		logger.exception("%s :%s" % (url, e))
+	return name, size, unit
+
 class AnonymousDownload(DownloadPlugin):
 	""""""
 	def link_parser(self, url, wait_func, content_range=None):
@@ -118,23 +140,6 @@ class AnonymousDownload(DownloadPlugin):
 		return link, form, wait
 
 	def check_links(self, url):
-		""""""
-		name = None
-		size = -1
-		unit = None
-		try:
-			for line in URLOpen().open(url):
-				if 'class="arrow_down"' in line:
-					tmp = line.split("</strong>")
-					name = tmp[1].split("<span>")[0].strip()
-					tmp = tmp[1].split("<strong>")[1].split(" ")
-					unit = tmp[1].upper()
-					size = float(tmp[0])
-					if unit == "MB" and not int(size):
-						size = int(size*1024)
-						if not size:
-							size = 1
-						unit = "KB"
-		except Exception, e:
-			logger.exception("%s :%s" % (url, e))
-		return name, size, unit
+		print("bongo")
+		return check_links(url)
+
