@@ -39,7 +39,8 @@ import core.service_config as service_config
 import media
 import core.cons as cons
 
-LANGUAGES = [	("Czech", "cs"),
+LANGUAGES = [("Arabic", "ar"),
+		("Czech", "cs"),
 		("Danish", "da"),
 		("Dutch", "nl"),
 		("English", "en"),
