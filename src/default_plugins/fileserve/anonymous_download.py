@@ -44,9 +44,9 @@ class AnonymousDownload(DownloadPlugin):
 			cookie = cookielib.CookieJar()
 			opener = URLOpen(cookie)
 			
-			form = urllib.urlencode([("checkTimeLimit", "check")])
+			form = urllib.urlencode([("checkDownload", "check")])
 			#If the limit is exceeded
-			if opener.open(url,form).read() == '1':
+			if '"fail":"timeLimit"' in opener.open(url,form).read():
 				return self.set_limit_exceeded()
 				
 			it = opener.open(url)
