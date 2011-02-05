@@ -21,20 +21,26 @@
 import urllib
 import cookielib
 import hashlib
+from core.url_open import URLOpen
+import logging
+logger = logging.getLogger(__name__)
 
 class PremiumCookie:
 	""""""
 	def __init__(self):
-		self.md5pw=''
+		""""""
+		self.digestURL = URLOpen()
 
 	def get_cookie(self, user, password, url=None):
 		""""""
-		# create a cache of the MD5 hashed password
-		if len(self.md5pw) == 0:
-			self.md5pw = hashlib.md5(password).hexdigest()
-
-		return '&username='+user+'&passwordmd5='+self.md5pw
+		DigestURLHandler = self.digestURL.open('http://api.hotfile.com/?action=getdigest')
+		
+		# retrieve MD5 digest
+		md5Digest = DigestURLHandler.readline()
+		md5pw = hashlib.md5(password).hexdigest()
+		md5pw = hashlib.md5(md5pw+md5Digest).hexdigest()
+		return '&username='+user+'&passwordmd5dig='+md5pw+'&digest='+md5Digest
 
 if __name__ == "__main__":
 	account_hasher = PremiumCookie()
-	print account_hasher.get_cookie("caffein","kingkong1944")
+	print account_hasher.get_cookie("testuser","testpass")
