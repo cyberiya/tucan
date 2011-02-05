@@ -44,6 +44,7 @@ class PremiumDownload(DownloadPlugin, Accounts):
 			return
 
 		encoded_link = 'http://api.hotfile.com/?action=getdirectdownloadlink&link=' + url + auth_string
+		logger.info("Encoded link %s" % (encoded_link))
 		opener = URLOpen()
 		handler = opener.open(encoded_link)
 		actual_link = handler.readline()
