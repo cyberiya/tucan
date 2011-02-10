@@ -94,7 +94,12 @@ class AnonymousDownload(DownloadPlugin):
 					it.next()
 					tmp = it.next().split("<strong>")[1].split("<")[0]
 					unit = tmp[-2:]
-					size = int(round(float(tmp[:-2])))
+					#Fix me : GB bug
+					if unit == "GB":
+						size = int(1024*float(tmp[:-2]))
+						unit = "MB"
+					else:
+						size = int(round(float(tmp[:-2])))
 					
 					if size > 1024:
 						if unit == "KB":
