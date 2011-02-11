@@ -33,6 +33,9 @@ class PremiumCookie:
 
 	def get_cookie(self, user, password, url=None):
 		""""""
+		if user == None or password == None:
+			return None
+
 		DigestURLHandler = self.digestURL.open('http://api.hotfile.com/?action=getdigest')
 		
 		# retrieve MD5 digest
@@ -40,7 +43,3 @@ class PremiumCookie:
 		md5pw = hashlib.md5(password).hexdigest()
 		md5pw = hashlib.md5(md5pw+md5Digest).hexdigest()
 		return '&username='+user+'&passwordmd5dig='+md5pw+'&digest='+md5Digest
-
-if __name__ == "__main__":
-	account_hasher = PremiumCookie()
-	print account_hasher.get_cookie("testuser","testpass")
