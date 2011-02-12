@@ -1,7 +1,7 @@
 ###############################################################################
 ## Tucan Project
-## Copyright (C) 	2008-2010 Fran Lupion crak@tucaneando.com
-## 						 2011 Ali Shah ahshah@airpost.net
+## Copyright (C)    2008-2010 Fran Lupion crak@tucaneando.com
+##                       2011 Ali Shah ahshah@airpost.net
 ##
 ## This program is free software; you can redistribute it and/or modify
 ## it under the terms of the GNU General Public License as published by
