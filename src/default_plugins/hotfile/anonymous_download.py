@@ -61,9 +61,9 @@ def check_links(url):
 		link_name_size_status = URLOpen().open(check_link_url).readline()
 		link_name_size_status_list = link_name_size_status.split(',')
 		name   = link_name_size_status_list[0]
-		size   = int(link_name_size_status_list[1])
+		size   = int(link_name_size_status_list[1]) / 1024
 		status = int(link_name_size_status_list[2])
-		unit = "B"
+		unit = "KB"
 	except Exception, e:
 		logger.exception("%s :%s" % (url, e))
 		
