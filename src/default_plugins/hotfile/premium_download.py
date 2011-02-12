@@ -30,7 +30,9 @@ from core.accounts import Accounts
 from core.service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
 from core.url_open import URLOpen
 
-class PremiumDownload(AnonymousDownload, DownloadPlugin, Accounts):
+import link_validity_check
+
+class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
 	def __init__(self, config, section):
 		""""""
@@ -49,3 +51,6 @@ class PremiumDownload(AnonymousDownload, DownloadPlugin, Accounts):
 		handler = opener.open(encoded_link)
 		actual_link = handler.readline()
 		return opener.open(actual_link)	
+
+	def check_links(self, url):
+		return link_validity_check(url)
