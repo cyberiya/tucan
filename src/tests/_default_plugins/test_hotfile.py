@@ -36,8 +36,8 @@ SERVICE_NAME = "hotfile"
 
 TEST_INVALID_LINK = "http://hotfile.com/dl/73035169/57ac0fc/prueba.bin.html"
 TEST_LINK = "http://hotfile.com/dl/103600010/4a54715/prueba.bin.html"
-TEST_SIZE = 116327
-TEST_UNIT = "B"
+TEST_SIZE = 113
+TEST_UNIT = "KB"
 
 class TestAnonymous(base_tests.TestBaseDownload):
 	""""""

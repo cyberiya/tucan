@@ -23,14 +23,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 from premium_cookie import PremiumCookie
-from anonymous_download import check_links
+from anonymous_download import AnonymousDownload
 
+from core.download_plugin import DownloadPlugin
 from core.accounts import Accounts
 from core.service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
-from core.download_plugin import DownloadPlugin
 from core.url_open import URLOpen
 
-class PremiumDownload(DownloadPlugin, Accounts):
+class PremiumDownload(AnonymousDownload, DownloadPlugin, Accounts):
 	""""""
 	def __init__(self, config, section):
 		""""""
@@ -49,8 +49,3 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		handler = opener.open(encoded_link)
 		actual_link = handler.readline()
 		return opener.open(actual_link)	
-
-	def check_links(self, url):
-		""""""
-		return check_links(url)
-
