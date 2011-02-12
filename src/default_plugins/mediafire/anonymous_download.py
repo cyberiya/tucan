@@ -172,12 +172,12 @@ class AnonymousDownload(DownloadPlugin):
 			#Happens sometimes, unecessary to continue at this point
 			except:
 				return []
-			coef = tmp.split("At(i)^")[1]
+			coef = tmp.split(")^")[1]
 			coef = coef.split(")")[0]
 			coef = coef.split("^")
 			esc = urllib.unquote(tmp.split("unescape('")[1].split("');")[0])
 			for i in range(int(bond)):
-				ordt = ord(esc[i])
+				ordt = int(esc[i*2:i*2+2],16)
 				for a in coef:
 					ordt = ordt^int(a)
 				res = "%s%s" %(res,chr(ordt))
