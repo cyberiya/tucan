@@ -21,6 +21,9 @@
 import time
 import unittest
 
+from core.queue import Queue
+from core.upload_manager import UploadManager
+
 SIZE = 10240
 
 class UploadMockup:
@@ -41,8 +44,8 @@ class TestUploadManager(unittest.TestCase):
 	""""""
 	def setUp(self):
 		""""""
-		pass
-		
+		self.manager = UploadManager(Queue())
+		self.manager.add([('/home/user/file.part1.rar', 1024, ['megaupload.anonymous_upload'])])		
 	def get_speed(self):
 		""""""
 		return 4096
@@ -50,9 +53,6 @@ class TestUploadManager(unittest.TestCase):
 	def update(self, current_size, actual_speed):
 		print current_size
 		print actual_speed
-		
-	def add(self):
-		pass
 	
 	def start(self):
 		pass
@@ -66,10 +66,11 @@ class TestUploadManager(unittest.TestCase):
 	def scheduler(self):
 		pass
 
-	def test_upload_mockup(self):
+	def upload_mockup(self):
 		""""""
 		upload = UploadMockup("something", self.get_speed, self.update)
 
 	def tearDown(self):
 		""""""
-		pass
+		self.manager.quit()
+		del self.manager

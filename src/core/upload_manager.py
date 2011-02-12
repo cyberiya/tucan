@@ -50,6 +50,11 @@ class UploadManager:
 				self.threads.remove(id)
 		return cont
 
+	def add(self, file_list):
+		""""""
+		self.queue.add_package(file_list)
+		self.scheduler()
+
 	def start(self, id, item=None):
 		""""""
 		if not item:
@@ -70,7 +75,7 @@ class UploadManager:
 
 	def schedule(self):
 		""""""
-		items = [for item in self.queue.items if isinstance(item, Link)]
+		items = [item for item in self.queue.items if isinstance(item, Link)]
 		for item in items:
 			if item.get_pending():
 				self.start(item.id, item)
