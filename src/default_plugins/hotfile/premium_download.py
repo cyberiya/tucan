@@ -30,7 +30,7 @@ from core.accounts import Accounts
 from core.service_config import SECTION_PREMIUM_DOWNLOAD, ServiceConfig
 from core.url_open import URLOpen
 
-from link_validity_check import link_validity_check
+from check_links import CheckLinks
 
 class PremiumDownload(DownloadPlugin, Accounts):
 	""""""
@@ -53,4 +53,4 @@ class PremiumDownload(DownloadPlugin, Accounts):
 		return opener.open(actual_link)	
 
 	def check_links(self, url):
-		return link_validity_check(url)
+		return CheckLinks().check(url)

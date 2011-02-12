@@ -27,7 +27,7 @@ from core.download_plugin import DownloadPlugin
 from core.recaptcha import Recaptcha
 from core.url_open import URLOpen
 
-from link_validity_check import link_validity_check
+from check_links import CheckLinks
 BASE_URL = "http://hotfile.com"
 
 
@@ -120,4 +120,4 @@ class AnonymousDownload(DownloadPlugin):
 		return link, form, wait
 
 	def check_links(self, url):
-		return link_validity_check(url)
+		return CheckLinks().check(url)
