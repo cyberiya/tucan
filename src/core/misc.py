@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 
 import url_open
 import cons
+import traceback
 
 REPORT_URL = "http://crak.appspot.com/add"
 
@@ -65,14 +66,17 @@ def report_log(email="", comment=""):
 
 def get_exception_info(type, value, trace):
 	""""""
+
 	try:
-		file_name = trace.tb_frame.f_code.co_filename
-		line_no = trace.tb_lineno
-		exception = type.__name__
+		back_trace_list = traceback.format_exception(type, value, trace)
+		message=""
+		for trace in back_trace_list:
+			message += trace
+		return message
 	except:
 		return "Unhandled Error! No info available"
 	else:
-		return "File %s line %i - %s: %s" % (file_name, line_no, exception, value)
+		return message
 
 def get_size(num):
 	""""""
