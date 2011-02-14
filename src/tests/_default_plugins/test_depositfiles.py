@@ -34,7 +34,7 @@ CONF_PATH = "../default_plugins/depositfiles"
 SERVICE_NAME = "depositfiles"
 
 TEST_INVALID_LINK = "http://depositfiles.com/en/files/19ixor0a"
-TEST_LINK = "http://depositfiles.com/en/files/19ixor0af"
+TEST_LINK = "http://depositfiles.com/en/files/97lt4vvv2"
 TEST_SIZE = 114
 TEST_UNIT = "KB"
 
