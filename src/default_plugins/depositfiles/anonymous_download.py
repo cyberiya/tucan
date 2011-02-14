@@ -95,7 +95,7 @@ class AnonymousDownload(DownloadPlugin):
 			it = URLOpen().open(url)
 			for line in it:
 				if '<div class="info">' in line:
-					name = it.next().split('>')[1].split('<')[0].strip()
+					name = it.next().split('="')[1].split('">')[0].strip()
 					tmp = it.next().split('>')[2].split('<')[0].strip()
 					unit = tmp[-2:]
 					size = int(round(float(tmp[:-2].replace("&nbsp;",""))))
