@@ -72,6 +72,9 @@ class AnonymousDownload(DownloadPlugin):
 								break
 						if link:
 							break
+				elif 'html_download_api-limit_interval' in line:
+					tmp = int(line.split(">")[1].split("<")[0])
+					return self.set_limit_exceeded(tmp)
 			if not link:
 				return self.set_limit_exceeded()
 		except Exception, e:
