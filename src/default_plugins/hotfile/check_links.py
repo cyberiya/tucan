@@ -50,12 +50,14 @@ class CheckLinks:
 		check_link_url = ("http://api.hotfile.com/?action=checklinks&ids=" + link_id + 
 						  "&keys=" + link_key + "&fields=name,size,status")
 		""" print ("Check link url: {0}".format(check_link_url))  """
-
 		try: 
 			link_name_size_status = URLOpen().open(check_link_url).readline()
 			link_name_size_status_list = link_name_size_status.split(',')
 			name   = link_name_size_status_list[0]
-			size   = int(link_name_size_status_list[1]) / 1024
+			""" Hotfile glitch: sometimes removed files do not have size information """
+			if ( len(link_name_size_status_list[1]) != 0):
+				size   = int(link_name_size_status_list[1]) / 1024
+
 			status = int(link_name_size_status_list[2])
 			unit = "KB"
 		except Exception, e:
