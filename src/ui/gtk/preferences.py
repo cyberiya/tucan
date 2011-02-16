@@ -290,21 +290,24 @@ class Preferences(gtk.Dialog):
 		frame.set_border_width(10)
 		frame.set_shadow_type(gtk.SHADOW_NONE)
 		vbox.pack_start(frame, False, False)
+
 		bbox = gtk.HButtonBox()
 		bbox.set_layout(gtk.BUTTONBOX_EDGE)
 		frame.add(bbox)
 		button = gtk.Button(None, gtk.STOCK_FIND)
 		button.connect("clicked", self.update_manager)
 		bbox.pack_start(button)
-		button = gtk.Button(None, gtk.STOCK_REMOVE)
-		button.connect("clicked", self.delete_service)
+		button = gtk.Button(None, gtk.STOCK_INFO)
+		button.connect("clicked", self.service_info)
 		bbox.pack_start(button)
 		aspect = gtk.AspectFrame()
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		bbox.pack_start(aspect)
-		button = gtk.Button(None, gtk.STOCK_INFO)
-		button.connect("clicked", self.service_info)
-		bbox.pack_start(button)
+		self.toggle_all_button = gtk.Button("Enable All")
+		self.toggle_all_button.connect("clicked", self.toggled_all)
+		bbox.pack_start(self.toggle_all_button)
+
+		self.check_toggled_all()
 
 		hbox = gtk.HBox()
 		vbox.pack_start(hbox, False, False, 5)
@@ -354,12 +357,39 @@ class Preferences(gtk.Dialog):
 		model = self.treeview.get_model()
 		if button.get_active():
 			active = False
+			self.toggle_all_button.set_sensitive(True)
 		else:
 			tos = _("Before using this service, you must accept it's terms of service at ") + model.get_value(model.get_iter(path), 1)
 			m = Message(self, cons.SEVERITY_INFO, _("Terms of service"), tos, True)
 			active = m.accepted
 		button.set_active(active)
 		model.set_value(model.get_iter(path), 2, active)
+		if active:
+			self.check_toggled_all()
+
+
+	def toggled_all(self, button):
+		""""""
+		tos = _("Before using all services, you must accept their terms of service")
+		m = Message(self, cons.SEVERITY_INFO, _("Terms of service"), tos, True)
+		if m.accepted:
+			button.set_sensitive(False)
+			model = self.treeview.get_model()
+			iter = model.get_iter_root()
+			while iter:
+				model.set_value(iter, 2, True)
+				iter = model.iter_next(iter)
+
+	def check_toggled_all(self):
+		""""""
+		enabled = True
+		model = self.treeview.get_model()
+		iter = model.get_iter_root()
+		while iter:
+			enabled = enabled and model.get_value(iter, 2)
+			iter = model.iter_next(iter)
+		if enabled:
+			self.toggle_all_button.set_sensitive(False)
 
 	def service_preferences(self, treeview, path, view_column=None):
 		""""""
