@@ -93,18 +93,17 @@ class AnonymousDownload(DownloadPlugin):
 						if not wait_func():
 							return
 						c = Recaptcha(BASE_URL, recaptcha_link)
-						for retry in range(3):
-							challenge, response = c.solve_captcha()
-							if response:
-								if not wait_func():
-									return
-							
-								#Submit the input to the recaptcha system
-								form = urllib.urlencode([("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response), ("recaptcha_shortencode_field", "undefined")])
-								handle = opener.open(form_action, form, content_range)
-								if not handle.info().getheader("Content-Type") == "text/html":
-									#Captcha is good
-									return handle
+						challenge, response = c.solve_captcha()
+						if response:
+							if not wait_func():
+								return
+						
+							#Submit the input to the recaptcha system
+							form = urllib.urlencode([("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response), ("recaptcha_shortencode_field", "undefined")])
+							handle = opener.open(form_action, form, content_range)
+							if not handle.info().getheader("Content-Type") == "text/html":
+								#Captcha is good
+								return handle
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 
