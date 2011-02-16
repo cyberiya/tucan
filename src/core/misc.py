@@ -68,15 +68,9 @@ def get_exception_info(type, value, trace):
 	""""""
 
 	try:
-		back_trace_list = traceback.format_exception(type, value, trace)
-		message=""
-		for trace in back_trace_list:
-			message += trace
-		return message
+		return "".join(traceback.format_exception(type, value, trace))
 	except:
 		return "Unhandled Error! No info available"
-	else:
-		return message
 
 def get_size(num):
 	""""""
