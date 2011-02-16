@@ -2,4 +2,4 @@ syntax: glob
 *.pyc
 *.swp
 *.swo
-
+*.accounts

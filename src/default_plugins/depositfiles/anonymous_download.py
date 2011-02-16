@@ -51,16 +51,32 @@ class AnonymousDownload(DownloadPlugin):
 					else:
 						if tmp > 0:
 							wait = tmp
-				if 'download_started();' in line:
-					link = line.split('action="')[1].split('"')[0]
-					break
-				if 'html_download_api-limit_interval' in line:
+				elif "$('#download_container').load('" in line:
+					try:
+						tmp = line.split("load('")[1].split("'")[0]
+						url = "%s%s" % ("http://depositfiles.com", tmp)
+					except Exception, e:
+						pass
+					if not wait_func(wait + 1):
+						return
+					#Due to a bug in DepositFiles, sometimes it returns "Invalid params"
+					#If it's the case, retry, 10 times and set limit exceeded
+					for attempt in range(10):
+						for line in opener.open(url):
+							if "Invalid" in line:
+								if not wait_func():
+									return
+								break
+							elif "action" in line:
+								link = line.split('"')[1].split('"')[0]
+								break
+						if link:
+							break
+				elif 'html_download_api-limit_interval' in line:
 					tmp = int(line.split(">")[1].split("<")[0])
 					return self.set_limit_exceeded(tmp)
 			if not link:
-				return
-			if not wait_func(wait):
-				return
+				return self.set_limit_exceeded()
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
 		else:
@@ -82,7 +98,7 @@ class AnonymousDownload(DownloadPlugin):
 			it = URLOpen().open(url)
 			for line in it:
 				if '<div class="info">' in line:
-					name = it.next().split('>')[1].split('<')[0].strip()
+					name = it.next().split('="')[1].split('">')[0].strip()
 					tmp = it.next().split('>')[2].split('<')[0].strip()
 					unit = tmp[-2:]
 					size = int(round(float(tmp[:-2].replace("&nbsp;",""))))
