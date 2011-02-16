@@ -24,9 +24,9 @@ info() {
 	printf "\n"
 }
 
-update(){
+update() {
 	printf "\n\nsvn checkout $1 ${TEMP_DIR}$2\n"
-	test `svn checkout $1 ${TEMP_DIR}$2`
+	test $(svn checkout $1 ${TEMP_DIR}$2)
 
 	printf "\n\ncat ${TEMP_DIR}$2/updates.conf\n"
 	cat ${TEMP_DIR}$2/updates.conf
@@ -36,7 +36,7 @@ update(){
 	LINE=$(cat ${TEMP_DIR}$2/updates.conf | grep $3)
 	if [ -n $LINE ]; then
 		printf "\n\necho ${SERVICE_NAME} = ${SERVICE_UPDATE} >> ${TEMP_DIR}$2/updates.conf\n"
-		echo ${SERVICE_NAME} = ${SERVICE_UPDATE} >> ${TEMP_DIR}$2/updates.conf
+		echo "${SERVICE_NAME} = ${SERVICE_UPDATE}" >> ${TEMP_DIR}$2/updates.conf
 	else
 		printf "\n\nsed -i \"s/${LINE}/${SERVICE_NAME} = ${SERVICE_UPDATE}/\" ${TEMP_DIR}updates.conf\n"
 		sed -i "s/${LINE}/${SERVICE_NAME} = ${SERVICE_UPDATE}/" ${TEMP_DIR}$2/updates.conf
@@ -51,9 +51,8 @@ update(){
 	printf "\ncd ${TEMP_DIR}$2/ && svn add $3$EXTENSION/\n"
 	cd ${TEMP_DIR}$2/ && svn add $3$EXTENSION
 
-	printf "cd ${TEMP_DIR}$2/ && svn commit --message \"$3 update (${SERVICE_UPDATE})\""
+	printf "cd ${TEMP_DIR}$2/ && svn commit --message \"$3 update (${SERVICE_UPDATE})\"\n"
 	cd ${TEMP_DIR}$2/ && svn commit --message "$3 update (${SERVICE_UPDATE})"
-
 }
 
 main() {
