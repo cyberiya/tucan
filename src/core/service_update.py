@@ -119,6 +119,9 @@ class ServiceUpdate:
 		""""""
 		logger.warning("Updating: %s" % service_name)
 		try:
+			#Get the state of the plugin before the update
+			if self.config.has_option(config.SECTION_SERVICES, service_name):
+				enabled = self.config.service(os.path.join(cons.PLUGIN_PATH, service_dir, ""))[3]
 			fd = tempfile.TemporaryFile()
 			fd.write(URLOpen().open(archive).read())
 			fd.seek(0)
@@ -128,6 +131,9 @@ class ServiceUpdate:
 			fd.close()
 			if not self.config.has_option(config.SECTION_SERVICES, service_name):
 				self.config.set(config.SECTION_SERVICES, service_name, os.path.join(cons.PLUGIN_PATH, service_dir, ""))
+			else:
+				#Set the previous state of the plugin
+				self.config.service(os.path.join(cons.PLUGIN_PATH, service_dir, ""))[4].enable(enabled)
 		except Exception, e:
 			logger.exception(e)
 		else:
