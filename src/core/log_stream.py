@@ -18,14 +18,25 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import logging
+logger = logging.getLogger(__name__)
+
+import cons
+
 SEVERITY = ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 class LogStream:
 	""""""
 	def __init__(self):
 		""""""
-		self.new_buffer = []
 		self.old_buffer = []
+		try:
+			f = open(cons.LOG_FILE, "r")
+			self.new_buffer = f.readlines()
+			f.close()
+		except Exception, e:
+			logging.exception(e)
+			self.new_buffer = [e]
 
 	def write(self, message):
 		""""""
