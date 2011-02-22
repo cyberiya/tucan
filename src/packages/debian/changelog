@@ -1,3 +1,10 @@
+tucan (0.3.10-1) unstable; urgency=low
+
+  * New upstream release
+  * debian-policy updated to 3.9.1
+
+ -- Fran Lupion (Crak) <crak@tucaneando.com>  Mon, 21 Feb 2011 20:07:16 +0200
+
 tucan (0.3.9-1) unstable; urgency=low
 
   * New upstream release

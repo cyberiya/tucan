@@ -3,7 +3,7 @@ Section: net
 Priority: optional
 Maintainer: Fran Lupion (Crak) <crak@tucaneando.com>
 Build-Depends: debhelper (>= 7)
-Standards-Version: 3.8.3
+Standards-Version: 3.9.1
 Homepage: http://www.tucaneando.com
 
 Package: tucan
