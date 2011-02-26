@@ -56,7 +56,8 @@ LANGUAGES = [("Arabic", "ar"),
 		("Slovenian", "sl"),
 		("Spanish", "es"),
 		("Swedish","se"),
-		("Turkish", "tr")]
+		("Turkish", "tr"),
+		("Vietnamese", "vi")]
 
 class Preferences(gtk.Dialog):
 	""""""
