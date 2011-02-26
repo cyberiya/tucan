@@ -28,14 +28,17 @@ import cons
 
 class Item:
 	""""""
-	def __init__(self, parent_id=None):
+	def __init__(self, update_cb, parent=None):
 		""""""
 		self.id = str(uuid.uuid1())
-		self.parent_id = parent_id
+		self.parent = parent
+		self.parent_id = parent.id if parent else None
 		self.status = cons.STATUS_PEND
 		self.current_size = 0
 		self.total_size = 0
 		self.current_speed = 0
+		self.current_time = 0
+		self.update_cb = update_cb
 
 	def get_progress(self):
 		""""""
@@ -46,48 +49,72 @@ class Item:
 		if self.status in [cons.STATUS_ACTIVE, cons.STATUS_WAIT]:
 			return True
 
+	def get_pending(self):
+		""""""
+		if self.status in [cons.STATUS_PEND, cons.STATUS_ERROR]:
+			return True
+
+	def update(self, diff_size, diff_speed):
+		""""""
+		self.current_size += diff_size
+		self.current_speed += diff_speed
+		self.update_cb(self.id)
+
 class Link(Item):
 	""""""
-	def __init__(self, parent_id, plugin):
+	def __init__(self, update_cb, parent, plugin):
 		""""""
-		Item.__init__(self, parent_id)
+		Item.__init__(self, update_cb, parent)
 		self.url = None
 		self.plugin = plugin
 
+	def update(self, diff_size, diff_speed):
+		""""""
+		Item.update(self, diff_size, diff_speed)
+		self.parent.update(diff_size, diff_speed)
+	
 class File(Item):
 	""""""
-	def __init__(self, parent_id, path):
+	def __init__(self, update_cb, parent, path):
 		""""""
-		Item.__init__(self, parent_id)
+		Item.__init__(self, update_cb, parent)
 		self.path = path
 		self.name = os.path.basename(path)
 
+	def update(self, diff_size, diff_speed):
+		""""""
+		Item.update(self, diff_size, diff_speed)
+		self.parent.update(diff_size, diff_speed)
+
 class Package(Item):
 	""""""
-	def __init__(self, name, desc=""):
+	def __init__(self, update_cb, name, desc=""):
 		""""""
-		Item.__init__(self)
+		Item.__init__(self, update_cb)
 		self.name = name
 		self.desc = desc #same for all the files
-
 class Queue:
 	""""""
 	def __init__(self):
 		""""""
 		self.items = [] #main list [package]
 
+	def update_row(self, id):
+		""""""
+		pass
+
 	def add_package(self, file_list, name=None):
 		""""""
 		if not name:
 			name ="package-%s" % time.strftime("%Y%m%d%H%M%S")
-		package = Package(name)
+		package = Package(self.update_row, name)
 		self.items.append(package)
 		for path, size, links in file_list:
-			file = File(package.id, path)
+			file = File(self.update_row, package, path)
 			self.items.append(file)
 			for plugin in links:
 				file.total_size += size
-				link = Link(file.id, plugin)
+				link = Link(self.update_row, file, plugin)
 				link.total_size = size
 				self.items.append(link)
 			package.total_size += file.total_size

@@ -69,11 +69,15 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 		Queue.__init__(self)
 		self.column_types = (gtk.gdk.Pixbuf, str, int, int, int, int)
 		self.cache = Cache()
-		
-	def set_value(self, id, key, value):
+
+	def update_row(self, id):
 		""""""
 		path = self.on_get_path(id)
 		self.row_changed(path, self.get_iter(path))
+		
+	def set_value(self, id, key, value):
+		""""""
+		self.update_row(id)
 		Queue.set_value(self, id, key, value)
 
 	def add_package(self, file_list, name=None):
@@ -255,8 +259,8 @@ class GenericTreeModelExample:
 		
 		PATH1 = '/home/user/file.part1.rar'
 		PATH2 = '/home/user/file.part2.rar'
-		SIZE = 1024
-		SIZE2 = 2048
+		SIZE = 1000
+		SIZE2 = 2000
 		LINK1 = 'megaupload.anonymous_upload'
 		LINK2 = 'rapidshare.anonymous_upload'
 
@@ -313,12 +317,16 @@ class GenericTreeModelExample:
 	def update(self):
 		""""""
 		for item in self.listmodel.items:
-			self.listmodel.set_value(item.id, "current_size", item.current_size+1)
-		if item.current_size != item.total_size:
+			if isinstance(item, Link):
+				item.update(100, 100)
+			#self.listmodel.set_value(item.id, "current_size", item.current_size+100)
+		if item.current_size == item.total_size:
+			self.delete_event()
+		else:
 			return True
 
 if __name__ == "__main__":
 	g = GenericTreeModelExample()
-	gobject.timeout_add(5000, g.delete_event)
+	#gobject.timeout_add(5000, g.delete_event)
 	gobject.timeout_add(100, g.update)
 	gtk.main()
