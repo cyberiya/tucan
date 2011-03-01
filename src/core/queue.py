@@ -28,14 +28,17 @@ import cons
 
 class Item:
 	""""""
-	def __init__(self, parent_id=None):
+	def __init__(self, callback, parent=None):
 		""""""
 		self.id = str(uuid.uuid1())
-		self.parent_id = parent_id
+		self.parent = parent
+		self.parent_id = parent.id if parent else None
 		self.status = cons.STATUS_PEND
 		self.current_size = 0
 		self.total_size = 0
 		self.current_speed = 0
+		self.current_time = 0
+		self.callback = callback
 
 	def get_progress(self):
 		""""""
@@ -44,55 +47,98 @@ class Item:
 	def get_active(self):
 		""""""
 		if self.status in [cons.STATUS_ACTIVE, cons.STATUS_WAIT]:
-			return True
+			return self.status
 
 	def get_pending(self):
 		""""""
 		if self.status in [cons.STATUS_PEND, cons.STATUS_ERROR]:
-			return True
+			return self.status
+
+	def update(self, diff_size, diff_speed):
+		""""""
+		self.current_size += diff_size
+		self.current_speed += diff_speed
+		self.callback(self.id)
+
+	def set_status(self, status):
+		""""""
+		self.status = status
+		self.callback(self.parent_id, self.parent, status)
 
 class Link(Item):
 	""""""
-	def __init__(self, parent_id, plugin):
+	def __init__(self, callback, parent, plugin):
 		""""""
-		Item.__init__(self, parent_id)
+		Item.__init__(self, callback, parent)
 		self.url = None
 		self.plugin = plugin
 
+	def update(self, diff_size, diff_speed):
+		""""""
+		Item.update(self, diff_size, diff_speed)
+		self.parent.update(diff_size, diff_speed)
+	
 class File(Item):
 	""""""
-	def __init__(self, parent_id, path):
+	def __init__(self, callback, parent, path):
 		""""""
-		Item.__init__(self, parent_id)
+		Item.__init__(self, callback, parent)
 		self.path = path
 		self.name = os.path.basename(path)
 
+	def update(self, diff_size, diff_speed):
+		""""""
+		Item.update(self, diff_size, diff_speed)
+		self.parent.update(diff_size, diff_speed)
+
 class Package(Item):
 	""""""
-	def __init__(self, name, desc=""):
+	def __init__(self, callback, name, desc=""):
 		""""""
-		Item.__init__(self)
+		Item.__init__(self, callback)
 		self.name = name
 		self.desc = desc #same for all the files
-
 class Queue:
 	""""""
 	def __init__(self):
 		""""""
 		self.items = [] #main list [package]
 
+	def propagate_cb(self, id, parent=None, status=None):
+		""""""
+		if parent:
+			self.propagate_status(parent, status)
+
+	def sort_status(self, new_status, old_status):
+		""""""
+		status = [cons.STATUS_ACTIVE, cons.STATUS_WAIT, cons.STATUS_PEND, cons.STATUS_ERROR, cons.STATUS_STOP, cons.STATUS_CORRECT]
+		return status[min(status.index(new_status), status.index(old_status))]
+
+	def propagate_status(self, parent, status):
+		""""""
+		#check if the status change affects the parent
+		if parent.status != status:
+			#find the appropriate status in the brotherhood
+			for item in self.get_children(parent.id):
+				status = self.sort_status(item.status, status)
+			#check again if the status change affects the parent
+			if parent.status != status:
+				parent.status = status
+				if parent.parent:
+					self.propagate_status(parent.parent, status)
+
 	def add_package(self, file_list, name=None):
 		""""""
 		if not name:
 			name ="package-%s" % time.strftime("%Y%m%d%H%M%S")
-		package = Package(name)
+		package = Package(self.propagate_cb, name)
 		self.items.append(package)
 		for path, size, links in file_list:
-			file = File(package.id, path)
+			file = File(self.propagate_cb, package, path)
 			self.items.append(file)
 			for plugin in links:
 				file.total_size += size
-				link = Link(file.id, plugin)
+				link = Link(self.propagate_cb, file, plugin)
 				link.total_size = size
 				self.items.append(link)
 			package.total_size += file.total_size
