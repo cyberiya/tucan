@@ -70,6 +70,11 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 		self.column_types = (gtk.gdk.Pixbuf, str, int, int, int, int)
 		self.cache = Cache()
 
+	def propagate_cb(self, id, parent=None, status=None):
+		""""""
+		Queue.propagate_cb(self, id, parent, status)
+		self.update_row(id)
+
 	def update_row(self, id):
 		""""""
 		path = self.on_get_path(id)

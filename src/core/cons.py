@@ -49,7 +49,7 @@ USER_AGENT = "Mozilla/5.0 (X11; U; Linux i686; en-US) Gecko/20101223 Firefox/3.6
 STATUS_PEND = "pending"
 STATUS_ACTIVE = "active"
 STATUS_WAIT = "waiting"
-STATUS_STOP = "stoped"
+STATUS_STOP = "stopped"
 STATUS_CORRECT = "correct"
 STATUS_ERROR = "error"
 

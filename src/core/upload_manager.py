@@ -20,13 +20,35 @@
 
 import time
 import threading
-
 import logging
 logger = logging.getLogger(__name__)
+
+from queue import Link
 
 import cons
 
 MAX_UPLOADS = 1
+
+SIZE = 10240
+
+class UploadMockup(threading.Thread):
+	""""""
+	def __init__(self, item):
+		""""""
+		threading.Thread.__init__(self)
+		self.item = item
+		self.stop_flag = False
+
+	def run(self):
+		"""Parsing and Poster work"""
+		speed = 2048
+		while not self.stop_flag and self.item.current_size < SIZE:
+			time.sleep(1)
+			self.item.update(speed, speed)
+
+	def stop(self):
+		"""Set a flag so that it stops"""
+		self.stop_flag = True
 
 class UploadManager:
 	""""""
@@ -47,7 +69,7 @@ class UploadManager:
 			if th.isAlive():
 				cont += 1
 			else:
-				self.threads.remove(id)
+				del self.threads[id]
 		return cont
 
 	def add(self, file_list):
@@ -61,16 +83,16 @@ class UploadManager:
 			item = self.queue.get_item(id)
 		if self.get_active_threads() < MAX_UPLOADS:
 			#logging message
-			th = threading.Thread()
+			th = UploadMockup(item)
 			th.start()
-			self.thread_list[id] = th
+			self.threads[id] = th
 
 	def stop(self, id, item=None):
 		""""""
 		if not item:
 			item = self.queue.get_item(id)
 		if id in self.threads:
-			self.threads[id].stop_flag = True
+			self.threads[id].stop()
 			#logging message
 
 	def schedule(self):

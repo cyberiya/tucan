@@ -21,6 +21,7 @@
 import unittest
 
 from core.queue import Queue
+import core.cons as cons
 
 PATH1 = '/home/user/file.part1.rar'
 PATH2 = '/home/user/file.part2.rar'
@@ -289,6 +290,63 @@ class TestQueue(unittest.TestCase):
 		self.assertEqual(link6, link10)
 		self.assertEqual(link7, link11)
 		self.assertEqual(link8, link12)
+
+	def test_propagate_status(self):
+		""""""
+		package = self.queue.get_children().pop()
+		file1, file2 = self.queue.get_children(package.id)
+		link1, link2 = self.queue.get_children(file1.id)
+		link3, link4 = self.queue.get_children(file2.id)
+		#p : pend, f: pend pend, l: pend pend pend pend
+		link1.set_status(cons.STATUS_ACTIVE)
+		#p : active, f: active pend, l: active pend pend pend
+		self.assertEqual(file1.status, cons.STATUS_ACTIVE)
+		self.assertEqual(package.status, cons.STATUS_ACTIVE)
+		link2.set_status(cons.STATUS_WAIT)
+		#p : active, f: active pend, l: active wait pend pend
+		self.assertEqual(file1.status, cons.STATUS_ACTIVE)
+		self.assertEqual(package.status, cons.STATUS_ACTIVE)
+		link1.set_status(cons.STATUS_PEND)
+		#p : wait, f: wait pend, l: pend wait pend pend
+		self.assertEqual(file1.status, cons.STATUS_WAIT)
+		self.assertEqual(package.status, cons.STATUS_WAIT)
+		link1.set_status(cons.STATUS_ACTIVE)
+		#p : active, f: active pend, l: active wait pend pend
+		link1.set_status(cons.STATUS_ERROR)
+		link2.set_status(cons.STATUS_ERROR)
+		#p : pend, f: error pend, l: error error pend pend
+		self.assertEqual(file1.status, cons.STATUS_ERROR)
+		self.assertEqual(package.status, cons.STATUS_PEND)
+		link1.set_status(cons.STATUS_WAIT)
+		#p : wait, f: wait pend, l: wait error pend pend
+		self.assertEqual(file1.status, cons.STATUS_WAIT)
+		self.assertEqual(package.status, cons.STATUS_WAIT)
+		link1.set_status(cons.STATUS_CORRECT)
+		link2.set_status(cons.STATUS_CORRECT)
+		#p : pend, f: correct pend, l: correct correct pend pend
+		self.assertEqual(file1.status, cons.STATUS_CORRECT)
+		self.assertEqual(package.status, cons.STATUS_PEND)
+		link3.set_status(cons.STATUS_ACTIVE)
+		#p : active, f: correct active, l: correct correct active pend
+		self.assertEqual(file2.status, cons.STATUS_ACTIVE)
+		self.assertEqual(package.status, cons.STATUS_ACTIVE)
+		link3.set_status(cons.STATUS_CORRECT)
+		link4.set_status(cons.STATUS_CORRECT)
+		#p : correct, f: correct correct, l: correct correct correct correct
+		self.assertEqual(file2.status, cons.STATUS_CORRECT)
+		self.assertEqual(package.status, cons.STATUS_CORRECT)
+
+	def test_sort_status(self):
+		tmp = self.queue.sort_status(cons.STATUS_CORRECT, cons.STATUS_STOP)
+		self.assertEqual(tmp, cons.STATUS_STOP)
+		tmp = self.queue.sort_status(cons.STATUS_STOP, cons.STATUS_ERROR)
+		self.assertEqual(tmp, cons.STATUS_ERROR)
+		tmp = self.queue.sort_status(cons.STATUS_ERROR, cons.STATUS_PEND)
+		self.assertEqual(tmp, cons.STATUS_PEND)
+		tmp = self.queue.sort_status(cons.STATUS_PEND, cons.STATUS_WAIT)
+		self.assertEqual(tmp, cons.STATUS_WAIT)
+		tmp = self.queue.sort_status(cons.STATUS_WAIT, cons.STATUS_ACTIVE)
+		self.assertEqual(tmp, cons.STATUS_ACTIVE)
 
 	def tearDown(self):
 		""""""
