@@ -27,9 +27,9 @@ from queue import Link
 
 import cons
 
-MAX_UPLOADS = 1
+MAX_UPLOADS = 2
 
-SIZE = 10240
+SIZE = 4096
 
 class UploadMockup(threading.Thread):
 	""""""
@@ -41,10 +41,14 @@ class UploadMockup(threading.Thread):
 
 	def run(self):
 		"""Parsing and Poster work"""
-		speed = 2048
+		speed = 1024
 		while not self.stop_flag and self.item.current_size < SIZE:
-			time.sleep(1)
+			time.sleep(0.1)
 			self.item.update(speed, speed)
+		if self.stop_flag:
+			self.item.set_status(cons.STATUS_STOP)
+		else:
+			self.item.set_status(cons.STATUS_CORRECT)
 
 	def stop(self):
 		"""Set a flag so that it stops"""
@@ -62,7 +66,7 @@ class UploadManager:
 
 		self.threads = {}
 
-	def get_active_threads(self):
+	def active_limit_reached(self):
 		""""""
 		cont = 0
 		for id, th in self.threads.items():
@@ -70,7 +74,7 @@ class UploadManager:
 				cont += 1
 			else:
 				del self.threads[id]
-		return cont
+		return cont < MAX_UPLOADS
 
 	def add(self, file_list):
 		""""""
@@ -79,34 +83,59 @@ class UploadManager:
 
 	def start(self, id, item=None):
 		""""""
+		#item is only passed inside upload_manager
+		if item:
+			force = False
+		else:
+			item = self.queue.get_item(id)
+			force = True
+		if item.status != cons.STATUS_CORRECT:
+			if self.active_limit_reached() or force:
+				children = self.queue.get_children(id)
+				if children:
+					for child in children:
+						self.start(child.id, child)
+				#Links dont have children
+				else:
+						item.set_status(cons.STATUS_ACTIVE)
+						th = UploadMockup(item)
+						th.start()
+						self.threads[id] = th
+			else:
+				item.set_status(cons.STATUS_PEND)
+
+	def stop(self, id, item=None, force=True):
+		""""""
+		#item is only passed inside upload_manager
 		if not item:
 			item = self.queue.get_item(id)
-		if self.get_active_threads() < MAX_UPLOADS:
-			#logging message
-			th = UploadMockup(item)
-			th.start()
-			self.threads[id] = th
+		if item.status != cons.STATUS_CORRECT:
+			children = self.queue.get_children(id)
+			if children:
+				for child in children:
+					self.stop(child.id, child, force)
+			#Links dont have children
+			else:
+				#only stop active items if force 
+				if force or not item.get_active():
+					item.set_status(cons.STATUS_STOP)
+					#logging message
+					if id in self.threads:
+						self.threads[id].stop()
 
-	def stop(self, id, item=None):
+	def scheduled_start(self):
 		""""""
-		if not item:
-			item = self.queue.get_item(id)
-		if id in self.threads:
-			self.threads[id].stop()
-			#logging message
-
-	def schedule(self):
-		""""""
-		items = [item for item in self.queue.items if isinstance(item, Link)]
-		for item in items:
-			if item.get_pending():
-				self.start(item.id, item)
-				break
+		if self.active_limit_reached():
+			items = [item for item in self.queue.items if isinstance(item, Link)]
+			for item in items:
+				if item.get_pending():
+					self.start(item.id, item)
+					break
 
 	def keep_scheduling(self):
 		""""""
 		for item in self.queue.get_children():
-			if item.status == cons.STATUS_PEND or item.get_active():
+			if item.get_pending() or item.get_active():
 				return True
 
 	def scheduler(self):
@@ -119,7 +148,7 @@ class UploadManager:
 				else:
 					self.schedules = 0
 					logger.debug("scheduled.")
-				self.schedule()
+				self.scheduled_start()
 				if self.timer:
 					self.timer.cancel()
 				self.timer = threading.Timer(5, self.scheduler)
