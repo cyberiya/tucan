@@ -29,8 +29,6 @@ import cons
 
 MAX_UPLOADS = 2
 
-SIZE = 4096
-
 class UploadMockup(threading.Thread):
 	""""""
 	def __init__(self, item):
@@ -41,8 +39,8 @@ class UploadMockup(threading.Thread):
 
 	def run(self):
 		"""Parsing and Poster work"""
-		speed = 1024
-		while not self.stop_flag and self.item.current_size < SIZE:
+		speed = 100
+		while not self.stop_flag and self.item.current_size < self.item.total_size:
 			time.sleep(0.1)
 			self.item.update(speed, speed)
 		if self.stop_flag:
@@ -66,7 +64,7 @@ class UploadManager:
 
 		self.threads = {}
 
-	def active_limit_reached(self):
+	def limit_not_reached(self):
 		""""""
 		cont = 0
 		for id, th in self.threads.items():
@@ -90,7 +88,7 @@ class UploadManager:
 			item = self.queue.get_item(id)
 			force = True
 		if item.status != cons.STATUS_CORRECT:
-			if self.active_limit_reached() or force:
+			if self.limit_not_reached() or force:
 				children = self.queue.get_children(id)
 				if children:
 					for child in children:
@@ -125,12 +123,13 @@ class UploadManager:
 
 	def scheduled_start(self):
 		""""""
-		if self.active_limit_reached():
-			items = [item for item in self.queue.items if isinstance(item, Link)]
+		if self.limit_not_reached():
+			items = [item for item in self.queue.items if item.type == cons.ITEM_TYPE_LINK]
 			for item in items:
 				if item.get_pending():
 					self.start(item.id, item)
-					break
+					if not self.limit_not_reached():
+						break
 
 	def keep_scheduling(self):
 		""""""
@@ -151,11 +150,12 @@ class UploadManager:
 				self.scheduled_start()
 				if self.timer:
 					self.timer.cancel()
-				self.timer = threading.Timer(5, self.scheduler)
+				#self.timer = threading.Timer(5, self.scheduler)
+				self.timer = threading.Timer(0.5, self.scheduler)
 				self.timer.start()
 			else:
-				print "all complete"
-				#events.trigger_all_complete()
+				#print "all-complete"
+				events.trigger_all_complete()
 			self.scheduling = False
 
 	def quit(self):

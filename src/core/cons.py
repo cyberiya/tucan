@@ -45,6 +45,11 @@ else:
 #user agent
 USER_AGENT = "Mozilla/5.0 (X11; U; Linux i686; en-US) Gecko/20101223 Firefox/3.6.13"
 
+#item constants
+ITEM_TYPE_PACKAGE = 2
+ITEM_TYPE_FILE = 1
+ITEM_TYPE_LINK = 0
+
 #status constants
 STATUS_PEND = "pending"
 STATUS_ACTIVE = "active"
