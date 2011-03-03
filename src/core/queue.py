@@ -28,9 +28,10 @@ import cons
 
 class Item:
 	""""""
-	def __init__(self, callback, parent=None):
+	def __init__(self, item_type, callback, parent=None):
 		""""""
 		self.id = str(uuid.uuid1())
+		self.type = item_type
 		self.parent = parent
 		self.parent_id = parent.id if parent else None
 		self.status = cons.STATUS_PEND
@@ -58,6 +59,8 @@ class Item:
 		""""""
 		self.current_size += diff_size
 		self.current_speed += diff_speed
+		if self.parent:
+			self.parent.update(diff_size, diff_speed)
 		self.callback(self.id)
 
 	def set_status(self, status):
@@ -69,33 +72,23 @@ class Link(Item):
 	""""""
 	def __init__(self, callback, parent, plugin):
 		""""""
-		Item.__init__(self, callback, parent)
+		Item.__init__(self, cons.ITEM_TYPE_LINK, callback, parent)
 		self.url = None
 		self.plugin = plugin
-
-	def update(self, diff_size, diff_speed):
-		""""""
-		Item.update(self, diff_size, diff_speed)
-		self.parent.update(diff_size, diff_speed)
 	
 class File(Item):
 	""""""
 	def __init__(self, callback, parent, path):
 		""""""
-		Item.__init__(self, callback, parent)
+		Item.__init__(self, cons.ITEM_TYPE_FILE, callback, parent)
 		self.path = path
 		self.name = os.path.basename(path)
-
-	def update(self, diff_size, diff_speed):
-		""""""
-		Item.update(self, diff_size, diff_speed)
-		self.parent.update(diff_size, diff_speed)
 
 class Package(Item):
 	""""""
 	def __init__(self, callback, name, desc=""):
 		""""""
-		Item.__init__(self, callback)
+		Item.__init__(self, cons.ITEM_TYPE_PACKAGE, callback)
 		self.name = name
 		self.desc = desc #same for all the files
 class Queue:
@@ -148,11 +141,11 @@ class Queue:
 		""""""
 		item = self.get_item(id)
 		if item and not item.get_active():
-			if isinstance(item, Package):
+			if item.type == cons.ITEM_TYPE_PACKAGE:
 				self.delete_package(item)
-			elif isinstance(item, File):
+			elif item.type == cons.ITEM_TYPE_FILE:
 				self.delete_file(item)
-			elif isinstance(item, Link):
+			elif item.type == cons.ITEM_TYPE_LINK:
 				self.delete_link(item)
 
 	def delete_package(self, package):
@@ -215,8 +208,8 @@ class Queue:
 			tmp = items.index(item) + direction
 			if tmp >= 0 and tmp < len(items):
 				ind2 = self.items.index(items[tmp])
-				for i in [Package, File, Link]:
-					if isinstance(item, i) and isinstance(items[tmp], i):
+				for type in [cons.ITEM_TYPE_PACKAGE, cons.ITEM_TYPE_FILE, cons.ITEM_TYPE_LINK]:
+					if item.type == type and items[tmp].type == type:
 						self.swap(ind, ind2, self.get_length(item.id), self.get_length(items[tmp].id))
 						break
 
