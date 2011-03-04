@@ -64,6 +64,7 @@ SEVERITY_WARNING = "warning"
 SEVERITY_ERROR = "error"
 
 #size unit constants
+UNIT_B = "B"
 UNIT_KB = "KB"
 UNIT_MB = "MB"
 UNIT_GB = "GB"

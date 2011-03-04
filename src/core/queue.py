@@ -18,79 +18,14 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import uuid
 import time
-import os.path
 import logging
 logger = logging.getLogger(__name__)
 
+from base_types import Package, File, Link
+
 import cons
 
-class Item:
-	""""""
-	def __init__(self, item_type, callback, parent=None):
-		""""""
-		self.id = str(uuid.uuid1())
-		self.type = item_type
-		self.parent = parent
-		self.parent_id = parent.id if parent else None
-		self.status = cons.STATUS_PEND
-		self.current_size = 0
-		self.total_size = 0
-		self.current_speed = 0
-		self.current_time = 0
-		self.callback = callback
-
-	def get_progress(self):
-		""""""
-		return int((float(self.current_size)/self.total_size)*100)
-		
-	def get_active(self):
-		""""""
-		if self.status in [cons.STATUS_ACTIVE, cons.STATUS_WAIT]:
-			return self.status
-
-	def get_pending(self):
-		""""""
-		if self.status in [cons.STATUS_PEND, cons.STATUS_ERROR]:
-			return self.status
-
-	def update(self, diff_size, diff_speed):
-		""""""
-		self.current_size += diff_size
-		self.current_speed += diff_speed
-		if self.parent:
-			self.parent.update(diff_size, diff_speed)
-		self.callback(self.id)
-
-	def set_status(self, status):
-		""""""
-		self.status = status
-		self.callback(self.parent_id, self.parent, status)
-
-class Link(Item):
-	""""""
-	def __init__(self, callback, parent, plugin):
-		""""""
-		Item.__init__(self, cons.ITEM_TYPE_LINK, callback, parent)
-		self.url = None
-		self.plugin = plugin
-	
-class File(Item):
-	""""""
-	def __init__(self, callback, parent, path):
-		""""""
-		Item.__init__(self, cons.ITEM_TYPE_FILE, callback, parent)
-		self.path = path
-		self.name = os.path.basename(path)
-
-class Package(Item):
-	""""""
-	def __init__(self, callback, name, desc=""):
-		""""""
-		Item.__init__(self, cons.ITEM_TYPE_PACKAGE, callback)
-		self.name = name
-		self.desc = desc #same for all the files
 class Queue:
 	""""""
 	def __init__(self):
@@ -126,15 +61,19 @@ class Queue:
 			name ="package-%s" % time.strftime("%Y%m%d%H%M%S")
 		package = Package(self.propagate_cb, name)
 		self.items.append(package)
+		package_total_size = 0
 		for path, size, links in file_list:
 			file = File(self.propagate_cb, package, path)
 			self.items.append(file)
+			file_total_size = 0
 			for plugin in links:
-				file.total_size += size
+				file_total_size += size
 				link = Link(self.propagate_cb, file, plugin)
-				link.total_size = size
+				link.set_total_size(size)
 				self.items.append(link)
-			package.total_size += file.total_size
+			file.set_total_size(file_total_size)
+			package_total_size += file.total_size
+		package.set_total_size(package_total_size)
 		return package.id
 
 	def delete(self, id):

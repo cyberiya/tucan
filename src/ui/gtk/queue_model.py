@@ -28,10 +28,9 @@ pygtk.require('2.0')
 import gtk
 import gobject
 
-from core.queue import Queue, Package, File, Link
+from core.queue import Queue
 
 import core.cons as cons
-
 
 class Cache:
 	""""""
@@ -68,9 +67,18 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 		""""""
 		gtk.GenericTreeModel.__init__(self)
 		Queue.__init__(self)
-		self.column_types = (gtk.gdk.Pixbuf, str, int, int, int, int)
 		self.cache = Cache()
-		self.icons = icons
+		self.column_types = (gtk.gdk.Pixbuf, str, int, str, str, str, str, str)
+		self.column_values = (
+		lambda x: icons.get_icon(x.type, x.status),
+		lambda x: x.get_name(),
+		lambda x: x.get_progress(),
+		lambda x: x.get_current_size(),
+		lambda x: x.get_total_size(),
+		lambda x: x.get_speed(),
+		lambda x: x.get_time(),
+		lambda x: x.get_info()
+		)
 
 	def propagate_cb(self, id, parent=None, status=None):
 		""""""
@@ -130,8 +138,11 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 
 	def on_get_column_type(self, num):
 		""""""
-		if num < len(self.column_types):
-			return self.column_types[num]
+		return self.column_types[num]
+
+	def on_get_value(self, iter_id, column):
+		""""""
+		return self.column_values[column](self.get_item(iter_id))
 
 	def on_get_iter(self, path):
 		""""""
@@ -189,22 +200,6 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 					if item.id == iter_id:
 						self.cache.set(iter_id, (package_cont, file_cont, link_cont))
 						return (package_cont, file_cont, link_cont)
-
-	def on_get_value(self, iter_id, column):
-		""""""
-		item = self.get_item(iter_id)
-		if column is 0:
-			return self.icons.get_icon(item.type, item.status)
-		if column is 1:
-			return str(item)
-		elif column is 2:
-			return item.get_progress()
-		elif column is 3:
-			return item.current_size
-		elif column is 4:
-			return item.total_size
-		elif column is 5:
-			return item.current_speed
 
 	def on_iter_next(self, iter_id):
 		""""""
