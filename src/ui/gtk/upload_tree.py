@@ -24,10 +24,12 @@ import gtk
 import gobject
 import pango
 
-import core.cons as cons
-import core.misc as misc
+from queue_model import QueueModel
+
+from core.upload_manager import UploadManager
 
 import core.cons as cons
+import core.misc as misc
 
 STATUS_ICONS = [(cons.STATUS_CORRECT, gtk.STOCK_APPLY), (cons.STATUS_ERROR, gtk.STOCK_CANCEL), (cons.STATUS_WAIT, gtk.STOCK_REFRESH), (cons.STATUS_ACTIVE, gtk.STOCK_MEDIA_PLAY), (cons.STATUS_PEND, gtk.STOCK_MEDIA_PAUSE), (cons.STATUS_STOP, gtk.STOCK_MEDIA_STOP)]
 
@@ -50,73 +52,56 @@ class IconLoader:
 		elif item_type == cons.ITEM_TYPE_LINK:
 			return self.link_icons[status]
 
-class UploadTree(gtk.VBox):
+class UploadTree(gtk.VBox, UploadManager):
 	""""""
-	def __init__(self, model):
+	def __init__(self):
 		""""""
 		gtk.VBox.__init__(self)
 		scroll = gtk.ScrolledWindow()
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.treeview = gtk.TreeView(model)
-		scroll.add(self.treeview)
 		self.pack_start(scroll)
 
+		model = QueueModel(IconLoader(self))
+		UploadManager.__init__(self, model)
+		self.treeview = gtk.TreeView(model)
+		scroll.add(self.treeview)
+
 		self.treeview.set_rules_hint(True)
-		self.treeview.set_headers_visible(False)
-		self.treeview.set_fixed_height_mode(True)
+		#self.treeview.set_headers_visible(False)
+		#self.treeview.set_fixed_height_mode(True)
 
-		#tree columns
-		tree_icon = gtk.TreeViewColumn('Icon') 
-		icon_cell = gtk.CellRendererPixbuf()
-		tree_icon.pack_start(icon_cell, False)
-		tree_icon.add_attribute(icon_cell, 'pixbuf', 0)
-		self.treeview.append_column(tree_icon)
+		COLUMNS = (
+		("Status", "pixbuf", 0, []),
+		("Name", "text", 1, [("width-chars", 40), ("ellipsize", pango.ELLIPSIZE_MIDDLE)]),
+		("Progress", "value", 2, [("width", 150)]),
+		("Current Size", "text", 3, []),
+		("Total Size", "text", 4, []),
+		("Speed", "text", 5, []),
+		("ETA", "text", 6, []),
+		("Info", "text", 7, [])
+		)
 
-		tree_name = gtk.TreeViewColumn('Name')
-		name_cell = gtk.CellRendererText()
-		name_cell.set_property("width-chars", 60)
-		name_cell.set_property("ellipsize", pango.ELLIPSIZE_MIDDLE)
-		tree_name.pack_start(name_cell, True)
-		tree_name.add_attribute(name_cell, 'text', 3)
-		self.treeview.append_column(tree_name)
+		for name, attr, value, properties in COLUMNS:
+			column = gtk.TreeViewColumn(name)
+			#column.set_property("fixed-width", width)
+			#column.set_resizable(True)
+			if attr == "pixbuf":
+				cell = gtk.CellRendererPixbuf()
+			elif attr == "value":
+				cell = gtk.CellRendererProgress()
+			elif attr == "text":
+				cell = gtk.CellRendererText()
+			for property, pvalue in properties:
+				cell.set_property(property, pvalue)
+			column.pack_start(cell, True)
+			column.add_attribute(cell, attr, value)
+			#column.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+			self.treeview.append_column(column)
 
-		tree_progress = gtk.TreeViewColumn('Progress')
-		tree_progress.set_min_width(150)
-		progress_cell = gtk.CellRendererProgress()
-		tree_progress.pack_start(progress_cell, True)
-		tree_progress.add_attribute(progress_cell, 'value', 4)
-		tree_progress.add_attribute(progress_cell, 'visible', 5)
-		self.treeview.append_column(tree_progress)
+	def add_package(self, file_list):
+		""""""
+		id = UploadManager.add_package(self, file_list)
+		model = self.treeview.get_model()
+		self.treeview.expand_row(model.on_get_path(id), True)
 
-		tree_current_size = gtk.TreeViewColumn('Current Size')
-		current_size_cell = gtk.CellRendererText()
-		tree_current_size.pack_start(current_size_cell, False)
-		tree_current_size.add_attribute(current_size_cell, 'text', 6)
-		self.treeview.append_column(tree_current_size)
-
-		tree_total_size = gtk.TreeViewColumn('Total Size')
-		total_size_cell = gtk.CellRendererText()
-		tree_total_size.pack_start(total_size_cell, False)
-		tree_total_size.add_attribute(total_size_cell, 'text', 7)
-		self.treeview.append_column(tree_total_size)
-
-		tree_speed = gtk.TreeViewColumn('Speed')
-		speed_cell = gtk.CellRendererText()
-		tree_speed.pack_start(speed_cell, False)
-		tree_speed.add_attribute(speed_cell, 'text', 8)
-		self.treeview.append_column(tree_speed)
-
-		tree_time = gtk.TreeViewColumn('Time Left')
-		time_cell = gtk.CellRendererText()
-		tree_time.pack_start(time_cell, False)
-		tree_time.add_attribute(time_cell, 'text', 9)
-		self.treeview.append_column(tree_time)
-
-		tree_plugins = gtk.TreeViewColumn('Plugin')
-		plugins_cell = gtk.CellRendererText()
-		tree_plugins.pack_start(plugins_cell, False)
-		tree_plugins.add_attribute(plugins_cell, 'text', 10)
-		self.treeview.append_column(tree_plugins)
-
-
-"""(icon, status, password, name, progress, progress_visible, current_size, total_size, speed, time, services)"""
+"""(status, name, progress, current_size, total_size, speed, time, info)"""

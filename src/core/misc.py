@@ -19,6 +19,7 @@
 ###############################################################################
 
 import sys
+import time
 import shutil
 import urllib
 import logging
@@ -72,6 +73,16 @@ def get_exception_info(type, value, trace):
 	except:
 		return "Unhandled Error! No info available"
 
+def normalize(value, format):
+	""""""
+	if value:
+		value = float(value)
+		for unit in [cons.UNIT_B, cons.UNIT_KB, cons.UNIT_MB, cons.UNIT_GB]:
+			if value < 1024:
+				return format % (value, unit)
+			else:
+				value /= 1024
+
 def get_size(num):
 	""""""
 	result = 0, cons.UNIT_KB
@@ -84,6 +95,18 @@ def get_size(num):
 			if tmp > 0:
 				result = tmp, cons.UNIT_MB
 	return result
+
+def normalize_time(value):
+	""""""
+	if value:
+		hours, remainder = divmod(value, cons.HOUR)
+		minutes, seconds = divmod(remainder, cons.MINUTE)
+		if hours:
+			return "%sh%sm%ss" % (hours, minutes, seconds)
+		elif minutes:
+			return "%sm%ss" % (minutes, seconds)
+		else:
+			return "%ss" % seconds
 
 def calculate_time(time):
 	""""""

@@ -34,7 +34,7 @@ class TestUploadManager(unittest.TestCase):
 		self.manager = UploadManager(Queue())
 		#disable scheduler
 		self.manager.scheduling = True
-		self.manager.add(PACKAGE)
+		self.manager.add_package(PACKAGE)
 
 	def test_start(self):
 		""""""

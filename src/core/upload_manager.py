@@ -23,8 +23,6 @@ import threading
 import logging
 logger = logging.getLogger(__name__)
 
-from queue import Link
-
 import cons
 
 MAX_UPLOADS = 2
@@ -39,10 +37,12 @@ class UploadMockup(threading.Thread):
 
 	def run(self):
 		"""Parsing and Poster work"""
-		speed = 100
+		speed = 10000000
+		old_speed = 0
 		while not self.stop_flag and self.item.current_size < self.item.total_size:
-			time.sleep(0.1)
-			self.item.update(speed, speed)
+			time.sleep(0.5)
+			self.item.update(speed, speed-old_speed)
+			old_speed = speed
 		if self.stop_flag:
 			self.item.set_status(cons.STATUS_STOP)
 		else:
@@ -74,10 +74,11 @@ class UploadManager:
 				del self.threads[id]
 		return cont < MAX_UPLOADS
 
-	def add(self, file_list):
+	def add_package(self, file_list):
 		""""""
-		self.queue.add_package(file_list)
+		id = self.queue.add_package(file_list)
 		self.scheduler()
+		return id
 
 	def start(self, id, item=None):
 		""""""
