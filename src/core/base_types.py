@@ -41,8 +41,8 @@ class Item:
 		self.normalized_total_size = ""
 		self.current_speed = 0
 		self.current_time = 0
-		self.elapsed_time = 0
-		self.started_time = time.time()
+		self.elapsed_time = ""
+		self.started_time = 0
 		self.callback = callback
 
 	def get_name(self):
@@ -80,7 +80,7 @@ class Item:
 			return misc.normalize_time((self.total_size-self.current_size)/self.current_speed)
 		elif self.status == cons.STATUS_CORRECT:
 			if not self.elapsed_time:
-				self.elapsed_time = misc.normalize_time(int(time.time()-self.started_time))
+				self.elapsed_time = misc.normalize_time(time.time()-self.started_time)
 			return self.elapsed_time
 
 	def get_info(self):
@@ -112,11 +112,14 @@ class Item:
 
 	def set_status(self, status):
 		""""""
-		#if self.status == cons.STATUS_ACTIVE:
-		#if self.status == cons.STATUS_CORRECT:
-
+		#print self.__class__.__name__, status
+		if status == cons.STATUS_ACTIVE:
+			if not self.started_time:
+				self.started_time = time.time()
+		elif status == cons.STATUS_STOP:
+			self.started_time = 0
 		self.status = status
-		self.callback(self.parent_id, self.parent, status)
+		self.callback(self.id, self.parent, status)
 
 class Link(Item):
 	""""""
