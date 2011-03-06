@@ -27,6 +27,15 @@ logger = logging.getLogger(__name__)
 import cons
 import misc
 
+STATUS_HIERARCHY = [
+cons.STATUS_ACTIVE,
+cons.STATUS_WAIT,
+cons.STATUS_PEND,
+cons.STATUS_ERROR,
+cons.STATUS_STOP,
+cons.STATUS_CORRECT
+]
+
 class Item:
 	""""""
 	def __init__(self, item_type, callback, parent=None):
