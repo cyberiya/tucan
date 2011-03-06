@@ -102,11 +102,11 @@ def normalize_time(value):
 		hours, remainder = divmod(value, cons.HOUR)
 		minutes, seconds = divmod(remainder, cons.MINUTE)
 		if hours:
-			return "%sh%sm%ss" % (hours, minutes, seconds)
+			return "%.0fh%.0fm%.0fs" % (hours, minutes, seconds)
 		elif minutes:
-			return "%sm%ss" % (minutes, seconds)
+			return "%.0fm%.0fs" % (minutes, seconds)
 		else:
-			return "%ss" % seconds
+			return "%.0fs" % seconds
 
 def calculate_time(time):
 	""""""
