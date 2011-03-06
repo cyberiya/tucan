@@ -173,3 +173,11 @@ class Queue:
 	def get_children(self, id=None):
 		""""""
 		return [item for item in self.items if item.parent_id == id]
+
+	def for_all_children(self, func, id, *args):
+		""""""
+		children = self.get_children(id)
+		if children:
+			for child in children:
+				func(child.id, child, *args)
+			return True

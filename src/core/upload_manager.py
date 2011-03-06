@@ -79,14 +79,6 @@ class UploadManager:
 		id = self.queue.add_package(file_list)
 		self.scheduler()
 		return id
-		
-	def for_all_children(self, func, id, force):
-		""""""
-		children = self.queue.get_children(id)
-		if children:
-			for child in children:
-				func(child.id, child, force)
-			return True
 
 	def start(self, id, item=None, force=True):
 		""""""
@@ -96,14 +88,14 @@ class UploadManager:
 		if item.status != cons.STATUS_CORRECT:
 			if self.limit_not_reached() or force:
 				#Start Links when not active
-				if not self.for_all_children(self.start, id, force) and not item.get_active():
+				if not self.queue.for_all_children(self.start, id, force) and not item.get_active():
 					logger.info("Started: %s" % item.get_name())
 					item.set_status(cons.STATUS_ACTIVE)
 					th = UploadMockup(item)
 					th.start()
 					self.threads[id] = th
 			elif not force:
-				if not self.for_all_children(self.start, id, force) and not item.get_active():
+				if not self.queue.for_all_children(self.start, id, force) and not item.get_active():
 					logger.info("Pending: %s" % item.get_name())
 					item.set_status(cons.STATUS_PEND)
 
@@ -114,7 +106,7 @@ class UploadManager:
 			item = self.queue.get_item(id)
 		if item.status != cons.STATUS_CORRECT:
 			#Stop active Links if force 
-			if not self.for_all_children(self.stop, id, force) and force or not item.get_active():
+			if not self.queue.for_all_children(self.stop, id, force) and force or not item.get_active():
 				item.set_status(cons.STATUS_STOP)
 				logger.info("Stoped: %s" % item.get_name())
 				if id in self.threads:
