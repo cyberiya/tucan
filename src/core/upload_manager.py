@@ -86,16 +86,15 @@ class UploadManager:
 		if not item:
 			item = self.queue.get_item(id)
 		if item.status != cons.STATUS_CORRECT:
-			if self.limit_not_reached() or force:
-				#Start Links when not active
-				if not self.queue.for_all_children(self.start, id, force) and not item.get_active():
+			#start Links when not active
+			if not self.queue.for_all_children(self.start, id, force) and not item.get_active():
+				if self.limit_not_reached() or force:
 					logger.info("Started: %s" % item.get_name())
 					item.set_status(cons.STATUS_ACTIVE)
 					th = UploadMockup(item)
 					th.start()
 					self.threads[id] = th
-			elif not force:
-				if not self.queue.for_all_children(self.start, id, force) and not item.get_active():
+				elif item.status != cons.STATUS_PEND:
 					logger.info("Pending: %s" % item.get_name())
 					item.set_status(cons.STATUS_PEND)
 
@@ -105,7 +104,7 @@ class UploadManager:
 		if not item:
 			item = self.queue.get_item(id)
 		if item.status != cons.STATUS_CORRECT:
-			#Stop active Links if force 
+			#stop active Links if force 
 			if not self.queue.for_all_children(self.stop, id, force) and force or not item.get_active():
 				item.set_status(cons.STATUS_STOP)
 				logger.info("Stoped: %s" % item.get_name())
@@ -151,12 +150,13 @@ class UploadManager:
 
 	def quit(self):
 		""""""
+		threads = self.threads.values()
+		for th in threads:
+			th.stop()
 		if self.timer:
 			self.scheduling = True
 			while self.timer.isAlive():
 				self.timer.cancel()
 				self.timer.join(0.5)
-		for id, th in self.threads.items():
-			while th.isAlive():
-				th.stop_flag = True
-				th.join(0.5)
+		while [th for th in threads if th.isAlive()]:
+			th.join(0.5)
