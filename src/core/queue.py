@@ -22,7 +22,7 @@ import time
 import logging
 logger = logging.getLogger(__name__)
 
-from base_types import Package, File, Link
+from base_types import Package, File, Link, STATUS_HIERARCHY
 
 import cons
 
@@ -30,7 +30,7 @@ class Queue:
 	""""""
 	def __init__(self):
 		""""""
-		self.items = [] #main list [package]
+		self.items = []
 
 	def update_cb(self, id, parent=None, status=None):
 		"""updates row and propagates status to parent"""
@@ -39,7 +39,7 @@ class Queue:
 
 	def sort_status(self, new_status, old_status):
 		""""""
-		status = [cons.STATUS_ACTIVE, cons.STATUS_WAIT, cons.STATUS_PEND, cons.STATUS_ERROR, cons.STATUS_STOP, cons.STATUS_CORRECT]
+		status = STATUS_HIERARCHY
 		return status[min(status.index(new_status), status.index(old_status))]
 
 	def propagate_status(self, parent, status):
