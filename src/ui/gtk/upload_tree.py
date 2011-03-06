@@ -31,7 +31,14 @@ from core.upload_manager import UploadManager
 import core.cons as cons
 import core.misc as misc
 
-STATUS_ICONS = [(cons.STATUS_CORRECT, gtk.STOCK_APPLY), (cons.STATUS_ERROR, gtk.STOCK_CANCEL), (cons.STATUS_WAIT, gtk.STOCK_REFRESH), (cons.STATUS_ACTIVE, gtk.STOCK_MEDIA_PLAY), (cons.STATUS_PEND, gtk.STOCK_MEDIA_PAUSE), (cons.STATUS_STOP, gtk.STOCK_MEDIA_STOP)]
+STATUS_ICONS = [
+(cons.STATUS_CORRECT, gtk.STOCK_APPLY), 
+(cons.STATUS_ERROR, gtk.STOCK_CANCEL), 
+(cons.STATUS_WAIT, gtk.STOCK_REFRESH), 
+(cons.STATUS_ACTIVE, gtk.STOCK_MEDIA_PLAY), 
+(cons.STATUS_PEND, gtk.STOCK_MEDIA_PAUSE), 
+(cons.STATUS_STOP, gtk.STOCK_MEDIA_STOP)
+]
 
 class IconLoader:
 	""""""
@@ -103,5 +110,6 @@ class UploadTree(gtk.VBox, UploadManager):
 		id = UploadManager.add_package(self, file_list)
 		model = self.treeview.get_model()
 		self.treeview.expand_row(model.on_get_path(id), True)
+		return id
 
 """(status, name, progress, current_size, total_size, speed, time, info)"""
