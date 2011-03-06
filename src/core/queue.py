@@ -32,8 +32,8 @@ class Queue:
 		""""""
 		self.items = [] #main list [package]
 
-	def propagate_cb(self, id, parent=None, status=None):
-		""""""
+	def update_cb(self, id, parent=None, status=None):
+		"""updates row and propagates status to parent"""
 		if parent:
 			self.propagate_status(parent, status)
 
@@ -51,7 +51,7 @@ class Queue:
 				status = self.sort_status(item.status, status)
 			#check again if the status change affects the parent
 			if parent.status != status:
-				parent.status = status
+				parent.set_status(status)
 				if parent.parent:
 					self.propagate_status(parent.parent, status)
 
@@ -59,16 +59,16 @@ class Queue:
 		""""""
 		if not name:
 			name ="package-%s" % time.strftime("%Y%m%d%H%M%S")
-		package = Package(self.propagate_cb, name)
+		package = Package(self.update_cb, name)
 		self.items.append(package)
 		package_total_size = 0
 		for path, size, links in file_list:
-			file = File(self.propagate_cb, package, path)
+			file = File(self.update_cb, package, path)
 			self.items.append(file)
 			file_total_size = 0
 			for plugin in links:
 				file_total_size += size
-				link = Link(self.propagate_cb, file, plugin)
+				link = Link(self.update_cb, file, plugin)
 				link.set_total_size(size)
 				self.items.append(link)
 			file.set_total_size(file_total_size)

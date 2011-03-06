@@ -80,9 +80,9 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 		lambda x: x.get_info()
 		)
 
-	def propagate_cb(self, id, parent=None, status=None):
+	def update_cb(self, id, parent=None, status=None):
 		""""""
-		Queue.propagate_cb(self, id, parent, status)
+		Queue.update_cb(self, id, parent, status)
 		self.update_row(id)
 
 	def update_row(self, id):
