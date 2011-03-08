@@ -161,6 +161,7 @@ class UploadTree(gtk.VBox, UploadManager):
 		asked = False
 		answer = False
 		for item in [model.get_item_from_path(path) for path in paths]:
+			force = True
 			if not self.limit_not_reached():
 				if not asked:
 					asked = True
