@@ -99,7 +99,7 @@ class Queue:
 	def delete_file(self, file):
 		""""""
 		if len(self.get_children(file.parent_id)) > 1:
-			links = self.get_children(id)
+			links = self.get_children(file.id)
 			self.items.remove(file)
 			for link in links:
 				self.items.remove(link)
