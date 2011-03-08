@@ -74,12 +74,11 @@ class Queue:
 			file.set_total_size(file_total_size)
 			package_total_size += file.total_size
 		package.set_total_size(package_total_size)
-		return package.id
+		return package
 
-	def delete(self, id):
+	def delete(self, item):
 		""""""
-		item = self.get_item(id)
-		if item and not item.get_active():
+		if item:
 			if item.type == cons.ITEM_TYPE_PACKAGE:
 				self.delete_package(item)
 			elif item.type == cons.ITEM_TYPE_FILE:
@@ -100,24 +99,49 @@ class Queue:
 	def delete_file(self, file):
 		""""""
 		if len(self.get_children(file.parent_id)) > 1:
-			self.get_item(file.parent_id).total_size -= file.total_size
 			links = self.get_children(id)
 			self.items.remove(file)
 			for link in links:
 				self.items.remove(link)
+			package = self.get_item(file.parent_id)
+			package.current_size -= file.current_size
+			package.set_total_size(package.total_size - file.total_size)
 		else:
-			self.delete(file.parent_id)
+			self.delete(file.parent)
 
 	def delete_link(self, link):
 		""""""
 		if len(self.get_children(link.parent_id)) > 1:
+			self.items.remove(link)
 			file = self.get_item(link.parent_id)
 			package = self.get_item(file.parent_id)
-			file.total_size -= link.total_size
-			package.total_size -= link.total_size
-			self.items.remove(link)
+			file.current_size -= link.current_size
+			file.set_total_size(file.total_size - link.total_size)
+			package.current_size -= link.current_size
+			package.set_total_size(package.total_size - link.total_size)
 		else:
-			self.delete(link.parent_id)
+			self.delete(link.parent)
+			
+	def move_up(self, item):
+		""""""
+		self.move(item, -1)
+
+	def move_down(self, item):
+		""""""
+		self.move(item, 1)
+
+	def move(self, item, direction=-1):
+		"""direction : -1 if the item goes up, 1 if it goes down."""
+		if item:
+			ind = self.items.index(item)
+			items = self.get_children(item.parent_id)
+			tmp = items.index(item) + direction
+			if tmp >= 0 and tmp < len(items):
+				ind2 = self.items.index(items[tmp])
+				for type in [cons.ITEM_TYPE_PACKAGE, cons.ITEM_TYPE_FILE, cons.ITEM_TYPE_LINK]:
+					if item.type == type and items[tmp].type == type:
+						self.swap(ind, ind2, self.get_length(item.id), self.get_length(items[tmp].id))
+						break
 
 	def swap(self, old, new, l1, l2):
 		""""""
@@ -136,45 +160,18 @@ class Queue:
 				l += 1
 		return l
 
-	def move(self, id, direction=-1):
-		"""
-		direction : -1 if the item goes up, 1 if it goes down.
-		"""
-		item = self.get_item(id)
-		if item:
-			ind = self.items.index(item)
-			items = self.get_children(item.parent_id)
-			tmp = items.index(item) + direction
-			if tmp >= 0 and tmp < len(items):
-				ind2 = self.items.index(items[tmp])
-				for type in [cons.ITEM_TYPE_PACKAGE, cons.ITEM_TYPE_FILE, cons.ITEM_TYPE_LINK]:
-					if item.type == type and items[tmp].type == type:
-						self.swap(ind, ind2, self.get_length(item.id), self.get_length(items[tmp].id))
-						break
-
-	def get_value(self, id, key):
-		""""""
-		item = self.get_item(id)
-		if item:
-			return getattr(item, key)
-
-	def set_value(self, id, key, value):
-		""""""
-		item = self.get_item(id)
-		if item:
-			setattr(item, key, value)
-
 	def get_item(self, id):
 		""""""
-		for item in self.items:
-			if item.id == id:
-				return item
+		if id:
+			for item in self.items:
+				if item.id == id:
+					return item
 
 	def get_children(self, id=None):
 		""""""
 		return [item for item in self.items if item.parent_id == id]
 
-	def for_all_children(self, func, id, *args):
+	def for_all_children(self, id, func, *args):
 		""""""
 		children = self.get_children(id)
 		if children:
