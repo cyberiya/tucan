@@ -93,7 +93,9 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 		""""""
 		path = self.on_get_path(id)
 		if path:
-			self.row_changed(path, self.get_iter(path))
+			iter = self.get_iter(path)
+			if iter:
+				self.row_changed(path, iter)
 
 	def add_package(self, file_list, name=None):
 		""""""
