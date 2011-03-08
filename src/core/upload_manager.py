@@ -40,8 +40,8 @@ class UploadMockup(threading.Thread):
 		speed = 1000000
 		old_speed = 0
 		while not self.stop_flag and self.item.current_size < self.item.total_size:
-			time.sleep(0.5)
 			self.item.update(speed, speed-old_speed)
+			time.sleep(0.5)
 			old_speed = speed
 		if self.stop_flag:
 			self.item.set_status(cons.STATUS_STOP)
@@ -76,18 +76,49 @@ class UploadManager:
 
 	def add_package(self, file_list):
 		""""""
-		id = self.queue.add_package(file_list)
+		package = self.queue.add_package(file_list)
+		logger.info("Added: %s" % package.get_name())
 		self.scheduler()
-		return id
+		return package.id
+
+	def delete(self, id, item=None):
+		""""""
+		if not item:
+			item = self.queue.get_item(id)
+		if not item.get_active():
+			logger.info("Deleted: %s" % item.get_name())
+			self.queue.delete(item)
+			return True
+
+	def clear(self, id, item=None):
+		""""""
+		if not item:
+			item = self.queue.get_item(id)
+		if item.status == cons.STATUS_CORRECT:
+			logger.info("Clear: %s" % item.get_name())
+			self.queue.delete(item)
+
+	def move_up(self, id, item=None):
+		""""""
+		if not item:
+			item = self.queue.get_item(id)
+		logger.info("Move up: %s" % item.get_name())
+		self.queue.move_up(item)
+
+	def move_down(self, id, item=None):
+		""""""
+		if not item:
+			item = self.queue.get_item(id)
+		logger.info("Move down: %s" % item.get_name())
+		self.queue.move_down(item)
 
 	def start(self, id, item=None, force=True):
 		""""""
-		#item is only passed inside upload_manager
 		if not item:
 			item = self.queue.get_item(id)
 		if item.status != cons.STATUS_CORRECT:
 			#start Links when not active
-			if not self.queue.for_all_children(self.start, id, force) and not item.get_active():
+			if not self.queue.for_all_children(id, self.start, force) and not item.get_active():
 				if self.limit_not_reached() or force:
 					logger.info("Started: %s" % item.get_name())
 					item.set_status(cons.STATUS_ACTIVE)
@@ -100,12 +131,11 @@ class UploadManager:
 
 	def stop(self, id, item=None, force=True):
 		""""""
-		#item is only passed inside upload_manager
 		if not item:
 			item = self.queue.get_item(id)
 		if item.status != cons.STATUS_CORRECT:
 			#stop active Links if force 
-			if not self.queue.for_all_children(self.stop, id, force) and force or not item.get_active():
+			if not self.queue.for_all_children(id, self.stop, force) and force or not item.get_active():
 				item.set_status(cons.STATUS_STOP)
 				logger.info("Stoped: %s" % item.get_name())
 				if id in self.threads:
@@ -140,8 +170,8 @@ class UploadManager:
 				self.scheduled_start()
 				if self.timer:
 					self.timer.cancel()
-				#self.timer = threading.Timer(5, self.scheduler)
-				self.timer = threading.Timer(0.5, self.scheduler)
+				self.timer = threading.Timer(5, self.scheduler)
+				#self.timer = threading.Timer(0.5, self.scheduler)
 				self.timer.start()
 			else:
 				#print "all-complete"
