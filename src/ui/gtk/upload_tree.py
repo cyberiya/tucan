@@ -24,6 +24,7 @@ import gtk
 import gobject
 import pango
 
+from message import Message
 from queue_model import QueueModel
 
 from core.upload_manager import UploadManager
@@ -73,6 +74,9 @@ class UploadTree(gtk.VBox, UploadManager):
 		self.treeview = gtk.TreeView(model)
 		scroll.add(self.treeview)
 
+		selection = self.treeview.get_selection()
+		selection.set_mode(gtk.SELECTION_MULTIPLE)
+
 		self.treeview.set_rules_hint(True)
 		#self.treeview.set_headers_visible(False)
 		#self.treeview.set_fixed_height_mode(True)
@@ -111,5 +115,79 @@ class UploadTree(gtk.VBox, UploadManager):
 		model = self.treeview.get_model()
 		self.treeview.expand_row(model.on_get_path(id), True)
 		return id
+		
+	def delete_cb(self, button):
+		""""""
+		model, paths = self.treeview.get_selection().get_selected_rows()
+		for path in paths:
+			item = model.get_item_from_path(path)
+			if item:
+				if not self.delete(item.id, item):
+					message = "Do you really want to delete active items?"
+					m = Message(None, cons.SEVERITY_WARNING, "Delete", message, False, True)
+					if m.accepted:
+						self.stop(item.id, item)
+						self.delete(item.id, item)
 
-"""(status, name, progress, current_size, total_size, speed, time, info)"""
+	def clear_cb(self, button):
+		""""""
+		model, paths = self.treeview.get_selection().get_selected_rows()
+		items = [model.get_item_from_path(path) for path in paths]
+		if not items:
+			items = self.queue.get_children()
+		for item in items:
+			self.clear(item.id, item)
+
+	def move_up_cb(self, button):
+		""""""
+		model, paths = self.treeview.get_selection().get_selected_rows()
+		for path in paths:
+			item = model.get_item_from_path(path)
+			if item:
+				self.move_up(item.id, item)
+
+	def move_down_cb(self, button):
+		""""""
+		model, paths = self.treeview.get_selection().get_selected_rows()
+		for path in paths:
+			item = model.get_item_from_path(path)
+			if item:
+				self.move_down(item.id, item)
+
+	def start_cb(self, button):
+		""""""
+		model, paths = self.treeview.get_selection().get_selected_rows()
+		for path in paths:
+			item = model.get_item_from_path(path)
+			if item:
+				if item.type == cons.ITEM_TYPE_LINK:
+					force = True
+				elif not self.limit_not_reached():
+					message = "Max concurrent uploads reached, do you really want to start more?"
+					m = Message(None, cons.SEVERITY_WARNING, "Start", message, False, True)
+					if m.accepted:
+						force = True
+					else:
+						force = False
+				else:
+					force = False
+				self.start(item.id, item, force)
+
+	def stop_cb(self, button):
+		""""""
+		model, paths = self.treeview.get_selection().get_selected_rows()
+		for path in paths:
+			item = model.get_item_from_path(path)
+			if item:
+				if item.type == cons.ITEM_TYPE_LINK:
+					force = True
+				elif item.get_active():
+					message = "Do you really want to stop active items?"
+					m = Message(None, cons.SEVERITY_WARNING, "Stop", message, False, True)
+					if m.accepted:
+						force = True
+					else:
+						force = False
+				else:
+					force = True
+				self.stop(item.id, item, force)
