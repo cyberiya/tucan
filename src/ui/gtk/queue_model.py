@@ -64,7 +64,7 @@ class Cache:
 class QueueModel(gtk.GenericTreeModel, Queue):
 	""""""
 	def __init__(self, icons):
-		""""""
+		"""(status_icon, name, progress, current_size, total_size, speed, time, info)"""
 		gtk.GenericTreeModel.__init__(self)
 		Queue.__init__(self)
 		self.cache = Cache()
@@ -79,6 +79,10 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 		lambda x: x.get_time(),
 		lambda x: x.get_info()
 		)
+		
+	def get_item_from_path(self, path):
+		""""""
+		return self.get_item(self.on_get_iter(path))
 
 	def update_cb(self, id, parent=None, status=None):
 		""""""
@@ -88,45 +92,42 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 	def update_row(self, id):
 		""""""
 		path = self.on_get_path(id)
-		self.row_changed(path, self.get_iter(path))
-		
-	def set_value(self, id, key, value):
-		""""""
-		self.update_row(id)
-		Queue.set_value(self, id, key, value)
+		if path:
+			self.row_changed(path, self.get_iter(path))
 
 	def add_package(self, file_list, name=None):
 		""""""
-		id = Queue.add_package(self, file_list, name=None)
-		path = self.on_get_path(id)
+		package = Queue.add_package(self, file_list, name=None)
+		path = self.on_get_path(package.id)
 		self.row_inserted(path, self.get_iter(path))
-		for item in self.get_children(id):
+		for item in self.get_children(package.id):
 			path = self.on_get_path(item.id)
 			self.row_inserted(path, self.get_iter(path))
 			for subitem in self.get_children(item.id):
 				path = self.on_get_path(subitem.id)
 				self.row_inserted(path, self.get_iter(path))
-		return id
+		return package
 
-	def delete(self, id):
+	def delete(self, item):
 		""""""
-		path = self.on_get_path(id)
+		path = self.on_get_path(item.id)
 		self.row_deleted(path)
-		Queue.delete(self, id)
-
-	def move(self, id, direction):
-		""""""
-		item = self.get_item(id)
-		path = self.on_get_path(item.parent_id)
-		if path:
-			iter = self.get_iter(path)
-		else:
-			iter = None
-		prev = self.get_children(item.parent_id)
 		self.cache.clear()
-		Queue.move(self, id, direction)
-		next = self.get_children(item.parent_id)
-		self.rows_reordered(path, iter, [next.index(item) for item in prev])
+		Queue.delete(self, item)
+
+	def move(self, item, direction):
+		""""""
+		if item:
+			path = self.on_get_path(item.parent_id)
+			if path:
+				iter = self.get_iter(path)
+			else:
+				iter = None
+			prev = self.get_children(item.parent_id)
+			self.cache.clear()
+			Queue.move(self, item, direction)
+			next = self.get_children(item.parent_id)
+			self.rows_reordered(path, iter, [next.index(item) for item in prev])
 
 	def on_get_flags(self):
 		""""""
@@ -142,7 +143,10 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 
 	def on_get_value(self, iter_id, column):
 		""""""
-		return self.column_values[column](self.get_item(iter_id))
+		item = self.get_item(iter_id)
+		#print item
+		if item:
+			return self.column_values[column](item)
 
 	def on_get_iter(self, path):
 		""""""
