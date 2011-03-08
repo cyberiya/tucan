@@ -119,20 +119,25 @@ class UploadTree(gtk.VBox, UploadManager):
 	def delete_cb(self, button):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
-		for path in paths:
-			item = model.get_item_from_path(path)
-			if item:
-				if not self.delete(item.id, item):
+		asked = False
+		answer = False
+		for item in [model.get_item_from_path(path) for path in paths]:
+			if not self.delete(item.id, item):
+				if not asked:
+					asked = True
 					message = "Do you really want to delete active items?"
 					m = Message(None, cons.SEVERITY_WARNING, "Delete", message, False, True)
 					if m.accepted:
-						self.stop(item.id, item)
-						self.delete(item.id, item)
+						answer = True
+				if answer:
+					self.stop(item.id, item)
+					self.delete(item.id, item)
 
 	def clear_cb(self, button):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
 		items = [model.get_item_from_path(path) for path in paths]
+		#no item selected clear completed packages
 		if not items:
 			items = self.queue.get_children()
 		for item in items:
@@ -141,53 +146,44 @@ class UploadTree(gtk.VBox, UploadManager):
 	def move_up_cb(self, button):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
-		for path in paths:
-			item = model.get_item_from_path(path)
-			if item:
-				self.move_up(item.id, item)
+		for item in [model.get_item_from_path(path) for path in paths]:
+			self.move_up(item.id, item)
 
 	def move_down_cb(self, button):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
-		for path in paths:
-			item = model.get_item_from_path(path)
-			if item:
-				self.move_down(item.id, item)
+		for item in [model.get_item_from_path(path) for path in paths]:
+			self.move_down(item.id, item)
 
 	def start_cb(self, button):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
-		for path in paths:
-			item = model.get_item_from_path(path)
-			if item:
-				if item.type == cons.ITEM_TYPE_LINK:
-					force = True
-				elif not self.limit_not_reached():
+		asked = False
+		answer = False
+		for item in [model.get_item_from_path(path) for path in paths]:
+			if not self.limit_not_reached():
+				if not asked:
+					asked = True
 					message = "Max concurrent uploads reached, do you really want to start more?"
 					m = Message(None, cons.SEVERITY_WARNING, "Start", message, False, True)
 					if m.accepted:
-						force = True
-					else:
-						force = False
-				else:
-					force = False
-				self.start(item.id, item, force)
+						answer = True
+				force = answer
+			self.start(item.id, item, force)
 
 	def stop_cb(self, button):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
-		for path in paths:
-			item = model.get_item_from_path(path)
-			if item:
-				if item.type == cons.ITEM_TYPE_LINK:
-					force = True
-				elif item.get_active():
+		asked = False
+		answer = False
+		for item in [model.get_item_from_path(path) for path in paths]:
+			force = True
+			if item.get_active():
+				if not asked:
+					asked = True
 					message = "Do you really want to stop active items?"
 					m = Message(None, cons.SEVERITY_WARNING, "Stop", message, False, True)
 					if m.accepted:
-						force = True
-					else:
-						force = False
-				else:
-					force = True
-				self.stop(item.id, item, force)
+						answer = True
+				force = answer
+			self.stop(item.id, item, force)
