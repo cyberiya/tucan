@@ -111,9 +111,10 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 	def delete(self, item):
 		""""""
 		path = self.on_get_path(item.id)
-		self.row_deleted(path)
-		Queue.delete(self, item)
-		self.cache.clear()
+		if path:
+			self.row_deleted(path)
+			Queue.delete(self, item)
+			self.cache.clear()
 
 	def move(self, item, direction):
 		""""""
