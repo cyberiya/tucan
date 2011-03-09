@@ -25,7 +25,9 @@ logger = logging.getLogger(__name__)
 
 import cons
 
-MAX_UPLOADS = 2
+MAX_UPLOADS = 3
+
+import random
 
 class UploadMockup(threading.Thread):
 	""""""
@@ -33,16 +35,36 @@ class UploadMockup(threading.Thread):
 		""""""
 		threading.Thread.__init__(self)
 		self.item = item
+		self.speed = 0
+		self.max_speed = 0
 		self.stop_flag = False
+	
+	def limit_speed(self, speed):
+		""""""
+		self.max_speed = speed
+
+	def upload(self):
+		""""""
+		time.sleep(random.random()*0.01)
+		return 1024*4
 
 	def run(self):
 		"""Parsing and Poster work"""
-		speed = 1000000
-		old_speed = 0
 		while not self.stop_flag and self.item.current_size < self.item.total_size:
-			self.item.update(speed, speed-old_speed)
-			time.sleep(0.5)
-			old_speed = speed
+			remaining_time = 1
+			size = 0
+			total_time = time.time()
+			while remaining_time > 0 and not self.stop_flag:
+				start_time = time.time()
+				size += self.upload()
+				remaining_time -= time.time() - start_time
+				if self.max_speed and size >= self.max_speed:
+					if remaining_time > 0:
+						time.sleep(remaining_time)
+					break
+			#print time.time() - total_time
+			self.item.update(size, size-self.speed)
+			self.speed = size
 		if self.stop_flag:
 			self.item.set_status(cons.STATUS_STOP)
 		else:
@@ -61,8 +83,15 @@ class UploadManager:
 		self.timer = None
 		self.schedules = 0
 		self.scheduling = False
+		self.max_speed = 0
+		self.max_speed = 1024*304
 
 		self.threads = {}
+	
+	def set_max_speed(self, speed):
+		""""""
+		if speed > 0:
+			self.max_speed = speed
 
 	def limit_not_reached(self):
 		""""""
@@ -161,8 +190,9 @@ class UploadManager:
 		""""""
 		if not self.scheduling:
 			self.scheduling = True
+			self.calculate_speed()
 			if self.keep_scheduling():
-				if self.schedules < 11:
+				if self.schedules < 59:
 					self.schedules += 1
 				else:
 					self.schedules = 0
@@ -170,13 +200,32 @@ class UploadManager:
 				self.scheduled_start()
 				if self.timer:
 					self.timer.cancel()
-				self.timer = threading.Timer(5, self.scheduler)
-				#self.timer = threading.Timer(0.5, self.scheduler)
+				self.timer = threading.Timer(1, self.scheduler)
 				self.timer.start()
 			else:
-				#print "all-complete"
 				events.trigger_all_complete()
 			self.scheduling = False
+
+	def calculate_speed(self):
+		""""""
+		if self.max_speed or True:
+			actual_speed = 0
+			num = len(self.threads)
+			if num:
+				speed, remainder = divmod(self.max_speed, num)
+				threads_to_limit = []
+				for th in self.threads.values():
+					if th.speed < speed:
+						th.limit_speed(0)
+						actual_speed += th.speed
+					else:
+						threads_to_limit.append(th)
+				num = len(threads_to_limit)
+				if num:
+					speed, remainder = divmod(self.max_speed - actual_speed, num)
+					for th in threads_to_limit:
+						th.limit_speed(speed)
+				#self.threads.values()[2].limit_speed(1024*30)
 
 	def quit(self):
 		""""""
