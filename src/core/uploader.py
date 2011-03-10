@@ -18,25 +18,56 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-"""
-import MultipartPostHandler, urllib2, cookielib
+import time
+import threading
+import logging
+logger = logging.getLogger(__name__)
 
-cookies = cookielib.CookieJar()
-opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookies), MultipartPostHandler.MultipartPostHandler)
-params = { "username" : "bob", "password" : "riviera", "file" : open("filename", "rb") }
-opener.open("http://wwww.bobsite.com/upload/", params)
-"""
+import cons
 
-import urllib
-import urllib2
+import random
 
-from HTMLParser import HTMLParser
-
-class Uploader(HTMLParser):
+class Uploader(threading.Thread):
 	""""""
-	def __init__(self, file_name):
+	def __init__(self, item):
 		""""""
-		HTMLParser.__init__(self)
+		threading.Thread.__init__(self)
+		self.item = item
+		self.speed = 0
+		self.max_speed = 0
+		self.stop_flag = False
+	
+	def limit_speed(self, speed):
+		""""""
+		self.max_speed = speed
 
-if __name__ == "__main__":
-	c = Uploader("/home/crak/mierda.html")
+	def upload(self):
+		""""""
+		time.sleep(random.random()*0.01)
+		return 1024*4
+
+	def run(self):
+		"""Parsing and Poster work"""
+		while not self.stop_flag and self.item.current_size < self.item.total_size:
+			remaining_time = 1
+			size = 0
+			total_time = time.time()
+			while remaining_time > 0 and not self.stop_flag:
+				start_time = time.time()
+				size += self.upload()
+				remaining_time -= time.time() - start_time
+				if self.max_speed and size >= self.max_speed:
+					if remaining_time > 0:
+						time.sleep(remaining_time)
+					break
+			#print time.time() - total_time
+			self.item.update(size, size-self.speed)
+			self.speed = size
+		if self.stop_flag:
+			self.item.set_status(cons.STATUS_STOP)
+		else:
+			self.item.set_status(cons.STATUS_CORRECT)
+
+	def stop(self):
+		"""Set a flag so that it stops"""
+		self.stop_flag = True

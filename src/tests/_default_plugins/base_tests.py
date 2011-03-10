@@ -27,6 +27,8 @@ import __builtin__
 from core.events import Events
 __builtin__.events = Events()
 
+from core.base_types import Item
+
 import core.cons as cons
 
 ACCOUNTS_FILE = "test.accounts"
@@ -36,8 +38,37 @@ OPTION_PASSWORD = "password"
 
 TEST_DIR = "/tmp/"
 TEST_NAME = "prueba.bin"
+FILE_DIR = "_default_plugins"
 
 TIMEOUT = 500
+
+class TestBaseUpload(unittest.TestCase):
+	""""""
+	def setUp(self):
+		""""""
+		self.plugin = None
+
+	def test_check_files(self):
+		""""""
+		error_path = ""
+		correct_path = os.path.join(FILE_DIR, TEST_NAME)
+		result = self.plugin.check_files([error_path, correct_path])
+		self.assertFalse(result[0], "%s: valid file!" % error_path)
+		self.assertTrue(result[1], "%s: invalid file!" % correct_path)
+		self.plugin.max_size = 1024
+		result = self.plugin.check_files([correct_path])
+		self.assertFalse(result[0], "%s: file too big!" % correct_path)
+
+	def test_upload(self):
+		""""""
+		item = Item(cons.ITEM_TYPE_LINK, lambda x,y,z: x)
+		item.set_status(cons.STATUS_ACTIVE)
+		th = self.plugin.parse(item)
+		if th:
+			th.start()
+		while th.isAlive():
+			pass
+		self.assertEqual(item.status, cons.STATUS_CORRECT, "s%: Error uploading")
 
 class TestBaseDownload(unittest.TestCase):
 	""""""
@@ -77,7 +108,7 @@ class TestBaseDownload(unittest.TestCase):
 		self.assertEqual(status, cons.STATUS_CORRECT, "s%: Error downloading")
 		name = "%s%s" % (TEST_DIR, TEST_NAME)
 		self.assertTrue(os.path.exists(name), "Not Found: %s" % name)
-		f1 = file(os.path.join("_default_plugins", TEST_NAME), "r")
+		f1 = file(os.path.join(FILE_DIR, TEST_NAME), "r")
 		f2 = file(name, "r")
 		local = f1.read()
 		remote = f2.read()
@@ -112,7 +143,7 @@ class TestBaseCookie(unittest.TestCase):
 		account_name = ""
 		account_password = ""
 		
-		name = os.path.join("_default_plugins", ACCOUNTS_FILE)
+		name = os.path.join(FILE_DIR, ACCOUNTS_FILE)
 		self.assertTrue(os.path.exists(name), "Not Found: %s" % name)
 		
 		config = ConfigParser.SafeConfigParser()
