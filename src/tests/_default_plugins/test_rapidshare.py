@@ -24,6 +24,7 @@ import base_tests
 
 from core.service_config import ServiceConfig, SECTION_ANONYMOUS_DOWNLOAD, SECTION_PREMIUM_DOWNLOAD
 from rapidshare.anonymous_download import AnonymousDownload
+from rapidshare.anonymous_upload import AnonymousUpload
 from rapidshare.premium_download import PremiumDownload
 from rapidshare.premium_cookie import PremiumCookie
 
@@ -35,6 +36,16 @@ TEST_INVALID_LINK = "http://rapidshare.com/files/0"
 TEST_LINK = "http://rapidshare.com/files/391174483/prueba.bin"
 TEST_SIZE = 113
 TEST_UNIT = "KB"
+
+class TestAnonymousUpload(base_tests.TestBaseUpload):
+	""""""
+	def setUp(self):
+		""""""
+		self.plugin = AnonymousUpload()
+
+	def tearDown(self):
+		""""""
+		del self.plugin
 
 class TestAnonymous(base_tests.TestBaseDownload):
 	""""""
@@ -68,3 +79,4 @@ class TestPremium(base_tests.TestBaseCookie, base_tests.TestBaseDownload):
 	def tearDown(self):
 		""""""
 		del self.cookie
+		del self.plugin
