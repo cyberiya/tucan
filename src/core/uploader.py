@@ -27,46 +27,84 @@ import cons
 
 import random
 
+class StopUpload(Exception):
+	""""""
+
 class Uploader(threading.Thread):
 	""""""
-	def __init__(self, item):
+	def __init__(self, item, parse, parse_result):
 		""""""
 		threading.Thread.__init__(self)
 		self.item = item
-		self.speed = 0
+		self.parse = parse
+		self.parse_result = parse_result
 		self.max_speed = 0
 		self.stop_flag = False
+
+		self.tmp_size = 0
+		self.tmp_speed = 0
+		self.last_speed = 0
+		self.update_time = 0
+		self.remaining_time = 1
 	
 	def limit_speed(self, speed):
 		""""""
 		self.max_speed = speed
 
-	def upload(self):
+	def update_cb(self, multipart_param, current_size, total_size):
 		""""""
-		time.sleep(random.random()*0.01)
-		return 1024*4
+		if self.stop_flag:
+			raise StopUpload
+		else:
+			self.tmp_speed += current_size - self.tmp_size
+			self.tmp_size = current_size
+			#total_size includes headers so its bigger than file size
+			if not self.update_time:
+				self.item.set_total_size(total_size)
+			#last update independent of remaining_time
+			elif current_size == total_size:
+				self.update_item()
+			elif self.remaining_time > 0:
+				if self.max_speed and self.tmp_speed >= self.max_speed:
+					time.sleep(self.remaining_time)
+					self.update_item()
+				else:
+					self.remaining_time -= time.time() - self.update_time
+			else:
+				self.update_item()
+			self.update_time = time.time()
+
+	def update_item(self):
+		""""""
+		self.item.update(self.tmp_speed, self.tmp_speed - self.last_speed)
+		self.last_speed = self.tmp_speed
+		self.tmp_speed = 0
+		self.remaining_time = 1
 
 	def run(self):
-		"""Parsing and Poster work"""
-		while not self.stop_flag and self.item.current_size < self.item.total_size:
-			remaining_time = 1
-			size = 0
-			total_time = time.time()
-			while remaining_time > 0 and not self.stop_flag:
-				start_time = time.time()
-				size += self.upload()
-				remaining_time -= time.time() - start_time
-				if self.max_speed and size >= self.max_speed:
-					if remaining_time > 0:
-						time.sleep(remaining_time)
-					break
-			#print time.time() - total_time
-			self.item.update(size, size-self.speed)
-			self.speed = size
-		if self.stop_flag:
+		""""""
+		url = None
+		self.item.set_status(cons.STATUS_ACTIVE)
+		try:
+			encoder = self.parse(self.item.path)
+			#MultipartEncoder.open blocks while uploading
+			handler = encoder.open(self.update_cb)
+			url = self.parse_result(handler)
+		except StopUpload:
 			self.item.set_status(cons.STATUS_STOP)
+		except IOError, e:
+			logger.error(e)
+			self.item.set_status(cons.STATUS_ERROR)
+		except Exception, e:
+			logger.exception(e)
+			self.item.set_status(cons.STATUS_ERROR)
 		else:
-			self.item.set_status(cons.STATUS_CORRECT)
+			if url:
+				self.item.url = url
+				self.item.set_status(cons.STATUS_CORRECT)
+			else:
+				logger.error(url)
+				self.item.set_status(cons.STATUS_ERROR)
 
 	def stop(self):
 		"""Set a flag so that it stops"""

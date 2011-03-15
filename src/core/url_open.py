@@ -19,11 +19,13 @@
 ###############################################################################
 
 import __builtin__
+import socket
 import urllib2
 import logging
 logger = logging.getLogger(__name__)
 
-import socket
+from poster.encode import multipart_encode
+from poster.streaminghttp import StreamingHTTPHandler
 
 import cons
 
@@ -63,6 +65,27 @@ class URLOpen:
 			return self.opener.open(urllib2.Request(url, None, headers), form)
 		else:
 			return self.opener.open(urllib2.Request(url, None, headers))
+
+class MultipartEncoder:
+	""""""
+	def __init__(self, url, form, boundary=None, cookie=None):
+		""""""
+		self.url = url
+		self.form = form
+		self.boundary = boundary
+
+		handlers = [StreamingHTTPHandler]
+		if PROXY:
+			handlers.append(urllib2.ProxyHandler(PROXY))
+		if cookie:
+			handlers.append(urllib2.HTTPCookieProcessor(cookie))
+		self.opener = urllib2.build_opener(*handlers)
+
+	def open(self, callback):
+		""""""
+		datagen, headers = multipart_encode(self.form, self.boundary, callback)
+		headers["User-Agent"] = cons.USER_AGENT
+		return self.opener.open(urllib2.Request(self.url, datagen, headers))
 
 if __name__ == "__main__":
 	PROXY = {"http": "proxy.alu.uma.es:3128"}

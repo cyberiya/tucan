@@ -27,7 +27,7 @@ import __builtin__
 from core.events import Events
 __builtin__.events = Events()
 
-from core.base_types import Item
+from core.base_types import Link
 
 import core.cons as cons
 
@@ -61,14 +61,19 @@ class TestBaseUpload(unittest.TestCase):
 
 	def test_upload(self):
 		""""""
-		item = Item(cons.ITEM_TYPE_LINK, lambda x,y,z: x)
-		item.set_status(cons.STATUS_ACTIVE)
-		th = self.plugin.parse(item)
+		path = os.path.join(FILE_DIR, TEST_NAME)
+		path = "/home/crak/tmp_deb/tucan_0.3.10.orig.tar.gz"
+		link = Link(lambda x,y=None,z=None: x, None, path, None)
+		link.set_total_size(os.stat(path).st_size)
+		th = self.plugin.process(link)
 		if th:
+			#th.limit_speed(4*1024)
 			th.start()
-		while th.isAlive():
-			pass
-		self.assertEqual(item.status, cons.STATUS_CORRECT, "s%: Error uploading")
+			while th.isAlive():
+				time.sleep(1)
+				th.stop()
+			#print link.status, link.get_progress(), link.get_time(), link.get_name()
+		self.assertEqual(link.status, cons.STATUS_CORRECT, "s%: Error uploading")
 
 class TestBaseDownload(unittest.TestCase):
 	""""""
