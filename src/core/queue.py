@@ -68,7 +68,7 @@ class Queue:
 			file_total_size = 0
 			for plugin in links:
 				file_total_size += size
-				link = Link(self.update_cb, file, plugin)
+				link = Link(self.update_cb, file, path, plugin)
 				link.set_total_size(size)
 				self.items.append(link)
 			file.set_total_size(file_total_size)
