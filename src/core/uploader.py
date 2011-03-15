@@ -42,11 +42,12 @@ class Uploader(threading.Thread):
 		self.stop_flag = False
 
 		self.tmp_size = 0
-		self.tmp_speed = 0
+		self.diff_size = 0
 		self.last_speed = 0
 		self.update_time = 0
 		self.remaining_time = 1
-	
+		self.elapsed_time = time.time()
+
 	def limit_speed(self, speed):
 		""""""
 		self.max_speed = speed
@@ -56,16 +57,16 @@ class Uploader(threading.Thread):
 		if self.stop_flag:
 			raise StopUpload
 		else:
-			self.tmp_speed += current_size - self.tmp_size
+			self.diff_size += current_size - self.tmp_size
 			self.tmp_size = current_size
 			#total_size includes headers so its bigger than file size
 			if not self.update_time:
 				self.item.set_total_size(total_size)
 			#last update independent of remaining_time
 			elif current_size == total_size:
-				self.update_item()
+				self.update_item(self.last_speed)
 			elif self.remaining_time > 0:
-				if self.max_speed and self.tmp_speed >= self.max_speed:
+				if self.max_speed and self.diff_size >= self.max_speed:
 					time.sleep(self.remaining_time)
 					self.update_item()
 				else:
@@ -74,11 +75,14 @@ class Uploader(threading.Thread):
 				self.update_item()
 			self.update_time = time.time()
 
-	def update_item(self):
+	def update_item(self, speed=None):
 		""""""
-		self.item.update(self.tmp_speed, self.tmp_speed - self.last_speed)
-		self.last_speed = self.tmp_speed
-		self.tmp_speed = 0
+		if not speed:
+			speed = self.diff_size / (time.time() - self.elapsed_time)
+		self.elapsed_time = time.time()
+		self.item.update(self.diff_size, speed - self.last_speed)
+		self.last_speed = speed
+		self.diff_size = 0
 		self.remaining_time = 1
 
 	def run(self):

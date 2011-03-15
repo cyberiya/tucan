@@ -28,6 +28,8 @@ from core.events import Events
 __builtin__.events = Events()
 
 from core.base_types import Link
+from core.url_open import set_proxy
+set_proxy(None)
 
 import core.cons as cons
 
@@ -67,11 +69,12 @@ class TestBaseUpload(unittest.TestCase):
 		link.set_total_size(os.stat(path).st_size)
 		th = self.plugin.process(link)
 		if th:
-			#th.limit_speed(4*1024)
+			#th.limit_speed(24*1024)
 			th.start()
 			while th.isAlive():
+				#print link.get_speed()
 				time.sleep(1)
-				th.stop()
+				#th.stop()
 			#print link.status, link.get_progress(), link.get_time(), link.get_name()
 		self.assertEqual(link.status, cons.STATUS_CORRECT, "s%: Error uploading")
 
