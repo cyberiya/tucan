@@ -32,9 +32,17 @@ class UploadPlugin:
 		""""""
 		self.max_size = max_size
 
-	def parse(self, item):
+	def parse(self, path):
 		""""""
-		return Uploader(item)
+		pass
+	
+	def parse_result(self, handler):
+		""""""
+		pass
+
+	def process(self, item):
+		""""""
+		return Uploader(item, self.parse, self.parse_result)
 
 	def check_files(self, file_list):
 		""""""

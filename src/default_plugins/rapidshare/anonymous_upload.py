@@ -18,10 +18,16 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
+import uuid
+import time
+import random
 import logging
 logger = logging.getLogger(__name__)
 
 from core.upload_plugin import UploadPlugin
+from core.url_open import URLOpen, MultipartEncoder
+
+API_URL = "http://api.rapidshare.com/cgi-bin/rsapi.cgi?sub=nextuploadserver_v1&cbf=RSAPIDispatcher&cbid=1"
 
 MAX_SIZE = 209796096
 
@@ -30,3 +36,22 @@ class AnonymousUpload(UploadPlugin):
 	def __init__(self):
 		""""""
 		UploadPlugin.__init__(self, MAX_SIZE)
+
+	def parse(self, path):
+		""""""
+		tmp = URLOpen().open(API_URL).read()
+		if tmp:
+			#uploadid = str(int(time.time()))[-5:] + str(int(round(random.random()*1000000)))
+			uploadid = "%s%i" % (str(int(time.time()))[-5:], random.randint(10000, 1000000))
+			server = tmp.split('"')[1].split('"')[0]
+			url = "http://rs%sl3.rapidshare.com/cgi-bin/upload.cgi?rsuploadid=%s" % (server,uploadid)
+			form = {"rsapi_v1" : "1", "realfolder" : "0" , "filecontent": open(path, "rb")}
+			#rapidshare boundary handler has a bug
+			boundary = "--%s" % uuid.uuid4().hex
+			return MultipartEncoder(url, form, boundary)
+
+	def parse_result(self, handler):
+		""""""
+		for line in handler.readlines():
+			if 'File1.1=' in line:
+				return line.split('File1.1=')[1].strip()
