@@ -24,6 +24,7 @@ import base_tests
 
 from core.service_config import ServiceConfig, SECTION_ANONYMOUS_DOWNLOAD, SECTION_PREMIUM_DOWNLOAD
 from megaupload.anonymous_download import AnonymousDownload
+from megaupload.anonymous_upload import AnonymousUpload
 from megaupload.premium_download import PremiumDownload
 from megaupload.premium_cookie import PremiumCookie
 
@@ -35,6 +36,16 @@ TEST_INVALID_LINK = "http://www.megaupload.com/?d=0"
 TEST_LINK = "http://www.megaupload.com/?d=3VCUBE3Y"
 TEST_SIZE = 113
 TEST_UNIT = "KB"
+
+class TestAnonymousUpload(base_tests.TestBaseUpload):
+	""""""
+	def setUp(self):
+		""""""
+		self.plugin = AnonymousUpload()
+
+	def tearDown(self):
+		""""""
+		del self.plugin
 
 class TestAnonymous(base_tests.TestBaseDownload):
 	""""""
