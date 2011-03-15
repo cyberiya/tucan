@@ -50,8 +50,8 @@ class Item:
 		self.normalized_total_size = ""
 		self.current_speed = 0
 		self.current_time = 0
-		self.elapsed_time = ""
 		self.started_time = 0
+		self.elapsed_time = ""
 		self.callback = callback
 
 	def get_name(self):
@@ -124,8 +124,10 @@ class Item:
 		if status == cons.STATUS_ACTIVE:
 			if not self.started_time:
 				self.started_time = time.time()
-		elif status == cons.STATUS_STOP:
-			self.started_time = 0
+		else:
+			if status == cons.STATUS_STOP:
+				self.started_time = 0
+			self.current_speed = 0
 		self.status = status
 		self.callback(self.id, self.parent, status)
 
