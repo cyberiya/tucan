@@ -85,12 +85,12 @@ class Item:
 
 	def get_time(self):
 		""""""
-		if self.current_speed:
-			return misc.normalize_time((self.total_size-self.current_size)/self.current_speed)
-		elif self.status == cons.STATUS_CORRECT:
+		if self.status == cons.STATUS_CORRECT:
 			if not self.elapsed_time:
 				self.elapsed_time = misc.normalize_time(time.time()-self.started_time)
 			return self.elapsed_time
+		elif self.current_speed:
+			return misc.normalize_time((self.total_size-self.current_size)/self.current_speed)
 
 	def get_info(self):
 		""""""
@@ -121,7 +121,6 @@ class Item:
 
 	def set_status(self, status):
 		""""""
-		#print self.__class__.__name__, status
 		if status == cons.STATUS_ACTIVE:
 			if not self.started_time:
 				self.started_time = time.time()
@@ -132,10 +131,11 @@ class Item:
 
 class Link(Item):
 	""""""
-	def __init__(self, callback, parent, plugin):
+	def __init__(self, callback, parent, path, plugin):
 		""""""
 		Item.__init__(self, cons.ITEM_TYPE_LINK, callback, parent)
 		self.url = None
+		self.path = path
 		self.plugin = plugin
 
 	def get_name(self):
