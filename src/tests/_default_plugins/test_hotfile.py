@@ -25,6 +25,7 @@ import base_tests
 from core.service_config import ServiceConfig, SECTION_ANONYMOUS_DOWNLOAD, SECTION_PREMIUM_DOWNLOAD
 from ui.gtk.captcha_dialog import CaptchaDialog
 from hotfile.anonymous_download import AnonymousDownload
+from hotfile.anonymous_upload import AnonymousUpload
 from hotfile.premium_download import PremiumDownload
 from hotfile.premium_cookie import PremiumCookie
 
@@ -38,6 +39,16 @@ TEST_INVALID_LINK = "http://hotfile.com/dl/73035169/57ac0fc/prueba.bin.html"
 TEST_LINK = "http://hotfile.com/dl/103600010/4a54715/prueba.bin.html"
 TEST_SIZE = 113
 TEST_UNIT = "KB"
+
+class TestAnonymousUpload(base_tests.TestBaseUpload):
+	""""""
+	def setUp(self):
+		""""""
+		self.plugin = AnonymousUpload()
+
+	def tearDown(self):
+		""""""
+		del self.plugin
 
 class TestAnonymous(base_tests.TestBaseDownload):
 	""""""
