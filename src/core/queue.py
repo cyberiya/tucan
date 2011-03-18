@@ -39,9 +39,14 @@ class Queue:
 
 	def load(self, data):
 		""""""
-		for item in cPickle.loads(data):
-			item.set_callback(self.update_cb)
-			self.items.append(item)
+		try:
+			for item in cPickle.loads(data):
+				item.set_callback(self.update_cb)
+				self.items.append(item)
+		except Exception, e:
+			logger.exception("Could not load session: %s" % e)
+		else:
+			return True
 
 	def update_cb(self, id, parent=None, status=None):
 		"""updates row and propagates status to parent"""
