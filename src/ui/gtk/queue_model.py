@@ -83,11 +83,12 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 	def load(self, data):
 		""""""
 		old_ids = [item.id for item in self.items]
-		Queue.load(self, data)
-		new_ids = [item.id for item in self.items]
-		for id in [id for id in new_ids if id not in old_ids]:
-			path = self.on_get_path(id)
-			self.row_inserted(path, self.get_iter(path))
+		if Queue.load(self, data):
+			new_ids = [item.id for item in self.items]
+			for id in [id for id in new_ids if id not in old_ids]:
+				path = self.on_get_path(id)
+				self.row_inserted(path, self.get_iter(path))
+			return True
 		
 	def get_item_from_path(self, path):
 		""""""

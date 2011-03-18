@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 import cons
 
-MAX_UPLOADS = 3
+MAX_UPLOADS = 2
 
 import random
 
@@ -84,9 +84,19 @@ class UploadManager:
 		self.schedules = 0
 		self.scheduling = False
 		self.max_speed = 0
-		self.max_speed = 1024*304
 
 		self.threads = {}
+
+	def dump_session(self):
+		""""""
+		return self.queue.dump()
+
+	def load_session(self, data):
+		""""""
+		if self.queue.load(data):
+			self.timer = threading.Timer(0, self.scheduler)
+			self.timer.start()
+			return True
 	
 	def set_max_speed(self, speed):
 		""""""
@@ -107,7 +117,8 @@ class UploadManager:
 		""""""
 		package = self.queue.add_package(file_list)
 		logger.info("Added: %s" % package.get_name())
-		self.scheduler()
+		self.timer = threading.Timer(0, self.scheduler)
+		self.timer.start()
 		return package.id
 
 	def delete(self, id, item=None):
@@ -203,26 +214,27 @@ class UploadManager:
 				self.timer = threading.Timer(1, self.scheduler)
 				self.timer.start()
 			else:
+				self.timer = None
 				events.trigger_all_complete()
 			self.scheduling = False
 
 	def calculate_speed(self):
 		""""""
-		if self.max_speed or True:
-			actual_speed = 0
+		if self.max_speed:
 			num = len(self.threads)
 			if num:
-				speed, remainder = divmod(self.max_speed, num)
+				used_speed = 0
 				threads_to_limit = []
+				speed, remainder = divmod(self.max_speed, num)
 				for th in self.threads.values():
 					if th.speed < speed:
 						th.limit_speed(0)
-						actual_speed += th.speed
+						used_speed += th.speed
 					else:
 						threads_to_limit.append(th)
 				num = len(threads_to_limit)
 				if num:
-					speed, remainder = divmod(self.max_speed - actual_speed, num)
+					speed, remainder = divmod(self.max_speed - used_speed, num)
 					for th in threads_to_limit:
 						th.limit_speed(speed)
 				#self.threads.values()[2].limit_speed(1024*30)

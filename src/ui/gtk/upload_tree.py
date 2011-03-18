@@ -32,6 +32,17 @@ from core.upload_manager import UploadManager
 import core.cons as cons
 import core.misc as misc
 
+COLUMNS = (
+("Status", "pixbuf", 0, []),
+("Name", "text", 1, [("width-chars", 40), ("ellipsize", pango.ELLIPSIZE_MIDDLE)]),
+("Progress", "value", 2, [("width", 150)]),
+("Current Size", "text", 3, []),
+("Total Size", "text", 4, []),
+("Speed", "text", 5, []),
+("ETA", "text", 6, []),
+("Info", "text", 7, [])
+)
+
 STATUS_ICONS = [
 (cons.STATUS_CORRECT, gtk.STOCK_APPLY), 
 (cons.STATUS_ERROR, gtk.STOCK_CANCEL), 
@@ -70,6 +81,8 @@ class UploadTree(gtk.VBox, UploadManager):
 		self.pack_start(scroll)
 
 		model = QueueModel(IconLoader(self))
+		model.connect("row-inserted", self.expand)
+
 		UploadManager.__init__(self, model)
 		self.treeview = gtk.TreeView(model)
 		scroll.add(self.treeview)
@@ -80,17 +93,6 @@ class UploadTree(gtk.VBox, UploadManager):
 		self.treeview.set_rules_hint(True)
 		#self.treeview.set_headers_visible(False)
 		#self.treeview.set_fixed_height_mode(True)
-
-		COLUMNS = (
-		("Status", "pixbuf", 0, []),
-		("Name", "text", 1, [("width-chars", 40), ("ellipsize", pango.ELLIPSIZE_MIDDLE)]),
-		("Progress", "value", 2, [("width", 150)]),
-		("Current Size", "text", 3, []),
-		("Total Size", "text", 4, []),
-		("Speed", "text", 5, []),
-		("ETA", "text", 6, []),
-		("Info", "text", 7, [])
-		)
 
 		for name, attr, value, properties in COLUMNS:
 			column = gtk.TreeViewColumn(name)
@@ -109,13 +111,19 @@ class UploadTree(gtk.VBox, UploadManager):
 			#column.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
 			self.treeview.append_column(column)
 
-	def add_package(self, file_list):
+	def expand(self, treemodel, path, iter):
 		""""""
-		id = UploadManager.add_package(self, file_list)
-		model = self.treeview.get_model()
-		self.treeview.expand_row(model.on_get_path(id), True)
-		return id
-		
+		#only expand packages
+		if len(path) == 1:
+			gobject.idle_add(self.treeview.expand_row, path, False)
+
+	def load_session(self, data):
+		""""""
+		if not UploadManager.load_session(self, data):
+			title = _("Session Error")
+			message = _("Corrupted session file.\nCheck the log for more details.")
+			m = Message(None, cons.SEVERITY_ERROR, title, message)
+
 	def delete_cb(self, button):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()

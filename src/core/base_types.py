@@ -58,6 +58,8 @@ class Item:
 		"""can't pickle instancemethod objects"""
 		tmp =  self.__dict__.copy()
 		tmp["callback"] = None
+		if self.get_active():
+			tmp["status"] = cons.STATUS_PEND
 		return tmp
 
 	def get_name(self):
@@ -75,7 +77,7 @@ class Item:
 		""""""
 		if self.status == cons.STATUS_CORRECT:
 			return self.normalized_total_size
-		else:
+		elif self.current_size:
 			return misc.normalize(self.current_size, "%.2f%s")
 
 	def get_total_size(self):
@@ -137,7 +139,7 @@ class Item:
 		self.status = status
 		self.callback(self.id, self.parent, status)
 
-	def set_callback(self, callback=None):
+	def set_callback(self, callback):
 		""""""
 		self.callback = callback
 
