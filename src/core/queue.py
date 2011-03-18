@@ -19,6 +19,7 @@
 ###############################################################################
 
 import time
+import cPickle
 import logging
 logger = logging.getLogger(__name__)
 
@@ -31,6 +32,16 @@ class Queue:
 	def __init__(self):
 		""""""
 		self.items = []
+		
+	def dump(self):
+		""""""
+		return cPickle.dumps(self.items)
+
+	def load(self, data):
+		""""""
+		for item in cPickle.loads(data):
+			item.set_callback(self.update_cb)
+			self.items.append(item)
 
 	def update_cb(self, id, parent=None, status=None):
 		"""updates row and propagates status to parent"""
@@ -59,16 +70,19 @@ class Queue:
 		""""""
 		if not name:
 			name ="package-%s" % time.strftime("%Y%m%d%H%M%S")
-		package = Package(self.update_cb, name)
+		package = Package(name)
+		package.set_callback(self.update_cb)
 		self.items.append(package)
 		package_total_size = 0
 		for path, size, links in file_list:
-			file = File(self.update_cb, package, path)
+			file = File(package, path)
+			file.set_callback(self.update_cb)
 			self.items.append(file)
 			file_total_size = 0
 			for plugin in links:
 				file_total_size += size
-				link = Link(self.update_cb, file, path, plugin)
+				link = Link(file, path, plugin)
+				link.set_callback(self.update_cb)
 				link.set_total_size(size)
 				self.items.append(link)
 			file.set_total_size(file_total_size)
@@ -148,7 +162,6 @@ class Queue:
 		if old > new:
 			old,new,l1,l2 = new,old,l2,l1
 		self.items[old:old+l2],self.items[old+l2:old+l2+l1] = self.items[new:new+l2], self.items[old:old+l1]
-
 
 	def get_length(self, id):
 		""""""
