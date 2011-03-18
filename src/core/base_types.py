@@ -38,7 +38,7 @@ cons.STATUS_CORRECT
 
 class Item:
 	""""""
-	def __init__(self, item_type, callback, parent=None):
+	def __init__(self, item_type, parent=None):
 		""""""
 		self.id = str(uuid.uuid1())
 		self.type = item_type
@@ -52,7 +52,13 @@ class Item:
 		self.current_time = 0
 		self.started_time = 0
 		self.elapsed_time = ""
-		self.callback = callback
+		self.callback = None
+		
+	def __getstate__(self):
+		"""can't pickle instancemethod objects"""
+		tmp =  self.__dict__.copy()
+		tmp["callback"] = None
+		return tmp
 
 	def get_name(self):
 		""""""
@@ -131,11 +137,15 @@ class Item:
 		self.status = status
 		self.callback(self.id, self.parent, status)
 
+	def set_callback(self, callback=None):
+		""""""
+		self.callback = callback
+
 class Link(Item):
 	""""""
-	def __init__(self, callback, parent, path, plugin):
+	def __init__(self, parent, path, plugin):
 		""""""
-		Item.__init__(self, cons.ITEM_TYPE_LINK, callback, parent)
+		Item.__init__(self, cons.ITEM_TYPE_LINK, parent)
 		self.url = None
 		self.path = path
 		self.plugin = plugin
@@ -153,9 +163,9 @@ class Link(Item):
 
 class File(Item):
 	""""""
-	def __init__(self, callback, parent, path):
+	def __init__(self, parent, path):
 		""""""
-		Item.__init__(self, cons.ITEM_TYPE_FILE, callback, parent)
+		Item.__init__(self, cons.ITEM_TYPE_FILE, parent)
 		self.path = path
 		self.name = os.path.basename(path)
 
@@ -169,9 +179,9 @@ class File(Item):
 
 class Package(Item):
 	""""""
-	def __init__(self, callback, name):
+	def __init__(self, name):
 		""""""
-		Item.__init__(self, cons.ITEM_TYPE_PACKAGE, callback)
+		Item.__init__(self, cons.ITEM_TYPE_PACKAGE)
 		self.name = name
 		self.desc = "Uploaded by %s - %s" % (cons.TUCAN_NAME, cons.TUCAN_VERSION)
 
