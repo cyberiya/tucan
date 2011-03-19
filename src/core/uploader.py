@@ -89,6 +89,9 @@ class Uploader(threading.Thread):
 		""""""
 		url = None
 		self.item.set_status(cons.STATUS_ACTIVE)
+		size = self.item.current_size
+		if size:
+			self.item.update(-size, 0)
 		try:
 			encoder = self.parse(self.item.path)
 			#MultipartEncoder.open blocks while uploading
@@ -107,9 +110,9 @@ class Uploader(threading.Thread):
 				self.item.url = url
 				self.item.set_status(cons.STATUS_CORRECT)
 			else:
-				logger.error(url)
+				logger.error("No upload URL!")
 				self.item.set_status(cons.STATUS_ERROR)
 
 	def stop(self):
-		"""Set a flag so that it stops"""
+		"""stops in the next encoder callback"""
 		self.stop_flag = True
