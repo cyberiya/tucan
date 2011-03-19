@@ -30,6 +30,7 @@ __builtin__.events = Events()
 from core.base_types import Link
 from core.url_open import set_proxy
 set_proxy(None)
+#set_proxy("proxy.alu.uma.es", 3128)
 
 import core.cons as cons
 
@@ -64,8 +65,9 @@ class TestBaseUpload(unittest.TestCase):
 	def test_upload(self):
 		""""""
 		path = os.path.join(FILE_DIR, TEST_NAME)
-		path = "/home/crak/tmp_deb/tucan_0.3.10.orig.tar.gz"
-		link = Link(lambda x,y=None,z=None: x, None, path, None)
+		#path = "/home/crak/tmp_deb/tucan_0.3.10.orig.tar.gz"
+		link = Link(None, path, None)
+		link.set_callback(lambda x, y=None, z=None: x)
 		link.set_total_size(os.stat(path).st_size)
 		th = self.plugin.process(link)
 		if th:
@@ -74,7 +76,6 @@ class TestBaseUpload(unittest.TestCase):
 			while th.isAlive():
 				#print link.get_speed()
 				time.sleep(1)
-				#th.stop()
 			#print link.status, link.get_progress(), link.get_time(), link.get_name()
 		self.assertEqual(link.status, cons.STATUS_CORRECT, "s%: Error uploading")
 
