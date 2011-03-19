@@ -49,7 +49,6 @@ class Item:
 		self.total_size = 0
 		self.normalized_total_size = ""
 		self.current_speed = 0
-		self.current_time = 0
 		self.started_time = 0
 		self.elapsed_time = ""
 		self.callback = None
@@ -120,7 +119,7 @@ class Item:
 		self.current_speed += diff_speed
 		if self.parent:
 			self.parent.update(diff_size, diff_speed)
-		self.callback(self.id)
+		self.callback(self)
 
 	def set_total_size(self, size):
 		""""""
@@ -137,7 +136,7 @@ class Item:
 				self.started_time = 0
 			self.current_speed = 0
 		self.status = status
-		self.callback(self.id, self.parent, status)
+		self.callback(self, status)
 
 	def set_callback(self, callback):
 		""""""

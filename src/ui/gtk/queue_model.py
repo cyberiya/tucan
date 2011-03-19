@@ -94,10 +94,10 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 		""""""
 		return self.get_item(self.on_get_iter(path))
 
-	def update_cb(self, id, parent=None, status=None):
+	def update_cb(self, item, status=None):
 		""""""
-		Queue.update_cb(self, id, parent, status)
-		self.update_row(id)
+		Queue.update_cb(self, item, status)
+		self.update_row(item.id)
 
 	def update_row(self, id):
 		""""""
