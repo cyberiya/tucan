@@ -194,7 +194,7 @@ class Tucan:
 	def set_globals(self):
 		""""""
 		#proxy settings
-		__builtin__.PROXY = None
+		#__builtin__.PROXY = None
 		if configuration.get_proxy_enabled():
 			proxy_url, proxy_port = configuration.get_proxy()
 			url_open.set_proxy(proxy_url, proxy_port)

@@ -47,10 +47,10 @@ class URLOpen:
 	""""""
 	def __init__(self, cookie=None):
 		""""""
+		handlers = [urllib2.HTTPCookieProcessor(cookie)]
 		if PROXY:
-			self.opener = urllib2.build_opener(urllib2.ProxyHandler(PROXY), urllib2.HTTPCookieProcessor(cookie))
-		else:
-			self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookie))
+			handlers.append(urllib2.ProxyHandler(PROXY))
+		self.opener = urllib2.build_opener(*handlers)
 
 	def open(self, url, form=None, range=None, keep_alive=False, referer=False):
 		""""""
@@ -86,8 +86,3 @@ class MultipartEncoder:
 		datagen, headers = multipart_encode(self.form, self.boundary, callback)
 		headers["User-Agent"] = cons.USER_AGENT
 		return self.opener.open(urllib2.Request(self.url, datagen, headers))
-
-if __name__ == "__main__":
-	PROXY = {"http": "proxy.alu.uma.es:3128"}
-	o = URLOpen()
-	print o.open("http://www.google.com").read()
