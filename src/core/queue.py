@@ -48,10 +48,10 @@ class Queue:
 		else:
 			return True
 
-	def update_cb(self, id, parent=None, status=None):
-		"""updates row and propagates status to parent"""
-		if parent:
-			self.propagate_status(parent, status)
+	def update_cb(self, item, status=None):
+		"""updates and propagates status to parent"""
+		if status and item.parent:
+			self.propagate_status(item.parent, status)
 
 	def sort_status(self, new_status, old_status):
 		""""""
