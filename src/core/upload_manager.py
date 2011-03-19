@@ -50,6 +50,9 @@ class UploadMockup(threading.Thread):
 
 	def run(self):
 		"""Parsing and Poster work"""
+		size = self.item.current_size
+		if size:
+			self.item.update(-size, 0)
 		while not self.stop_flag and self.item.current_size < self.item.total_size:
 			remaining_time = 1
 			size = 0
