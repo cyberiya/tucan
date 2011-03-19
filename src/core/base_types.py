@@ -59,6 +59,7 @@ class Item:
 		tmp["callback"] = None
 		if self.get_active():
 			tmp["status"] = cons.STATUS_PEND
+			tmp["current_speed"] = 0
 		return tmp
 
 	def get_name(self):

@@ -99,9 +99,12 @@ def get_size(num):
 def normalize_time(value):
 	""""""
 	if value:
-		hours, remainder = divmod(value, cons.HOUR)
-		minutes, seconds = divmod(remainder, cons.MINUTE)
-		if hours:
+		days, remainder = divmod(value, cons.TIME_DAY)
+		hours, remainder = divmod(remainder, cons.TIME_HOUR)
+		minutes, seconds = divmod(remainder, cons.TIME_MINUTE)
+		if days:
+			return "%.0fd%.0fh%.0fm%.0fs" % (days, hours, minutes, seconds)
+		elif hours:
 			return "%.0fh%.0fm%.0fs" % (hours, minutes, seconds)
 		elif minutes:
 			return "%.0fm%.0fs" % (minutes, seconds)
