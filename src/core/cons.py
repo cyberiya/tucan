@@ -73,8 +73,9 @@ UNIT_GB = "GB"
 UNIT_SPEED = "KB/s"
 
 #time constants
-MINUTE = 60
-HOUR = 3600
+TIME_MINUTE = 60
+TIME_HOUR = 3600
+TIME_DAY = 86400
 
 #service type constans
 TYPE_ANONYMOUS = "Anonymous"
