@@ -73,7 +73,7 @@ def get_exception_info(type, value, trace):
 	except:
 		return "Unhandled Error! No info available"
 
-def normalize(value, format):
+def normalize(value, format="%.2f%s"):
 	""""""
 	if value:
 		value = float(value)
