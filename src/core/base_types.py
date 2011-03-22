@@ -100,7 +100,7 @@ class Item:
 		if self.status == cons.STATUS_CORRECT:
 			return self.normalized_total_size
 		elif self.current_size:
-			return misc.normalize(self.current_size, "%.2f%s")
+			return misc.normalize(self.current_size)
 
 	def get_total_size(self):
 		""""""
@@ -147,7 +147,7 @@ class Item:
 	def set_total_size(self, size):
 		""""""
 		self.total_size = size
-		self.normalized_total_size = misc.normalize(size, "%.2f%s")
+		self.normalized_total_size = misc.normalize(size)
 
 	def set_status(self, status):
 		""""""
