@@ -50,7 +50,7 @@ class UploadPlugin:
 		for path in file_list:
 			check = False
 			if os.path.exists(path) and os.path.isfile(path):
-				if self.max_size > os.stat(path).st_size:
+				if not self.max_size or self.max_size > os.stat(path).st_size:
 					check = True
 				else:
 					logger.warning("File too big: %s" % path)
