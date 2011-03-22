@@ -130,3 +130,7 @@ def calculate_time(time):
 	elif seconds > 0:
 		result = str(seconds) + "s"
 	return result
+
+def name_package():
+	""""""
+	return "package-%s" % time.strftime("%Y%m%d%H%M%S")

@@ -30,6 +30,7 @@ from file_chooser import FileChooser
 
 import media
 import core.cons as cons
+import core.misc as misc
 
 class AdvancedPackages(gtk.Dialog):
 	""""""
@@ -106,7 +107,7 @@ class AdvancedPackages(gtk.Dialog):
 
 		#fill treestore
 		package_icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_PACKAGE, 32, 32)
-		single_package_name = "package-%s" % time.strftime("%Y%m%d%H%M%S")
+		single_package_name = misc.name_package()
 		single_package_links = []
 		for package_name, package_links in self.packages:
 			single_package_links += package_links
