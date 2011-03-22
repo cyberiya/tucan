@@ -116,11 +116,11 @@ def calculate_time(time):
 	result = None
 	hours = 0
 	minutes = 0
-	while time >= cons.HOUR:
-		time = time - cons.HOUR
+	while time >= cons.TIME_HOUR:
+		time = time - cons.TIME_HOUR
 		hours += 1
-	while time >= cons.MINUTE:
-		time = time - cons.MINUTE
+	while time >= cons.TIME_MINUTE:
+		time = time - cons.TIME_MINUTE
 		minutes += 1
 	seconds = time
 	if hours > 0:
