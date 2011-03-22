@@ -18,14 +18,19 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import time
 import cPickle
 import logging
 logger = logging.getLogger(__name__)
 
-from base_types import Package, File, Link, STATUS_HIERARCHY
+from base_types import STATUS_HIERARCHY
 
 import cons
+
+VALID_PREVIOUS_TYPES = {
+cons.ITEM_TYPE_PACKAGE : [cons.ITEM_TYPE_LINK],
+cons.ITEM_TYPE_FILE : [cons.ITEM_TYPE_LINK, cons.ITEM_TYPE_PACKAGE],
+cons.ITEM_TYPE_LINK : [cons.ITEM_TYPE_LINK, cons.ITEM_TYPE_FILE]
+}
 
 class Queue:
 	""""""
@@ -40,13 +45,9 @@ class Queue:
 	def load(self, data):
 		""""""
 		try:
-			for item in cPickle.loads(data):
-				item.set_callback(self.update_cb)
-				self.items.append(item)
+			return self.add(cPickle.loads(data))
 		except Exception, e:
 			logger.exception("Could not load session: %s" % e)
-		else:
-			return True
 
 	def update_cb(self, item, status=None):
 		"""updates and propagates status to parent"""
@@ -71,39 +72,44 @@ class Queue:
 				if parent.parent:
 					self.propagate_status(parent.parent, status)
 
-	def add_package(self, file_list, name=None):
+	def add(self, items):
 		""""""
-		if not name:
-			name ="package-%s" % time.strftime("%Y%m%d%H%M%S")
-		package = Package(name)
-		package.set_callback(self.update_cb)
-		self.items.append(package)
-		package_total_size = 0
-		for path, size, links in file_list:
-			file = File(package, path)
-			file.set_callback(self.update_cb)
-			self.items.append(file)
-			file_total_size = 0
-			for plugin in links:
-				file_total_size += size
-				link = Link(file, path, plugin)
-				link.set_callback(self.update_cb)
-				link.set_total_size(size)
-				self.items.append(link)
-			file.set_total_size(file_total_size)
-			package_total_size += file.total_size
-		package.set_total_size(package_total_size)
-		return package
+		new_items = []
+		ids = [item.id for item in self.items]
+		prev_item = self.items[-1] if ids else None
+		for item in items:
+			#IDs must be unique
+			if item.id not in ids + [i.id for i in new_items]:
+				item.set_callback(self.update_cb)
+				if prev_item:
+					if prev_item.type in VALID_PREVIOUS_TYPES[item.type]:
+						prev_item = item
+						new_items.append(item)
+					else:
+						logger.error("Invalid item sequence: adding %s after %s" % (item.type, prev_item.type))
+						return
+				elif item.type == cons.ITEM_TYPE_PACKAGE:
+					prev_item = item
+					new_items.append(item)
+				else:
+					logger.error("First item in queue must be a package: %s" % item.type)
+					return
+			else:
+				logger.error("ID already present in queue: %s" % item.id)
+				return
+		if new_items:
+			self.items += new_items
+			return True
 
 	def delete(self, item):
 		""""""
-		if item:
-			if item.type == cons.ITEM_TYPE_PACKAGE:
-				self.delete_package(item)
-			elif item.type == cons.ITEM_TYPE_FILE:
-				self.delete_file(item)
-			elif item.type == cons.ITEM_TYPE_LINK:
-				self.delete_link(item)
+		#if item:
+		if item.type == cons.ITEM_TYPE_PACKAGE:
+			self.delete_package(item)
+		elif item.type == cons.ITEM_TYPE_FILE:
+			self.delete_file(item)
+		elif item.type == cons.ITEM_TYPE_LINK:
+			self.delete_link(item)
 
 	def delete_package(self, package):
 		""""""

@@ -79,17 +79,7 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 		lambda x: x.get_time(),
 		lambda x: x.get_info()
 		)
-		
-	def load(self, data):
-		""""""
-		old_ids = [item.id for item in self.items]
-		if Queue.load(self, data):
-			new_ids = [item.id for item in self.items]
-			for id in [id for id in new_ids if id not in old_ids]:
-				path = self.on_get_path(id)
-				self.row_inserted(path, self.get_iter(path))
-			return True
-		
+
 	def get_item_from_path(self, path):
 		""""""
 		return self.get_item(self.on_get_iter(path))
@@ -105,18 +95,13 @@ class QueueModel(gtk.GenericTreeModel, Queue):
 		if path:
 			self.row_changed(path, self.get_iter(path))
 
-	def add_package(self, file_list, name=None):
+	def add(self, items):
 		""""""
-		package = Queue.add_package(self, file_list, name=None)
-		path = self.on_get_path(package.id)
-		self.row_inserted(path, self.get_iter(path))
-		for item in self.get_children(package.id):
-			path = self.on_get_path(item.id)
-			self.row_inserted(path, self.get_iter(path))
-			for subitem in self.get_children(item.id):
-				path = self.on_get_path(subitem.id)
+		if Queue.add(self, items):
+			for id in [item.id for item in items]:
+				path = self.on_get_path(id)
 				self.row_inserted(path, self.get_iter(path))
-		return package
+			return True
 
 	def delete(self, item):
 		""""""

@@ -116,13 +116,12 @@ class UploadManager:
 				del self.threads[id]
 		return cont < MAX_UPLOADS
 
-	def add_package(self, file_list):
+	def add_package(self, items):
 		""""""
-		package = self.queue.add_package(file_list)
-		logger.info("Added: %s" % package.get_name())
-		self.timer = threading.Timer(0, self.scheduler)
-		self.timer.start()
-		return package.id
+		if self.queue.add(items):
+			logger.info("Added: %s" % items[0].get_name())
+			self.timer = threading.Timer(0, self.scheduler)
+			self.timer.start()
 
 	def delete(self, id, item=None):
 		""""""

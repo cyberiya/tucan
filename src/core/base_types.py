@@ -36,6 +36,28 @@ cons.STATUS_STOP,
 cons.STATUS_CORRECT
 ]
 
+def create_upload_package(file_list, name=None):
+	""""""
+	items = []
+	if not name:
+		name = misc.name_package()
+	package = Package(name)
+	items.append(package)
+	package_total_size = 0
+	for path, size, links in file_list:
+		file = File(package, path)
+		items.append(file)
+		file_total_size = 0
+		for plugin in links:
+			file_total_size += size
+			link = Link(file, path, plugin)
+			link.set_total_size(size)
+			items.append(link)
+		file.set_total_size(file_total_size)
+		package_total_size += file.total_size
+	package.set_total_size(package_total_size)
+	return items
+
 class Item:
 	""""""
 	def __init__(self, item_type, parent=None):
