@@ -74,8 +74,8 @@ class InputFiles(gtk.Dialog):
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		#(icon, name, size, normalized_size, path, plugin)
-		self.package_treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, int, str, str, gobject.TYPE_PYOBJECT))
+		#(icon, name, size, normalized_size, path, service_name, plugin_type)
+		self.package_treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, int, str, str, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT))
 		scroll.add(self.package_treeview)
 
 		self.package_treeview.set_rules_hint(True)
@@ -153,14 +153,18 @@ class InputFiles(gtk.Dialog):
 			selected = False
 			first = None
 			vbox = gtk.VBox()
-			for plugin_type, plugin in service.get_upload_plugins():
-				first = gtk.RadioButton(first, plugin_type)
-				tooltip = "Max File Size: %s" % misc.normalize(plugin.max_size, "%.0f%s")
-				first.set_tooltip_text(tooltip)
-				vbox.pack_start(first, False, False, 1)
-			vbox.show_all()
-			services.append([icon, name, selected, service, vbox])
-
+			available_plugins = service.get_upload_plugins()
+			if available_plugins:
+				for plugin_type, plugin in available_plugins:
+					first = gtk.RadioButton(first, plugin_type)
+					func = lambda x, y, z: self.activate(x.get_active(), y, z)
+					first.connect("toggled", func, service, vbox)
+					tooltip = "Max File Size: %s" % misc.normalize(plugin.max_size, "%.0f%s")
+					first.set_tooltip_text(tooltip)
+					vbox.pack_start(first, False, False, 1)
+				vbox.show_all()
+				services.append([icon, name, selected, service, vbox])
+		
 		#choose path
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 5)
@@ -211,17 +215,19 @@ class InputFiles(gtk.Dialog):
 		
 		file_iter = package_model.get_iter_root()
 		while file_iter:
-			plugins = []
+			services = []
 			service_iter = package_model.iter_children(file_iter)
 			while service_iter:
-				plugin = package_model.get_value(service_iter, 5)
-				if plugin:
-					plugins.append(plugin)
+				plugin_type = package_model.get_value(service_iter, 6)
+				if plugin_type:
+					service_name = package_model.get_value(service_iter, 5)
+					plugin_info = package_model.get_value(service_iter, 1)
+					services.append((service_name, plugin_type, plugin_info))
 				service_iter = package_model.iter_next(service_iter)
-			if plugins:
+			if services:
 				size = package_model.get_value(file_iter, 2)
 				path = package_model.get_value(file_iter, 4)
-				files.append((path, size, plugins))
+				files.append((path, size, services))
 			file_iter = package_model.iter_next(file_iter)
 		if files:
 			self.add_package(create_upload_package(files, self.package_entry.get_text()))
@@ -240,31 +246,35 @@ class InputFiles(gtk.Dialog):
 			active = False
 		button.set_active(active)
 
-		services_model = self.services_treeview.get_model()
-		package_model = self.package_treeview.get_model()
+		model = self.services_treeview.get_model()		
+		iter = model.get_iter(path)
+		model.set_value(iter, 2, active)
+
+		service = model.get_value(iter, 3)
+		vbox = model.get_value(iter, 4)
 		
-		service_iter = services_model.get_iter(path)
-		services_model.set_value(service_iter, 2, active)
+		self.activate(active, service, vbox)
 		
-		service = services_model.get_value(service_iter, 3)
-		vbox = services_model.get_value(service_iter, 4)
-		plugin = self.get_selected_plugin(service, vbox)
+	def activate(self, add, service, vbox):
+		""""""
+		model = self.package_treeview.get_model()
+		plugin_type = self.get_selected_plugin(service, vbox)
 		
 		iters = []
-		file_iter = package_model.get_iter_root()
+		file_iter = model.get_iter_root()
 		while file_iter:
-			if active:	
+			if add:	
 				iters.append(file_iter)
 			else:
-				iter = package_model.iter_children(file_iter)
+				iter = model.iter_children(file_iter)
 				while iter:
-					if plugin.__module__ == package_model.get_value(iter, 1):
-						package_model.remove(iter)
+					if service.name == model.get_value(iter, 5):
+						model.remove(iter)
 						break
-					iter = package_model.iter_next(iter)
-			file_iter = package_model.iter_next(file_iter)
-		if active and iters:
-			self.add_service(package_model, iters, plugin)
+					iter = model.iter_next(iter)
+			file_iter = model.iter_next(file_iter)
+		if add and iters:
+			self.add_service(model, iters, service, plugin_type)
 
 	def choose_files(self, button):
 		""""""
@@ -287,35 +297,40 @@ class InputFiles(gtk.Dialog):
 		for path in paths:
 			if path not in [row[4] for row in package_model]:
 				size = os.stat(path).st_size
-				row = [self.file_icon, os.path.basename(path), size, misc.normalize(size), path, None]
+				row = [self.file_icon, os.path.basename(path), size, misc.normalize(size), path, None, None]
 				iter = package_model.append(None, row)
 				iters.append(iter)
 		for row in services_model:
 			if row[2]:
-				self.add_service(package_model, iters, self.get_selected_plugin(row[3], row[4]))
-
+				service = row[3]
+				plugin_type = self.get_selected_plugin(service, row[4])
+				self.add_service(package_model, iters, service, plugin_type)
+	
 	def get_selected_plugin(self, service, vbox):
 		""""""
 		for button in vbox.get_children():
 			if button.get_active():
-				for plugin_type, plugin in service.get_upload_plugins():
-					if plugin_type == button.get_label():
-						return plugin
+				return button.get_label()
 
-	def add_service(self, package_model, iters, plugin):
+	def add_service(self, package_model, iters, service, choosed_type):
 		""""""
-		checked = plugin.check_files([package_model.get_value(iter, 4)  for iter in iters])
-		i = 0
-		for iter in iters:
-			if checked[i]:
-				icon = self.correct_icon
-				link_plugin = plugin
-			else:
-				icon = self.incorrect_icon
-				link_plugin = None
-			package_model.append(iter, [icon, plugin.__module__, 0, None, None, link_plugin])
-			self.package_treeview.expand_row(package_model.get_path(iter), True)
-			i += 1
+		available_plugins = service.get_upload_plugins()
+		if available_plugins:
+			for plugin_type, plugin in available_plugins:
+				if choosed_type == plugin_type:
+					break
+			checked = plugin.check_files([package_model.get_value(iter, 4)  for iter in iters])
+			i = 0
+			for iter in iters:
+				if checked[i]:
+					icon = self.correct_icon
+					t = plugin_type
+				else:
+					icon = self.incorrect_icon
+					t = None
+				package_model.append(iter, [icon, plugin.__module__, 0, None, None, service.name, t])
+				self.package_treeview.expand_row(package_model.get_path(iter), True)
+				i += 1
 
 	def close(self, widget=None, other=None):
 		""""""

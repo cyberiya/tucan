@@ -76,14 +76,14 @@ class Service:
 		""""""
 		result = []
 		plugins = self.upload_plugins
-		if cons.TYPE_PREMIUM in plugins:
-			if plugins[cons.TYPE_PREMIUM].active:
-				result.append((cons.TYPE_PREMIUM, plugins[cons.TYPE_PREMIUM]))
-		if cons.TYPE_USER in plugins:
-			if plugins[cons.TYPE_USER].active:
-				result.append((cons.TYPE_USER, plugins[cons.TYPE_USER]))
-		if cons.TYPE_ANONYMOUS in plugins:
-			result.append((cons.TYPE_ANONYMOUS, plugins[cons.TYPE_ANONYMOUS]))
+		for plugin_type, plugin in plugins.items():
+			if plugin_type in [cons.TYPE_PREMIUM, cons.TYPE_USER]:
+				if plugin.active:
+					result.append((plugin_type, plugin))
+				else:
+					logging.warning("%s has no active account!" % plugin.__module__)
+			elif plugin_type == cons.TYPE_ANONYMOUS:
+				result.append((plugin_type, plugin))
 		return result
 
 	def clean(self):

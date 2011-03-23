@@ -44,13 +44,14 @@ def create_upload_package(file_list, name=None):
 	package = Package(name)
 	items.append(package)
 	package_total_size = 0
-	for path, size, plugins in file_list:
+	for path, size, services in file_list:
 		file = File(package, path)
 		items.append(file)
 		file_total_size = 0
-		for plugin in plugins:
+		for service_name, plugin_type, plugin_info in services:
 			file_total_size += size
-			link = Link(file, path, plugin)
+			link = Link(file, path, service_name)
+			link.set_plugin(plugin_type, plugin_info)
 			link.set_total_size(size)
 			items.append(link)
 		file.set_total_size(file_total_size)
@@ -167,21 +168,34 @@ class Item:
 
 class Link(Item):
 	""""""
-	def __init__(self, parent, path, plugin):
+	def __init__(self, parent, path, service_name):
 		""""""
 		Item.__init__(self, cons.ITEM_TYPE_LINK, parent)
 		self.url = None
 		self.path = path
-		self.plugin = plugin
+		self.service_name = service_name
+		self.plugin_type = None
+		self.plugin_info = None
+		
+	def set_plugin(self, plugin_type, info):
+		""""""
+		self.plugin_type = plugin_type
+		self.plugin_info = info
+	
+	def get_plugin(self):
+		""""""
+		return self.service_name, self.plugin_type
 
 	def get_name(self):
 		""""""
 		if self.url:
 			return self.url
+		else:
+			return "http://www.%s" % self.service_name
 
 	def get_info(self):
 		""""""
-		return self.plugin.__module__
+		return self.plugin_info
 
 class File(Item):
 	""""""
