@@ -19,36 +19,42 @@
 ###############################################################################
 
 import os
+import time
 
 import pygtk
 pygtk.require('2.0')
 import gtk
+import pango
 import gobject
 
 from file_chooser import FileChooser
+from message import Message
+
+from core.base_types import create_upload_package
 
 import media
 import core.cons as cons
-
-SERVICES = [("Megaupload", 100, cons.UNIT_MB, ["Anonymous", "Premium"]), ("Rapidshare", 200, cons.UNIT_MB, ["Collector", "Premium"]), ("Gigasize", 100, cons.UNIT_MB, ["Anonymous"])]
+import core.misc as misc
 
 class InputFiles(gtk.Dialog):
 	""""""
-	def __init__(self, parent, upload_services):
+	def __init__(self, parent, upload_services, add_package):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_transient_for(parent)
 		self.set_icon_from_file(media.ICON_UPLOAD)
 		self.set_title(("Input Files"))
 		self.set_position(gtk.WIN_POS_CENTER)
-		self.set_size_request(600,500)
+		self.set_size_request(600, 500)
 
 		self.history_path = cons.DEFAULT_PATH
+		
+		self.add_package = add_package
 
 		main_hbox = gtk.HBox()
 		self.vbox.pack_start(main_hbox)
 
-		self.file_icon = self.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_BUTTON)
+		self.file_icon = self.render_icon(gtk.STOCK_FILE, gtk.ICON_SIZE_MENU)
 		self.correct_icon = self.render_icon(gtk.STOCK_APPLY, gtk.ICON_SIZE_MENU)
 		self.incorrect_icon = self.render_icon(gtk.STOCK_CANCEL, gtk.ICON_SIZE_MENU)
 
@@ -56,10 +62,20 @@ class InputFiles(gtk.Dialog):
 		frame = gtk.Frame()
 		main_hbox.pack_start(frame, True)
 		frame.set_border_width(5)
+		
+		hbox = gtk.HBox()
+		frame.set_label_widget(hbox)
+		hbox.pack_start(gtk.image_new_from_file(media.ICON_PACKAGE))
+		self.package_entry = gtk.Entry(50)
+		hbox.pack_start(self.package_entry)
+		self.package_entry.set_width_chars(25)
+		self.package_entry.set_text("package-%s" % time.strftime("%Y%m%d%H%M%S"))
+
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		self.package_treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, str, str, bool))
+		#(icon, name, size, normalized_size, path, plugin)
+		self.package_treeview = gtk.TreeView(gtk.TreeStore(gtk.gdk.Pixbuf, str, int, str, str, gobject.TYPE_PYOBJECT))
 		scroll.add(self.package_treeview)
 
 		self.package_treeview.set_rules_hint(True)
@@ -73,6 +89,8 @@ class InputFiles(gtk.Dialog):
 
 		tree_name = gtk.TreeViewColumn('Name') 
 		name_cell = gtk.CellRendererText()
+		name_cell.set_property("width-chars", 36)
+		name_cell.set_property("ellipsize", pango.ELLIPSIZE_MIDDLE)
 		tree_name.pack_start(name_cell, True)
 		tree_name.add_attribute(name_cell, 'text', 1)
 		self.package_treeview.append_column(tree_name)
@@ -80,7 +98,7 @@ class InputFiles(gtk.Dialog):
 		tree_size = gtk.TreeViewColumn('Size') 
 		size_cell = gtk.CellRendererText()
 		tree_size.pack_start(size_cell, False)
-		tree_size.add_attribute(size_cell, 'text', 2)
+		tree_size.add_attribute(size_cell, 'text', 3)
 		self.package_treeview.append_column(tree_size)
 
 		service_vbox = gtk.VBox()
@@ -89,15 +107,16 @@ class InputFiles(gtk.Dialog):
 		# services treeview
 		frame = gtk.Frame()
 		service_vbox.pack_start(frame)
-		frame.set_size_request(200, -1)
+		frame.set_size_request(170, -1)
 		frame.set_border_width(5)
 		frame.set_label_widget(gtk.image_new_from_file(media.ICON_PREFERENCES_SERVICES))
 		scroll = gtk.ScrolledWindow()
 		frame.add(scroll)
 		scroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-		services = gtk.ListStore(gtk.gdk.Pixbuf, str, int, str, bool, gobject.TYPE_PYOBJECT)
+		#(icon, service_name, selected, Service, plugins_vbox)
+		services = gtk.ListStore(gtk.gdk.Pixbuf, str, bool, gobject.TYPE_PYOBJECT, gobject.TYPE_PYOBJECT)
 		self.services_treeview = gtk.TreeView(services)
-		self.services_treeview.get_selection().connect("changed", self.select)
+		self.services_treeview.get_selection().connect("changed", self.select_service)
 		scroll.add(self.services_treeview)
 
 		self.services_treeview.set_rules_hint(True)
@@ -119,28 +138,34 @@ class InputFiles(gtk.Dialog):
 		add_cell = gtk.CellRendererToggle()
 		add_cell.connect("toggled", self.toggled)
 		tree_add.pack_start(add_cell, True)
-		tree_add.add_attribute(add_cell, 'active', 4)
+		tree_add.add_attribute(add_cell, 'active', 2)
 		self.services_treeview.append_column(tree_add)
 
 		#plugins
 		self.plugins_frame = gtk.Frame()
 		service_vbox.pack_start(self.plugins_frame, False, False)
-		self.plugins_frame.set_size_request(200, 100)
+		self.plugins_frame.set_size_request(160, 100)
 		self.plugins_frame.set_border_width(5)
 
-		for service, size, unit, plugins in upload_services:
-			vbox = gtk.VBox()
+		for service in upload_services:
+			icon = gtk.gdk.pixbuf_new_from_file(service.icon_path)
+			name = service.name.split(".")[0]
+			selected = False
 			first = None
-			for plugin in plugins:
-				first = gtk.RadioButton(first, plugin)
+			vbox = gtk.VBox()
+			for plugin_type, plugin in service.get_upload_plugins():
+				first = gtk.RadioButton(first, plugin_type)
+				tooltip = "Max File Size: %s" % misc.normalize(plugin.max_size, "%.0f%s")
+				first.set_tooltip_text(tooltip)
 				vbox.pack_start(first, False, False, 1)
-			services.append([self.correct_icon, service, size, unit, False, vbox])
+			vbox.show_all()
+			services.append([icon, name, selected, service, vbox])
 
 		#choose path
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False, False, 5)
 		path_button = gtk.Button(None, gtk.STOCK_OPEN)
-		path_button.set_size_request(90,40)
+		path_button.set_size_request(90,-1)
 		hbox.pack_start(path_button, False, False, 5)
 		path_button.connect("clicked", self.choose_files)
 		path_label = gtk.Label(("Choose files to upload."))
@@ -149,7 +174,7 @@ class InputFiles(gtk.Dialog):
 		hbox.pack_start(aspect, True, True)
 		aspect.set_shadow_type(gtk.SHADOW_NONE)
 		clear_button = gtk.Button(None, gtk.STOCK_CLEAR)
-		clear_button.set_size_request(190,40)
+		clear_button.set_size_request(160,-1)
 		hbox.pack_start(clear_button, False, False, 5)
 		clear_button.connect("clicked", self.clear)
 
@@ -170,42 +195,43 @@ class InputFiles(gtk.Dialog):
 		""""""
 		self.package_treeview.get_model().clear()
 
-	def select(self, selection):
+	def select_service(self, selection):
 		""""""
 		model, service_iter = selection.get_selected()
-		if iter:
+		if service_iter:
 			if self.plugins_frame.get_child():
 				self.plugins_frame.remove(self.plugins_frame.get_child())
-			vbox = model.get_value(service_iter, 5)
-			self.plugins_frame.add(vbox)
-			vbox.show_all()
+			self.plugins_frame.add(model.get_value(service_iter, 4))
 
 	def add_files(self, button):
 		""""""
-		result = []
+		files = []
 		package_model = self.package_treeview.get_model()
 		services_model = self.services_treeview.get_model()
-
+		
 		file_iter = package_model.get_iter_root()
 		while file_iter:
-			services = []
+			plugins = []
 			service_iter = package_model.iter_children(file_iter)
 			while service_iter:
-				service_name = package_model.get_value(service_iter, 1)
-				if package_model.get_value(service_iter, 4):
-					for service in services_model:
-						if service[1] == service_name:
-							for button in service[5].get_children():
-								if button.get_active():
-									services.append((service_name, button.get_label()))
+				plugin = package_model.get_value(service_iter, 5)
+				if plugin:
+					plugins.append(plugin)
 				service_iter = package_model.iter_next(service_iter)
-			if len(services) > 0:
-				tmp = package_model.get_value(file_iter, 2).split(" ")
-				size, unit = self.split_size(self.join_size(int(tmp[0]), tmp[1]))
-				result.append((package_model.get_value(file_iter, 3), int(size), unit, services))
+			if plugins:
+				size = package_model.get_value(file_iter, 2)
+				path = package_model.get_value(file_iter, 4)
+				files.append((path, size, plugins))
 			file_iter = package_model.iter_next(file_iter)
-		self.close()
-		print result
+		if files:
+			self.add_package(create_upload_package(files, self.package_entry.get_text()))
+			self.close()
+		else:
+			title = _("Nothing to add")
+			message = _("There aren't files to add.\nSelected services must support file size.")
+			m = Message(self, cons.SEVERITY_INFO, title, message, both=True)
+			if not m.accepted:
+				self.close()
 
 	def toggled(self, button, path):
 		""""""
@@ -216,83 +242,81 @@ class InputFiles(gtk.Dialog):
 
 		services_model = self.services_treeview.get_model()
 		package_model = self.package_treeview.get_model()
-
-		services_model.set_value(services_model.get_iter(path), 4, active)
-
+		
+		service_iter = services_model.get_iter(path)
+		services_model.set_value(service_iter, 2, active)
+		
+		service = services_model.get_value(service_iter, 3)
+		vbox = services_model.get_value(service_iter, 4)
+		plugin = self.get_selected_plugin(service, vbox)
+		
+		iters = []
 		file_iter = package_model.get_iter_root()
 		while file_iter:
-			service_iter = package_model.iter_children(file_iter)
-			found = False
-			while service_iter:
-				if services_model.get_value(services_model.get_iter(path), 1) == package_model.get_value(service_iter, 1):
-					found = True
-					break
-				service_iter = package_model.iter_next(service_iter)
-			if active:
-				if not found:
-					tmp = package_model.get_value(file_iter, 2).split(" ")
-					max_size = self.join_size(services_model.get_value(services_model.get_iter(path), 2), services_model.get_value(services_model.get_iter(path), 3))
-					self.add_service(package_model, file_iter, services_model.get_value(services_model.get_iter(path), 1), self.join_size(int(tmp[0]), tmp[1]), max_size)
+			if active:	
+				iters.append(file_iter)
 			else:
-				if found:
-					package_model.remove(service_iter)
+				iter = package_model.iter_children(file_iter)
+				while iter:
+					if plugin.__module__ == package_model.get_value(iter, 1):
+						package_model.remove(iter)
+						break
+					iter = package_model.iter_next(iter)
 			file_iter = package_model.iter_next(file_iter)
+		if active and iters:
+			self.add_service(package_model, iters, plugin)
 
 	def choose_files(self, button):
 		""""""
 		f = FileChooser(self, self.on_choose, self.history_path, True)
 		self.history_path = f.history_path
 
-	def on_choose(self, path):
+	def on_choose(self, choosed_path):
 		""""""
 		package_model = self.package_treeview.get_model()
 		services_model = self.services_treeview.get_model()
-		if os.path.isfile(path):
-			if path not in [row[1] for row in package_model]:
-				file_size = int(os.stat(path).st_size/1024)
-				size, unit = self.split_size(file_size)
-				file_iter = package_model.append(None, [self.file_icon, os.path.basename(path), "%i %s" %(size, unit), path, None])	
-				for row in services_model:
-					if row[4]:
-						self.add_service(package_model, file_iter, row[1], file_size, self.join_size(row[2], row[3]))
+		paths = []
+		if os.path.isfile(choosed_path):
+			paths.append(choosed_path)
+		elif os.path.isdir(choosed_path):
+			for path in os.listdir(choosed_path):
+				path = os.path.join(choosed_path, path)
+				if os.path.isfile(path):
+					paths.append(path)
+		iters = []
+		for path in paths:
+			if path not in [row[4] for row in package_model]:
+				size = os.stat(path).st_size
+				row = [self.file_icon, os.path.basename(path), size, misc.normalize(size), path, None]
+				iter = package_model.append(None, row)
+				iters.append(iter)
+		for row in services_model:
+			if row[2]:
+				self.add_service(package_model, iters, self.get_selected_plugin(row[3], row[4]))
 
-	def join_size(self, size, unit):
+	def get_selected_plugin(self, service, vbox):
 		""""""
-		factor = 1
-		if unit == cons.UNIT_KB:
-			factor = 1
-		elif unit == cons.UNIT_MB:
-			factor = 1024
-		elif unit == cons.UNIT_GB:
-			factor = 1024*1024
-		return size*factor
+		for button in vbox.get_children():
+			if button.get_active():
+				for plugin_type, plugin in service.get_upload_plugins():
+					if plugin_type == button.get_label():
+						return plugin
 
-	def split_size(self, size):
+	def add_service(self, package_model, iters, plugin):
 		""""""
-		if size > 0:
-			tmp = size/1024
-			if tmp > 0:
-				tmp2 = tmp/1024
-				if tmp2 > 0:
-					return tmp2, cons.UNIT_GB
-				else:
-					return tmp, cons.UNIT_MB
+		checked = plugin.check_files([package_model.get_value(iter, 4)  for iter in iters])
+		i = 0
+		for iter in iters:
+			if checked[i]:
+				icon = self.correct_icon
+				link_plugin = plugin
 			else:
-				return size, cons.UNIT_KB
-		else:
-			return 1, cons.UNIT_KB
-
-	def add_service(self, package_model, file_iter, service, file_size, max_size):
-		""""""
-		if max_size > file_size:
-			package_model.append(file_iter, [self.correct_icon, service, None, None, True])
-		else:
-			package_model.append(file_iter, [self.incorrect_icon, service, None, None, False])
-		self.package_treeview.expand_row(package_model.get_path(file_iter), True)
+				icon = self.incorrect_icon
+				link_plugin = None
+			package_model.append(iter, [icon, plugin.__module__, 0, None, None, link_plugin])
+			self.package_treeview.expand_row(package_model.get_path(iter), True)
+			i += 1
 
 	def close(self, widget=None, other=None):
 		""""""
 		self.destroy()
-
-if __name__ == "__main__":
-	x = InputFiles(None, SERVICES)
