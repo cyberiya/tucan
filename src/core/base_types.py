@@ -44,11 +44,11 @@ def create_upload_package(file_list, name=None):
 	package = Package(name)
 	items.append(package)
 	package_total_size = 0
-	for path, size, links in file_list:
+	for path, size, plugins in file_list:
 		file = File(package, path)
 		items.append(file)
 		file_total_size = 0
-		for plugin in links:
+		for plugin in plugins:
 			file_total_size += size
 			link = Link(file, path, plugin)
 			link.set_total_size(size)
@@ -178,12 +178,10 @@ class Link(Item):
 		""""""
 		if self.url:
 			return self.url
-		else:
-			return str(self.plugin)
 
 	def get_info(self):
 		""""""
-		return str(self.plugin)
+		return self.plugin.__module__
 
 class File(Item):
 	""""""

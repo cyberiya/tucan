@@ -60,12 +60,9 @@ class Service:
 			#self.upload_plugins[plugin_type] = eval("module.%s(config, '%s')" % (plugin_name, plugin_module))
 		return plugins
 
-	def get_plugin(self, upload=False):
+	def get_download_plugin(self):
 		""""""
-		if upload:
-			plugins = self.upload_plugins
-		else:
-			plugins = self.download_plugins
+		plugins = self.download_plugins
 		if cons.TYPE_PREMIUM in plugins:
 			if plugins[cons.TYPE_PREMIUM].active:
 				return plugins[cons.TYPE_PREMIUM], cons.TYPE_PREMIUM
@@ -75,11 +72,23 @@ class Service:
 		if cons.TYPE_ANONYMOUS in plugins:
 			return plugins[cons.TYPE_ANONYMOUS], cons.TYPE_ANONYMOUS
 			
+	def get_upload_plugins(self):
+		""""""
+		result = []
+		plugins = self.upload_plugins
+		if cons.TYPE_PREMIUM in plugins:
+			if plugins[cons.TYPE_PREMIUM].active:
+				result.append((cons.TYPE_PREMIUM, plugins[cons.TYPE_PREMIUM]))
+		if cons.TYPE_USER in plugins:
+			if plugins[cons.TYPE_USER].active:
+				result.append((cons.TYPE_USER, plugins[cons.TYPE_USER]))
+		if cons.TYPE_ANONYMOUS in plugins:
+			result.append((cons.TYPE_ANONYMOUS, plugins[cons.TYPE_ANONYMOUS]))
+		return result
+
 	def clean(self):
 		""""""
 		for plugin in self.download_plugins.values():
-			plugin.stop_all()
-		for plugin in self.upload_plugins.values():
 			plugin.stop_all()
 
 class ServiceManager:
@@ -101,23 +110,12 @@ class ServiceManager:
 		""""""
 		for service in self.services:
 			if service.name == service_name:
-				return service.get_plugin(False)
-
-	def get_upload_plugin(self, service_name):
-		""""""
-		for service in self.services:
-			if service.name == service_name:
-				return service.get_plugin(True)
+				return service.get_download_plugin()
 
 	def get_check_links(self, service_name):
 		""""""
 		plugin, type = self.get_download_plugin(service_name)
 		return plugin.check_links, type
-
-	def get_check_files(self, service_name):
-		""""""
-		plugin, type = self.get_upload_plugin(service_name)
-		return plugin.check_files, type
 		
 	def stop_all(self):
 		""""""
