@@ -25,7 +25,6 @@ import ConfigParser
 
 import __builtin__
 from core.events import Events
-__builtin__.events = Events()
 
 from core.base_types import Link
 from core.url_open import set_proxy
@@ -33,6 +32,9 @@ set_proxy(None)
 #set_proxy("proxy.alu.uma.es", 3128)
 
 import core.cons as cons
+import core.shared as shared
+
+shared.events = Events()
 
 ACCOUNTS_FILE = "test.accounts"
 
