@@ -33,6 +33,7 @@ from advanced_packages import AdvancedPackages
 
 import media
 import core.cons as cons
+import core.shared as shared
 
 class InputLinks(gtk.Dialog):
 	""""""
@@ -133,7 +134,7 @@ class InputLinks(gtk.Dialog):
 		hbox = gtk.HBox()
 		self.vbox.pack_start(hbox, False)
 		self.advanced_button = gtk.CheckButton(_("Show advanced Package configuration."))
-		self.advanced_button.set_active(configuration.get_advanced_packages())
+		self.advanced_button.set_active(shared.configuration.get_advanced_packages())
 		hbox.pack_start(self.advanced_button, False, False, 8)
 
 		#action area
@@ -280,5 +281,5 @@ class InputLinks(gtk.Dialog):
 
 	def close(self, widget=None, other=None):
 		""""""
-		configuration.set_advanced_packages(self.advanced_button.get_active())
+		shared.configuration.set_advanced_packages(self.advanced_button.get_active())
 		self.destroy()

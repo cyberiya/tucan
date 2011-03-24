@@ -19,19 +19,19 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import __builtin__
 import os
 import sys
 import logging
 import optparse
 
-from core.misc import remove_conf_dir, main_info
+from core.dependencies import Dependencies
 
-import core.dependencies as dependencies
 import core.pid_file as pid_file
 import core.url_open as url_open
 import core.config as config
+import core.shared as shared
 import core.cons as cons
+import core.misc as misc
 
 class Tucan:
 	""""""
@@ -53,7 +53,7 @@ class Tucan:
 			
 		if self.options.clean:
 			try:
-				remove_conf_dir()
+				misc.remove_conf_dir()
 			except Exception, e:
 				sys.exit(e)
 
@@ -63,8 +63,9 @@ class Tucan:
 		#check for previous running instance
 		self.pid_file = pid_file.PidFile(cons.PID_FILE)
 		if self.pid_file.start():
-			#configuration
-			__builtin__.configuration = config.Config()
+			#config
+			shared.configuration = config.Config()
+			self.config = shared.configuration
 			sys.path.append(cons.PLUGIN_PATH)
 
 			#logging
@@ -90,8 +91,8 @@ class Tucan:
 
 	def start_ui(self):
 		""""""
-		self.set_globals()
-		main_info(self.logger)
+		self.set_shared()
+		misc.main_info(self.logger)
 		if self.options.wizard:
 			self.set_verbose()
 			self.start_wizard(self.options.wizard)
@@ -123,11 +124,11 @@ class Tucan:
 
 		w = Wizard()
 		if wizard_type == "accounts":
-			w.account_setup(configuration)
+			w.account_setup()
 		elif wizard_type == "services":
-			w.service_setup(configuration)
+			w.service_setup()
 		elif wizard_type == "updates":
-			w.update_setup(configuration)
+			w.update_setup()
 		else:
 			self.exit("TYPE should be one of: accounts, services or updates")
 		
@@ -138,7 +139,7 @@ class Tucan:
 		#exception hook
 		sys.excepthook = exception_hook
 
-		d = NoUi(configuration, file, url)
+		d = NoUi(file, url)
 		d.run()
 
 	def start_cli(self, file, url):
@@ -153,7 +154,7 @@ class Tucan:
 			#exception hook
 			sys.excepthook = exception_hook
 
-			c = Cli(configuration, file, url)
+			c = Cli(file, url)
 			wrapper(c.run)
 
 	def start_gui(self, unique=True):
@@ -182,8 +183,8 @@ class Tucan:
 
 			gobject.threads_init()
 			try:
-				__builtin__.dependencies.set_recaptcha()
-				Gui(configuration)
+				shared.dependencies.set_recaptcha()
+				Gui()
 				gtk.main()
 			except Exception, e:
 				self.logger.critical(e)
@@ -191,19 +192,18 @@ class Tucan:
 		else:
 			already_running()
 
-	def set_globals(self):
+	def set_shared(self):
 		""""""
 		#proxy settings
-		#__builtin__.PROXY = None
-		if configuration.get_proxy_enabled():
-			proxy_url, proxy_port = configuration.get_proxy()
+		if self.config.get_proxy_enabled():
+			proxy_url, proxy_port = self.config.get_proxy()
 			url_open.set_proxy(proxy_url, proxy_port)
 		else:
 			url_open.set_proxy(None)
 			
-		__builtin__.dependencies = dependencies.Dependencies()
-		__builtin__.max_downloads = configuration.get_max_downloads()
-		__builtin__.max_download_speed = configuration.get_max_download_speed()
+		shared.dependencies = Dependencies()
+		shared.max_downloads = self.config.get_max_downloads()
+		shared.max_download_speed = self.config.get_max_download_speed()
 
 	def exit(self, arg=0):
 		""""""

@@ -18,7 +18,6 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import __builtin__
 import socket
 import urllib2
 import logging
@@ -27,19 +26,18 @@ logger = logging.getLogger(__name__)
 from poster.encode import multipart_encode
 from poster.streaminghttp import StreamingHTTPHandler
 
+import shared
 import cons
-
-__builtin__.PROXY = None
 
 def set_proxy(url, port=0):
 	""""""
 	if url:
-		__builtin__.PROXY = {"http": "%s:%i" % (url, port)}
+		shared.proxy = {"http": "%s:%i" % (url, port)}
 		socket.setdefaulttimeout(60)
 		logger.info("Using proxy: %s:%i" % (url, port))
 	else:
-		if __builtin__.PROXY:
-			__builtin__.PROXY = None
+		if shared.proxy:
+			shared.proxy = None
 			logger.info("Proxy Disabled.")
 		socket.setdefaulttimeout(30)
 
@@ -48,8 +46,8 @@ class URLOpen:
 	def __init__(self, cookie=None):
 		""""""
 		handlers = [urllib2.HTTPCookieProcessor(cookie)]
-		if PROXY:
-			handlers.append(urllib2.ProxyHandler(PROXY))
+		if shared.proxy:
+			handlers.append(urllib2.ProxyHandler(shared.proxy))
 		self.opener = urllib2.build_opener(*handlers)
 
 	def open(self, url, form=None, range=None, keep_alive=False, referer=False):
@@ -75,8 +73,8 @@ class MultipartEncoder:
 		self.boundary = boundary
 
 		handlers = [StreamingHTTPHandler]
-		if PROXY:
-			handlers.append(urllib2.ProxyHandler(PROXY))
+		if shared.proxy:
+			handlers.append(urllib2.ProxyHandler(shared.proxy))
 		if cookie:
 			handlers.append(urllib2.HTTPCookieProcessor(cookie))
 		self.opener = urllib2.build_opener(*handlers)

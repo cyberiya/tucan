@@ -38,6 +38,7 @@ import core.service_config as service_config
 
 import media
 import core.cons as cons
+import core.shared as shared
 
 LANGUAGES = [("Arabic", "ar"),
 		("Czech", "cs"),
@@ -61,7 +62,7 @@ LANGUAGES = [("Arabic", "ar"),
 
 class Preferences(gtk.Dialog):
 	""""""
-	def __init__(self, parent, configuration, show_services=False, remote_info=None):
+	def __init__(self, parent, show_services=False, remote_info=None):
 		""""""
 		gtk.Dialog.__init__(self)
 		self.set_transient_for(parent)
@@ -70,7 +71,7 @@ class Preferences(gtk.Dialog):
 		self.set_position(gtk.WIN_POS_CENTER)
 		self.set_size_request(500,500)
 
-		self.config = configuration
+		self.config = shared.configuration
 
 		self.notebook = gtk.Notebook()
 		self.notebook.set_property("homogeneous", True)
@@ -109,10 +110,10 @@ class Preferences(gtk.Dialog):
 		model = self.treeview.get_model()
 		iter = model.get_iter_root()
 		while iter:
-			configuration = model.get_value(iter, 3)
-			configuration.enable(model.get_value(iter, 2))
+			service_config = model.get_value(iter, 3)
+			service_config.enable(model.get_value(iter, 2))
 			if not self.config.has_option(config.SECTION_SERVICES, model.get_value(iter,1)):
-				self.config.set(config.SECTION_SERVICES, model.get_value(iter,1), configuration.path)
+				self.config.set(config.SECTION_SERVICES, model.get_value(iter,1), service_config.path)
 			iter = model.iter_next(iter)
 
 		#advanced preferences
@@ -284,8 +285,8 @@ class Preferences(gtk.Dialog):
 		self.treeview.append_column(tree_enable)
 
 		#fill store
-		for path, icon_path, name, enabled, configuration in self.config.get_services():
-			self.add_service(path, icon_path, name, enabled, configuration)
+		for path, icon_path, name, enabled, service_config in self.config.get_services():
+			self.add_service(path, icon_path, name, enabled, service_config)
 
 		frame = gtk.Frame()
 		frame.set_border_width(10)
@@ -324,15 +325,15 @@ class Preferences(gtk.Dialog):
 		if iter:
 			self.service_preferences(None, model.get_path(iter))
 
-	def add_service(self, path, icon_path, name, enabled, configuration):
+	def add_service(self, path, icon_path, name, enabled, service_config):
 		""""""
-		if configuration:
+		if service_config:
 			try:
 				icon = gtk.gdk.pixbuf_new_from_file_at_size(icon_path, 32, 32)
 			except Exception:
 				icon = gtk.gdk.pixbuf_new_from_file_at_size(media.ICON_MISSING, 32, 32)
 				logger.info("Could not load: %s" % icon_path)
-			self.treeview.get_model().append((icon, name, enabled, configuration))
+			self.treeview.get_model().append((icon, name, enabled, service_config))
 		else:
 			Message(self, cons.SEVERITY_ERROR, path , _("Service not configured."))
 
@@ -340,8 +341,8 @@ class Preferences(gtk.Dialog):
 		""""""
 		UpdateManager(self, self.config, remote_info)
 		self.treeview.get_model().clear()
-		for path, icon_path, name, enabled, configuration in self.config.get_services():
-			self.add_service(path, icon_path, name, enabled, configuration)
+		for path, icon_path, name, enabled, service_config in self.config.get_services():
+			self.add_service(path, icon_path, name, enabled, service_config)
 
 	def delete_service(self, button):
 		""""""

@@ -18,34 +18,16 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import sys
-import __builtin__
-import logging
-logger = logging.getLogger(__name__)
+configuration = None
 
-from events import Events
-from service_manager import ServiceManager
-from download_manager import DownloadManager
-from history import History
+dependencies = None
 
-import cons
-import shared
+events = None
 
-class Core(ServiceManager):
-	""""""
-	def __init__(self):
-		""""""
-		if not shared.configuration.configured:
-			logger.warning("No configuration found!")
+proxy = None
 
-		#events system
-		__builtin__.events = Events()
+max_downloads = 1
+max_download_speed = 0
 
-		ServiceManager.__init__(self)
-		self.history = History()
-		self.download_manager = DownloadManager(self.get_download_plugin, self.services)
-		
-	def stop_all(self):
-		""""""
-		self.download_manager.quit()
-		ServiceManager.stop_all(self)
+max_uploads = 1
+max_upload_speed = 0

@@ -59,6 +59,7 @@ from core.misc import get_exception_info
 import media
 import core.cons as cons
 import core.config as config
+import core.shared as shared
 
 MIN_WIDTH = 250
 MIN_HEIGHT = 200
@@ -83,11 +84,8 @@ def already_running():
 
 class Gui(gtk.Window, Core):
 	""""""
-	def __init__(self, conf):
+	def __init__(self):
 		""""""
-		#configuration
-		self.configuration = conf
-
 		#i18n
 		init_gettext()
 
@@ -99,15 +97,16 @@ class Gui(gtk.Window, Core):
 		logging.getLogger("").addHandler(handler)
 
 		#show preferences if not configured
-		if not self.configuration.configured:
-			Preferences(self, self.configuration, True)
+		self.config = shared.configuration
+		if not self.config.configured:
+			Preferences(self, True)
 		self.preferences_shown =  False
 
 		#l10n
-		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=[self.configuration.get_languaje()])
+		lang = gettext.translation(cons.NAME_LOCALES, cons.PATH_LOCALES, languages=[self.config.get_languaje()])
 		lang.install()
 
-		Core.__init__(self, self.configuration)
+		Core.__init__(self)
 		gtk.Window.__init__(self, gtk.WINDOW_TOPLEVEL)
 
 		self.set_icon_from_file(media.ICON_TUCAN)
@@ -115,7 +114,7 @@ class Gui(gtk.Window, Core):
 		self.set_size_request(MIN_WIDTH, MIN_HEIGHT)
 
 		#remember position and size
-		x, y, w, h = self.configuration.get_window_settings()
+		x, y, w, h = self.config.get_window_settings()
 		if gtk.gdk.screen_width() <= w or gtk.gdk.screen_height() <= h:
 			self.maximize()
 		elif w > MIN_WIDTH and h > MIN_HEIGHT:
@@ -141,7 +140,7 @@ class Gui(gtk.Window, Core):
 		menu_log = _("Show Logs"), lambda x: LogView(self, log_stream)
 		menu_history = _("Show History"), lambda x: HistoryView(self, self.history, [(s.name, s.icon_path) for s in self.services])
 		self.show_uploads = gtk.CheckMenuItem(_("Show Uploads"))
-		show_uploads = self.show_uploads, self.resize_pane, self.configuration.get_show_uploads()
+		show_uploads = self.show_uploads, self.resize_pane, self.config.get_show_uploads()
 		shutdown = gtk.CheckMenuItem(_("Shutdown Computer")), self.shutdown, False
 
 		m_file = _("File")
@@ -228,12 +227,12 @@ class Gui(gtk.Window, Core):
 
 		#tray_close
 		self.close_handler_id = None
-		self.update_tray_close(self.configuration.get_tray_close())
+		self.update_tray_close(self.config.get_tray_close())
 
 		self.show_all()
 
 		#Autocheck services
-		if self.configuration.get_auto_update():
+		if self.config.get_auto_update():
 			th = threading.Thread(group=None, target=self.check_updates, name=None)
 			th.start()
 
@@ -256,7 +255,7 @@ class Gui(gtk.Window, Core):
 	def enable_clipboard(self, enable=True):
 		""""""
 		if enable:
-			if self.configuration.get_clipboard_monitor():
+			if self.config.get_clipboard_monitor():
 				gobject.idle_add(self.clipboard_monitor.enable)
 		else:
 			self.clipboard_monitor.disable()
@@ -272,7 +271,7 @@ class Gui(gtk.Window, Core):
 
 	def check_updates(self):
 		""""""
-		s = ServiceUpdate(self.configuration)
+		s = ServiceUpdate(self.config)
 		if s.get_updates():
 			gobject.idle_add(self.preferences, None, s.remote_info)
 
@@ -282,10 +281,10 @@ class Gui(gtk.Window, Core):
 			self.preferences_shown = True
 			self.enable_clipboard(False)
 			if info:
-				Preferences(self, self.configuration, True, info)
+				Preferences(self, self.config, True, info)
 			else:
-				Preferences(self, self.configuration)
-			self.update_tray_close(self.configuration.get_tray_close())
+				Preferences(self, self.config)
+			self.update_tray_close(self.config.get_tray_close())
 			self.downloads.status_bar.synchronize()
 			self.enable_clipboard(True)
 			self.preferences_shown =  False
@@ -314,7 +313,7 @@ class Gui(gtk.Window, Core):
 
 	def add_downloads(self, button, content=None):
 		""""""
-		default_path = self.configuration.get_downloads_folder()
+		default_path = self.config.get_downloads_folder()
 		self.enable_clipboard(False)
 		InputLinks(self, default_path, self.filter_service, self.get_check_links, self.create_packages, self.manage_packages, content)
 		self.enable_clipboard(True)
@@ -366,7 +365,7 @@ class Gui(gtk.Window, Core):
 		""""""
 		tmp_packages = []
 		if not len(packages_info) > 0:
-			default_path = self.configuration.get_downloads_folder()
+			default_path = self.config.get_downloads_folder()
 			packages_info = [(default_path, name, None) for name, package_files in packages]
 		#create directories and password files
 		for info in packages_info:
@@ -473,9 +472,9 @@ class Gui(gtk.Window, Core):
 		self.save_default_session()
 		self.destroy()
 		gtk.main_quit()
-		#save ui configuration
-		self.configuration.set_show_uploads(self.show_uploads.get_active())
-		self.configuration.set_window_settings(x, y, w, h)
-		self.configuration.save()
+		#save ui config
+		self.config.set_show_uploads(self.show_uploads.get_active())
+		self.config.set_window_settings(x, y, w, h)
+		self.config.save()
 		self.stop_all()
 
