@@ -20,7 +20,6 @@
 
 import re
 import sys
-import __builtin__
 import logging
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,7 @@ class Service:
 		for plugin_module, plugin_name, plugin_type in config.get_download_plugins():
 			logger.info("Loading: %s.%s, %i" % (package, plugin_module, config.get_update()))
 			try:
-				__builtin__.dependencies.check(config.get_captcha(plugin_module))
+				shared.dependencies.check(config.get_captcha(plugin_module))
 				module = __import__("%s.%s" % (package, plugin_module), None, None, [''])
 				self.download_plugins[plugin_type] = eval("module.%s(config, '%s')" % (plugin_name, plugin_module))
 			except Exception, e:

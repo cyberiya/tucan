@@ -25,6 +25,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import cons
+import shared
 
 class Link:
 	""""""
@@ -164,12 +165,12 @@ class DownloadManager:
 		permanent = True
 		speeds = [download.speed for download in self.active_downloads if download.status == cons.STATUS_ACTIVE]
 		current_active = len(speeds)
-		remain_speed = max_download_speed
+		remain_speed = shared.max_download_speed
 		for speed in speeds:
 			remain_speed -= speed
 		if current_active > 0:
 			if remain_speed < 0:
-				new_speed = max_download_speed/current_active
+				new_speed = shared.max_download_speed/current_active
 				permanent = False
 		for download in self.active_downloads:
 			plugin = None
@@ -209,7 +210,7 @@ class DownloadManager:
 					elif status == cons.STATUS_CORRECT:
 						logger.info("%s %s %s %s %s %s %s" % (download.name, status, progress, actual_size, unit, speed, time))
 						#history_trigger
-						events.trigger_file_complete(download.name, actual_size, unit, download.links)
+						shared.events.trigger_file_complete(download.name, actual_size, unit, download.links)
 						plugin.return_slot()
 						download.progress = 100
 						self.complete_downloads.append(download)
@@ -227,7 +228,7 @@ class DownloadManager:
 					logger.debug("scheduled.")
 				try:
 					for download in self.pending_downloads:
-						if len(self.active_downloads) < max_downloads:
+						if len(self.active_downloads) < shared.max_downloads:
 							if download.status not in [cons.STATUS_STOP]:
 								if self.start(download.name):
 									logger.debug("Active: %s" % [tmp.name for tmp in self.active_downloads])
@@ -241,7 +242,7 @@ class DownloadManager:
 				self.timer = threading.Timer(5, self.scheduler)
 				self.timer.start()
 			else:
-				events.trigger_all_complete()
+				shared.events.trigger_all_complete()
 			self.scheduling = False
 
 	def quit(self):
