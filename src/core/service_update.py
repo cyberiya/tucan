@@ -33,6 +33,7 @@ from service_config import ServiceConfig
 
 import config
 import cons
+import shared
 
 SECTION_MAIN = "main"
 SECTION_UPDATES = "updates"
@@ -57,9 +58,9 @@ class RemoteInfo(SafeConfigParser):
 
 class ServiceUpdate:
 	""""""""
-	def __init__(self, config, info=None):
+	def __init__(self, info=None):
 		"""urllib2 does not support proxy and https"""
-		self.config = config
+		self.config = shared.configuration
 		self.remote_outdated = False
 		self.remote_version = None
 		self.updates = None

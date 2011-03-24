@@ -27,6 +27,7 @@ from core.service_config import SECTION_PREMIUM_DOWNLOAD
 
 import core.misc
 import core.cons as cons
+import core.shared as shared
 
 class Wizard:
 	""""""
@@ -34,11 +35,11 @@ class Wizard:
 		""""""
 		core.misc.main_info()
 
-	def account_setup(self, config):
+	def account_setup(self):
 		""""""
 		logger.info("Setup accounts.")
 		quit = False
-		services = [service for service in config.get_services() if service[4].premium_cookie()[1] or service[4].user_cookie()[1]]
+		services = [service for service in shared.configuration.get_services() if service[4].premium_cookie()[1] or service[4].user_cookie()[1]]
 		while not quit:
 			try:
 				cont = 0
@@ -175,11 +176,11 @@ class Wizard:
 			cont +=1
 		return cont
 
-	def service_setup(self, config):
+	def service_setup(self):
 		""""""
 		logger.info("Enable services.")
 		quit = False
-		services = config.get_services()
+		services = shared.configuration.get_services()
 		cont = self.list_enabled(services)
 		while not quit:
 			try:
@@ -195,17 +196,17 @@ class Wizard:
 						logger.info("You should read '%s' terms of service." % service[2])
 					logger.info("'%s' %s" % (service[2], self.get_status(status)))
 					service[4].enable(status)
-					services = config.get_services()
+					services = shared.configuration.get_services()
 			except ValueError:
 				pass
 			except Exception, e:
 				logger.error("Invalid argument!")
 		logger.info("DONE")
 
-	def update_setup(self, config):
+	def update_setup(self):
 		""""""
 		try:
-			s = ServiceUpdate(config)
+			s = ServiceUpdate()
 			logger.info("Checking updates...")
 			s.get_updates()
 			new = 0
@@ -221,5 +222,5 @@ class Wizard:
 		except Exception, e:
 			logger.error("Error updating. %s" % e)
 		else:
-			config.save()
+			shared.configuration.save()
 			logger.info("DONE")

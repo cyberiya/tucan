@@ -25,6 +25,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import cons
+import shared
 
 class Service:
 	""""""
@@ -93,12 +94,12 @@ class Service:
 
 class ServiceManager:
 	""""""
-	def __init__(self, configuration):
+	def __init__(self):
 		""""""
 		self.services = []
 		if cons.PLUGIN_PATH not in sys.path:
 			sys.path.append(cons.PLUGIN_PATH)
-		for package, icon, service, enabled, config in configuration.get_services():
+		for package, icon, service, enabled, config in shared.configuration.get_services():
 			s = Service(service, icon)
 			if enabled:
 				if s.add_plugins(package, config):

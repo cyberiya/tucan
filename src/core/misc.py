@@ -27,6 +27,7 @@ logger = logging.getLogger(__name__)
 
 import url_open
 import cons
+import shared
 import traceback
 
 REPORT_URL = "http://crak.appspot.com/add"
@@ -56,7 +57,7 @@ def report_log(email="", comment=""):
 	except Exception, e:
 		logger.exception("%s" % e)
 	else:
-		form = urllib.urlencode([("uuid", configuration.get_uuid()), ("email", email), ("comment", urllib.quote(comment)), ("log", urllib.quote(log))])
+		form = urllib.urlencode([("uuid", shared.configuration.get_uuid()), ("email", email), ("comment", urllib.quote(comment)), ("log", urllib.quote(log))])
 		try:
 			id = url_open.URLOpen().open(REPORT_URL, form).read().strip()
 			logger.info("REPORT ID: %s" % id)

@@ -31,6 +31,7 @@ import gobject
 import media
 import core.cons as cons
 import core.misc as misc
+import core shared as shared
 
 class LimitItem(gtk.MenuItem):
 	""""""
@@ -70,7 +71,7 @@ class Statusbar(gtk.Statusbar):
 		gtk.Statusbar.__init__(self)
 		self.set_has_resize_grip(False)
 
-		self.services = configuration.get_services()
+		self.services = shared.configuration.get_services()
 		self.blinks = 0
 		self.updating = False
 

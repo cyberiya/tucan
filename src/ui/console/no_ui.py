@@ -31,6 +31,7 @@ from core.misc import get_exception_info
 
 import core.config as config
 import core.cons as cons
+import core.shared as shared
 
 def exception_hook(self, type, value, trace):
 	""""""
@@ -41,14 +42,14 @@ def exception_hook(self, type, value, trace):
 
 class NoUi(Core):
 	""""""
-	def __init__(self, conf, links_file, url):
+	def __init__(self, links_file, url):
 		""""""
-		self.configuration = conf
+		self.config = shared.configuration
 		self.links_file = links_file
 		self.stop_flag = False
 		self.buffer = []
 		self.url = url
-		Core.__init__(self, self.configuration)
+		Core.__init__(self)
 
 	def run(self):
 		""""""
@@ -122,7 +123,7 @@ class NoUi(Core):
 	def manage_packages(self, packages, packages_info):
 		""""""
 		if not len(packages_info) > 0:
-			default_path = self.configuration.get_downloads_folder()
+			default_path = self.config.get_downloads_folder()
 			packages_info = [(default_path, name, None) for name, package_files in packages]
 		for package_name, package_downloads in packages:
 			info = packages_info[packages.index((package_name, package_downloads))]
