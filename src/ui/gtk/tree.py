@@ -28,6 +28,7 @@ from statusbar import Statusbar
 
 import core.cons as cons
 import core.misc as misc
+import core.shared as shared
 
 class Tree(gtk.VBox):
 	""""""
@@ -126,7 +127,7 @@ class Tree(gtk.VBox):
 		self.status_bar.push(self.status_bar.get_context_id("Downloads"), " No Downloads Active.")
 		self.updating = False
 		
-		events.connect(cons.EVENT_ALL_COMPLETE, self.stop_update)
+		shared.events.connect(cons.EVENT_ALL_COMPLETE, self.stop_update)
 		
 	def stop_update(self):
 		""""""
@@ -229,7 +230,7 @@ class Tree(gtk.VBox):
 							model.set_value(package_iter, 1, cons.STATUS_CORRECT)
 							model.set_value(package_iter, 4, 100)
 							model.set_value(package_iter, 6, str(package_total_size)+package_total_unit)
-							events.trigger_package_complete(model.get_value(package_iter, 10), children_names)
+							shared.events.trigger_package_complete(model.get_value(package_iter, 10), children_names)
 					elif package_actual_size > 0:
 						model.set_value(package_iter, 4, package_progress/len(children_names))
 						model.set_value(package_iter, 6, str(package_actual_size)+package_actual_unit)
