@@ -174,7 +174,8 @@ class Tucan:
 		try:
 			from ui.gtk.gui import Gui, already_running, exception_hook
 			from ui.gtk.recover import halt
-		except:
+		except Exception, e:
+			self.logger.exception(e)
 			sys.exit("Tucan installed without GUI support. %s" % message)
 			
 		if unique:
@@ -187,7 +188,7 @@ class Tucan:
 				Gui()
 				gtk.main()
 			except Exception, e:
-				self.logger.critical(e)
+				self.logger.exception(e)
 				halt(str(e))
 		else:
 			already_running()
