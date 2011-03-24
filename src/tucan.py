@@ -91,8 +91,16 @@ class Tucan:
 
 	def start_ui(self):
 		""""""
-		self.set_shared()
 		misc.main_info(self.logger)
+
+		shared.dependencies = Dependencies()
+
+		if self.config.get_proxy_enabled():
+			proxy_url, proxy_port = self.config.get_proxy()
+			url_open.set_proxy(proxy_url, proxy_port)
+		else:
+			url_open.set_proxy(None)
+
 		if self.options.wizard:
 			self.set_verbose()
 			self.start_wizard(self.options.wizard)
@@ -175,7 +183,7 @@ class Tucan:
 			from ui.gtk.gui import Gui, already_running, exception_hook
 			from ui.gtk.recover import halt
 		except Exception, e:
-			self.logger.exception(e)
+			#self.logger.exception(e)
 			sys.exit("Tucan installed without GUI support. %s" % message)
 			
 		if unique:
@@ -188,23 +196,11 @@ class Tucan:
 				Gui()
 				gtk.main()
 			except Exception, e:
-				self.logger.exception(e)
+				#self.logger.exception(e)
+				self.logger.critical(e)
 				halt(str(e))
 		else:
 			already_running()
-
-	def set_shared(self):
-		""""""
-		#proxy settings
-		if self.config.get_proxy_enabled():
-			proxy_url, proxy_port = self.config.get_proxy()
-			url_open.set_proxy(proxy_url, proxy_port)
-		else:
-			url_open.set_proxy(None)
-			
-		shared.dependencies = Dependencies()
-		shared.max_downloads = self.config.get_max_downloads()
-		shared.max_download_speed = self.config.get_max_download_speed()
 
 	def exit(self, arg=0):
 		""""""
