@@ -19,7 +19,6 @@
 ###############################################################################
 
 import time
-import __builtin__
 import logging
 logger = logging.getLogger(__name__)
 
@@ -31,7 +30,7 @@ import gobject
 import media
 import core.cons as cons
 import core.misc as misc
-import core shared as shared
+import core.shared as shared
 
 class LimitItem(gtk.MenuItem):
 	""""""
@@ -88,7 +87,7 @@ class Statusbar(gtk.Statusbar):
 		self.max_speed.set_range(0,5000)
 		self.max_speed.set_increments(4,0)
 		self.max_speed.set_numeric(True)
-		self.max_speed.set_value(__builtin__.max_download_speed)
+		self.max_speed.set_value(shared.max_download_speed)
 		hbox.pack_start(self.max_speed, False, False, )
 
 		self.max_speed.connect("value-changed", self.change_speed)
@@ -97,8 +96,8 @@ class Statusbar(gtk.Statusbar):
 		self.menu.connect("unmap", self.stop_updating)
 
 		self.limits = {}
-		events.connect(cons.EVENT_LIMIT_ON, self.add_limit)
-		events.connect(cons.EVENT_LIMIT_OFF, self.remove_limit)
+		shared.events.connect(cons.EVENT_LIMIT_ON, self.add_limit)
+		shared.events.connect(cons.EVENT_LIMIT_OFF, self.remove_limit)
 
 		frame = gtk.Frame()
 		frame.set_shadow_type(gtk.SHADOW_IN)
@@ -118,11 +117,11 @@ class Statusbar(gtk.Statusbar):
 
 	def synchronize(self):
 		""""""
-		self.max_speed.set_value(__builtin__.max_download_speed)
+		self.max_speed.set_value(shared.max_download_speed)
 
 	def change_speed(self, spinbutton):
 		""""""
-		__builtin__.max_download_speed = spinbutton.get_value_as_int()
+		shared.max_download_speed = spinbutton.get_value_as_int()
 		
 	def update_times(self):
 		""""""
@@ -150,7 +149,7 @@ class Statusbar(gtk.Statusbar):
 	def add_limit(self, module, end_wait):
 		""""""
 		tmp = module.split(".")
-		callback = lambda x: events.trigger_limit_cancel(module)
+		callback = lambda x: shared.events.trigger_limit_cancel(module)
 		if not module in self.limits:
 			for name, icon_path, url, enabled, config in self.services:
 				if tmp[0] == name:

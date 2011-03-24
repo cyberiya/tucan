@@ -21,7 +21,6 @@
 import os
 import sys
 import time
-import __builtin__
 import gettext
 import logging
 logger = logging.getLogger(__name__)
@@ -70,7 +69,7 @@ class NoUi(Core):
 			if self.url:
 				links = [self.url]
 			elif self.links_file:
-				events.connect(cons.EVENT_FILE_COMPLETE, self.comment_link)
+				shared.events.connect(cons.EVENT_FILE_COMPLETE, self.comment_link)
 				f = open(self.links_file, "r")
 				self.buffer = f.readlines()
 				links =	[link.strip() for link in self.buffer if link and not link.startswith("#")]

@@ -22,8 +22,8 @@ import os
 import sys
 import time
 import threading
-import webbrowser
 import __builtin__
+import webbrowser
 import gettext
 import logging
 logger = logging.getLogger(__name__)
@@ -242,7 +242,7 @@ class Gui(gtk.Window, Core):
 		self.enable_clipboard()
 		
 		#captcha dialog
-		self.captcha_dialog_id = events.connect(cons.EVENT_CAPTCHA_DIALOG, threaded_captcha_dialog, self)
+		self.captcha_dialog_id = shared.events.connect(cons.EVENT_CAPTCHA_DIALOG, threaded_captcha_dialog, self)
 
 		#ugly polling
 		gobject.timeout_add_seconds(60, self.save_default_session)
@@ -271,7 +271,7 @@ class Gui(gtk.Window, Core):
 
 	def check_updates(self):
 		""""""
-		s = ServiceUpdate(self.config)
+		s = ServiceUpdate()
 		if s.get_updates():
 			gobject.idle_add(self.preferences, None, s.remote_info)
 
@@ -281,9 +281,9 @@ class Gui(gtk.Window, Core):
 			self.preferences_shown = True
 			self.enable_clipboard(False)
 			if info:
-				Preferences(self, self.config, True, info)
+				Preferences(self, True, info)
 			else:
-				Preferences(self, self.config)
+				Preferences(self)
 			self.update_tray_close(self.config.get_tray_close())
 			self.downloads.status_bar.synchronize()
 			self.enable_clipboard(True)
@@ -303,9 +303,9 @@ class Gui(gtk.Window, Core):
 	def shutdown(self, checkbox):
 		""""""
 		if checkbox.get_active():
-			self.shutdown_id = events.connect(cons.EVENT_ALL_COMPLETE, Shutdown, self, self.quit)
+			self.shutdown_id = shared.events.connect(cons.EVENT_ALL_COMPLETE, Shutdown, self, self.quit)
 		else:
-			events.disconnect(cons.EVENT_ALL_COMPLETE, self.shutdown_id)
+			shared.events.disconnect(cons.EVENT_ALL_COMPLETE, self.shutdown_id)
 
 	def help(self, widget):
 		""""""
