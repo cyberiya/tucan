@@ -39,6 +39,9 @@ class Core(ServiceManager):
 		#events system
 		shared.events = Events()
 
+		shared.max_downloads = shared.configuration.get_max_downloads()
+		shared.max_download_speed = shared.configuration.get_max_download_speed()
+
 		ServiceManager.__init__(self)
 		self.history = History()
 		self.download_manager = DownloadManager(self.get_download_plugin, self.services)
