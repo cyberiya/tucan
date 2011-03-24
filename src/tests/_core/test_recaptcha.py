@@ -20,13 +20,13 @@
 
 import unittest
 
-import __builtin__
-__builtin__.PROXY = None
-from core.events import Events
-__builtin__.events = Events()
 
+from core.events import Events
 from core.recaptcha import Recaptcha
 import core.cons as cons
+import core.shared as shared
+
+shared.events = Events()
 
 NAME = "Recaptcha"
 #LINK = "http://api.recaptcha.net/challenge?k=6LfRJwkAAAAAAGmA3mAiAcAsRsWvfkBijaZWEvkD"
@@ -48,17 +48,17 @@ class TestRecaptcha(unittest.TestCase):
 
 	def test_captcha_mockup(self):
 		""""""
-		id = events.connect(cons.EVENT_CAPTCHA_DIALOG, DialogMockup)
+		id = shared.events.connect(cons.EVENT_CAPTCHA_DIALOG, DialogMockup)
 		challenge, solution = self.recaptcha.solve_captcha()
-		events.disconnect(cons.EVENT_CAPTCHA_DIALOG, id)
+		shared.events.disconnect(cons.EVENT_CAPTCHA_DIALOG, id)
 		self.assertTrue(challenge, "challenge should be a string: %s" % challenge)
 		self.assertTrue(solution, "solution should be a string: %s" % solution)
 
 	def test_timeout(self):
 		""""""
-		id = events.connect(cons.EVENT_CAPTCHA_DIALOG, DialogMockup, True)
+		id = shared.events.connect(cons.EVENT_CAPTCHA_DIALOG, DialogMockup, True)
 		challenge, solution = self.recaptcha.solve_captcha()
-		events.disconnect(cons.EVENT_CAPTCHA_DIALOG, id)
+		shared.events.disconnect(cons.EVENT_CAPTCHA_DIALOG, id)
 		self.assertTrue(challenge, "challenge should be a string: %s" % challenge)
 		self.assertFalse(solution, "solution should be None: %s" % solution)
 

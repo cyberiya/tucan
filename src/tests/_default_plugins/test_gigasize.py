@@ -25,7 +25,6 @@ import base_tests
 
 from core.service_config import ServiceConfig, SECTION_ANONYMOUS_DOWNLOAD
 from gigasize.anonymous_download import AnonymousDownload
-from ui.gtk.captcha_dialog import CaptchaDialog
 
 import core.cons as cons
 
@@ -42,7 +41,6 @@ class TestAnonymous(base_tests.TestBaseDownload):
 	""""""
 	def setUp(self):
 		""""""
-		self.id = events.connect(cons.EVENT_CAPTCHA_DIALOG, CaptchaDialog)
 		config = ServiceConfig(os.path.join(os.path.dirname(sys.argv[0]), CONF_PATH))
 		self.plugin = AnonymousDownload(config, SECTION_ANONYMOUS_DOWNLOAD)
 		self.invalid_link = TEST_INVALID_LINK
@@ -52,5 +50,4 @@ class TestAnonymous(base_tests.TestBaseDownload):
 
 	def tearDown(self):
 		""""""
-		events.disconnect(cons.EVENT_CAPTCHA_DIALOG, self.id)
 		del self.plugin
