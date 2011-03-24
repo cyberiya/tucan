@@ -26,6 +26,7 @@ logger = logging.getLogger(__name__)
 from ConfigParser import SafeConfigParser
 
 import cons
+import shared
 
 HISTORY = "tucan.history"
 
@@ -45,7 +46,7 @@ class History(SafeConfigParser):
 			self.save()
 		self.read(cons.CONFIG_PATH + HISTORY)
 		self.id = len(self.sections())
-		events.connect(cons.EVENT_FILE_COMPLETE, self.add_history)
+		shared.events.connect(cons.EVENT_FILE_COMPLETE, self.add_history)
 
 	def get_all(self):
 		""""""
@@ -103,9 +104,9 @@ class History(SafeConfigParser):
 		f.close()
 
 if __name__ == "__main__":
-	import events
-	events = events.Events()
+	from events import Events
+	shared.events = Events()
 	c = History()
-	events.trigger_file_complete("puta", 323, "MB", "megaupload.com")
+	shared.events.trigger_file_complete("puta", 323, "MB", "megaupload.com")
 	c.set_played("5", True)
 	print c.get_all()

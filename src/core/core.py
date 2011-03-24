@@ -18,8 +18,6 @@
 ## Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 ###############################################################################
 
-import sys
-import __builtin__
 import logging
 logger = logging.getLogger(__name__)
 
@@ -39,7 +37,7 @@ class Core(ServiceManager):
 			logger.warning("No configuration found!")
 
 		#events system
-		__builtin__.events = Events()
+		shared.events = Events()
 
 		ServiceManager.__init__(self)
 		self.history = History()

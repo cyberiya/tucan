@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 from url_open import URLOpen
 
 import cons
+import shared
 
 TIMEOUT = 60
 
@@ -42,7 +43,7 @@ class Recaptcha:
 		self.captcha_response = None
 		self.wait_for_response = True
 		try:
-			events.trigger_captcha_dialog(self.service_name, self.get_captcha, self.set_response)
+			shared.events.trigger_captcha_dialog(self.service_name, self.get_captcha, self.set_response)
 			while self.wait_for_response:
 				if self.timeout:
 					self.timeout -= 1

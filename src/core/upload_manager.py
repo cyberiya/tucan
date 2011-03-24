@@ -24,6 +24,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import cons
+import shared
 
 MAX_UPLOADS = 2
 
@@ -51,6 +52,7 @@ class UploadMockup(threading.Thread):
 	def run(self):
 		"""Parsing and Poster work"""
 		size = self.item.current_size
+		self.item.set_status(cons.STATUS_ACTIVE)
 		if size:
 			self.item.update(-size, 0)
 		while not self.stop_flag and self.item.current_size < self.item.total_size:
@@ -65,7 +67,8 @@ class UploadMockup(threading.Thread):
 					if remaining_time > 0:
 						time.sleep(remaining_time)
 					break
-			#print time.time() - total_time
+			if self.item.current_size + size > self.item.total_size:
+				size = self.item.total_size - self.item.current_size
 			self.item.update(size, size-self.speed)
 			self.speed = size
 		if self.stop_flag:
@@ -162,13 +165,13 @@ class UploadManager:
 			#start Links when not active
 			if not self.queue.for_all_children(id, self.start, force) and not item.get_active():
 				if self.limit_not_reached() or force:
-					logger.info("Started: %s" % item.get_name())
-					item.set_status(cons.STATUS_ACTIVE)
+					logger.info("Started %s: %s" % (item.get_info(), item.parent.get_name()))
+					#th = item.plugin.process(item)
 					th = UploadMockup(item)
 					th.start()
 					self.threads[id] = th
 				elif item.status != cons.STATUS_PEND:
-					logger.info("Pending: %s" % item.get_name())
+					logger.info("Pending %s: %s" % (item.get_info(), item.parent.get_name()))
 					item.set_status(cons.STATUS_PEND)
 
 	def stop(self, id, item=None, force=True):
@@ -217,7 +220,7 @@ class UploadManager:
 				self.timer.start()
 			else:
 				self.timer = None
-				events.trigger_all_complete()
+				shared.events.trigger_all_complete()
 			self.scheduling = False
 
 	def calculate_speed(self):

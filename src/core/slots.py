@@ -23,6 +23,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 import cons
+import shared
 
 class Slots:
 	""""""
@@ -33,7 +34,7 @@ class Slots:
 		self.end_wait = 0
 		self.max = slots
 		self.slots = slots
-		events.connect(cons.EVENT_LIMIT_CANCEL, self.cancel_limit)
+		shared.events.connect(cons.EVENT_LIMIT_CANCEL, self.cancel_limit)
 
 	def get_slot(self):
 		""""""
@@ -57,7 +58,7 @@ class Slots:
 		else:
 			if time.time() > self.end_wait:
 				self.end_wait = 0
-				events.trigger_limit_off(self.__module__)
+				shared.events.trigger_limit_off(self.__module__)
 				self.limit = False
 				return True
 
@@ -66,7 +67,7 @@ class Slots:
 		if not wait:
 			wait = self.time_limit
 		self.end_wait = time.time() + wait
-		events.trigger_limit_on(self.__module__, self.end_wait)
+		shared.events.trigger_limit_on(self.__module__, self.end_wait)
 		logger.warning("Wait %i seconds." % wait)
 		self.return_slot()
 		self.limit = True

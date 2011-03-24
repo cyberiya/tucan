@@ -21,7 +21,6 @@
 import os
 import uuid
 import shutil
-import __builtin__
 import logging
 logger = logging.getLogger(__name__)
 
@@ -29,6 +28,7 @@ from ConfigParser import SafeConfigParser
 
 import service_config
 import cons
+import shared
 
 CONF = "tucan.conf"
 
@@ -153,7 +153,7 @@ class Config(SafeConfigParser):
 	def set_max_downloads(self, value):
 		""""""
 		self.set(SECTION_MAIN, OPTION_MAX_DOWNLOADS, str(value))
-		__builtin__.max_downloads = value
+		shared.max_downloads = value
 
 	def get_max_download_speed(self):
 		""""""
@@ -162,7 +162,7 @@ class Config(SafeConfigParser):
 	def set_max_download_speed(self, value):
 		""""""
 		self.set(SECTION_MAIN, OPTION_MAX_DOWNLOAD_SPEED, str(value))
-		__builtin__.max_download_speed = value
+		shared.max_download_speed = value
 
 	def get_downloads_folder(self):
 		""""""

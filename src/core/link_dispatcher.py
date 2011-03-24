@@ -33,7 +33,7 @@ class LinkDispatcher:
 	def __init__(self, sorted_links, get_check):
 		""""""
 		self.cancel_flag = False
-		events.connect(cons.EVENT_CHECK_CANCEL, self.cancel_check)
+		shared.events.connect(cons.EVENT_CHECK_CANCEL, self.cancel_check)
 		for service, links in sorted_links.items():
 			th = threading.Thread(group=None, target=self.threaded_check, name=None, args=(service, links, get_check))
 			th.start()
@@ -47,8 +47,8 @@ class LinkDispatcher:
 				return
 			else:
 				for link, (name, size, unit) in check_links(max_links).items():
-					events.trigger_link_checked(service, link, name, size, unit, plugin_type)
-		events.trigger_check_completed(service)
+					shared.events.trigger_link_checked(service, link, name, size, unit, plugin_type)
+		shared.events.trigger_check_completed(service)
 
 	def cancel_check(self):
 		""""""
@@ -57,11 +57,11 @@ class LinkDispatcher:
 if __name__ == "__main__":
 	import random
 	import time
-	import __builtin__
+	import shared
 	from events import Events
 	
 	logging.basicConfig(level=logging.DEBUG)
-	__builtin__.events = Events()
+	shared.events = Events()
 	
 	def check_links(links):
 		result = {}
@@ -73,4 +73,4 @@ if __name__ == "__main__":
 
 	l = LinkDispatcher(LINKS, lambda x: (check_links, "PREMIUM", MAX_SINGLE_CHECK))
 	time.sleep(10)
-	events.trigger_check_cancel()
+	shared.events.trigger_check_cancel()
