@@ -50,7 +50,7 @@ class URLOpen:
 			handlers.append(urllib2.ProxyHandler(shared.proxy))
 		self.opener = urllib2.build_opener(*handlers)
 
-	def open(self, url, form=None, range=None, keep_alive=False, referer=False, ajax=False):
+	def open(self, url, form=None, range=None, keep_alive=False, referer=False):
 		""""""
 		headers = {"User-Agent": cons.USER_AGENT}
 		if range:
@@ -59,8 +59,6 @@ class URLOpen:
 			headers["Connection"] = "Keep-alive"
 		if referer:
 			headers["Referer"] = referer
-		if ajax:
-			headers["X-Requested-With"] = "XMLHttpRequest"
 		if form:
 			return self.opener.open(urllib2.Request(url, None, headers), form)
 		else:
