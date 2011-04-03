@@ -29,7 +29,7 @@ from core.download_plugin import DownloadPlugin
 from core.recaptcha import Recaptcha
 from core.url_open import URLOpen
 
-BASE_URL = "http://filesonic.com/file"
+BASE_URL = "http://www.filesonic.com/file"
 
 class AnonymousDownload(DownloadPlugin):
 	""""""
@@ -39,30 +39,27 @@ class AnonymousDownload(DownloadPlugin):
 			cookie = cookielib.CookieJar()
 			opener = URLOpen(cookie)
 			file_id = url.split("/")[-2]
-			form_action = "%s/%s/%s?start=1" % (BASE_URL,file_id,file_id)
+			form_action = "%s?start=1" % (url)
 			
 			if not wait_func():
 				return
 			
 			it = opener.open(form_action)
+			form_action = "%s?start=1" % it.geturl() #Get the redirect url
+			end = form_action.split(".")[2].split("/")[0] #Get the .com replacement
+			form_action2 = "%s/%s/%s?start=1" % (BASE_URL,file_id,file_id)
+			form_action2 = form_action2.replace(".com",".%s" % end)
+			form = urllib.urlencode([("foo","foo")]) #Force urllib2 to do a POST
+			it = opener.open(form_action2, form, ajax=True)
 			it_tmp = None
-			for line in it:
-				#First wait
-				if "name='tm'" in line:
-					tm = line.split("value='")[1].split("'")[0];
-					tm_hash = it.next().split("value='")[1].split("'")[0];
-					form = urllib.urlencode([("tm", tm), ("tm_hash", tm_hash)])
-					it_tmp = opener.open(form_action, form)
-					break
-			
+
 			#Loop until we get the captcha
 			for loop in range(3):
 				if not wait_func():
 					return
+				#it_tmp is set after a wait
 				if it_tmp:
 					it = it_tmp
-				else:
-					it = opener.open(form_action)
 				for line in it:
 					if 'Recaptcha.create("' in line:
 						tmp = line.split('"')[1].split('"')[0]
@@ -77,8 +74,8 @@ class AnonymousDownload(DownloadPlugin):
 									return
 							
 								#Submit the input to the recaptcha system
-								form = urllib.urlencode([("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response), ("recaptcha_shortencode_field", "undefined")])
-								it = opener.open(form_action, form, content_range)
+								form = urllib.urlencode([("recaptcha_challenge_field", challenge), ("recaptcha_response_field", response)])
+								it = opener.open(form_action, form)
 								#Get the link
 								for line in it:
 									if 'downloadLink' in line:
@@ -90,18 +87,19 @@ class AnonymousDownload(DownloadPlugin):
 						it.next()
 						return opener.open(it.next().split('href="')[1].split('"')[0])
 					
-					if "name='tm'" in line:
+					#Need to wait
+					elif "name='tm'" in line:
 						tm = line.split("value='")[1].split("'")[0];
 						tm_hash = it.next().split("value='")[1].split("'")[0];
 						form = urllib.urlencode([("tm", tm), ("tm_hash", tm_hash)])
-						it_tmp = opener.open(form_action, form)
 				
 					#Need to wait
-					elif 'countDownDelay =' in line:
-						wait = int(line.split("= ")[1].split(";")[0])
+					elif "countDownDelay =" in line:
+						wait = int(line.split("=")[1].split(";")[0])
 						if wait < 60:
 							if not wait_func(wait):
 								return
+							it_tmp = opener.open(form_action, form) #fetch the page
 							#Next loop, reload the page
 							break
 						else:
@@ -120,7 +118,6 @@ class AnonymousDownload(DownloadPlugin):
 				if 'fileInfo filename' in line:
 					name = line.split('<strong>')[1].split('</strong>')[0]
 				elif 'fileInfo filesize' in line:
-					it.next()
 					it.next()
 					tmp = it.next().split('class="size">')[1].split("<")[0]
 					if "KB" in tmp:

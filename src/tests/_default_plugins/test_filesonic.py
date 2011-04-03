@@ -34,7 +34,7 @@ CONF_PATH = "../default_plugins/filesonic"
 SERVICE_NAME = "filesonic"
 
 TEST_INVALID_LINK = "http://www.filesonic.com/file/0/"
-TEST_LINK = "http://www.filesonic.com/file/48673559/prueba.bin"
+TEST_LINK = "http://www.filesonic.com/file/473899214/prueba.bin"
 TEST_SIZE = 114
 TEST_UNIT = "KB"
 
