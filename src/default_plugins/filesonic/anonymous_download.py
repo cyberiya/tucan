@@ -20,6 +20,7 @@
 ###############################################################################
 
 import urllib
+import urllib2
 import cookielib
 
 import logging
@@ -28,6 +29,7 @@ logger = logging.getLogger(__name__)
 from core.download_plugin import DownloadPlugin
 from core.recaptcha import Recaptcha
 from core.url_open import URLOpen
+import core.cons as cons
 
 BASE_URL = "http://www.filesonic.com/file"
 
@@ -50,7 +52,9 @@ class AnonymousDownload(DownloadPlugin):
 			form_action2 = "%s/%s/%s?start=1" % (BASE_URL,file_id,file_id)
 			form_action2 = form_action2.replace(".com",".%s" % end)
 			form = urllib.urlencode([("foo","foo")]) #Force urllib2 to do a POST
-			it = opener.open(form_action2, form, ajax=True)
+			#FIXME : urlopen should be able to set custom headers
+			headers = {"User-Agent": cons.USER_AGENT, "X-Requested-With": "XMLHttpRequest"}
+			it = opener.opener.open(urllib2.Request(form_action2, None, headers), form)
 			it_tmp = None
 
 			#Loop until we get the captcha
