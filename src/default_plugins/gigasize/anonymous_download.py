@@ -23,9 +23,9 @@ import cookielib
 logger = logging.getLogger(__name__)
 
 import urllib
+import random
 
 import Image
-import ImageOps
 
 from core.tesseract import Tesseract
 from core.download_plugin import DownloadPlugin
@@ -49,26 +49,47 @@ class AnonymousDownload(DownloadPlugin):
 			opener = URLOpen(cookie)
 			if not wait_func():
 				return
-			opener.open(url)
+			
 			retry = 5
 			while retry:
-				tes = Tesseract(opener.open("http://www.gigasize.com/randomImage.php").read(), self.filter_image)
+				it = opener.open(url)
+				for line in it:
+					if "<iframe src='" in line:
+						img_url = line.split("'")[1].split("'")[0]
+					elif 'name="fileId"' in line:
+						file_id = line.split('value="')[1].split('"')[0]
+			
+				it = opener.open(img_url)
+				for line in it:
+					if 'AdsCaptcha Challenge' in line:
+						img_url = line.split('src="')[1].split('"')[0]
+					elif 'class="code">' in line:
+						code = line.split('">')[1].split("<")[0]
+
+				tes = Tesseract(opener.open(img_url).read())
 				captcha = tes.get_captcha()
-				if len(captcha) == 3:
-					logger.warning("Captcha: %s" % captcha)
-					data = urllib.urlencode([("txtNumber", captcha)])
-					it = opener.open("http://www.gigasize.com/formdownload.php", data)
+				captcha = "".join([c for c in captcha if c.isdigit()]) #keep only the numbers
+	
+				data = urllib.urlencode([("fileId", file_id),("adscaptcha_response_field", captcha),("adscaptcha_challenge_field", code), ("adUnder", "")])
+				it = opener.open("%s/getoken" % BASE_URL, data)
+				captcha = False
+				for line in it:
+					if '"status":1' in line:
+						captcha = True
+				#captcha is valid
+				if captcha:
+					if not wait_func(30):
+						return
+					it = opener.open("%s/formtoken" % BASE_URL)
 					for line in it:
-						if '<div id="askPws" style="display:block">' in line:
-							return self.set_limit_exceeded()
-						if "formDownload" in line:
-							action = line.split('action="')[1].split('"')[0]
-							it.next()
-							it.next()
-							wait = int(it.next().split('>')[1].split('<')[0])
-							if not wait_func(wait):
-								return
-							return opener.open("%s%s" % (BASE_URL,action))
+						token = line
+					rnd = "".join([str(random.randint(1,9)) for i in range(16)])
+					data = urllib.urlencode([("fileId", file_id),("token", token),("rnd", rnd)])
+					it = opener.open("%s/getoken" % BASE_URL, data)
+					for line in it:
+						if '"status":1' in line:
+							link = line.split('":"')[1].split('"')[0].replace("\\","")
+					return opener.open(link)
 				retry -= 1
 		except Exception, e:
 			logger.exception("%s: %s" % (url, e))
@@ -81,10 +102,10 @@ class AnonymousDownload(DownloadPlugin):
 		try:
 			it = URLOpen().open(url)
 			for line in it:
-				if "<p><strong>Name</strong>" in line:
-					name = line.split("<b>")[1].split("</b>")[0].strip()
-				elif "<p>Size:" in line:
-					tmp = line.split("<span>")[1].split("</span>")[0].strip()
+				if '<div class="fileInfo">' in line:
+					name = it.next().split("</strong>")[0].split(">")[-1].strip()
+					it.next()
+					tmp = it.next().split("</strong>")[0].split(">")[-1].strip()
 					if cons.UNIT_KB in tmp:
 						unit = cons.UNIT_KB
 						size = int(float(tmp.split(cons.UNIT_KB)[0]))
@@ -94,25 +115,8 @@ class AnonymousDownload(DownloadPlugin):
 					elif cons.UNIT_GB in tmp:
 						unit = cons.UNIT_GB
 						size = int(float(tmp.split(cons.UNIT_GB)[0]))
-			if "get.php?d=" not in url:
-				name = url.split("/").pop()
 		except Exception, e:
 			name = None
 			size = -1
 			logger.exception("%s :%s" % (url, e))
 		return name, size, unit
-		
-	def filter_image(self, image):
-		""""""
-		image = image.resize((120,40), Image.BICUBIC)
-		image = image.crop((30,9,86,32))
-		image = image.point(self.filter_pixel)
-		image = ImageOps.grayscale(image)
-		return image
-
-	def filter_pixel(self, pixel):
-		""""""
-		if pixel > 60:
-			return 255
-		else:
-			return 1
