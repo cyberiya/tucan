@@ -34,7 +34,7 @@ import core.cons as cons
 
 import time
 
-WAIT = 60 #Default, also parsed in the page if possible
+WAIT = 30 #Default, also parsed in the page if possible
 BASE_URL = "http://www.gigasize.com"
 
 
@@ -43,22 +43,24 @@ class AnonymousDownload(DownloadPlugin):
 	def link_parser(self, url, wait_func, content_range=None):
 		""""""
 		try:
-			captcha_url = None
-			wait = WAIT
+			url = url.split("&")[0]
 			cookie = cookielib.CookieJar()
 			opener = URLOpen(cookie)
+			
 			if not wait_func():
 				return
 			
 			retry = 5
 			while retry:
 				it = opener.open(url)
+				img_url = None
 				for line in it:
 					if "<iframe src='" in line:
 						img_url = line.split("'")[1].split("'")[0]
 					elif 'name="fileId"' in line:
 						file_id = line.split('value="')[1].split('"')[0]
-			
+				if not img_url:
+					return self.set_limit_exceeded()
 				it = opener.open(img_url)
 				for line in it:
 					if 'AdsCaptcha Challenge' in line:
@@ -78,7 +80,7 @@ class AnonymousDownload(DownloadPlugin):
 						captcha = True
 				#captcha is valid
 				if captcha:
-					if not wait_func(30):
+					if not wait_func(WAIT):
 						return
 					it = opener.open("%s/formtoken" % BASE_URL)
 					for line in it:
@@ -100,6 +102,7 @@ class AnonymousDownload(DownloadPlugin):
 		size = -1
 		unit = None
 		try:
+			url = url.split("&")[0]
 			it = URLOpen().open(url)
 			for line in it:
 				if '<div class="fileInfo">' in line:
