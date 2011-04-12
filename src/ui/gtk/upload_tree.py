@@ -124,7 +124,7 @@ class UploadTree(gtk.VBox, UploadManager):
 			message = _("Corrupted session file.\nCheck the log for more details.")
 			m = Message(None, cons.SEVERITY_ERROR, title, message)
 
-	def delete_cb(self, button):
+	def delete_cb(self):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
 		asked = False
@@ -141,7 +141,7 @@ class UploadTree(gtk.VBox, UploadManager):
 					self.stop(item.id, item)
 					self.delete(item.id, item)
 
-	def clear_cb(self, button):
+	def clear_cb(self):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
 		items = [model.get_item_from_path(path) for path in paths]
@@ -151,19 +151,19 @@ class UploadTree(gtk.VBox, UploadManager):
 		for item in items:
 			self.clear(item.id, item)
 
-	def move_up_cb(self, button):
+	def move_up_cb(self):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
 		for item in [model.get_item_from_path(path) for path in paths]:
 			self.move_up(item.id, item)
 
-	def move_down_cb(self, button):
+	def move_down_cb(self):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
 		for item in [model.get_item_from_path(path) for path in paths]:
 			self.move_down(item.id, item)
 
-	def start_cb(self, button):
+	def start_cb(self):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
 		asked = False
@@ -180,7 +180,7 @@ class UploadTree(gtk.VBox, UploadManager):
 				force = answer
 			self.start(item.id, item, force)
 
-	def stop_cb(self, button):
+	def stop_cb(self):
 		""""""
 		model, paths = self.treeview.get_selection().get_selected_rows()
 		asked = False
