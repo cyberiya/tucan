@@ -35,7 +35,7 @@ CONF_PATH = "../default_plugins/mediafire"
 SERVICE_NAME = "mediafire"
 
 TEST_INVALID_LINK = "http://www.mediafire.com/?00000"
-TEST_LINK = "http://www.mediafire.com/?8r3cgzxoza0b5bq"
+TEST_LINK = "http://www.mediafire.com/?yxu50m5pi26c72y"
 TEST_SIZE = 114
 TEST_UNIT = "KB"
 
