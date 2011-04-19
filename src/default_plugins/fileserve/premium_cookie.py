@@ -44,7 +44,7 @@ class PremiumCookie:
 				"recaptcha_shortencode_field":"",
 				"loginFormSubmit":"Login"})
 
-		logger.warning("Submitting this post: %s" % encoded_str)
+		#logger.warning("Submitting this post: %s" % encoded_str)
 		
 		opener.open("http://www.fileserve.com/login.php", encoded_str)
 		if len(cookie) > 0:
