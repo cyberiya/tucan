@@ -36,7 +36,8 @@ class PremiumCookie:
 
 		cookie = cookielib.CookieJar()
 		opener = URLOpen(cookie)
-		encoded_str = urllib.urlencode({"loginUserName":user, 
+		encoded_str = urllib.urlencode({
+				"loginUserName":user, 
 				"loginUserPassword":password,
 				"autoLogin":"on",
 				"recaptcha_response_field":"",
@@ -45,7 +46,7 @@ class PremiumCookie:
 				"loginFormSubmit":"Login"})
 
 		#logger.warning("Submitting this post: %s" % encoded_str)
-		
+
 		opener.open("http://www.fileserve.com/login.php", encoded_str)
 		if len(cookie) > 0:
 			return cookie
