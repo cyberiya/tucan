@@ -49,7 +49,6 @@ class AnonymousDownload(DownloadPlugin):
 		"""
 		file_id   = url.split("/")[3]
 		file_name = self.check_links(url)[0]
-		logger.info("Found ID: %s name: %s" % (file_id,  file_name))
 		encoded_str = urllib.urlencode({
 			"op"          : "download1",
 			"usr_login"   : "",
@@ -57,9 +56,6 @@ class AnonymousDownload(DownloadPlugin):
 			"name"        : file_name,
 			"referer"     : "",
 			"method_free" : "+Regular+Download+"})
-
-		logger.warning("Submitting this post: %s" % encoded_str)
-
 		opener = URLOpen()
 
 		"""
@@ -69,13 +65,12 @@ class AnonymousDownload(DownloadPlugin):
 		web_page = opener.open(url, encoded_str, False, url)
 
 
-		while 1 > 0:
+		for retry in range(3):
 			if not wait_func():
 				return
 
 			for line in web_page:
 				if '<input type="hidden" name="rand" value="' in line:
-					logger.warning("Found rand line: %s" % line)
 					rand_value = line.split('value="')[1].split('"')[0]
 					break
 
@@ -86,7 +81,6 @@ class AnonymousDownload(DownloadPlugin):
 			for line in  web_page:
 				if '<span id="countdown">' in line:
 					wait_length  = line.split('<span id="countdown">')[1].split('<')[0]
-					logger.warning("Found wait length: %s" % wait_length)
 					if not wait_func(int(wait_length)):
 						return
 
@@ -99,21 +93,16 @@ class AnonymousDownload(DownloadPlugin):
 					minutes = 0
 					hours   = 0
 					prev_word = ''
-					logger.warning("Found time to wait: %s" % parse_line)
 
 					for word in parse_line.split(' '):
-						logger.warning("Parsing: %s", word)
 
 						if  word == 'hour,' or word == 'hours,':
-							logger.warning("Found hour!")
 							hours = int(prev_word)
                              
 						elif  word == 'minute,' or word == 'minutes,':
-							logger.warning("Found minute!")
 							minutes = int(prev_word)
 
 						elif  word == 'second' or word == 'seconds':
-							logger.warning("Found second!")
 							seconds = int(prev_word)
 							break
 						else:
@@ -124,7 +113,6 @@ class AnonymousDownload(DownloadPlugin):
 					return self.set_limit_exceeded(seconds)
 				
 				if  'http://api.recaptcha.net/challenge?' in line:
-					logger.warning("Found captcha line: %s" % line)
 					recaptcha_link = line.split('src="')[1].split('"')[0]
 					if not wait_func():
 						return
@@ -150,7 +138,6 @@ class AnonymousDownload(DownloadPlugin):
 						#Get the link and return it
 						for line in download_page:
 							if 'Download File' in line:
-								logger.warning("Found download line: %s" % line)
 								return opener.open(line.split('href="')[1].split('"')[0])
 
 		return
