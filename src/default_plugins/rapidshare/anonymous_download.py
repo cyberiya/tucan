@@ -31,7 +31,7 @@ from core.slots import Slots
 #MAX_SIZE = 209796096
 MAX_SIZE = None
 
-API_URL = "/cgi-bin/rsapi.cgi"
+API_URL = "/cgi-bin/rsapi.cgi?sub=download"
 
 class AnonymousDownload(DownloadPlugin, Slots):
 	""""""
@@ -42,17 +42,19 @@ class AnonymousDownload(DownloadPlugin, Slots):
 		try:
 			tmp = url.split("/")
 			opener = URLOpen()
-			form =  urllib.urlencode([("sub", "download_v1"), ("fileid", tmp[4]), ("filename", tmp[5])])
-			for line in opener.open("http://api.rapidshare.com%s" % API_URL, form, content_range):
+			url = "%s&fileid=%s" % (API_URL,tmp[4])
+			url = "%s&filename=%s" % (url,tmp[5])
+			for line in opener.open("http://%s%s" % ("api.rapidshare.com",url)):
+				print line
 				if "DL:" in line:
 					tmp = line.split("DL:")[1].split(",")
-					link = "http://%s%s" % (tmp[0], API_URL)
-					form =  "%s&%s" % (form, urllib.urlencode([("dlauth", tmp[1])]))
+					link = "http://%s%s&dlauth=%s" % (tmp[0],url,tmp[1])
 					wait = int(tmp[2])
+					print link
 			if not wait_func(wait):
 				return
-			elif link:
-				return URLOpen().open(link, form, content_range)
+			if link:
+				return URLOpen().open(link, content_range)
 			else:
 				return self.set_limit_exceeded()
 		except Exception, e:
