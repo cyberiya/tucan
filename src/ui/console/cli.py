@@ -37,11 +37,17 @@ WIDTH = 100
 
 LINES_PER_DOWNLOAD = 3
 
+class UIContext:
+	Downloads = 0
+	AddLinks  = 1
+	Log       = 2
+	Wizard    = 3
+
 class Cli(NoUi):
 	""""""
 	def __init__(self, *kwargs):
 		""""""
-		#set logger
+		#Setup logger to log events to this class
 		self.stream = LogStream()
 		handler = logging.StreamHandler(self.stream)
 		handler.setLevel(logging.INFO)
@@ -49,13 +55,36 @@ class Cli(NoUi):
 		logging.getLogger("").addHandler(handler)
 
 		NoUi.__init__(self, *kwargs)
+
+		#Set context tab
+		self.context = UIContext.Downloads
 		self.running = True
 		self.quit_question = False
 		self.win_height = 0
 		self.win_chars = 0
-		self.last_length = 0
 		self.total_speed = 0
 		self.th = None
+		self.statistics_th = None
+
+
+	def update_statistics(self):
+		avg_counter = 0
+		avg_speed   = 0
+		while self.running:
+			total_speed  = 0
+			avg_counter += 1
+			downloads = self.download_manager.complete_downloads + self.download_manager.active_downloads
+			for download in downloads:
+				total_speed += download.speed
+			
+			avg_speed += total_speed
+			if avg_counter == 10:
+				avg_counter = 0
+				avg_speed = avg_speed / 5
+				self.total_speed = int(avg_speed)
+			self.download_manager.update()
+			time.sleep(.1)
+
 
 	def run(self, screen):
 		""""""
@@ -68,24 +97,49 @@ class Cli(NoUi):
 
 		#set default screen
 		self.status_pad = curses.newpad(STATUS_LINES, WIDTH)
-		self.main_pad = curses.newpad(DOWNLOAD_LINES, WIDTH)
-		self.log_pad = curses.newpad(LOG_LINES, WIDTH)
+		self.main_pad   = curses.newpad(DOWNLOAD_LINES, WIDTH)
+		self.log_pad    = curses.newpad(LOG_LINES, WIDTH)
 
 		#load links file
 		self.th = threading.Thread(group=None, target=self.load_links, name=None)
 		self.th.start()
 
+		#start statistics thread
+		self.statistics_th = threading.Thread(group=None, target=self.update_statistics, name=None)
+		self.statistics_th.start()
+
+		current_context = UIContext.Downloads
 		while self.running:
 			self.win_height, self.win_chars = self.screen.getmaxyx()
 			self.parse_input()
+
+			self.update_status()
+
+			# if the current view has changed clear the screen
+			if self.context != current_context:
+				self.clear_screen(self.context)
+				current_context = self.context
+
 			try:
-				log_len = self.update_main()
-				self.update_log(log_len)
+				if self.context == UIContext.Downloads:
+					self.update_main()
+				elif self.context == UIContext.Log:
+					self.update_log()
+
 			except curses.error, e:
 				logger.warning(e)
-			else:
-				curses.doupdate()
+
+			curses.doupdate()
 			time.sleep(0.5)
+
+	def clear_screen(self, except_context):
+		""""""
+		if except_context != UIContext.Log:
+			self.log_pad.clear()
+			self.log_pad.refresh(0, 0, 2, 0, self.win_height-2, self.win_chars-1)
+		if except_context != UIContext.Downloads:
+			self.main_pad.clear()
+			self.main_pad.refresh(0, 0, 2, 0, self.win_height-2, self.win_chars-1)
 
 	def parse_input(self):
 		""""""
@@ -106,14 +160,18 @@ class Cli(NoUi):
 				if input.lower() == "q":
 					self.quit_question = True
 					self.set_status("Are you sure you want to quit? [y/N]")
-				else:
-					self.update_status()
+
+				elif input.lower() =="l":
+					self.context = UIContext.Log
+
+				elif input.lower() =="d":
+					self.context = UIContext.Downloads
+
 
 	def update_main(self):
 		""""""
 		if self.win_height > 5:
 			cont = 0
-			self.total_speed = 0
 			self.main_pad.erase()
 			downloads = self.download_manager.complete_downloads + self.download_manager.active_downloads
 			while len(downloads)*LINES_PER_DOWNLOAD > DOWNLOAD_LINES:
@@ -123,7 +181,6 @@ class Cli(NoUi):
 				for link in download.links:
 					if link.active:
 						service = "[%s %s]" %(link.plugin_type, link.service)
-				self.total_speed += download.speed
 				percent = "%i%s" % (int(download.progress), "%")
 				speed = "%s KB/s" % download.speed
 				size = "%i%s / %i%s" % (download.actual_size, download.actual_size_unit, download.total_size, download.total_size_unit)
@@ -131,7 +188,6 @@ class Cli(NoUi):
 				self.main_pad.addnstr(cont, 1, download.name, WIDTH)
 				self.main_pad.addnstr(cont+1, 5, "%s %s \t%s \t%s \t%s" % (percent, service, size, speed, time), WIDTH)
 				cont += LINES_PER_DOWNLOAD
-			self.download_manager.update()
 			#2 blank lines at top
 			cont +=2
 			remain = self.win_height-cont
@@ -143,16 +199,14 @@ class Cli(NoUi):
 			self.main_pad.noutrefresh(start, 0, 2, 0, cont-start, self.win_chars-1)
 			return remain
 
-	def update_log(self, length):
+	def update_log(self):
 		""""""
-		if length:
-			lines = self.stream.readnlines(length)
-			if lines:
-				self.last_length = length
-				self.log_pad.erase()
-				for i in range(len(lines)):
-					self.log_pad.addnstr(i, 0, lines[i], WIDTH, curses.A_DIM)
-				self.log_pad.noutrefresh(0, 0, self.win_height-length, 0, self.win_height-1, self.win_chars-1)
+		lines = self.stream.readnlines(self.win_height-1)
+		if lines:
+			self.log_pad.erase()
+			for i in range(len(lines)):
+				self.log_pad.addnstr(i, 0, lines[i], WIDTH, curses.A_DIM)
+			self.log_pad.noutrefresh(0, 0, 2, 0, self.win_height-1, self.win_chars-1)
 
 	def update_status(self):
 		""""""
