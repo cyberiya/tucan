@@ -108,7 +108,6 @@ class AnonymousDownload(DownloadPlugin):
 						else:
 							prev_word = word
 
-					logger.warning("Limited exceeded: %s %s %s " % (hours, minutes, seconds))
 					seconds = seconds + (minutes * 60) + (hours * 3600)
 					return self.set_limit_exceeded(seconds)
 				
