@@ -161,8 +161,8 @@ class TestBaseCookie(unittest.TestCase):
 		
 		try:
 			config.read(name)
-			account_name = config.get(self.service_name, OPTION_NAME)
-			account_password = config.get(self.service_name, OPTION_PASSWORD)
+			account_name = config.get(self.service_name, OPTION_NAME, raw=True)
+			account_password = config.get(self.service_name, OPTION_PASSWORD, raw=True)
 		except Exception, e:
 			self.fail(e)
 		else:
