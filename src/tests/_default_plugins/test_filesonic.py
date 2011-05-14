@@ -22,8 +22,10 @@ import sys
 import os.path
 import base_tests
 
-from core.service_config import ServiceConfig, SECTION_ANONYMOUS_DOWNLOAD
+from core.service_config import ServiceConfig, SECTION_ANONYMOUS_DOWNLOAD, SECTION_PREMIUM_DOWNLOAD
 from filesonic.anonymous_download import AnonymousDownload
+from filesonic.premium_cookie import PremiumCookie
+from filesonic.premium_download import PremiumDownload
 from ui.gtk.captcha_dialog import CaptchaDialog
 
 import core.cons as cons
@@ -54,3 +56,21 @@ class TestAnonymous(base_tests.TestBaseDownload):
 		""""""
 		shared.events.disconnect(cons.EVENT_CAPTCHA_DIALOG, self.id)
 		del self.plugin
+		
+class TestPremium(base_tests.TestBaseCookie, base_tests.TestBaseDownload):
+	""""""
+	def setUp(self):
+		""""""
+		self.cookie = PremiumCookie()
+		self.service_name = SERVICE_NAME
+		
+		config = ServiceConfig(os.path.join(os.path.dirname(sys.argv[0]), CONF_PATH))
+		self.plugin = PremiumDownload(self.get_mocked_config(config), SECTION_PREMIUM_DOWNLOAD)
+		self.invalid_link = TEST_INVALID_LINK
+		self.link = TEST_LINK
+		self.size = TEST_SIZE
+		self.unit = TEST_UNIT
+
+	def tearDown(self):
+		""""""
+		del self.cookie

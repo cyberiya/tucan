@@ -44,7 +44,7 @@ class AnonymousDownload(DownloadPlugin):
 					pkr = line.split("'")[1].split("'")[0]
 				#Get the last block to unescape
 				if "unescape" in line:
-					tmp = line.split("}}}")[-1]
+					tmp = line.split("break;}")[-1]
 					tmp = tmp.split("var cb")[0]
 					tmp = self.split_eval(tmp)
 				
@@ -137,8 +137,8 @@ class AnonymousDownload(DownloadPlugin):
 		try:
 			it = URLOpen().open(url)
 			for line in it:
-				if 'download_file_title" style="margin-bottom:20px;">' in line:
-					name = line.split('download_file_title" style="margin-bottom:20px;">')[1].split('<')[0].strip()
+				if 'download_file_title" style="margin:20px 0;">' in line:
+					name = line.split('download_file_title" style="margin:20px 0;">')[1].split('<')[0].strip()
 					tmp = line.split('color:#777;">')[1].split('<')[0].strip("()")
 					unit = tmp[-2:]
 					size = int(round(float(tmp[:-2])))
