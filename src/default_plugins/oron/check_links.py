@@ -37,7 +37,6 @@ class CheckLinks():
 					line = it.next()
 					size_and_units = []
 					size_and_units = line.split(":")[1].split("<")[0].lstrip().rstrip().split(" ")
-					logger.info("Found name: %s size_and_units %s" % (name, size_and_units))
 					size = float(size_and_units[0])
 					unit = size_and_units[1].upper()
 					if 'B' == unit:
