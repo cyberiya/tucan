@@ -30,6 +30,7 @@ from core.download_plugin import DownloadPlugin
 from core.recaptcha import Recaptcha
 from core.url_open import URLOpen
 import core.cons as cons
+from check_links import CheckLinks 
 
 BASE_URL = "http://www.filesonic.com/file"
 
@@ -112,32 +113,4 @@ class AnonymousDownload(DownloadPlugin):
 			logger.exception("%s: %s" % (url, e))
 
 	def check_links(self, url):
-		""""""
-		name = None
-		size = -1
-		unit = None
-		try:
-			it = URLOpen().open(url)
-			for line in it:
-				if 'fileInfo filename' in line:
-					name = line.split('<strong>')[1].split('</strong>')[0]
-				elif 'fileInfo filesize' in line:
-					it.next()
-					tmp = it.next().split('class="size">')[1].split("<")[0]
-					if "KB" in tmp:
-						size = int(round(float(tmp.split("KB")[0])))
-						unit = "KB"
-					elif "MB" in tmp:
-						size = float(tmp.split("MB")[0])
-						if int(round(size)) > 0:
-							size = int(round(size))
-							unit = "MB"
-						else:
-							size = int(round(1024 * size))
-							unit = "KB"
-					elif "GB" in tmp:
-						size = int(round(float(tmp.split("GB")[0])))
-						unit = "GB"
-		except Exception, e:
-			logger.exception("%s :%s" % (url, e))
-		return name, size, unit
+		return CheckLinks().check_links(url)
